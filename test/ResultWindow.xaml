@@ -1,0 +1,31 @@
+﻿<Window x:Class="UZIP2.ResultWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UZIP2"
+        mc:Ignorable="d"
+        Title="UZipResult" Height="270" Width="270" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="270" Height="270" >
+        <Border x:Name="UBoard" BorderThickness="1"  CornerRadius="5" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="250" Margin="10">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Direction="0" RenderingBias="Quality" ShadowDepth="0" Opacity=".4"/>
+            </Border.Effect>
+        </Border>
+        <Label Content="解压缩结果" HorizontalAlignment="Left" Height="28" VerticalAlignment="Top" Width="93" FontSize="14" VerticalContentAlignment="Center" FontWeight="Bold" Margin="17.17,13.334,0,0"/>
+        <Grid>
+            <Button x:Name="BOk" Content="关闭" Style="{StaticResource MButton}" HorizontalAlignment="Center" Height="30" Margin="25,214.7,25,0" VerticalAlignment="Top" Width="220" d:IsHidden="True" Visibility="Hidden"/>
+            <Label x:Name="BClose" Content="✖" Margin="230.67,13.834,14.33,231.166" HorizontalAlignment="Center" VerticalAlignment="Center" Width="25" Height="25" MouseEnter="BClose_MouseEnter" MouseLeave="BClose_MouseLeave" MouseLeftButtonDown="BClose_MouseLeftButtonDown"/>
+            <RichTextBox x:Name="BResults" HorizontalAlignment="Center" Height="175.866" Margin="20,38.834,20,55.3" VerticalAlignment="Center" Width="230" Block.LineHeight="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True">
+                <FlowDocument PageWidth="1000">
+                    <Paragraph>
+                        <Run Text=""/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <Button x:Name="OpenFilePath" Content="打开文件目录" Style="{StaticResource MButton_F}" HorizontalAlignment="Left" Height="24" Margin="20,220.7,0,0" VerticalAlignment="Top" Width="112" FontSize="12" Click="OpenFilePath_Click" />
+            <Button x:Name="OpenOutPath" Content="打开输出目录" Style="{StaticResource MButton_F}" HorizontalAlignment="Left" Height="24" Margin="137,220.7,0,0" VerticalAlignment="Top" Width="112" FontSize="12" Click="OpenOutPath_Click" />
+
+        </Grid>
+    </Grid>
+</Window>

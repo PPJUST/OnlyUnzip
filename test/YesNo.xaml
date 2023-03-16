@@ -1,0 +1,23 @@
+﻿<Window x:Class="UZIP2.YesNo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UZIP2"
+        mc:Ignorable="d"
+        Title="YesNo" Height="120" Width="240" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Topmost="True" >
+    <Grid HorizontalAlignment="Center" Height="100" Margin="0,0,0,0" VerticalAlignment="Center" Width="220">
+        <Border x:Name="UBoard" BorderThickness="1" HorizontalAlignment="Center" Height="100" Margin="0,0,0,0" VerticalAlignment="Center" Width="220" CornerRadius="5" Background="White">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Direction="0" RenderingBias="Quality" ShadowDepth="0" Opacity=".4"/>
+            </Border.Effect>
+        </Border>
+        <Label Content="注意" HorizontalAlignment="Left" Height="28" VerticalAlignment="Top" Width="133.667" FontSize="14" VerticalContentAlignment="Center" FontWeight="Bold" Margin="10.667,6.525,0,0"/>
+        <Grid>
+            <Button x:Name="BOk" Content="是" Style="{StaticResource MButton_F}" HorizontalAlignment="Left" Height="25" Margin="17.272,61,0,0" VerticalAlignment="Top" Width="90" Click="BOk_Click"/>
+            <Button x:Name="BCancel" Content="否" Style="{StaticResource MButton_F}"  HorizontalAlignment="Left" Height="25" Margin="112.272,61,0,0" VerticalAlignment="Top" Width="90" Click="BCancel_Click" />
+
+        </Grid>
+        <Label x:Name="BTips" Content="是否确定？" HorizontalAlignment="Left" Height="28" VerticalAlignment="Top" Width="205.667" FontSize="14" VerticalContentAlignment="Center" Margin="10.667,28.191,0,0"/>
+    </Grid>
+</Window>

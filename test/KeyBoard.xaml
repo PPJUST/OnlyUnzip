@@ -1,0 +1,102 @@
+﻿<Window x:Class="UZIP2.Window2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UZIP2"
+        mc:Ignorable="d"
+        Title="KeyBoard"  Height="270" Width="505" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Grid HorizontalAlignment="Center" Height="250" Margin="0,0,0,0" VerticalAlignment="Center" Width="485">
+        <Border x:Name="UBoard" BorderThickness="1" HorizontalAlignment="Left" Height="250" Margin="0,0,0,0" VerticalAlignment="Center" Width="485" CornerRadius="5" Background="White">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Direction="0" RenderingBias="Quality" ShadowDepth="0" Opacity=".4"/>
+            </Border.Effect>
+        </Border>
+        <Grid x:Name="WKeyBoard" HorizontalAlignment="Left" Height="250" Margin="0,0,-15,0" VerticalAlignment="Top" Width="500">
+            <Label x:Name="UTip" Content="请选择一个常规键(白色)和任意数量的控制键(Ctrl/Alt/Shift)，应避免与其他软件重复。" Margin="10,211,24,15" HorizontalAlignment="Center" VerticalAlignment="Center" Width="466" Foreground="Gray"></Label>
+            <Grid x:Name="WKB_A" HorizontalAlignment="Left" Height="202" Margin="6,10,0,0" VerticalAlignment="Top" Width="470">
+                <ToggleButton x:Name="B_192" Content="~" HorizontalAlignment="Left" Height="30" Margin="5,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_49" Content="1" HorizontalAlignment="Left" Height="30" Margin="36,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_50" Content="2" HorizontalAlignment="Left" Height="30" Margin="67,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_51" Content="3" HorizontalAlignment="Left" Height="30" Margin="98,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_52" Content="4" HorizontalAlignment="Left" Height="30" Margin="129,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_53" Content="5" HorizontalAlignment="Left" Height="30" Margin="160,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_54" Content="6" HorizontalAlignment="Left" Height="30" Margin="191,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_55" Content="7" HorizontalAlignment="Left" Height="30" Margin="222,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_56" Content="8" HorizontalAlignment="Left" Height="30" Margin="253,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_57" Content="9" HorizontalAlignment="Left" Height="30" Margin="284,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_48" Content="0" HorizontalAlignment="Left" Height="30" Margin="315,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_189" Content="-" HorizontalAlignment="Left" Height="30" Margin="346,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_187" Content="+" HorizontalAlignment="Left" Height="30" Margin="377,36,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_8" Content="BackSpace" HorizontalAlignment="Left" Height="30" Margin="408,36,0,0" VerticalAlignment="Top" Width="60" BorderBrush="#adb2b5" Background="White" Foreground="Gray" FontSize="10" IsEnabled="False" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_9" Content="Tab" HorizontalAlignment="Left" Height="30" Margin="5,67,0,0" VerticalAlignment="Top" Width="45" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click" IsEnabled="False"/>
+                <ToggleButton x:Name="B_81" Content="Q" HorizontalAlignment="Left" Height="30" Margin="51,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_87" Content="W" HorizontalAlignment="Left" Height="30" Margin="82,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_69" Content="E" HorizontalAlignment="Left" Height="30" Margin="113,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_82" Content="R" HorizontalAlignment="Left" Height="30" Margin="144,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_84" Content="T" HorizontalAlignment="Left" Height="30" Margin="175,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_89" Content="Y" HorizontalAlignment="Left" Height="30" Margin="206,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_85" Content="U" HorizontalAlignment="Left" Height="30" Margin="237,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_73" Content="I" HorizontalAlignment="Left" Height="30" Margin="268,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_79" Content="O" HorizontalAlignment="Left" Height="30" Margin="299,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_80" Content="P" HorizontalAlignment="Left" Height="30" Margin="330,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_219" Content="[" HorizontalAlignment="Left" Height="30" Margin="361,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_221" Content="]" HorizontalAlignment="Left" Height="30" Margin="392,67,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_220" Content="\" HorizontalAlignment="Left" Height="30" Margin="423,67,0,0" VerticalAlignment="Top" Width="45" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_65" Content="A" HorizontalAlignment="Left" Height="30" Margin="66,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_83" Content="S" HorizontalAlignment="Left" Height="30" Margin="97,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_68" Content="D" HorizontalAlignment="Left" Height="30" Margin="128,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_70" Content="F" HorizontalAlignment="Left" Height="30" Margin="159,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_71" Content="G" HorizontalAlignment="Left" Height="30" Margin="190,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_72" Content="H" HorizontalAlignment="Left" Height="30" Margin="221,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_74" Content="J" HorizontalAlignment="Left" Height="30" Margin="252,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_75" Content="K" HorizontalAlignment="Left" Height="30" Margin="283,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_76" Content="L" HorizontalAlignment="Left" Height="30" Margin="314,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_186" Content=";" HorizontalAlignment="Left" Height="30" Margin="345,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_222" Content="'" HorizontalAlignment="Left" Height="30" Margin="376,98,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_13" Content="Enter" HorizontalAlignment="Left" Height="30" Margin="407,98,0,0" VerticalAlignment="Top" Width="61" BorderBrush="#adb2b5" Background="White" Foreground="Gray" IsEnabled="False" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_90" Content="Z" HorizontalAlignment="Left" Height="30" Margin="81,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_88" Content="X" HorizontalAlignment="Left" Height="30" Margin="112,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_67" Content="C" HorizontalAlignment="Left" Height="30" Margin="143,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_86" Content="V" HorizontalAlignment="Left" Height="30" Margin="174,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_66" Content="B" HorizontalAlignment="Left" Height="30" Margin="205,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_78" Content="N" HorizontalAlignment="Left" Height="30" Margin="236,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_77" Content="M" HorizontalAlignment="Left" Height="30" Margin="267,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_188" Content="," HorizontalAlignment="Left" Height="30" Margin="298,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_190" Content="." HorizontalAlignment="Left" Height="30" Margin="329,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_191" Content="/" HorizontalAlignment="Left" Height="30" Margin="360,129,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_27" Content="Esc" HorizontalAlignment="Left" Height="30" Margin="5,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="#adb2b5" Background="White" Foreground="Gray" IsEnabled="False" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_112" Content="F1" HorizontalAlignment="Left" Height="30" Margin="40,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_113" Content="F2" HorizontalAlignment="Left" Height="30" Margin="71,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_114" Content="F3" HorizontalAlignment="Left" Height="30" Margin="102,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_115" Content="F4" HorizontalAlignment="Left" Height="30" Margin="133,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_116" Content="F5" HorizontalAlignment="Left" Height="30" Margin="169,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_117" Content="F6" HorizontalAlignment="Left" Height="30" Margin="200,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_118" Content="F7" HorizontalAlignment="Left" Height="30" Margin="231,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_119" Content="F8" HorizontalAlignment="Left" Height="30" Margin="262,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_120" Content="F9" HorizontalAlignment="Left" Height="30" Margin="298,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_121" Content="F10" HorizontalAlignment="Left" Height="30" Margin="329,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_122" Content="F11" HorizontalAlignment="Left" Height="30" Margin="360,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="B_123" Content="F12" HorizontalAlignment="Left" Height="30" Margin="391,0,0,0" VerticalAlignment="Top" Width="30" BorderBrush="LightGray" Background="White" Foreground="Gray" Click="ToggleButton_Click"/>
+                <ToggleButton x:Name="BC_Space" Content="" HorizontalAlignment="Left" Height="30" Margin="96.7,160,0,0" VerticalAlignment="Top" Width="279" BorderBrush="#adb2b5" Background="White" Foreground="Gray" IsEnabled="False"/>
+            </Grid>
+            <Grid x:Name="WKB_C" HorizontalAlignment="Left" Height="202" Margin="6,10,0,0" VerticalAlignment="Top" Width="470">
+                <ToggleButton x:Name="BC_Cap" Content="Caps" HorizontalAlignment="Left" Height="30" Margin="5,98,0,0" VerticalAlignment="Top" Width="60" BorderBrush="LightGray" Background="#adb2b5" Foreground="Gray" Click="BC_Cap_Click" IsEnabled="False"/>
+                <ToggleButton x:Name="BC_LShift" Content="Shift" HorizontalAlignment="Left" Margin="5,129,0,39" Width="75" BorderBrush="#adb2b5" Background="WhiteSmoke" Foreground="Gray" Height="30" VerticalAlignment="Top" Click="BC_LShift_Click"/>
+                <ToggleButton x:Name="BC_RShift" Content="Shift" HorizontalAlignment="Left" Height="30" Margin="391,129,0,0" VerticalAlignment="Top" Width="77" BorderBrush="#adb2b5" Background="WhiteSmoke" Foreground="Gray" Click="BC_RShift_Click"/>
+                <ToggleButton x:Name="BC_LCtrl" Content="Ctrl" HorizontalAlignment="Left" Height="30" Margin="5,160,0,-18" VerticalAlignment="Top" Width="45" BorderBrush="#adb2b5" Background="WhiteSmoke" Foreground="Gray" Click="BC_LCtrl_Click"/>
+                <ToggleButton x:Name="BC_LAlt" Content="Alt" HorizontalAlignment="Left" Height="30" Margin="51,160,0,-18.5" VerticalAlignment="Top" Width="45" BorderBrush="#adb2b5" Background="WhiteSmoke" Foreground="Gray" Click="BC_LAlt_Click"/>
+                <ToggleButton x:Name="BC_RAlt" Content="Alt" HorizontalAlignment="Left" Height="30" Margin="377,160,0,-23" VerticalAlignment="Top" Width="45" BorderBrush="#adb2b5" Background="WhiteSmoke" Foreground="Gray" Click="BC_RAlt_Click"/>
+                <ToggleButton x:Name="BC_RCtrl" Content="Ctrl" HorizontalAlignment="Left" Height="30" Margin="423,160,0,0" VerticalAlignment="Top" Width="45" BorderBrush="#adb2b5" Background="WhiteSmoke" Foreground="Gray" Click="BC_RCtrl_Click"/>
+            </Grid>
+            <Label x:Name="BClose" Content="✖" Margin="456.67,3.834,18.33,221.166" HorizontalAlignment="Center" VerticalAlignment="Center" Width="25" Height="25" MouseEnter="WMain_BClose_MouseEnter" MouseLeave="WMain_BClose_MouseLeave" MouseLeftButtonDown="WMain_BClose_MouseLeftButtonDown"/>
+
+
+        </Grid>
+        
+        <Button x:Name="UOk" Content="确定" Style="{StaticResource MButton}" HorizontalAlignment="Left" Height="30" Margin="157,210,0,0" VerticalAlignment="Top" Width="177" Visibility="Hidden" Click="UOk_Click"/>
+
+    </Grid>
+    
+    
+</Window>
