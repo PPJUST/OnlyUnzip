@@ -135,19 +135,19 @@ class only_unzip(QMainWindow):
                         break  # 退出当前文件循环
                     else:
                         # send2trash.send2trash(file)
-                        print('输出测试')
-                        print(fenjuan_full_dict[first_fenjuan_file])
                         for x in fenjuan_full_dict[first_fenjuan_file]:
-                            print(x)
                             winshell.delete_file(x, no_confirm=True)  # 删除各个压缩文件到回收站★
                         self.right_password_number_add_one(password)  # 成功解压则密码使用次数+1
                         self.check_unzip_result(unzip_path, file_directory, temporary_folder)  # 执行检查函数，并传递需要的变量
                         break  # 检查完结果后退出循环
             if password_try_number == len(passwords):
                 error_number += 1
-        if len(os.listdir(temporary_folder)) == 0:  # 解压完成后如果临时文件夹为空，则删除
-            # send2trash.send2trash(temporary_folder)
-            winshell.delete_file(temporary_folder, no_confirm=True)
+        try:
+            if len(os.listdir(temporary_folder)) == 0:  # 解压完成后如果临时文件夹为空，则删除
+                # send2trash.send2trash(temporary_folder)
+                winshell.delete_file(temporary_folder, no_confirm=True)
+        except FileNotFoundError:
+            pass
         self.icon_change('unzip_finish')
         self.ui.label_info.setText(f'成功:{files_number - error_number} 失败:{error_number} 损坏:{damage_number}')
 
@@ -196,7 +196,6 @@ class only_unzip(QMainWindow):
                 new_files.remove(i)
         # 检查没有导入的压缩包分卷（例如files只包括其中某几个分卷）
         one_of_files = files[0]
-        print(one_of_files)
         all_files = os.listdir(os.path.split(one_of_files)[0])
         dir_file_list = []
         for i in all_files:
@@ -205,10 +204,6 @@ class only_unzip(QMainWindow):
         for i in dir_file_list:
             if re.match(re_7z, i):  # 匹配7z正则
                 prefix = re.match(re_7z, i).group(1) + r'.7z.001'
-                print('---测试')
-                print(prefix)
-                print(fenjuan_full_dict)
-                print('---测试')
                 if prefix in fenjuan_full_dict:
                     fenjuan_full_dict[prefix].add(i)
             elif re.match(re_zip_other, i):
