@@ -1,7 +1,7 @@
-from PySide2.QtUiTools import QUiLoader
-from PySide2.QtWidgets import QApplication, QLabel
+from PySide2.QtWidgets import QApplication, QLabel, QMainWindow
 from PySide2.QtGui import QPixmap
-from PySide2.QtCore import Qt, Signal
+from PySide2.QtCore import Qt, Signal, QCoreApplication
+from PySide2.QtUiTools import QUiLoader
 import subprocess
 import configparser
 import os
@@ -9,33 +9,28 @@ import re
 import random
 import natsort
 import shutil
-import winshell
 import multiprocessing
-import threading
-import time
+import winshell
 
 
-path_dir = ''  # 定义全局变量
-path_file = ''  # 定义全局变量
-
-
-class only_unzip:
+class only_unzip(QMainWindow):
     def __init__(self):
         self.ui = QUiLoader().load('ui_main.ui')
 
         # 初始化
         self.ui.setFixedSize(200, 200)  # 设置窗口大小，用于固定大小
-        self.add_label_main()  # 添加main
+        self.add_label_main()  # 添加main控件
         self.read_password()
 
         # 设置对齐方式为居中
         self.ui.label_main.setAlignment(Qt.AlignCenter)
+        self.ui.label_info.setAlignment(Qt.AlignCenter)
 
         # 设置槽函数
-        self.ui.button_quit.clicked.connect(lambda: quit())
-        self.ui.button_password.clicked.connect(self.form_size_change)
+        self.ui.button_quit.clicked.connect(lambda: quit())  # 退出按钮
+        self.ui.button_password.clicked.connect(self.form_size_change)  # 显示密码按钮
         self.ui.button_update.clicked.connect(self.update_password)
-        self.ui.label_main.drop_signal.connect(lambda x: self.start_unzip(x))
+        self.ui.label_main.drop_signal.connect(lambda drop_path: self.drop_in_file(drop_path))
 
     def form_size_change(self):
         """扩大窗口，显示密码框"""
@@ -46,46 +41,65 @@ class only_unzip:
             self.ui.setFixedSize(200, 200)  # 设置窗口大小，用于固定大小
             self.ui.button_password.setText('显示密码框')
 
-    def start_unzip(self, path_list):
-        """拖入文件后的操作"""
-        self.ui.label_main.setPixmap(QPixmap("./icon/解压中.png").scaled(120, 120, aspectRatioMode=Qt.KeepAspectRatio))
-        rate_file_number = 1  # 到第几个文件了
-        error_number = 0  # 解压失败的文件数
-        temporary_folder = ""  # 设置空文本，方便后续修改临时文件路径
-        for path in path_list:  # 如果拖入多个文件，则一个一个文件处理
-            self.ui.label_info.setText(f'解压中：{rate_file_number}/{len(path_list)}')
-            if os.path.isdir(path):
-                path_dir = path
-            elif os.path.isfile(path):
-                path_file = path
+    def icon_change(self, icon_number):
+        if icon_number == 'unzip_star':
+            self.ui.label_main.setPixmap(QPixmap("./icon/解压中.png").scaled(120, 120, aspectRatioMode=Qt.KeepAspectRatio))
+        elif icon_number == 'unzip_finish':
+            self.ui.label_main.setPixmap(QPixmap("./icon/完成.png").scaled(120, 120, aspectRatioMode=Qt.KeepAspectRatio))
+        QCoreApplication.processEvents()
 
-                # 设置7z的指令
-                zip_path = './7-Zip/7z.exe'
-                file_path = path_file  # 解压的文件路径
-                file_directory = os.path.split(path_file)[0]
-                file_name_without_suffix = os.path.split(os.path.splitext(path_file)[0])[1]  # 解压的文件名
-                temporary_folder = os.path.split(file_path)[0] + "/unzipTempFolder"  # 临时存放解压结果的路径
-                unzip_path = temporary_folder + "/" + file_name_without_suffix  # 实际解压的路径
-                password_try_number = 0  # 密码尝试次数
-                for password in passwords:
-                    command = [zip_path, "x", "-p" + password, "-y", file_path,
-                               "-o" + unzip_path]  # 组合有密码的指令
-                    result = subprocess.call(command)
-                    if int(result) != 0:
-                        password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
-                    elif int(result) == 0:
-                        winshell.delete_file(file_path, no_confirm=True)  # 删除文件到回收站
-                        self.right_password_number_add_one(password)  # 成功解压则密码使用次数+1
-                        time.sleep(0.1)
-                        self.check_unzip_result(unzip_path, file_directory, temporary_folder)  # 执行检查函数，并传递需要的变量
-                        break  # 检查完结果后退出循环
-                if password_try_number == len(passwords):
-                    error_number += 1
+    def info_text_change(self, rate_file_number, files_number):
+        self.ui.label_info.setText(f'解压中：{rate_file_number}/{files_number}')
+        QCoreApplication.processEvents()  # 手动刷新
+
+    def unzip_start(self, zip_command):
+        self.result = subprocess.run(zip_command)
+
+    def drop_in_file(self, drop_path):
+        """拖入文件后处理获得的列表信号"""
+        drop_dirs = []
+        drop_files = []
+        for i in drop_path:  # 检查拖入的是文件还是文件夹
+            if os.path.isdir(i):
+                drop_dirs.append(i)
+            elif os.path.isfile(i):
+                drop_files.append(i)
+
+        self.icon_change('unzip_star')
+        files_number = len(drop_files)  # 总文件数
+        rate_file_number = 0  # 到第几个文件了
+        error_number = 0  # 解压失败的文件数
+        zip_path = './7-Zip/7z.exe'  # 设置7z指令
+
+        for file in drop_files:  # 开始逐个处理压缩文件
             rate_file_number += 1
+            self.info_text_change(rate_file_number, files_number)
+            # 设置7z的指令
+            file_directory = os.path.split(file)[0]  # 文件的父目录
+            file_name_without_suffix = os.path.split(os.path.splitext(file)[0])[1]  # 单独的没有后缀的文件名
+            temporary_folder = os.path.join(file_directory, "unzipTempFolder")  # 临时存放解压结果的文件夹
+            unzip_path = os.path.join(temporary_folder, file_name_without_suffix)  # 解压到临时文件下与文件同名的文件夹中
+            password_try_number = 0  # 密码尝试次数
+            for password in passwords:
+                zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path]  # 组合完整7z指令
+                # self.unzip_start(zip_command)
+                self.unzip_start(zip_command)
+                if self.result.returncode != 0:
+                    password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
+                elif self.result.returncode == 0:
+                    # send2trash.send2trash(file)
+                    winshell.delete_file(file, no_confirm=True)  # 删除原文件到回收站
+                    self.right_password_number_add_one(password)  # 成功解压则密码使用次数+1
+                    self.check_unzip_result(unzip_path, file_directory, temporary_folder)  # 执行检查函数，并传递需要的变量
+
+                    break  # 检查完结果后退出循环
+            if password_try_number == len(passwords):
+                error_number += 1
         if len(os.listdir(temporary_folder)) == 0:  # 解压完成后如果临时文件夹为空，则删除
+            # send2trash.send2trash(temporary_folder)
             winshell.delete_file(temporary_folder, no_confirm=True)
-        self.ui.label_main.setPixmap(QPixmap("./icon/完成.png").scaled(120, 120, aspectRatioMode=Qt.KeepAspectRatio))
-        self.ui.label_info.setText(f'成功：{len(path_list) - error_number}，失败：{error_number}')
+        self.icon_change('unzip_finish')
+        self.ui.label_info.setText(f'成功：{files_number - error_number}，失败：{error_number}')
 
     def check_unzip_result(self, unzip_path, file_directory, temporary_folder):
         """检查解压结果"""
@@ -148,7 +162,7 @@ class only_unzip:
         self.read_password()
 
     def add_label_main(self):
-        """添加main"""
+        """添加main控件"""
         self.ui.label_main = MyLabel()
         self.ui.layout_label.addWidget(self.ui.label_main)
         self.ui.label_main.setPixmap(QPixmap("./icon/初始.png").scaled(120, 120, aspectRatioMode=Qt.KeepAspectRatio))
@@ -165,12 +179,12 @@ class only_unzip:
         resort_passwords = []
         for password in passwords:  # 遍历全部密码
             sort_passwords.append(self.password.get(password, 'number') + ' - ' + password)  # value - section 组合
-        sort_passwords = reversed(natsort.natsorted(sort_passwords))  # 反转按数字排序后的列表
+        sort_passwords = reversed(natsort.natsorted(sort_passwords))  # 按数字大小降序排序
         for i in sort_passwords:
             resort_passwords.append(re.search(r' - (.+)', i).group(1))  # 正则提取 - 后的section
         passwords = resort_passwords  # 重新赋值回去
 
-        self.ui.text_edit_password.setText('\n'.join(passwords))
+        self.ui.text_edit_password.setText('\n'.join(passwords))  # 更新密码框
 
     def update_password(self):
         """更新密码"""
@@ -182,6 +196,8 @@ class only_unzip:
                 self.password.set(i, 'number', '0')
                 self.password.write(open('password.ini', 'w', encoding='utf-8'))  # 写入
         self.read_password()
+        self.ui.setFixedSize(200, 200)  # 更新密码后重设大小
+        self.ui.button_password.setText('显示密码框')
 
 
 # 重写label类
@@ -199,8 +215,8 @@ class MyLabel(QLabel):
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
             urls = event.mimeData().urls()
-            file_paths = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
-            self.drop_signal.emit(file_paths)  # 发送信号
+            drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
+            self.drop_signal.emit(drop_path)  # 发送信号
 
 
 def main():
