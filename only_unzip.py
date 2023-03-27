@@ -92,7 +92,7 @@ class only_unzip(QMainWindow):
                     # 检查解压结果和原文件大小比较
                     original_size = os.path.getsize(file)  # 原文件大小
                     unzip_size = self.get_folder_size(unzip_path)  # 压缩结果大小
-                    if unzip_size < original_size * 0.9:  # 解压后文件大小如果小于原文件90%则说明压缩包损坏
+                    if unzip_size < original_size * 0.95:  # 解压后文件大小如果小于原文件95%则说明压缩包损坏
                         winshell.delete_file(unzip_path, no_confirm=True)  # 删除解压结果
                         damage_number += 1  # 计数+1
                         break  # 退出当前文件循环
@@ -129,7 +129,7 @@ class only_unzip(QMainWindow):
                     for x in fenjuan_full_dict[first_fenjuan_file]:
                         original_size += os.path.getsize(x)  # 原文件大小(各个分卷合并）★
                     unzip_size = self.get_folder_size(unzip_path)  # 压缩结果大小
-                    if unzip_size < original_size * 0.9:  # 解压后文件大小如果小于原文件90%则说明压缩包损坏
+                    if unzip_size < original_size * 0.95:  # 解压后文件大小如果小于原文件95%则说明压缩包损坏
                         winshell.delete_file(unzip_path, no_confirm=True)  # 删除解压结果
                         damage_number += 1  # 计数+1
                         break  # 退出当前文件循环
