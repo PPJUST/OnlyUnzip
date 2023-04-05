@@ -10,6 +10,7 @@ import random
 import natsort
 import shutil
 import winshell
+import sys
 
 
 class only_unzip(QMainWindow):
@@ -26,7 +27,7 @@ class only_unzip(QMainWindow):
         self.ui.label_info.setAlignment(Qt.AlignCenter)
 
         # 设置槽函数
-        self.ui.button_quit.clicked.connect(lambda: quit())  # 退出按钮
+        self.ui.button_quit.clicked.connect(lambda: sys.exit(1))  # 退出按钮
         self.ui.button_password.clicked.connect(self.form_size_change)  # 显示密码按钮
         self.ui.button_update.clicked.connect(self.update_password)
         self.ui.label_main.drop_signal.connect(lambda drop_path: self.drop_in_file(drop_path))
@@ -52,7 +53,7 @@ class only_unzip(QMainWindow):
         QCoreApplication.processEvents()  # 手动刷新
 
     def unzip_start(self, zip_command):
-        self.result = subprocess.run(zip_command)
+        self.result = subprocess.run(zip_command)  # 直接调用7zip会弹出解压进度cmd
 
     def drop_in_file(self, drop_path):
         """拖入文件后处理获得的列表信号"""
@@ -83,7 +84,7 @@ class only_unzip(QMainWindow):
             unzip_path = os.path.join(temporary_folder, file_name_without_suffix)  # 解压到临时文件下与文件同名的文件夹中
             password_try_number = 0  # 密码尝试次数
             for password in passwords:
-                zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path]  # 组合完整7z指令
+                zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path, "-slt"]  # 组合完整7z指令
                 # self.unzip_start(zip_command)
                 self.unzip_start(zip_command)
                 if self.result.returncode != 0:
@@ -118,7 +119,7 @@ class only_unzip(QMainWindow):
             unzip_path = os.path.join(temporary_folder, file_name_without_suffix)  # 解压到临时文件下与文件同名的文件夹中
             password_try_number = 0  # 密码尝试次数
             for password in passwords:
-                zip_command = [zip_path, "x", "-p" + password, "-y", first_fenjuan_file, "-o" + unzip_path]  # 组合完整7z指令
+                zip_command = [zip_path, "x", "-p" + password, "-y", first_fenjuan_file, "-o" + unzip_path, "-slt"]  # 组合完整7z指令
                 # self.unzip_start(zip_command)
                 self.unzip_start(zip_command)
                 if self.result.returncode != 0:
