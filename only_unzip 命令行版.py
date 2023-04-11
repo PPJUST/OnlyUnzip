@@ -12,13 +12,13 @@ def input_path():
     full_path = input("输入压缩包所在文件夹的完整路径：")
     if not os.path.exists(full_path):
         print("——————路径不存在，请重新输入——————")
-        input_path()
+        return input_path()
     elif os.path.isfile(full_path):
         print("——————该路径不是文件夹，请重新输入——————")
-        input_path()
+        return input_path()
     elif len(os.listdir(full_path)) == 0:
         print("——————文件夹为空，请重新输入——————")
-        input_path()
+        return input_path()
     else:
         unzip_main_logic(full_path)  # 解压主程序
 
@@ -73,17 +73,17 @@ def export_password():
 
 def unzip_main_logic(full_path):
     """解压的程序逻辑"""
-    select_files, select_dirs = unzip_branch_walk_path(full_path)  # 先提取全部文件列表
-    fenjuan_files_dict, normal_files = unzip_branch_class_zip(select_files)  # 区分分卷压缩包
+    select_files, select_dirs = unzip_walk_path(full_path)  # 先提取全部文件列表
+    fenjuan_files_dict, normal_files = unzip_class_zip(select_files)  # 区分分卷压缩包
     fenjuan_files = fenjuan_files_dict.keys()  # 提取分卷压缩包的第一个分卷包为列表
-    unzip_branch_run_7zip_first(fenjuan_files, normal_files)
+    unzip_set_first(fenjuan_files, normal_files)
     if len(normal_files) != 0:
-        unzip_branch_run_7zip_second(normal_files, "normal")
+        unzip_run_7zip(normal_files, "normal")
     if len(fenjuan_files) != 0:
-        unzip_branch_run_7zip_second(fenjuan_files, "fenjuan")
+        unzip_run_7zip(fenjuan_files, "fenjuan")
 
 
-def unzip_branch_walk_path(full_path):
+def unzip_walk_path(full_path):
     """提取文件，返回完整文件路径列表"""
     walk_path_filenames = os.listdir(full_path)
     walk_path_full = []  # 存放遍历文件的完整路径
@@ -94,7 +94,7 @@ def unzip_branch_walk_path(full_path):
     return select_files, select_dirs
 
 
-def unzip_branch_class_zip(files):
+def unzip_class_zip(files):
     """区分卷压缩包与一般压缩包"""
     global fenjuan_dict
     normal_files = [x for x in files]  # 复制
@@ -173,7 +173,7 @@ def delete_original(file, ftype):
             winshell.delete_file(i, no_confirm=True)  # 删除原文件到回收站
 
 
-def unzip_branch_run_7zip_first(fenjuan_files, normal_files):
+def unzip_set_first(fenjuan_files, normal_files):
     """调用7zip解压-初始设置部分"""
     global total_number, rate_file_number, error_number, damage_number
     total_number = len(fenjuan_files) + len(normal_files)  # 总文件数
@@ -182,7 +182,7 @@ def unzip_branch_run_7zip_first(fenjuan_files, normal_files):
     damage_number = 0  # 损坏的压缩文件数
 
 
-def unzip_branch_run_7zip_second(files_list, ftype):
+def unzip_run_7zip(files_list, ftype):
     """调用7zip解压-开始解压"""
     global total_number, rate_file_number, error_number, damage_number
     zip_path = './7-Zip/7z.exe'  # 7zip路径
