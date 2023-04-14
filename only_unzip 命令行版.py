@@ -1,10 +1,12 @@
 import os
 import configparser
-import natsort
 import re
 import subprocess
+import time
+import natsort
 import winshell
 import shutil
+import filetype
 
 
 def input_path():
@@ -81,6 +83,10 @@ def unzip_main_logic(full_path):
         unzip_run_7zip(normal_files, "normal")
     if len(fenjuan_files) != 0:
         unzip_run_7zip(fenjuan_files, "fenjuan")
+    if loop_code:
+        return unzip_main_logic(full_path)
+    else:
+        main()
 
 
 def unzip_walk_path(full_path):
@@ -91,7 +97,30 @@ def unzip_walk_path(full_path):
         walk_path_full.append(os.path.join(full_path, i))
     select_files = [i for i in walk_path_full if os.path.isfile(i)]  # 存放提取的文件
     select_dirs = [i for i in walk_path_full if os.path.isdir(i)]  # 存放提取的文件夹
-    return select_files, select_dirs
+    select_files_only_zip = [x for x in select_files if is_zip_file(x) and x not in exclude_files]  # 提取是压缩包的文件列表，并排除exclude_files内的文件
+    if len(select_files_only_zip) == 0:
+        print("——————没有能够解压的文件——————")
+        main()
+    else:
+        return select_files_only_zip, select_dirs
+
+
+def is_zip_file(file_path):
+    """检查文件是否是压缩包"""
+    zip_suffix_point = ['.RAR', '.ZIP', '.ZIPX', '.EXE', '.TAR', '.TGZ', '.LZH', '.ISO', '.7Z', '.GZ', '.XZ']
+    zip_suffix = ['RAR', 'ZIP', 'ZIPX', 'EXE', 'TAR', 'TGZ', 'LZH', 'ISO', '7Z', 'GZ', 'XZ']
+    file_suffix = os.path.splitext(file_path)[1].upper()
+    if file_suffix in zip_suffix_point:
+        return True
+    else:
+        kind = filetype.guess(file_path)
+        if kind is None:
+            return False
+        else:
+            if kind.extension.upper() in zip_suffix:
+                return True
+            else:
+                return False
 
 
 def unzip_class_zip(files):
@@ -184,7 +213,7 @@ def unzip_set_first(fenjuan_files, normal_files):
 
 def unzip_run_7zip(files_list, ftype):
     """调用7zip解压-开始解压"""
-    global total_number, rate_file_number, error_number, damage_number
+    global rate_file_number, error_number, damage_number, exclude_files
     zip_path = './7-Zip/7z.exe'  # 7zip路径
     rate_file_number = 0
     for file in files_list:
@@ -201,12 +230,19 @@ def unzip_run_7zip(files_list, ftype):
             if unzip_result.returncode != 0:
                 password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
             elif unzip_result.returncode == 0:
-                print(f"——————成功解压第{rate_file_number}个文件，文件名：{os.path.split(file)[1]}，密码：{password}——————")
+                print(f"——————成功解压第{rate_file_number}个文件，文件名：{os.path.split(file)[1]}，解压密码：{password}——————")
+                with open('unzip_history.txt', 'a', encoding='utf-8') as history_save:
+                    the_history = f'解压日期：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}  解压文件：{os.path.split(file)[1]} 解压密码：{password}\n'
+                    history_save.write(the_history)
                 original_size = get_original_size(file, ftype)  # 原文件大小
                 unzip_size = get_result_size(unzip_path)  # 压缩结果大小
                 if unzip_size < original_size * 0.95:  # 解压后文件大小如果小于原文件95%，则说明压缩包损坏
                     winshell.delete_file(unzip_path, no_confirm=True)  # 删除解压结果
                     damage_number += 1  # 计数+1
+                    if ftype == 'normal':
+                        exclude_files.append(file)
+                    else:
+                        exclude_files += fenjuan_dict[file]
                     print(f"——————{os.path.split(file)[1]} 经检验已损坏（解压文件大小<解压前文件的95%）——————")
                     break  # 退出当前文件循环
                 else:
@@ -219,12 +255,15 @@ def unzip_run_7zip(files_list, ftype):
                     break  # 检查完结果后退出循环
         if password_try_number == len(resort_passwords):
             error_number += 1
+            if ftype == 'normal':
+                exclude_files.append(file)
+            else:
+                exclude_files += fenjuan_dict[file]
     print(f"★完成全部解压操作，成功：{total_number - error_number}个，失败：{error_number}个，文件损坏：{damage_number}个")
     if get_result_size(temporary_folder) == 0:
         winshell.delete_file(temporary_folder, no_confirm=True)
     else:
         print("——————注意：临时文件夹不为空，请检查——————")
-    main()
 
 
 def get_result_size(path):
@@ -295,26 +334,35 @@ def check_unzip_result(result_folder):
 
 
 def main():
+    global exclude_files, loop_code
+    exclude_files = []
+    loop_code = False
     hello = """
 ————————————————————————————————————
 ★★★功能选项：
-1. 输入文件夹路径，并开始解压
-2. 新增密码
-3. 查看全部密码（按使用次数排列）
-4. 导出密码文件
-5. 退出
+1. 输入文件夹路径，开始解压（直解压1次）
+2. 输入文件夹路径，开始循环解压（解除压缩包套娃）
+
+4. 新增密码
+5. 查看全部密码（按使用次数排列）
+6. 导出密码文件
+
+9. 退出
 """
     print(hello)
     input_code = int(input("★★★输入数字进入相应功能："))
     if input_code == 1:
         input_path()
     elif input_code == 2:
-        add_password()
-    elif input_code == 3:
-        show_password()
+        loop_code = True
+        input_path()
     elif input_code == 4:
-        export_password()
+        add_password()
     elif input_code == 5:
+        show_password()
+    elif input_code == 6:
+        export_password()
+    elif input_code == 9:
         exit(1)
     else:
         print("——————无对应功能，请重新输入——————")
@@ -323,6 +371,12 @@ def main():
 
 if __name__ == "__main__":
     print("★★★欢迎使用 only_unzip")
-    print("★★★更新日期：230405")
+    print("★★★更新日期：230414")
+
+    global total_number, rate_file_number, error_number, damage_number
+    global password_config, sort_passwords, resort_passwords
+    global fenjuan_dict
+    global exclude_files, loop_code
+
     read_password()
     main()
