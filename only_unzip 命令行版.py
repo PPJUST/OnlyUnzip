@@ -6,7 +6,12 @@ import time
 import natsort
 import winshell
 import shutil
-import filetype
+# import filetype
+
+global total_number, rate_file_number, error_number, damage_number
+global password_config, sort_passwords, resort_passwords
+global fenjuan_dict
+global exclude_files, loop_code
 
 
 def input_path():
@@ -55,7 +60,7 @@ def add_password():
             password_config.set(i, 'number', '0')
     password_config.write(open('password.ini', 'w', encoding='utf-8'))
     read_password()  # 重新读取
-    main()
+    main_menu()
 
 
 def show_password():
@@ -63,14 +68,14 @@ def show_password():
     for i in sort_passwords:
         re_findall = re.findall("(.+) - (.+)", i)[0]  # 反转 使用次数 - 密码，显示为 密码 - 使用次数
         print(f'{re_findall[1]} - 次数：{re_findall[0]}')
-    main()
+    main_menu()
 
 
 def export_password():
     """导出密码"""
     with open("password_export.txt", "w", encoding="utf-8") as pw:
         pw.write("\n".join(resort_passwords))
-    main()
+    main_menu()
 
 
 def unzip_main_logic(full_path):
@@ -86,7 +91,7 @@ def unzip_main_logic(full_path):
     if loop_code:
         return unzip_main_logic(full_path)
     else:
-        main()
+        main_menu()
 
 
 def unzip_walk_path(full_path):
@@ -97,16 +102,19 @@ def unzip_walk_path(full_path):
         walk_path_full.append(os.path.join(full_path, i))
     select_files = [i for i in walk_path_full if os.path.isfile(i)]  # 存放提取的文件
     select_dirs = [i for i in walk_path_full if os.path.isdir(i)]  # 存放提取的文件夹
-    select_files_only_zip = [x for x in select_files if is_zip_file(x) and x not in exclude_files]  # 提取是压缩包的文件列表，并排除exclude_files内的文件
+    # select_files_only_zip = [x for x in select_files if is_zip_file(x) and x not in exclude_files]  # 提取是压缩包的文件列表，并排除exclude_files内的文件
+    select_files_only_zip = [x for x in select_files if x not in exclude_files]  # 排除exclude_files内的文件
     if len(select_files_only_zip) == 0:
         print("——————没有能够解压的文件——————")
-        main()
+        main_menu()
     else:
         return select_files_only_zip, select_dirs
 
 
+''' 不再使用这个逻辑检查是否是压缩包
 def is_zip_file(file_path):
     """检查文件是否是压缩包"""
+    # filetype库支持的文件格式太少了，后期考虑magic库或者修改逻辑
     zip_suffix_point = ['.RAR', '.ZIP', '.ZIPX', '.EXE', '.TAR', '.TGZ', '.LZH', '.ISO', '.7Z', '.GZ', '.XZ']
     zip_suffix = ['RAR', 'ZIP', 'ZIPX', 'EXE', 'TAR', 'TGZ', 'LZH', 'ISO', '7Z', 'GZ', 'XZ']
     file_suffix = os.path.splitext(file_path)[1].upper()
@@ -115,16 +123,13 @@ def is_zip_file(file_path):
     else:
         kind = filetype.guess(file_path)
         if kind is None:
-            # return False
-            # 后期改回去，修改逻辑或者换magic库
-            return True
+            return False
         else:
             if kind.extension.upper() in zip_suffix:
                 return True
             else:
-                # return False
-                # 后期改回去，修改逻辑或者换magic库
-                return True
+                return False
+'''
 
 
 def unzip_class_zip(files):
@@ -347,23 +352,22 @@ def check_unzip_result(result_folder):
         os.rename(need_move_path, rename_full_path)
         shutil.move(rename_full_path, parent_directory)
 
-
-def main():
+def main_menu():
     global exclude_files, loop_code
     exclude_files = []
     loop_code = False
     hello = """
-————————————————————————————————————
-★★★功能选项：
-1. 输入文件夹路径，开始解压（只解压1次）
-2. 输入文件夹路径，开始循环解压（解除压缩包套娃）
+    ————————————————————————————————————
+    ★★★功能选项：
+    1. 输入文件夹路径，开始解压（只解压1次）
+    2. 输入文件夹路径，开始循环解压（解除压缩包套娃）
 
-4. 新增密码
-5. 查看全部密码（按使用次数排列）
-6. 导出密码文件
+    4. 新增密码
+    5. 查看全部密码（按使用次数排列）
+    6. 导出密码文件
 
-9. 退出
-"""
+    9. 退出
+    """
     print(hello)
     input_code = int(input("★★★输入数字进入相应功能："))
     if input_code == 1:
@@ -381,17 +385,15 @@ def main():
         exit(1)
     else:
         print("——————无对应功能，请重新输入——————")
-        return main()
+        return main_menu()
+
+
+def main():
+    print("★★★欢迎使用 only_unzip")
+    print("★★★更新日期：230414")
+    read_password()
+    main_menu()
 
 
 if __name__ == "__main__":
-    print("★★★欢迎使用 only_unzip")
-    print("★★★更新日期：230414")
-
-    global total_number, rate_file_number, error_number, damage_number
-    global password_config, sort_passwords, resort_passwords
-    global fenjuan_dict
-    global exclude_files, loop_code
-
-    read_password()
     main()
