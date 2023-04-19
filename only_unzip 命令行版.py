@@ -115,12 +115,16 @@ def is_zip_file(file_path):
     else:
         kind = filetype.guess(file_path)
         if kind is None:
-            return False
+            # return False
+            # 后期改回去，修改逻辑或者换magic库
+            return True
         else:
             if kind.extension.upper() in zip_suffix:
                 return True
             else:
-                return False
+                # return False
+                # 后期改回去，修改逻辑或者换magic库
+                return True
 
 
 def unzip_class_zip(files):
@@ -179,7 +183,7 @@ def pick_filename(file, ftype):
         elif re.match(re_rar, file):
             full_filename = re.match(re_rar, file).group(1)
         filename = os.path.split(full_filename)[1]
-    return filename
+    return filename.strip()
 
 
 def get_original_size(file, ftype):
@@ -227,7 +231,15 @@ def unzip_run_7zip(files_list, ftype):
         for password in resort_passwords:
             zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path, "-slt"]  # 组合完整7z指令
             unzip_result = subprocess.run(zip_command)
-            if unzip_result.returncode != 0:
+            print(f"7zip解压返回状态码：{unzip_result.returncode}")
+            if unzip_result.returncode == 2:  # 返回码为2 - 不是压缩包
+                error_number += 1
+                if ftype == 'normal':
+                    exclude_files.append(file)
+                else:
+                    exclude_files += fenjuan_dict[file]
+                break
+            elif unzip_result.returncode != 0:
                 password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
             elif unzip_result.returncode == 0:
                 print(f"——————成功解压第{rate_file_number}个文件，文件名：{os.path.split(file)[1]}，解压密码：{password}——————")
@@ -260,10 +272,13 @@ def unzip_run_7zip(files_list, ftype):
             else:
                 exclude_files += fenjuan_dict[file]
     print(f"★完成全部解压操作，成功：{total_number - error_number}个，失败：{error_number}个，文件损坏：{damage_number}个")
-    if get_result_size(temporary_folder) == 0:
-        winshell.delete_file(temporary_folder, no_confirm=True)
+    if os.path.exists(temporary_folder):
+        if get_result_size(temporary_folder) == 0:
+            winshell.delete_file(temporary_folder, no_confirm=True)
+        else:
+            print("——————注意：临时文件夹不为空，请检查——————")
     else:
-        print("——————注意：临时文件夹不为空，请检查——————")
+        pass
 
 
 def get_result_size(path):
@@ -340,7 +355,7 @@ def main():
     hello = """
 ————————————————————————————————————
 ★★★功能选项：
-1. 输入文件夹路径，开始解压（直解压1次）
+1. 输入文件夹路径，开始解压（只解压1次）
 2. 输入文件夹路径，开始循环解压（解除压缩包套娃）
 
 4. 新增密码
