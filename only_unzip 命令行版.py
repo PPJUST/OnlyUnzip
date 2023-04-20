@@ -6,7 +6,7 @@ import time
 import natsort
 import winshell
 import shutil
-# import filetype
+import magic
 
 global total_number, rate_file_number, error_number, damage_number
 global password_config, sort_passwords, resort_passwords
@@ -102,8 +102,8 @@ def unzip_walk_path(full_path):
         walk_path_full.append(os.path.join(full_path, i))
     select_files = [i for i in walk_path_full if os.path.isfile(i)]  # 存放提取的文件
     select_dirs = [i for i in walk_path_full if os.path.isdir(i)]  # 存放提取的文件夹
-    # select_files_only_zip = [x for x in select_files if is_zip_file(x) and x not in exclude_files]  # 提取是压缩包的文件列表，并排除exclude_files内的文件
-    select_files_only_zip = [x for x in select_files if x not in exclude_files]  # 排除exclude_files内的文件
+    select_files_only_zip = [x for x in select_files if is_zip_file(x) and x not in exclude_files]  # 提取是压缩包的文件列表，并排除exclude_files内的文件
+    # select_files_only_zip = [x for x in select_files if x not in exclude_files]  # 排除exclude_files内的文件
     if len(select_files_only_zip) == 0:
         print("——————没有能够解压的文件——————")
         main_menu()
@@ -111,25 +111,14 @@ def unzip_walk_path(full_path):
         return select_files_only_zip, select_dirs
 
 
-''' 不再使用这个逻辑检查是否是压缩包
 def is_zip_file(file_path):
     """检查文件是否是压缩包"""
-    # filetype库支持的文件格式太少了，后期考虑magic库或者修改逻辑
-    zip_suffix_point = ['.RAR', '.ZIP', '.ZIPX', '.EXE', '.TAR', '.TGZ', '.LZH', '.ISO', '.7Z', '.GZ', '.XZ']
-    zip_suffix = ['RAR', 'ZIP', 'ZIPX', 'EXE', 'TAR', 'TGZ', 'LZH', 'ISO', '7Z', 'GZ', 'XZ']
-    file_suffix = os.path.splitext(file_path)[1].upper()
-    if file_suffix in zip_suffix_point:
+    zip_type = ["application/x-rar", "application/octet-stream", "application/x-tar", "application/x-gzip", "application/octet-stream", "application/zip", "application/x-7z-compressed", "application/octet-stream", "application/octet-stream", "application/x-dosexec", "application/x-lzh-compressed", "application/x-gzip", "application/x-xz", "application/zip", "application/octet-stream"]
+    file_type = magic.from_buffer(open(file_path, 'rb').read(2048), mime=True)
+    if file_type in zip_type:
         return True
     else:
-        kind = filetype.guess(file_path)
-        if kind is None:
-            return False
-        else:
-            if kind.extension.upper() in zip_suffix:
-                return True
-            else:
-                return False
-'''
+        return False
 
 
 def unzip_class_zip(files):
