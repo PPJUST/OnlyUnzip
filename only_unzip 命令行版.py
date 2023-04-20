@@ -16,18 +16,21 @@ global exclude_files, loop_code
 
 def input_path():
     """输入文件夹路径"""
-    full_path = input("输入压缩包所在文件夹的完整路径：")
-    if not os.path.exists(full_path):
-        print("——————路径不存在，请重新输入——————")
-        return input_path()
-    elif os.path.isfile(full_path):
-        print("——————该路径不是文件夹，请重新输入——————")
-        return input_path()
-    elif len(os.listdir(full_path)) == 0:
-        print("——————文件夹为空，请重新输入——————")
-        return input_path()
+    full_path = input("输入压缩包所在文件夹的完整路径（输入0返回上级）：")
+    if full_path == str(0):
+        main_menu()
     else:
-        unzip_main_logic(full_path)  # 解压主程序
+        if not os.path.exists(full_path):
+            print("——————路径不存在，请重新输入——————")
+            return input_path()
+        elif os.path.isfile(full_path):
+            print("——————该路径不是文件夹，请重新输入——————")
+            return input_path()
+        elif len(os.listdir(full_path)) == 0:
+            print("——————文件夹为空，请重新输入——————")
+            return input_path()
+        else:
+            unzip_main_logic(full_path)  # 解压主程序
 
 
 def read_password():
@@ -226,14 +229,7 @@ def unzip_run_7zip(files_list, ftype):
             zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path, "-slt"]  # 组合完整7z指令
             unzip_result = subprocess.run(zip_command)
             print(f"7zip解压返回状态码：{unzip_result.returncode}")
-            if unzip_result.returncode == 2:  # 返回码为2 - 不是压缩包
-                error_number += 1
-                if ftype == 'normal':
-                    exclude_files.append(file)
-                else:
-                    exclude_files += fenjuan_dict[file]
-                break
-            elif unzip_result.returncode != 0:
+            if unzip_result.returncode != 0:
                 password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
             elif unzip_result.returncode == 0:
                 print(f"——————成功解压第{rate_file_number}个文件，文件名：{os.path.split(file)[1]}，解压密码：{password}——————")
