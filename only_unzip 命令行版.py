@@ -7,6 +7,7 @@ import natsort
 import winshell
 import shutil
 import magic
+import sys
 
 global total_number, rate_file_number, error_number, damage_number
 global password_config, sort_passwords, resort_passwords
@@ -54,9 +55,16 @@ def read_password():
 
 def add_password():
     """新增密码"""
-    input_password = input("输入需要新增的密码，一个一行\n")
-    new_password_temp = input_password.split('\n')
-    new_password = [x for x in new_password_temp if x != '']
+    print("输入需要新增的密码，一个一行")
+    print("如果需要结束输入，请按 两次 回车")
+    input_password = []
+    while True:
+        inp = input()
+        if inp == "":
+            break
+        else:
+            input_password.append(inp)
+    new_password = [x.strip() for x in input_password if x != '']
     for i in new_password:
         if i not in password_config.sections():
             password_config.add_section(i)
@@ -368,9 +376,6 @@ def main_menu():
         export_password()
     elif input_code == 9:
         exit(1)
-    else:
-        print("——————无对应功能，请重新输入——————")
-        return main_menu()
 
 
 def main():
