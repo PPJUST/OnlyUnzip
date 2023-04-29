@@ -8,6 +8,7 @@ import winshell
 import shutil
 import magic
 import sys
+from tqdm import tqdm
 
 global total_number, rate_file_number, error_number, damage_number
 global password_config, sort_passwords, resort_passwords
@@ -55,20 +56,15 @@ def read_password():
 
 def add_password():
     """新增密码"""
-    print("输入需要新增的密码，一个一行")
-    print("如果需要结束输入，请按 两次 回车")
-    input_password = []
+    print("输入需要新增的密码，一个一行\n输入 <单独占一行的0> 结束输入并返回主菜单")
     while True:
-        inp = input()
-        if inp == "":
+        inp = str(input()).strip()
+        if inp == '0':
             break
         else:
-            input_password.append(inp)
-    new_password = [x.strip() for x in input_password if x != '']
-    for i in new_password:
-        if i not in password_config.sections():
-            password_config.add_section(i)
-            password_config.set(i, 'number', '0')
+            if inp != "" and inp not in password_config.sections():
+                password_config.add_section(inp)
+                password_config.set(inp, 'number', '0')
     password_config.write(open('password.ini', 'w', encoding='utf-8'))
     read_password()  # 重新读取
     main_menu()
@@ -225,22 +221,20 @@ def unzip_run_7zip(files_list, ftype):
     global rate_file_number, error_number, damage_number, exclude_files
     zip_path = './7-Zip/7z.exe'  # 7zip路径
     rate_file_number = 0
-    for file in files_list:
+    for file in tqdm(files_list, bar_format='文件进度：{l_bar}{bar}| {n_fmt}/{total_fmt}'):
         rate_file_number += 1
-        print(f"——————正在解压第{rate_file_number}个文件，文件名：{os.path.split(file)[1]}，总进度{rate_file_number}/{total_number}——————")
         file_directory = os.path.split(file)[0]  # 文件的父目录
         file_name_without_suffix = pick_filename(file, ftype)  # 单独的没有后缀的文件名
         temporary_folder = os.path.join(file_directory, "UnzipTempFolder")  # 临时存放解压结果的文件夹
         unzip_path = os.path.join(temporary_folder, file_name_without_suffix)  # 解压到临时文件下与文件同名的文件夹中
         password_try_number = 0  # 密码尝试次数
-        for password in resort_passwords:
-            zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path, "-slt"]  # 组合完整7z指令
-            unzip_result = subprocess.run(zip_command)
-            print(f"7zip解压返回状态码：{unzip_result.returncode}")
+        for password in tqdm(resort_passwords, bar_format='解压密码测试：{l_bar}{bar}| {n_fmt}/{total_fmt}', file=sys.stdout):
+            zip_command = [zip_path, "x", "-p" + password, "-y", file, "-o" + unzip_path]  # 组合完整7z指令
+            unzip_result = subprocess.run(zip_command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             if unzip_result.returncode != 0:
                 password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
             elif unzip_result.returncode == 0:
-                print(f"——————成功解压第{rate_file_number}个文件，文件名：{os.path.split(file)[1]}，解压密码：{password}——————")
+                tqdm.write(f"——————成功解压{os.path.split(file)[1]}，解压密码：{password}——————")
                 with open('unzip_history.txt', 'a', encoding='utf-8') as history_save:
                     the_history = f'解压日期：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}  解压文件：{os.path.split(file)[1]} 解压密码：{password}\n'
                     history_save.write(the_history)
@@ -253,7 +247,7 @@ def unzip_run_7zip(files_list, ftype):
                         exclude_files.append(file)
                     else:
                         exclude_files += fenjuan_dict[file]
-                    print(f"——————{os.path.split(file)[1]} 经检验已损坏（解压文件大小<解压前文件的95%）——————")
+                    tqdm.write(f"——————{os.path.split(file)[1]} 已删除解压结果，解压文件大小<解压前文件的95%）——————")
                     break  # 退出当前文件循环
                 else:
                     right_password_number_add_one(password)  # 成功解压则密码使用次数+1
@@ -269,7 +263,7 @@ def unzip_run_7zip(files_list, ftype):
                 exclude_files.append(file)
             else:
                 exclude_files += fenjuan_dict[file]
-    print(f"★完成全部解压操作，成功：{total_number - error_number}个，失败：{error_number}个，文件损坏：{damage_number}个")
+    print(f"★完成全部解压操作，成功：{total_number - error_number}个，失败：{error_number}个，损坏：{damage_number}个")
     if os.path.exists(temporary_folder):
         if get_result_size(temporary_folder) == 0:
             winshell.delete_file(temporary_folder, no_confirm=True)
@@ -380,7 +374,6 @@ def main_menu():
 
 def main():
     print("★★★欢迎使用 only_unzip")
-    print("★★★更新日期：230414")
     read_password()
     main_menu()
 
