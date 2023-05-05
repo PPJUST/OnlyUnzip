@@ -16,51 +16,8 @@ global fenjuan_dict
 global exclude_files, loop_code
 
 
-def input_path():
-    """输入文件夹路径"""
-    full_path = input("输入压缩包所在文件夹的完整路径（输入0返回上级）：")
-    if full_path == str(0):
-        main_menu()
-    else:
-        if not os.path.exists(full_path):
-            print("——————路径不存在，请重新输入——————")
-            return input_path()
-        elif os.path.isfile(full_path):
-            print("——————该路径不是文件夹，请重新输入——————")
-            return input_path()
-        elif len(os.listdir(full_path)) == 0:
-            print("——————文件夹为空，请重新输入——————")
-            return input_path()
-        else:
-            unzip_main_logic(full_path)  # 解压主程序
 
 
-def read_password():
-    """读取密码"""
-    global password_config, sort_passwords, resort_passwords
-    password_config = configparser.ConfigParser()  # 注意大小写
-    password_config.read("password.ini", encoding='utf-8')  # 配置文件的路径
-
-    # 按密码的使用次数排序
-    passwords = password_config.sections()  # 获取section
-    sort_passwords = []  # 设置空列表，方便后续排序操作
-    resort_passwords = []  # 最终排序结果
-    for password in passwords:  # 遍历全部密码
-        sort_passwords.append(password_config.get(password, 'number') + ' - ' + password)  # value - section ，使用次数 - 密码
-    list_temp1 = reversed(natsort.natsorted(sort_passwords))  # 按数字大小降序排序
-    list_temp2 = [x for x in list_temp1]
-    sort_passwords = list_temp2
-    for i in sort_passwords:
-        resort_passwords.append(re.search(r' - (.+)', i).group(1))  # 正则提取 - 后的section
-
-
-
-
-def export_password():
-    """导出密码"""
-    with open("password_export.txt", "w", encoding="utf-8") as pw:
-        pw.write("\n".join(resort_passwords))
-    main_menu()
 
 
 def unzip_main_logic(full_path):
@@ -96,14 +53,6 @@ def unzip_walk_path(full_path):
         return select_files_only_zip, select_dirs
 
 
-def is_zip_file(file_path):
-    """检查文件是否是压缩包"""
-    zip_type = ["application/x-rar", "application/octet-stream", "application/x-tar", "application/x-gzip", "application/octet-stream", "application/zip", "application/x-7z-compressed", "application/octet-stream", "application/octet-stream", "application/x-dosexec", "application/x-lzh-compressed", "application/x-gzip", "application/x-xz", "application/zip", "application/octet-stream"]
-    file_type = magic.from_buffer(open(file_path, 'rb').read(2048), mime=True)
-    if file_type in zip_type:
-        return True
-    else:
-        return False
 
 
 def unzip_class_zip(files):
@@ -165,15 +114,7 @@ def pick_filename(file, ftype):
     return filename.strip()
 
 
-def get_original_size(file, ftype):
-    """统计原文件大小"""
-    if ftype == "normal":
-        size = os.path.getsize(file)
-    else:
-        size = 0
-        for i in fenjuan_dict[file]:
-            size += os.path.getsize(i)
-    return size
+
 
 
 def delete_original(file, ftype):
@@ -251,14 +192,7 @@ def unzip_run_7zip(files_list, ftype):
         pass
 
 
-def get_result_size(path):
-    """获取文件夹大小"""
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size
+
 
 
 def right_password_number_add_one(password):
@@ -317,44 +251,5 @@ def check_unzip_result(result_folder):
         os.rename(need_move_path, rename_full_path)
         shutil.move(rename_full_path, parent_directory)
 
-def main_menu():
-    global exclude_files, loop_code
-    exclude_files = []
-    loop_code = False
-    hello = """
-    ————————————————————————————————————
-    ★★★功能选项：
-    1. 输入文件夹路径，开始解压（只解压1次）
-    2. 输入文件夹路径，开始循环解压（解除压缩包套娃）
-
-    4. 新增密码
-    5. 查看全部密码（按使用次数排列）
-    6. 导出密码文件
-
-    9. 退出
-    """
-    print(hello)
-    input_code = int(input("★★★输入数字进入相应功能："))
-    if input_code == 1:
-        input_path()
-    elif input_code == 2:
-        loop_code = True
-        input_path()
-    elif input_code == 4:
-        add_password()
-    elif input_code == 5:
-        show_password()
-    elif input_code == 6:
-        export_password()
-    elif input_code == 9:
-        exit(1)
 
 
-def main():
-    print("★★★欢迎使用 only_unzip")
-    read_password()
-    main_menu()
-
-
-if __name__ == "__main__":
-    main()
