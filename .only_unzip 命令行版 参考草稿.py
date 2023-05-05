@@ -54,28 +54,6 @@ def read_password():
         resort_passwords.append(re.search(r' - (.+)', i).group(1))  # 正则提取 - 后的section
 
 
-def add_password():
-    """新增密码"""
-    print("输入需要新增的密码，一个一行\n输入 <单独占一行的0> 结束输入并返回主菜单")
-    while True:
-        inp = str(input()).strip()
-        if inp == '0':
-            break
-        else:
-            if inp != "" and inp not in password_config.sections():
-                password_config.add_section(inp)
-                password_config.set(inp, 'number', '0')
-    password_config.write(open('password.ini', 'w', encoding='utf-8'))
-    read_password()  # 重新读取
-    main_menu()
-
-
-def show_password():
-    """显示密码"""
-    for i in sort_passwords:
-        re_findall = re.findall("(.+) - (.+)", i)[0]  # 反转 使用次数 - 密码，显示为 密码 - 使用次数
-        print(f'{re_findall[1]} - 次数：{re_findall[0]}')
-    main_menu()
 
 
 def export_password():
