@@ -11,6 +11,7 @@ import natsort
 import shutil
 import winshell
 import sys
+import qdarktheme
 import os
 import configparser
 import re
@@ -21,7 +22,6 @@ import winshell
 import shutil
 import magic
 import sys
-from tqdm import tqdm
 from ui_v1 import Ui_MainWindow
 
 
@@ -32,6 +32,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
+        self.create_new_ini()
         self.start_with_load_setting()
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
 
@@ -64,7 +65,6 @@ class OnlyUnzip(QMainWindow):
     def unzip_main_logic(self, files):
         """解压程序主逻辑"""
         the_folder = os.path.split(files[0])[0]
-
         unzip_files = self.check_zip(files)
         unzip_files_dict = self.class_multi_volume(unzip_files)
         for key in unzip_files_dict:
@@ -95,8 +95,9 @@ class OnlyUnzip(QMainWindow):
                     break  # 退出当前文件循环
                 else:
                     self.right_password_number_add_one(password)  # 成功解压则密码使用次数+1
-                    for i in zipfile_list:  # 删除原文件
-                        winshell.delete_file(i)
+                    if self.ui.checkBox_delect_zip.isChecked():  # 根据选项选择是否删除原文件
+                        for i in zipfile_list:  # 删除原文件
+                            winshell.delete_file(i)
                     self.check_unzip_result(temporary_folder)  # 检查解压结果，处理套娃文件夹
                     if os.path.exists(unzip_folder):  # 处理遗留的解压结果文件夹
                         if self.get_folder_size(unzip_folder) == 0:
@@ -123,20 +124,39 @@ class OnlyUnzip(QMainWindow):
         read_config.read("config.ini", encoding='utf-8')  # 配置文件的路径
         old_number = int(read_config.get(password, 'number'))
         read_config.set(password, 'number', str(old_number + 1))  # 次数加1
-        read_config.write(open('password.ini', 'w', encoding='utf-8'))
+        read_config.write(open('config.ini', 'w', encoding='utf-8'))
 
     def check_unzip_result(self, folder):
         """检查解压结果，处理套娃文件夹"""
-        need_move_path = self.check_folder_depth(folder)  # 需要移动的文件夹/文件路径
-        need_move_filename = os.path.split(need_move_path)[1]  # 需要移动的文件夹/文件名称
-        parent_folder = os.path.split(folder)[0]  # 临时文件夹的上级目录（原压缩包所在的目录）
-        if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
-            shutil.move(need_move_path, parent_folder)
+        if self.ui.checkBox_nested_folders.isChecked():  # 如果选中选项
+            need_move_path = self.check_folder_depth(folder)  # 需要移动的文件夹/文件路径
+            need_move_filename = os.path.split(need_move_path)[1]  # 需要移动的文件夹/文件名称
+            parent_folder = os.path.split(folder)[0]  # 临时文件夹的上级目录（原压缩包所在的目录）
+            if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
+                shutil.move(need_move_path, parent_folder)
+            else:
+                rename_filename = self.rename_recursion(need_move_path, folder)
+                rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
+                os.rename(need_move_path, rename_full_path)
+                shutil.move(rename_full_path, parent_folder)
         else:
-            rename_filename = self.rename_recursion(need_move_path, folder)
-            rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
-            os.rename(need_move_path, rename_full_path)
-            shutil.move(rename_full_path, parent_folder)
+            unzip_folder = os.listdir(folder)[0]
+            full_folder_path = os.path.join(folder, unzip_folder)
+            on_folder_files = [os.path.join(full_folder_path, x) for x in os.listdir(full_folder_path)]
+            parent_folder = os.path.split(folder)[0]
+            if len(on_folder_files) == 1:  # 如果文件夹下就一个文件/文件夹，则直接移动
+                need_move_path = on_folder_files[0]
+                need_move_filename = os.path.split(need_move_path)[1]
+            else:  # 如果有多个文件/文件夹，则保留文件夹
+                need_move_path = full_folder_path
+                need_move_filename = os.path.split(need_move_path)[1]
+            if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
+                shutil.move(need_move_path, parent_folder)
+            else:
+                rename_filename = self.rename_recursion(need_move_path, folder)
+                rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
+                os.rename(need_move_path, rename_full_path)
+                shutil.move(rename_full_path, parent_folder)
 
     def check_folder_depth(self, path):
         """检查文件夹深度，找出最后一级多文件的文件夹"""
@@ -333,6 +353,24 @@ class OnlyUnzip(QMainWindow):
         self.ui.checkBox_delect_zip.setChecked(code_delete_zip)
         self.ui.checkBox_check_zip.setChecked(code_check_zip)
 
+    def create_new_ini(self):
+        """如果本地没有condig文件则新建"""
+        if not os.path.exists(os.path.join(os.getcwd(), 'config.ini')):
+            with open('config.ini', 'w', encoding='utf-8') as cw:
+                the_initialize = """[DEFAULT]
+information = 
+number = 0
+model = unzip
+nested_folders = True
+nested_zip = True
+delete_zip = True
+check_zip = True
+multithreading = 
+
+[无密码文件|勿删]
+number = 9999"""
+                cw.write(the_initialize)
+
     def update_password(self):
         """更新密码"""
         new_all_password = [x for x in self.ui.text_password.toPlainText().split('\n') if x.strip()]
@@ -391,6 +429,7 @@ class OnlyUnzip(QMainWindow):
 
 
 app = QApplication([])
+qdarktheme.setup_theme("auto")
 show_ui = OnlyUnzip()
 show_ui.show()
 app.exec_()

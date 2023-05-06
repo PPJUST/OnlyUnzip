@@ -70,7 +70,7 @@
        <enum>QFrame::Box</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page">
        <property name="acceptDrops">
@@ -81,8 +81,8 @@
          <rect>
           <x>9</x>
           <y>9</y>
-          <width>191</width>
-          <height>131</height>
+          <width>211</width>
+          <height>141</height>
          </rect>
         </property>
         <property name="acceptDrops">
@@ -111,102 +111,110 @@
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QLabel" name="label_4">
         <property name="geometry">
          <rect>
-          <x>9</x>
-          <y>170</y>
-          <width>116</width>
+          <x>11</x>
+          <y>191</y>
+          <width>36</width>
           <height>16</height>
          </rect>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="maximumSize">
-            <size>
-             <width>60</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>当前文件：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_current_file">
-           <property name="text">
-            <string>显示文件</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>进度：</string>
+        </property>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QLabel" name="label_schedule">
+        <property name="geometry">
+         <rect>
+          <x>53</x>
+          <y>191</y>
+          <width>48</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>显示进度</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>190</y>
-          <width>116</width>
+          <y>171</y>
+          <width>60</width>
           <height>16</height>
          </rect>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="label_4">
-           <property name="maximumSize">
-            <size>
-             <width>60</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>进度：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_schedule">
-           <property name="text">
-            <string>显示进度</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>当前文件：</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_current_file">
+        <property name="geometry">
+         <rect>
+          <x>76</x>
+          <y>171</y>
+          <width>48</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>显示文件</string>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="page_2">
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QPlainTextEdit" name="text_password"/>
         </item>
         <item>
-         <widget class="QSplitter" name="splitter_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <widget class="QPushButton" name="button_update_password">
-           <property name="text">
-            <string>更新</string>
-           </property>
-          </widget>
-          <widget class="QSplitter" name="splitter_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <widget class="QPushButton" name="button_export_password">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QPushButton" name="button_update_password">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>导出</string>
+             <string>更新</string>
             </property>
            </widget>
-           <widget class="QPushButton" name="button_export_password_with_number">
-            <property name="text">
-             <string>导出(含次数)</string>
-            </property>
-           </widget>
-          </widget>
-         </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QPushButton" name="button_export_password">
+              <property name="text">
+               <string>导出</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="button_export_password_with_number">
+              <property name="text">
+               <string>导出(含次数)</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
