@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>240</height>
+    <width>292</width>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,19 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item alignment="Qt::AlignTop">
      <widget class="QSplitter" name="splitter">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -35,15 +47,54 @@
       <property name="handleWidth">
        <number>0</number>
       </property>
+      <property name="childrenCollapsible">
+       <bool>true</bool>
+      </property>
       <widget class="QPushButton" name="button_page_main">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>主页面</string>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">buttonGroup</string>
        </attribute>
       </widget>
       <widget class="QPushButton" name="button_page_password">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>密码框</string>
        </property>
@@ -52,6 +103,18 @@
        </attribute>
       </widget>
       <widget class="QPushButton" name="button_page_setting">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>设置</string>
        </property>
@@ -76,105 +139,92 @@
        <property name="acceptDrops">
         <bool>false</bool>
        </property>
-       <widget class="QLabel" name="label_icon">
-        <property name="geometry">
-         <rect>
-          <x>9</x>
-          <y>9</y>
-          <width>211</width>
-          <height>141</height>
-         </rect>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>0</number>
         </property>
-        <property name="acceptDrops">
-         <bool>true</bool>
+        <property name="leftMargin">
+         <number>6</number>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
+        <property name="topMargin">
+         <number>6</number>
         </property>
-        <property name="text">
-         <string>图标</string>
+        <property name="rightMargin">
+         <number>6</number>
         </property>
-        <property name="scaledContents">
-         <bool>true</bool>
+        <property name="bottomMargin">
+         <number>0</number>
         </property>
-       </widget>
-       <widget class="Line" name="line_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>150</y>
-          <width>207</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>11</x>
-          <y>191</y>
-          <width>36</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>进度：</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_schedule">
-        <property name="geometry">
-         <rect>
-          <x>53</x>
-          <y>191</y>
-          <width>48</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>显示进度</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>171</y>
-          <width>60</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>当前文件：</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_current_file">
-        <property name="geometry">
-         <rect>
-          <x>76</x>
-          <y>171</y>
-          <width>48</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>显示文件</string>
-        </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="label_icon">
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="text">
+           <string>图标</string>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QLabel" name="label_3">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>当前文件：</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_current_file">
+           <property name="text">
+            <string>显示文件</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSplitter" name="splitter_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QLabel" name="label_4">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>进度：</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_schedule">
+           <property name="text">
+            <string>显示进度</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="page_2">
        <layout class="QVBoxLayout" name="verticalLayout_2">
