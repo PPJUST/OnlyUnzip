@@ -119,7 +119,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
-        self.setFixedSize(295, 254)
+        self.setFixedSize(292, 264)
         self.create_new_ini()  # 创建初始设置文件
         self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
@@ -254,7 +254,6 @@ class OnlyUnzip(QMainWindow):
     def get_zip_name(self, file):
         """提取文件名"""
         filename = os.path.split(file)[1]
-
         re_rar = r"^(.+)\.part\d+\.rar$"  # 4种压缩文件的命名规则
         re_7z = r"^(.+)\.7z\.\d+$"
         re_zip_top = r"^(.+)\.zip$"
@@ -485,7 +484,7 @@ number = 9999"""
         read_config.write(open('config.ini', 'w', encoding='utf-8'))  # 写入
 
 
-app = QApplication([])
+app = QApplication()
 qdarktheme.setup_theme("light")
 show_ui = OnlyUnzip()
 show_ui.show()
