@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>292</width>
-    <height>254</height>
+    <height>264</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,23 +32,11 @@
     </property>
     <item alignment="Qt::AlignTop">
      <widget class="QSplitter" name="splitter">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <property name="opaqueResize">
-       <bool>true</bool>
-      </property>
       <property name="handleWidth">
        <number>0</number>
-      </property>
-      <property name="childrenCollapsible">
-       <bool>true</bool>
       </property>
       <widget class="QPushButton" name="button_page_main">
        <property name="minimumSize">
@@ -122,6 +110,23 @@
         <string notr="true">buttonGroup</string>
        </attribute>
       </widget>
+      <widget class="QPushButton" name="button_page_setting_2">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>解压记录</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
@@ -187,7 +192,7 @@
            <property name="maximumSize">
             <size>
              <width>60</width>
-             <height>20</height>
+             <height>25</height>
             </size>
            </property>
            <property name="text">
@@ -210,7 +215,7 @@
            <property name="maximumSize">
             <size>
              <width>60</width>
-             <height>20</height>
+             <height>25</height>
             </size>
            </property>
            <property name="text">
@@ -337,6 +342,28 @@
            <bool>false</bool>
           </property>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_4">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QTreeWidget" name="treeWidget"/>
         </item>
        </layout>
       </widget>
