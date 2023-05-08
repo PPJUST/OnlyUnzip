@@ -9,16 +9,16 @@ import magic
 import natsort
 import qdarktheme
 # import winshell
-import send2trash  # win7装不上winshell，用s2t替代
+import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread
 from PySide2.QtWidgets import QApplication, QMainWindow
 
 from ui import Ui_MainWindow
 
 
-
 class unzip_main(QThread):
     signal_ui_update = Signal(list)  # 自定义信号
+
     def __init__(self, files, parent=None):
         super(unzip_main, self).__init__(parent)
         self.files = files
@@ -42,7 +42,7 @@ class unzip_main(QThread):
             self.signal_ui_update.emit(['图标-执行中', None])
             file_list = unzip_files_dict[first_file]
 
-            the_right_password = self.test_password(the_folder, first_file)
+            the_right_password = self.test_password(first_file)
             if the_right_password == '':
                 wrong_password_file_number += 1
             else:
@@ -66,15 +66,10 @@ class unzip_main(QThread):
         self.signal_ui_update.emit(['当前文件', '————————————'])
         self.signal_ui_update.emit(['进度', f'成功：{success_number}，失败{wrong_password_file_number}，损坏：{damaged_file_number}'])
 
-    def test_password(self, the_folder, zipfile):
-        zip_name = self.Main_OnlyUnzip.get_zip_name(zipfile)  # 调用主程序的函数，提取解压文件名
+    def test_password(self, zipfile):
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
-        temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
-        unzip_folder = os.path.join(temporary_folder, zip_name)  # 解压结果路径
-        # 组合解压指令
         passwords, _ = self.Main_OnlyUnzip.read_password_return_list()  # 调用主程序的函数，提取密码
         password_try_number = 0  # 密码尝试次数
-        total_number_of_passwords = len(passwords)
         the_right_password = ''
         for password in passwords:
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
@@ -117,9 +112,6 @@ class unzip_main(QThread):
             return '解压成功'
 
 
-
-
-
 class OnlyUnzip(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -128,12 +120,9 @@ class OnlyUnzip(QMainWindow):
 
         # 初始化
         self.setFixedSize(295, 254)
-        self.create_new_ini()
-        self.start_with_load_setting()
+        self.create_new_ini()  # 创建初始设置文件
+        self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
-
-        self.test_files = []  # _____________________________
-
 
         # 设置槽函数
         self.ui.label_icon.dropSignal.connect(self.drop_files)  # 拖入文件
@@ -160,10 +149,9 @@ class OnlyUnzip(QMainWindow):
                 files.append(i)
             else:
                 folders.append(i)
-        self.run_unzip_Qthread(files)
+        self.run_unzip_qthread(files)
 
-
-    def run_unzip_Qthread(self, files):
+    def run_unzip_qthread(self, files):
         self.unzip_qthread = unzip_main(files)
         self.unzip_qthread.signal_ui_update.connect(self.update_ui)
         self.unzip_qthread.start()
@@ -180,7 +168,6 @@ class OnlyUnzip(QMainWindow):
                 self.ui.label_icon.setPixmap('./icon/正在解压.png')
         elif the_list[0] == '图标-完成':
             self.ui.label_icon.setPixmap(the_list[1])
-
 
     def save_unzip_history(self, zipfile, password):
         """保存解压历史"""
