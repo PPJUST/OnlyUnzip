@@ -127,7 +127,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
-        self.setFixedSize(292, 279)
+        self.setFixedSize(262, 232)
         self.create_new_ini()  # 创建初始设置文件
         self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�tAbNUJ.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�HawpAt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -29,59 +29,70 @@ class MyLabel(QLabel):
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(292, 270)
+        MainWindow.resize(262, 233)
+        MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.horizontalLayout = QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setSpacing(0)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.splitter = QSplitter(self.centralwidget)
-        self.splitter.setObjectName(u"splitter")
-        self.splitter.setOrientation(Qt.Vertical)
-        self.splitter.setHandleWidth(0)
-        self.button_page_main = QPushButton(self.splitter)
+        self.gridLayout = QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setHorizontalSpacing(0)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setSpacing(0)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.button_page_main = QPushButton(self.centralwidget)
         self.buttonGroup = QButtonGroup(MainWindow)
         self.buttonGroup.setObjectName(u"buttonGroup")
         self.buttonGroup.addButton(self.button_page_main)
         self.button_page_main.setObjectName(u"button_page_main")
-        self.button_page_main.setMinimumSize(QSize(0, 50))
+        self.button_page_main.setMinimumSize(QSize(0, 40))
         self.button_page_main.setMaximumSize(QSize(16777215, 16777215))
         self.button_page_main.setAutoRepeat(False)
         self.button_page_main.setAutoDefault(False)
         self.button_page_main.setFlat(False)
-        self.splitter.addWidget(self.button_page_main)
-        self.button_page_password = QPushButton(self.splitter)
+
+        self.verticalLayout_6.addWidget(self.button_page_main)
+
+        self.button_page_password = QPushButton(self.centralwidget)
         self.buttonGroup.addButton(self.button_page_password)
         self.button_page_password.setObjectName(u"button_page_password")
-        self.button_page_password.setMinimumSize(QSize(0, 50))
+        self.button_page_password.setMinimumSize(QSize(0, 40))
         self.button_page_password.setMaximumSize(QSize(16777215, 16777215))
-        self.splitter.addWidget(self.button_page_password)
-        self.button_page_setting = QPushButton(self.splitter)
+
+        self.verticalLayout_6.addWidget(self.button_page_password)
+
+        self.button_page_setting = QPushButton(self.centralwidget)
         self.buttonGroup.addButton(self.button_page_setting)
         self.button_page_setting.setObjectName(u"button_page_setting")
-        self.button_page_setting.setMinimumSize(QSize(0, 50))
+        self.button_page_setting.setMinimumSize(QSize(0, 40))
         self.button_page_setting.setMaximumSize(QSize(16777215, 16777215))
-        self.splitter.addWidget(self.button_page_setting)
-        self.button_page_history = QPushButton(self.splitter)
+
+        self.verticalLayout_6.addWidget(self.button_page_setting)
+
+        self.button_page_history = QPushButton(self.centralwidget)
         self.buttonGroup.addButton(self.button_page_history)
         self.button_page_history.setObjectName(u"button_page_history")
-        self.button_page_history.setMinimumSize(QSize(0, 50))
+        self.button_page_history.setMinimumSize(QSize(0, 40))
         self.button_page_history.setMaximumSize(QSize(16777215, 16777215))
-        self.splitter.addWidget(self.button_page_history)
-        self.button_page_history_4 = QPushButton(self.splitter)
+
+        self.verticalLayout_6.addWidget(self.button_page_history)
+
+        self.button_page_history_4 = QPushButton(self.centralwidget)
         self.buttonGroup.addButton(self.button_page_history_4)
         self.button_page_history_4.setObjectName(u"button_page_history_4")
         self.button_page_history_4.setEnabled(False)
-        self.button_page_history_4.setMinimumSize(QSize(0, 50))
+        self.button_page_history_4.setMinimumSize(QSize(0, 40))
         self.button_page_history_4.setMaximumSize(QSize(16777215, 16777215))
-        self.splitter.addWidget(self.button_page_history_4)
 
-        self.horizontalLayout.addWidget(self.splitter, 0, Qt.AlignTop)
+        self.verticalLayout_6.addWidget(self.button_page_history_4)
+
+
+        self.gridLayout.addLayout(self.verticalLayout_6, 0, 0, 1, 1)
 
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
@@ -93,7 +104,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QVBoxLayout(self.page)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(6, 6, 6, 0)
+        self.verticalLayout_3.setContentsMargins(5, 0, 0, 0)
         self.label_icon = MyLabel(self.page)
         self.label_icon.setObjectName(u"label_icon")
         self.label_icon.setAcceptDrops(True)
@@ -257,7 +268,11 @@ class Ui_MainWindow(object):
 
         self.stackedWidget.addWidget(self.page_5)
 
-        self.horizontalLayout.addWidget(self.stackedWidget)
+        self.gridLayout.addWidget(self.stackedWidget, 0, 1, 2, 1)
+
+        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout.addItem(self.verticalSpacer, 1, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -271,7 +286,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"OnlyUnzip", None))
         self.button_page_main.setText(QCoreApplication.translate("MainWindow", u"\u4e3b\u9875\u9762", None))
         self.button_page_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801\u6846", None))
         self.button_page_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
@@ -290,7 +305,7 @@ class Ui_MainWindow(object):
         self.checkBox_delect_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5220\u9664\u539f\u6587\u4ef6", None))
         self.checkBox_nested_folders.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939", None))
         self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305", None))
-        self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u4ec5\u8bc6\u522b\u538b\u7f29\u5305(\u57fa\u4e8emagic\u5e93)", None))
+        self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u4ec5\u8bc6\u522b\u538b\u7f29\u5305", None))
         self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
