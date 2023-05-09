@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v1 ԭ�ļ�pxjqih.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�tAbNUJ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(292, 254)
+        MainWindow.resize(292, 270)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
@@ -42,12 +42,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.splitter = QSplitter(self.centralwidget)
         self.splitter.setObjectName(u"splitter")
-        self.splitter.setFrameShape(QFrame.NoFrame)
-        self.splitter.setLineWidth(1)
         self.splitter.setOrientation(Qt.Vertical)
-        self.splitter.setOpaqueResize(True)
         self.splitter.setHandleWidth(0)
-        self.splitter.setChildrenCollapsible(True)
         self.button_page_main = QPushButton(self.splitter)
         self.buttonGroup = QButtonGroup(MainWindow)
         self.buttonGroup.setObjectName(u"buttonGroup")
@@ -71,6 +67,19 @@ class Ui_MainWindow(object):
         self.button_page_setting.setMinimumSize(QSize(0, 50))
         self.button_page_setting.setMaximumSize(QSize(16777215, 16777215))
         self.splitter.addWidget(self.button_page_setting)
+        self.button_page_history = QPushButton(self.splitter)
+        self.buttonGroup.addButton(self.button_page_history)
+        self.button_page_history.setObjectName(u"button_page_history")
+        self.button_page_history.setMinimumSize(QSize(0, 50))
+        self.button_page_history.setMaximumSize(QSize(16777215, 16777215))
+        self.splitter.addWidget(self.button_page_history)
+        self.button_page_history_4 = QPushButton(self.splitter)
+        self.buttonGroup.addButton(self.button_page_history_4)
+        self.button_page_history_4.setObjectName(u"button_page_history_4")
+        self.button_page_history_4.setEnabled(False)
+        self.button_page_history_4.setMinimumSize(QSize(0, 50))
+        self.button_page_history_4.setMaximumSize(QSize(16777215, 16777215))
+        self.splitter.addWidget(self.button_page_history_4)
 
         self.horizontalLayout.addWidget(self.splitter, 0, Qt.AlignTop)
 
@@ -105,7 +114,7 @@ class Ui_MainWindow(object):
         self.splitter_2.setOrientation(Qt.Horizontal)
         self.label_3 = QLabel(self.splitter_2)
         self.label_3.setObjectName(u"label_3")
-        self.label_3.setMaximumSize(QSize(60, 20))
+        self.label_3.setMaximumSize(QSize(60, 25))
         self.splitter_2.addWidget(self.label_3)
         self.label_current_file = QLabel(self.splitter_2)
         self.label_current_file.setObjectName(u"label_current_file")
@@ -118,7 +127,7 @@ class Ui_MainWindow(object):
         self.splitter_3.setOrientation(Qt.Horizontal)
         self.label_4 = QLabel(self.splitter_3)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setMaximumSize(QSize(60, 20))
+        self.label_4.setMaximumSize(QSize(60, 25))
         self.splitter_3.addWidget(self.label_4)
         self.label_schedule = QLabel(self.splitter_3)
         self.label_schedule.setObjectName(u"label_schedule")
@@ -172,15 +181,15 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QVBoxLayout(self.page_3)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.checkBox_model_unzip = QCheckBox(self.page_3)
-        self.buttonGroup_2 = QButtonGroup(MainWindow)
-        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
-        self.buttonGroup_2.addButton(self.checkBox_model_unzip)
+        self.buttonGroup_checkbox = QButtonGroup(MainWindow)
+        self.buttonGroup_checkbox.setObjectName(u"buttonGroup_checkbox")
+        self.buttonGroup_checkbox.addButton(self.checkBox_model_unzip)
         self.checkBox_model_unzip.setObjectName(u"checkBox_model_unzip")
 
         self.verticalLayout_4.addWidget(self.checkBox_model_unzip)
 
         self.checkBox_model_test = QCheckBox(self.page_3)
-        self.buttonGroup_2.addButton(self.checkBox_model_test)
+        self.buttonGroup_checkbox.addButton(self.checkBox_model_test)
         self.checkBox_model_test.setObjectName(u"checkBox_model_test")
 
         self.verticalLayout_4.addWidget(self.checkBox_model_test)
@@ -212,6 +221,7 @@ class Ui_MainWindow(object):
 
         self.checkBox_nested_zip = QCheckBox(self.page_3)
         self.checkBox_nested_zip.setObjectName(u"checkBox_nested_zip")
+        self.checkBox_nested_zip.setEnabled(False)
 
         self.verticalLayout_4.addWidget(self.checkBox_nested_zip)
 
@@ -222,6 +232,30 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.checkBox_check_zip)
 
         self.stackedWidget.addWidget(self.page_3)
+        self.page_4 = QWidget()
+        self.page_4.setObjectName(u"page_4")
+        self.horizontalLayout_2 = QHBoxLayout(self.page_4)
+        self.horizontalLayout_2.setSpacing(0)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.listWidget_history = QListWidget(self.page_4)
+        self.listWidget_history.setObjectName(u"listWidget_history")
+        self.listWidget_history.setWordWrap(True)
+
+        self.horizontalLayout_2.addWidget(self.listWidget_history)
+
+        self.stackedWidget.addWidget(self.page_4)
+        self.page_5 = QWidget()
+        self.page_5.setObjectName(u"page_5")
+        self.verticalLayout_5 = QVBoxLayout(self.page_5)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.textBrowser = QTextBrowser(self.page_5)
+        self.textBrowser.setObjectName(u"textBrowser")
+
+        self.verticalLayout_5.addWidget(self.textBrowser)
+
+        self.stackedWidget.addWidget(self.page_5)
 
         self.horizontalLayout.addWidget(self.stackedWidget)
 
@@ -241,6 +275,8 @@ class Ui_MainWindow(object):
         self.button_page_main.setText(QCoreApplication.translate("MainWindow", u"\u4e3b\u9875\u9762", None))
         self.button_page_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801\u6846", None))
         self.button_page_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
+        self.button_page_history.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u8bb0\u5f55", None))
+        self.button_page_history_4.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.label_icon.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u6587\u4ef6\uff1a", None))
         self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u6587\u4ef6", None))
@@ -255,5 +291,10 @@ class Ui_MainWindow(object):
         self.checkBox_nested_folders.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939", None))
         self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305", None))
         self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u4ec5\u8bc6\u522b\u538b\u7f29\u5305(\u57fa\u4e8emagic\u5e93)", None))
+        self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u6e90\u7801\uff1ahttps://github.com/PPJUST/only_unzip</p></body></html>", None))
     # retranslateUi
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>292</width>
-    <height>264</height>
+    <height>270</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,7 +110,7 @@
         <string notr="true">buttonGroup</string>
        </attribute>
       </widget>
-      <widget class="QPushButton" name="button_page_setting_2">
+      <widget class="QPushButton" name="button_page_history">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -126,6 +126,32 @@
        <property name="text">
         <string>解压记录</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+      <widget class="QPushButton" name="button_page_history_4">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>关于</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
       </widget>
      </widget>
     </item>
@@ -281,7 +307,7 @@
            <string>解压模式</string>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_2</string>
+           <string notr="true">buttonGroup_checkbox</string>
           </attribute>
          </widget>
         </item>
@@ -291,7 +317,7 @@
            <string>测试模式</string>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_2</string>
+           <string notr="true">buttonGroup_checkbox</string>
           </attribute>
          </widget>
         </item>
@@ -328,6 +354,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="checkBox_nested_zip">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>是否处理套娃压缩包</string>
           </property>
@@ -363,7 +392,38 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QTreeWidget" name="treeWidget"/>
+         <widget class="QListWidget" name="listWidget_history">
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_5">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QTextBrowser" name="textBrowser">
+          <property name="html">
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;源码：https://github.com/PPJUST/only_unzip&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -375,7 +435,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_checkbox"/>
  </buttongroups>
 </ui>
