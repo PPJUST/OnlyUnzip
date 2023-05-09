@@ -26,19 +26,15 @@ class unzip_main(QThread):
         self.Main_OnlyUnzip = OnlyUnzip()
 
     def run(self):
-        print(f'调用子线程 输入为 {self.unzip_files_dict}')
         total_files_number = len(self.unzip_files_dict)  # 需要解压的文件总数（分卷计数1）
         current_number = 0
         wrong_password_file_number = 0
         damaged_file_number = 0
         success_number = 0
-
         for first_file in self.unzip_files_dict:
-            print(f'子线程处理的第一个文件 {first_file}')
             the_folder = os.path.split(first_file)[0]
             current_number += 1
             current_filename = self.Main_OnlyUnzip.get_zip_name(first_file)  # 提取当前处理的文件名
-            print(f'子线程处理的第一个文件-提取文件名 {current_filename}')
             self.signal_ui_update.emit(['当前文件', current_filename])
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中'])
             self.signal_ui_update.emit(['图标', None])
@@ -71,8 +67,6 @@ class unzip_main(QThread):
         self.signal_ui_update.emit(['进度', f'成功：{success_number}，失败{wrong_password_file_number}，损坏：{damaged_file_number}'])
 
     def test_password(self, zipfile):
-        print(f'子线程处理的第一个文件-测试密码 {zipfile}')
-        print(f'子线程处理的第一个文件-测试密码 {os.path.exists(zipfile)}')
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         passwords, _ = self.Main_OnlyUnzip.read_password_return_list()  # 调用主程序的函数，提取密码
         password_try_number = 0  # 密码尝试次数
@@ -85,11 +79,9 @@ class unzip_main(QThread):
             elif run_text_command.returncode == 0:
                 the_right_password = password
                 break
-        print(f'正确密码 {the_right_password}')
         return the_right_password
 
     def start_unzip(self, the_folder, zipfile, zipfile_list, unzip_password):
-        print(f'子线程中解压的文件 {zipfile}')
         zip_name = self.Main_OnlyUnzip.get_zip_name(zipfile)  # 解压文件名
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
@@ -172,17 +164,14 @@ class OnlyUnzip(QMainWindow):
                 file_path = os.path.join(root, filename)
                 file_path = file_path.replace('/', '\\')
                 all_files.append(file_path)
-                print(f'---------file_path {file_path}')
         return all_files
 
     def run_unzip_qthread(self, files):
-        print(f'输入的文件 {files}')
+        """解压的子线程"""
         if files:  # 列表或者字典都不为空则执行子线程
             unzip_files = self.check_zip(files)  # 检查是否是压缩包
-            print(f'检查是压缩包的文件 {unzip_files}')
             if unzip_files:
                 unzip_files_dict = self.class_multi_volume(unzip_files)  # 将压缩包分类 一般与分卷
-                print(f'--------unzip_files_dict {unzip_files_dict}')
                 # 运行子线程，进行测试与解压
                 self.unzip_qthread = unzip_main(unzip_files_dict)
                 self.unzip_qthread.signal_ui_update.connect(self.update_ui)
