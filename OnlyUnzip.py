@@ -12,7 +12,7 @@ import qdarktheme
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread
 from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem
-from PySide2.QtGui import QColor
+from PySide2.QtGui import QColor, QIcon
 
 from ui import Ui_MainWindow
 
@@ -126,7 +126,6 @@ class OnlyUnzip(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
-        self.setFixedSize(262, 232)
         self.create_new_ini()  # 创建初始设置文件
         self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
@@ -564,5 +563,7 @@ number = 9999"""
 app = QApplication()
 qdarktheme.setup_theme("light")
 show_ui = OnlyUnzip()
+show_ui.setWindowIcon(QIcon('./icon/程序图标.png'))
+show_ui.setFixedSize(262, 232)
 show_ui.show()
 app.exec_()
