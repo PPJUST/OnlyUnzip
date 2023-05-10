@@ -563,7 +563,7 @@ number = 9999"""
 app = QApplication()
 qdarktheme.setup_theme("light")
 show_ui = OnlyUnzip()
-show_ui.setWindowIcon(QIcon('./icon/程序图标.png'))
+show_ui.setWindowIcon(QIcon('./icon/程序图标.ico'))
 show_ui.setFixedSize(262, 232)
 show_ui.show()
 app.exec_()
