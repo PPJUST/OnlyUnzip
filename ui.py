@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�bWmmqZ.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�MQVdNe.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -28,6 +28,7 @@ class MyLabel(QLabel):
             urls = event.mimeData().urls()
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -238,7 +239,7 @@ class Ui_MainWindow(object):
 
         self.checkBox_nested_zip = QCheckBox(self.page_3)
         self.checkBox_nested_zip.setObjectName(u"checkBox_nested_zip")
-        self.checkBox_nested_zip.setEnabled(False)
+        self.checkBox_nested_zip.setEnabled(True)
 
         self.verticalLayout_4.addWidget(self.checkBox_nested_zip)
 

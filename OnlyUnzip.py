@@ -33,9 +33,12 @@ class unzip_main(QThread):
         wrong_password_file_number = 0
         damaged_file_number = 0
         success_number = 0
+        the_pre_folder = ''  # 上一个文件所在文件夹，用于删除临时文件夹
         for first_file in self.unzip_files_dict:
-            the_folder = os.path.split(first_file)[0]
+            the_folder = os.path.split(first_file)[0]  # 文件所在文件夹
             current_number += 1
+            if current_number == 1:
+                the_pre_folder = the_folder
             current_filename = OnlyUnzip.get_zip_name(first_file)  # 提取当前处理的文件名
             self.signal_ui_update.emit(['当前文件', current_filename])
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中'])
@@ -56,13 +59,21 @@ class unzip_main(QThread):
                         damaged_file_number += 1
                     if unzip_result == '解压成功':
                         success_number += 1
+                if the_pre_folder != the_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
+                    pre_temporary_folder = os.path.join(the_pre_folder, "UnzipTempFolder")  # 临时文件夹
+                    if os.path.exists(pre_temporary_folder):  # 处理遗留的临时文件夹
+                        if OnlyUnzip.get_folder_size(pre_temporary_folder) == 0:
+                            # winshell.delete_file(temporary_folder, no_confirm=True)
+                            pre_temporary_folder = pre_temporary_folder.replace('/', '\\')
+                            os.remove(pre_temporary_folder)
+                    the_pre_folder = the_folder
                 if current_number == total_files_number:  # 完成全部文件处理后，删除临时文件夹
                     temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
                     if os.path.exists(temporary_folder):  # 处理遗留的临时文件夹
                         if OnlyUnzip.get_folder_size(temporary_folder) == 0:
                             # winshell.delete_file(temporary_folder, no_confirm=True)
                             temporary_folder = temporary_folder.replace('/', '\\')
-                            send2trash.send2trash(temporary_folder)
+                            os.remove(temporary_folder)
         # 全部完成后发送信号
         self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
         self.signal_ui_update.emit(['当前文件', '————————————'])
@@ -196,6 +207,7 @@ class OnlyUnzip(QMainWindow):
             self.ui.label_icon.setPixmap('./icon/错误.png')
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule.setText('存在遗留临时文件夹')
+            self.ui.label_icon.setEnabled(True)
         else:
             if files:  # 列表或者字典都不为空则执行子线程
                 unzip_files = self.check_zip(files)  # 检查是否是压缩包
@@ -213,10 +225,12 @@ class OnlyUnzip(QMainWindow):
                     self.ui.label_icon.setPixmap('./icon/错误.png')
                     self.ui.label_current_file.setText('————————————')
                     self.ui.label_schedule.setText('没有压缩包')
+                    self.ui.label_icon.setEnabled(True)
             else:  # 有一个为空则说明没有需要解压的文件
                 self.ui.label_icon.setPixmap('./icon/错误.png')
                 self.ui.label_current_file.setText('————————————')
                 self.ui.label_schedule.setText('没有压缩包')
+                self.ui.label_icon.setEnabled(True)
 
     def update_ui(self, the_list):
         if the_list[0] == '当前文件':
@@ -239,14 +253,19 @@ class OnlyUnzip(QMainWindow):
             item = QListWidgetItem(the_list[1])
             item.setTextColor(QColor(254, 67, 101))
             self.ui.listWidget_history.addItem(item)
-        elif the_list[0] == '完成解压':
-            self.ui.label_icon.setEnabled(True)
+        elif the_list[0] == '完成解压':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
+            if self.ui.checkBox_nested_zip.isChecked():
+                self.ui.label_icon.setEnabled(True)
+                self.nested_zip()
+            else:
+                self.ui.label_icon.setEnabled(True)
 
     @staticmethod
     def save_unzip_history(zipfile, password):
         """保存解压历史"""
         with open('unzip_history.txt', 'a', encoding='utf-8') as hs:
-            history = f'日期：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())} 文件：{os.path.split(zipfile)[1]} 密码：{password}\n'
+            history = f'日期：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())} ' \
+                      f'| 文件：{os.path.split(zipfile)[1]} | 密码：{password}\n\n'
             hs.write(history)
 
     @staticmethod
@@ -258,10 +277,6 @@ class OnlyUnzip(QMainWindow):
         read_config.set(password, 'number', str(old_number + 1))  # 次数加1
         read_config.write(open('config.ini', 'w', encoding='utf-8'))
 
-        # if self.ui.checkBox_nested_zip.isChecked():  # 如果套娃压缩包选项选中
-        #     maybe_nested_zip_files = self.get_all_files_in_folder(folder)
-        #     self.drop_files(maybe_nested_zip_files)
-
     @staticmethod
     def nested_folders_true(folder):
         """处理套娃文件夹"""
@@ -270,11 +285,15 @@ class OnlyUnzip(QMainWindow):
         parent_folder = os.path.split(folder)[0]  # 临时文件夹的上级目录（原压缩包所在的目录）
         if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
             shutil.move(need_move_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(need_move_path)[1])
+            OnlyUnzip.save_unzip_result(new_path)
         else:
             rename_filename = OnlyUnzip.rename_recursion(need_move_path, folder)
             rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
             os.rename(need_move_path, rename_full_path)
             shutil.move(rename_full_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(rename_full_path)[1])
+            OnlyUnzip.save_unzip_result(new_path)
 
     @staticmethod
     def nested_folders_false(folder):
@@ -291,11 +310,43 @@ class OnlyUnzip(QMainWindow):
             need_move_filename = os.path.split(need_move_path)[1]
         if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
             shutil.move(need_move_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(need_move_path)[1])
+            OnlyUnzip.save_unzip_result(new_path)
         else:
             rename_filename = OnlyUnzip.rename_recursion(need_move_path, folder)
             rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
             os.rename(need_move_path, rename_full_path)
             shutil.move(rename_full_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(rename_full_path)[1])
+            OnlyUnzip.save_unzip_result(new_path)
+
+    def nested_zip(self):
+        """处理嵌套压缩包，逻辑为解压完成后再检查一遍解压结果，重新解压（偷懒的方法）"""
+        if os.path.exists(os.path.join(os.getcwd(), 'nested.txt')):
+            with open('nested.txt', encoding='utf-8') as nr:
+                lines = nr.readlines()
+            if lines:
+                os.remove('nested.txt')
+                unzip_nested_zip = [x.strip() for x in lines]
+                self.drop_files(unzip_nested_zip)
+
+    @staticmethod
+    def save_unzip_result(path):
+        """保存解压结果，用于处理嵌套压缩包"""
+        with open('nested.txt', 'a', encoding='utf-8') as na:
+            if os.path.isfile(path) and OnlyUnzip.is_zip_file(path):
+                na.writelines(path + '\n')
+            elif os.path.isdir(path):
+                all_files = []
+                for root, directories, files in os.walk(path):
+                    for filename in files:
+                        # 获取每个文件的完整路径，并添加到列表中
+                        file_path = os.path.join(root, filename)
+                        file_path = file_path.replace('/', '\\')  # 替换路径中不同的斜杠
+                        all_files.append(file_path)
+                for i in all_files:
+                    if OnlyUnzip.is_zip_file(i):
+                        na.writelines(i + '\n')
 
     @staticmethod
     def check_folder_depth(path):
@@ -353,49 +404,57 @@ class OnlyUnzip(QMainWindow):
         return zip_name
 
     @staticmethod
-    def class_multi_volume(files):
+    def class_multi_volume(unzip_files):
         """区分普通压缩包与分卷压缩包（会自动获取文件夹下的所有相关分卷包）"""
-        # 文件所在的文件夹
-        the_folder = os.path.split(files[0])[0]
-        # 利用正则匹配分卷压缩包
-        filenames = [os.path.split(x)[1] for x in files]
-        ordinary_zip = [x for x in filenames]  # 复制
-        re_rar = r"^(.+)\.part\d+\.rar$"  # 4种压缩文件的命名规则
-        re_7z = r"^(.+)\.7z\.\d+$"
-        re_zip_top = r"^(.+)\.zip$"
-        re_zip_other = r"^(.+)\.z\d+$"
-        multi_volume_dict = {}  # 分卷文件字典（键值对为 第一个分卷：文件夹下的全部分卷（不管有没有在变量files中）
-        for i in filenames:
-            full_filepath = os.path.join(the_folder, i)
-            if re.match(re_7z, i):  # 匹配7z正则
-                filename = re.match(re_7z, i).group(1)  # 提取文件名
-                first_multi_volume = os.path.join(the_folder, filename + r'.7z.001')  # 设置第一个分卷压缩包名，作为键名
-                if first_multi_volume not in multi_volume_dict:  # 如果文件名不在字典内，则添加一个空键值对
-                    multi_volume_dict[first_multi_volume] = set()  # 用集合添加（目的是为了后面的zip分卷，其实用列表更方便）
-                multi_volume_dict[first_multi_volume].add(full_filepath)  # 添加键值对（示例.7z.001：示例.7z.001，示例.7z.002）
-                ordinary_zip.remove(i)  # 将新列表中的分卷压缩包剔除
-            elif re.match(re_rar, i):
-                filename = re.match(re_rar, i).group(1)
-                first_multi_volume = os.path.join(the_folder, filename + r'.part1.rar')
-                if first_multi_volume not in multi_volume_dict:
-                    multi_volume_dict[first_multi_volume] = set()
-                multi_volume_dict[first_multi_volume].add(full_filepath)
-                ordinary_zip.remove(i)
-            elif re.match(re_zip_other, i) or re.match(re_zip_top, i):  # 只要是zip后缀的，都视为分卷压缩包，因为解压的都是.zip后缀
-                if re.match(re_zip_other, i):
-                    filename = re.match(re_zip_other, i).group(1)
-                else:
-                    filename = re.match(re_zip_top, i).group(1)
-                first_multi_volume = os.path.join(the_folder, filename + r'.zip')
-                if first_multi_volume not in multi_volume_dict:
-                    multi_volume_dict[first_multi_volume] = set()
-                multi_volume_dict[first_multi_volume].add(full_filepath)
-                multi_volume_dict[first_multi_volume].add(first_multi_volume)  # zip分卷的特性，第一个分卷包名称是.zip后缀
-                ordinary_zip.remove(i)
-                if first_multi_volume in ordinary_zip:  # zip分卷特性，如果是分卷删除第一个.zip后缀的文件名，所以需要删除多出来的一个zip文件
-                    ordinary_zip.remove(first_multi_volume)
-        return OnlyUnzip.find_all_multi_volume_in_folder(the_folder, ordinary_zip, multi_volume_dict)
-        # return the_folder, ordinary_zip, multi_volume_dict  # 返回普通压缩包、分卷压缩包
+        all_zip_dict = {}  # 存放最终结果
+        # 按文件所在文件夹建立对应字典：文件夹-文件
+        file_dict = {}
+        for item in unzip_files:
+            if os.path.split(item)[0] not in file_dict:
+                file_dict[os.path.split(item)[0]] = set()
+            file_dict[os.path.split(item)[0]].add(item)
+        # 按文件夹逐个处理其中的文件
+        for the_folder in file_dict:
+            files = file_dict[the_folder]
+            # 利用正则匹配分卷压缩包
+            filenames = [os.path.split(x)[1] for x in files]
+            ordinary_zip = [x for x in filenames]  # 复制
+            re_rar = r"^(.+)\.part\d+\.rar$"  # 4种压缩文件的命名规则
+            re_7z = r"^(.+)\.7z\.\d+$"
+            re_zip_top = r"^(.+)\.zip$"
+            re_zip_other = r"^(.+)\.z\d+$"
+            multi_volume_dict = {}  # 分卷文件字典（键值对为 第一个分卷：文件夹下的全部分卷（不管有没有在变量files中）
+            for i in filenames:
+                full_filepath = os.path.join(the_folder, i)
+                if re.match(re_7z, i):  # 匹配7z正则
+                    filename = re.match(re_7z, i).group(1)  # 提取文件名
+                    first_multi_volume = os.path.join(the_folder, filename + r'.7z.001')  # 设置第一个分卷压缩包名，作为键名
+                    if first_multi_volume not in multi_volume_dict:  # 如果文件名不在字典内，则添加一个空键值对
+                        multi_volume_dict[first_multi_volume] = set()  # 用集合添加（目的是为了后面的zip分卷，其实用列表更方便）
+                    multi_volume_dict[first_multi_volume].add(full_filepath)  # 添加键值对（示例.7z.001：示例.7z.001，示例.7z.002）
+                    ordinary_zip.remove(i)  # 将新列表中的分卷压缩包剔除
+                elif re.match(re_rar, i):
+                    filename = re.match(re_rar, i).group(1)
+                    first_multi_volume = os.path.join(the_folder, filename + r'.part1.rar')
+                    if first_multi_volume not in multi_volume_dict:
+                        multi_volume_dict[first_multi_volume] = set()
+                    multi_volume_dict[first_multi_volume].add(full_filepath)
+                    ordinary_zip.remove(i)
+                elif re.match(re_zip_other, i) or re.match(re_zip_top, i):  # 只要是zip后缀的，都视为分卷压缩包，因为解压的都是.zip后缀
+                    if re.match(re_zip_other, i):
+                        filename = re.match(re_zip_other, i).group(1)
+                    else:
+                        filename = re.match(re_zip_top, i).group(1)
+                    first_multi_volume = os.path.join(the_folder, filename + r'.zip')
+                    if first_multi_volume not in multi_volume_dict:
+                        multi_volume_dict[first_multi_volume] = set()
+                    multi_volume_dict[first_multi_volume].add(full_filepath)
+                    multi_volume_dict[first_multi_volume].add(first_multi_volume)  # zip分卷的特性，第一个分卷包名称是.zip后缀
+                    ordinary_zip.remove(i)
+                    if first_multi_volume in ordinary_zip:  # zip分卷特性，如果是分卷删除第一个.zip后缀的文件名，所以需要删除多出来的一个zip文件
+                        ordinary_zip.remove(first_multi_volume)
+            all_zip_dict.update(OnlyUnzip.find_all_multi_volume_in_folder(the_folder, ordinary_zip, multi_volume_dict))
+        return all_zip_dict
 
     @staticmethod
     def find_all_multi_volume_in_folder(the_folder, ordinary_zip, multi_volume_dict):
@@ -496,7 +555,7 @@ class OnlyUnzip(QMainWindow):
 
     @staticmethod
     def create_new_ini():
-        """如果本地没有condig文件则新建"""
+        """如果本地没有config文件则新建"""
         if not os.path.exists(os.path.join(os.getcwd(), 'config.ini')):
             with open('config.ini', 'w', encoding='utf-8') as cw:
                 the_initialize = """[DEFAULT]
