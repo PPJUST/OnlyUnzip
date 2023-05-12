@@ -65,7 +65,7 @@ class unzip_main(QThread):
                         if OnlyUnzip.get_folder_size(pre_temporary_folder) == 0:
                             # winshell.delete_file(temporary_folder, no_confirm=True)
                             pre_temporary_folder = pre_temporary_folder.replace('/', '\\')
-                            os.remove(pre_temporary_folder)
+                            send2trash.send2trash(pre_temporary_folder)  # os.remove提示无权限
                     the_pre_folder = the_folder
                 if current_number == total_files_number:  # 完成全部文件处理后，删除临时文件夹
                     temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
@@ -73,7 +73,7 @@ class unzip_main(QThread):
                         if OnlyUnzip.get_folder_size(temporary_folder) == 0:
                             # winshell.delete_file(temporary_folder, no_confirm=True)
                             temporary_folder = temporary_folder.replace('/', '\\')
-                            os.remove(temporary_folder)
+                            send2trash.send2trash(temporary_folder)  # os.remove提示无权限
         # 全部完成后发送信号
         self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
         self.signal_ui_update.emit(['当前文件', '————————————'])
@@ -322,11 +322,12 @@ class OnlyUnzip(QMainWindow):
 
     def nested_zip(self):
         """处理嵌套压缩包，逻辑为解压完成后再检查一遍解压结果，重新解压（偷懒的方法）"""
-        if os.path.exists(os.path.join(os.getcwd(), 'nested.txt')):
+        txt_path = os.path.join(os.getcwd(), 'nested.txt')
+        if os.path.exists(txt_path):
             with open('nested.txt', encoding='utf-8') as nr:
                 lines = nr.readlines()
             if lines:
-                os.remove('nested.txt')
+                os.remove(txt_path)
                 unzip_nested_zip = [x.strip() for x in lines]
                 self.drop_files(unzip_nested_zip)
 
