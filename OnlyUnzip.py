@@ -66,7 +66,8 @@ class unzip_main(QThread):
         # 全部完成后发送信号
         self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
         self.signal_ui_update.emit(['当前文件', '————————————'])
-        self.signal_ui_update.emit(['进度', f'成功：{success_number}，失败{wrong_password_file_number}，损坏：{damaged_file_number}'])
+        self.signal_ui_update.emit(
+            ['进度', f'成功：{success_number}，失败{wrong_password_file_number}，损坏：{damaged_file_number}'])
         self.signal_ui_update.emit(['完成解压', None])
 
     @staticmethod
@@ -141,6 +142,10 @@ class OnlyUnzip(QMainWindow):
         self.ui.button_update_password.clicked.connect(self.update_password)
         self.ui.button_export_password.clicked.connect(self.export_password)
         self.ui.button_export_password_with_number.clicked.connect(self.export_password_with_number)
+        self.ui.button_open_password.clicked.connect(lambda: os.startfile('password export.txt'))
+        self.ui.button_export_password.clicked.connect(lambda: self.ui.button_open_password.setEnabled(True))
+        self.ui.button_export_password_with_number.clicked.connect(
+            lambda: self.ui.button_open_password.setEnabled(True))
 
         self.ui.checkBox_model_unzip.stateChanged.connect(self.change_setting)
         self.ui.checkBox_model_test.stateChanged.connect(self.change_setting)
@@ -173,28 +178,45 @@ class OnlyUnzip(QMainWindow):
                 all_files.append(file_path)
         return all_files
 
+    @staticmethod
+    def is_old_temporary_folder_exist(files):
+        """检查之前解压的临时文件夹是否存在"""
+        all_temporary_folder = set()  # 所有可能存在的临时文件夹
+        for file in files:
+            temporary_folder = os.path.join(os.path.split(file)[0], "UnzipTempFolder")
+            all_temporary_folder.add(temporary_folder)
+        for folder in all_temporary_folder:
+            if os.path.exists(folder) and os.listdir(folder):
+                return True
+        return False
+
     def run_unzip_qthread(self, files):
         """解压的子线程"""
-        if files:  # 列表或者字典都不为空则执行子线程
-            unzip_files = self.check_zip(files)  # 检查是否是压缩包
-            if unzip_files:
-                self.ui.label_icon.setEnabled(False)  # 拖入文件执行解压前关闭Label控件，防止再次拖入文件导致报错
-                unzip_files_dict = self.class_multi_volume(unzip_files)  # 将压缩包分类 一般与分卷
-                # 运行子线程，进行测试与解压
-                is_unzip = self.ui.checkBox_model_unzip.isChecked()
-                is_delete = self.ui.checkBox_delect_zip.isChecked()
-                is_nested_folders = self.ui.checkBox_nested_folders.isChecked()
-                self.unzip_qthread = unzip_main(unzip_files_dict, is_unzip, is_delete, is_nested_folders)
-                self.unzip_qthread.signal_ui_update.connect(self.update_ui)
-                self.unzip_qthread.start()
+        if self.is_old_temporary_folder_exist(files):  # 如果存在临时文件夹，则不进行后续操作
+            self.ui.label_icon.setPixmap('./icon/错误.png')
+            self.ui.label_current_file.setText('————————————')
+            self.ui.label_schedule.setText('存在遗留临时文件夹')
+        else:
+            if files:  # 列表或者字典都不为空则执行子线程
+                unzip_files = self.check_zip(files)  # 检查是否是压缩包
+                if unzip_files:
+                    self.ui.label_icon.setEnabled(False)  # 拖入文件执行解压前关闭Label控件，防止再次拖入文件导致报错
+                    unzip_files_dict = self.class_multi_volume(unzip_files)  # 将压缩包分类 一般与分卷
+                    # 运行子线程，进行测试与解压
+                    is_unzip = self.ui.checkBox_model_unzip.isChecked()
+                    is_delete = self.ui.checkBox_delect_zip.isChecked()
+                    is_nested_folders = self.ui.checkBox_nested_folders.isChecked()
+                    self.unzip_qthread = unzip_main(unzip_files_dict, is_unzip, is_delete, is_nested_folders)
+                    self.unzip_qthread.signal_ui_update.connect(self.update_ui)
+                    self.unzip_qthread.start()
+                else:  # 有一个为空则说明没有需要解压的文件
+                    self.ui.label_icon.setPixmap('./icon/错误.png')
+                    self.ui.label_current_file.setText('————————————')
+                    self.ui.label_schedule.setText('没有压缩包')
             else:  # 有一个为空则说明没有需要解压的文件
-                self.ui.label_icon.setPixmap('./icon/初始状态.png')
+                self.ui.label_icon.setPixmap('./icon/错误.png')
                 self.ui.label_current_file.setText('————————————')
                 self.ui.label_schedule.setText('没有压缩包')
-        else:  # 有一个为空则说明没有需要解压的文件
-            self.ui.label_icon.setPixmap('./icon/初始状态.png')
-            self.ui.label_current_file.setText('————————————')
-            self.ui.label_schedule.setText('没有压缩包')
 
     def update_ui(self, the_list):
         if the_list[0] == '当前文件':

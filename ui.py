@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�HawpAt.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�bWmmqZ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -28,7 +28,6 @@ class MyLabel(QLabel):
             urls = event.mimeData().urls()
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -94,6 +93,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addLayout(self.verticalLayout_6, 0, 0, 1, 1)
 
+        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout.addItem(self.verticalSpacer, 1, 0, 1, 1)
+
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.stackedWidget.setAcceptDrops(False)
@@ -149,15 +152,17 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.page)
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
-        self.verticalLayout_2 = QVBoxLayout(self.page_2)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout = QVBoxLayout(self.page_2)
+        self.verticalLayout.setSpacing(6)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 3)
         self.text_password = QPlainTextEdit(self.page_2)
         self.text_password.setObjectName(u"text_password")
 
-        self.verticalLayout_2.addWidget(self.text_password)
+        self.verticalLayout.addWidget(self.text_password)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.gridLayout_2 = QGridLayout()
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.button_update_password = QPushButton(self.page_2)
         self.button_update_password.setObjectName(u"button_update_password")
         sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -166,25 +171,26 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.button_update_password.sizePolicy().hasHeightForWidth())
         self.button_update_password.setSizePolicy(sizePolicy)
 
-        self.horizontalLayout_4.addWidget(self.button_update_password)
+        self.gridLayout_2.addWidget(self.button_update_password, 0, 0, 1, 1)
 
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
         self.button_export_password = QPushButton(self.page_2)
         self.button_export_password.setObjectName(u"button_export_password")
 
-        self.verticalLayout.addWidget(self.button_export_password)
+        self.gridLayout_2.addWidget(self.button_export_password, 0, 1, 1, 1)
+
+        self.button_open_password = QPushButton(self.page_2)
+        self.button_open_password.setObjectName(u"button_open_password")
+        self.button_open_password.setEnabled(False)
+
+        self.gridLayout_2.addWidget(self.button_open_password, 1, 0, 1, 1)
 
         self.button_export_password_with_number = QPushButton(self.page_2)
         self.button_export_password_with_number.setObjectName(u"button_export_password_with_number")
 
-        self.verticalLayout.addWidget(self.button_export_password_with_number)
+        self.gridLayout_2.addWidget(self.button_export_password_with_number, 1, 1, 1, 1)
 
 
-        self.horizontalLayout_4.addLayout(self.verticalLayout)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+        self.verticalLayout.addLayout(self.gridLayout_2)
 
         self.stackedWidget.addWidget(self.page_2)
         self.page_3 = QWidget()
@@ -270,10 +276,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.stackedWidget, 0, 1, 2, 1)
 
-        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout.addItem(self.verticalSpacer, 1, 0, 1, 1)
-
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -299,6 +301,7 @@ class Ui_MainWindow(object):
         self.label_schedule.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u8fdb\u5ea6", None))
         self.button_update_password.setText(QCoreApplication.translate("MainWindow", u"\u66f4\u65b0", None))
         self.button_export_password.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa", None))
+        self.button_open_password.setText(QCoreApplication.translate("MainWindow", u"\u6253\u5f00\u6587\u4ef6", None))
         self.button_export_password_with_number.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa(\u542b\u6b21\u6570)", None))
         self.checkBox_model_unzip.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u6a21\u5f0f", None))
         self.checkBox_model_test.setText(QCoreApplication.translate("MainWindow", u"\u6d4b\u8bd5\u6a21\u5f0f", None))
