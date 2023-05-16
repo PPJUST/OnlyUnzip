@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�MQVdNe.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�cePVvx.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -29,7 +29,6 @@ class MyLabel(QLabel):
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -42,6 +41,10 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setHorizontalSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout.addItem(self.verticalSpacer, 1, 0, 1, 1)
+
         self.verticalLayout_6 = QVBoxLayout()
         self.verticalLayout_6.setSpacing(0)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -94,10 +97,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addLayout(self.verticalLayout_6, 0, 0, 1, 1)
 
-        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout.addItem(self.verticalSpacer, 1, 0, 1, 1)
-
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.stackedWidget.setAcceptDrops(False)
@@ -108,7 +107,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QVBoxLayout(self.page)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(5, 0, 0, 0)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.label_icon = MyLabel(self.page)
         self.label_icon.setObjectName(u"label_icon")
         self.label_icon.setAcceptDrops(True)
@@ -124,32 +123,25 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.line_3)
 
-        self.splitter_2 = QSplitter(self.page)
-        self.splitter_2.setObjectName(u"splitter_2")
-        self.splitter_2.setOrientation(Qt.Horizontal)
-        self.label_3 = QLabel(self.splitter_2)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setMaximumSize(QSize(60, 25))
-        self.splitter_2.addWidget(self.label_3)
-        self.label_current_file = QLabel(self.splitter_2)
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.label_current_file = QLabel(self.page)
         self.label_current_file.setObjectName(u"label_current_file")
-        self.splitter_2.addWidget(self.label_current_file)
+        self.label_current_file.setWordWrap(True)
 
-        self.verticalLayout_3.addWidget(self.splitter_2)
+        self.verticalLayout_2.addWidget(self.label_current_file)
 
-        self.splitter_3 = QSplitter(self.page)
-        self.splitter_3.setObjectName(u"splitter_3")
-        self.splitter_3.setOrientation(Qt.Horizontal)
-        self.label_4 = QLabel(self.splitter_3)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setMaximumSize(QSize(60, 25))
-        self.splitter_3.addWidget(self.label_4)
-        self.label_schedule = QLabel(self.splitter_3)
+        self.label_schedule = QLabel(self.page)
         self.label_schedule.setObjectName(u"label_schedule")
-        self.splitter_3.addWidget(self.label_schedule)
+        self.label_schedule.setWordWrap(True)
 
-        self.verticalLayout_3.addWidget(self.splitter_3)
+        self.verticalLayout_2.addWidget(self.label_schedule)
 
+
+        self.verticalLayout_3.addLayout(self.verticalLayout_2)
+
+        self.verticalLayout_3.setStretch(0, 3)
         self.stackedWidget.addWidget(self.page)
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
@@ -296,9 +288,7 @@ class Ui_MainWindow(object):
         self.button_page_history.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u8bb0\u5f55", None))
         self.button_page_history_4.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.label_icon.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u6587\u4ef6\uff1a", None))
         self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u6587\u4ef6", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u8fdb\u5ea6\uff1a", None))
         self.label_schedule.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u8fdb\u5ea6", None))
         self.button_update_password.setText(QCoreApplication.translate("MainWindow", u"\u66f4\u65b0", None))
         self.button_export_password.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa", None))
