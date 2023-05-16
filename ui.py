@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�qZGxrI.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�AyQJPy.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -33,18 +33,16 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(262, 233)
+        MainWindow.resize(278, 233)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.gridLayout = QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.gridLayout.setHorizontalSpacing(0)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout.addItem(self.verticalSpacer, 1, 0, 1, 1)
-
+        self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_7 = QVBoxLayout()
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_6 = QVBoxLayout()
         self.verticalLayout_6.setSpacing(0)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -95,7 +93,14 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addWidget(self.button_page_about)
 
 
-        self.gridLayout.addLayout(self.verticalLayout_6, 0, 0, 1, 1)
+        self.verticalLayout_7.addLayout(self.verticalLayout_6)
+
+        self.verticalSpacer = QSpacerItem(20, 21, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_7.addItem(self.verticalSpacer)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_7)
 
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
@@ -107,7 +112,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QVBoxLayout(self.page)
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 3)
         self.label_icon = MyLabel(self.page)
         self.label_icon.setObjectName(u"label_icon")
         self.label_icon.setAcceptDrops(True)
@@ -267,7 +272,7 @@ class Ui_MainWindow(object):
 
         self.stackedWidget.addWidget(self.page_5)
 
-        self.gridLayout.addWidget(self.stackedWidget, 0, 1, 2, 1)
+        self.horizontalLayout.addWidget(self.stackedWidget)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -304,16 +309,22 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">\u8bbe\u7f6e\u9009\u9879\u8bf4\u660e\uff1a</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">\u8bbe\u7f6e\u9009\u9879\u8bf4\u660e\uff1a</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u89e3\u538b\u6a21\u5f0f\uff1a\u89e3\u538b\u6587\u4ef6\u5230\u5f53\u524d\u6587\u4ef6\u6240\u5728\u76ee\u5f55</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u6d4b\u8bd5\u6a21\u5f0f\uff1a\u6d4b\u8bd5\u6587\u4ef6\u5bc6\u7801\uff0c\u53ef\u5230\u5386\u53f2\u8bb0\u5f55\u67e5\u770b"
-                        "</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5220\u9664\u539f\u6587\u4ef6\uff1a\u89e3\u538b\u540e\u5220\u9664\u539f\u6587\u4ef6</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939\uff1a\u903b\u8f91\u7c7b\u4f3cBandzip</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff1a\u903b\u8f91\u662f\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u518d\u6b21\u8fd0\u884c\u89e3\u538b\u6d4b\u8bd5\uff08\u5077\u61d2\u7684\u505a\u6cd5\uff09</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u4ec5\u8bc6\u522b\u538b\u7f29\u5305\uff1a\u538b\u7f29\u5305\u7684\u8bc6\u522b\uff1a\u57fa\u4e8emagic\u5e93+\u6392\u9664\u540e\u7f00xlsx\u3001xl"
-                        "s\u3001csv\u3001doc\u3001docx\u3001ppt\u3001pptx\u3001jar\u3001odt\u3001epub\u3001apk\u3001pkg\uff08\u6392\u9664\u9879\u548c\u56fe\u79cd\u4f1a\u88ab\u68c0\u6d4b\u4e3a\u4e0d\u662f\u538b\u7f29\u5305\uff0c\u9700\u8981\u89e3\u538b\u8bf7\u5173\u95ed\u8be5\u9009\u9879\uff09</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">\u6e90\u7801\uff1a</span>https://github.com/PPJUST/only_unzip</p></body></html>", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; "
+                        "margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u6d4b\u8bd5\u6a21\u5f0f\uff1a\u6d4b\u8bd5\u6587\u4ef6\u5bc6\u7801\uff0c\u53ef\u5230\u5386\u53f2\u8bb0\u5f55\u67e5\u770b</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5220\u9664\u539f\u6587\u4ef6\uff1a\u89e3\u538b\u540e\u5220\u9664\u539f\u6587\u4ef6</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939\uff1a\u903b\u8f91\u7c7b\u4f3cBandzip</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margi"
+                        "n-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff1a\u903b\u8f91\u662f\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u518d\u6b21\u8fd0\u884c\u89e3\u538b\u6d4b\u8bd5\uff08\u5077\u61d2\u7684\u505a\u6cd5\uff09</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u4ec5\u8bc6\u522b\u538b\u7f29\u5305\uff1a\u538b\u7f29\u5305\u7684\u8bc6\u522b\u57fa\u4e8emagic\u5e93+\u6392\u9664\u540e\u7f00xlsx\u3001xls\u3001csv\u3001doc\u3001docx\u3001ppt\u3001pptx\u3001jar\u3001odt\u3001epub\u3001apk\u3001pkg\uff08\u6392\u9664\u9879\u548c\u56fe\u79cd\u4f1a\u88ab\u68c0\u6d4b\u4e3a\u4e0d\u662f\u538b\u7f29\u5305\uff0c\u9700\u8981"
+                        "\u89e3\u538b\u8bf7\u5173\u95ed\u8be5\u9009\u9879\uff09</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">\u6e90\u7801\uff1a</span>https://github.com/PPJUST/only_unzip</p></body></html>", None))
     # retranslateUi
 
