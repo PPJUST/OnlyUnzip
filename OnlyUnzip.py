@@ -29,14 +29,15 @@ class unzip_main(QThread):
 
     def run(self):
         total_files_number = len(self.unzip_files_dict)  # 需要解压的文件总数（分卷计数1）
-        current_number = 0
-        wrong_password_file_number = 0
-        damaged_file_number = 0
+        current_number = 0  # 当前文件编号
+        wrong_password_file_number = 0  # 密码错误文件数
+        damaged_file_number = 0  # 损坏的文件数
+        pass_number = 0  # 跳过文件数
         success_number = 0
         the_pre_folder = ''  # 上一个文件所在文件夹，用于删除临时文件夹
         for first_file in self.unzip_files_dict:
             the_folder = os.path.split(first_file)[0]  # 文件所在文件夹
-            current_number += 1
+            current_number += 1  # 当前文件编号计数+1
             if current_number == 1:
                 the_pre_folder = the_folder
             current_filename = OnlyUnzip.get_zip_name(first_file)  # 提取当前处理的文件名
@@ -44,10 +45,16 @@ class unzip_main(QThread):
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中'])
             self.signal_ui_update.emit(['图标', None])
             file_list = self.unzip_files_dict[first_file]
-            the_right_password = self.test_password(first_file)
-            if the_right_password == '':
+            the_test_result, the_right_password = self.test_password(first_file)
+            if the_test_result == '密码错误':
                 wrong_password_file_number += 1
-                self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 解压失败'])
+                self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 密码错误'])
+            elif the_test_result == '不是压缩文件':
+                pass_number += 1
+                self.signal_ui_update.emit(['历史记录-跳过', f'{os.path.split(first_file)[1]} | 不是压缩文件（确定），已跳过'])
+            elif the_test_result == '丢失分卷':
+                damaged_file_number += 1
+                self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 丢失分卷'])
             else:
                 OnlyUnzip.right_password_number_add_one(the_right_password)  # 成功解压则密码使用次数+1
                 OnlyUnzip.save_unzip_history(first_file, the_right_password)  # 保存解压历史
@@ -57,6 +64,7 @@ class unzip_main(QThread):
                     unzip_result = self.start_unzip(the_folder, first_file, file_list, the_right_password)
                     if unzip_result == '文件损坏':
                         damaged_file_number += 1
+                        self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 文件损坏(可能)'])
                     if unzip_result == '解压成功':
                         success_number += 1
                 if the_pre_folder != the_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
@@ -78,24 +86,30 @@ class unzip_main(QThread):
         self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
         self.signal_ui_update.emit(['当前文件', '————————————'])
         self.signal_ui_update.emit(
-            ['进度', f'成功：{success_number}，失败{wrong_password_file_number}，损坏：{damaged_file_number}'])
+            ['进度', f'成功:{success_number}，密码错误:{wrong_password_file_number}，损坏:{damaged_file_number}，跳过:{pass_number}'])
         self.signal_ui_update.emit(['完成解压', None])
 
     @staticmethod
     def test_password(zipfile):
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         passwords, _ = OnlyUnzip.read_password_return_list()  # 调用主程序的函数，提取密码
-        password_try_number = 0  # 密码尝试次数
         the_right_password = ''
+        the_test_result = '密码错误'
         for password in passwords:
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
-            run_text_command = subprocess.run(command_test, creationflags=subprocess.CREATE_NO_WINDOW)
-            if run_text_command.returncode != 0:
-                password_try_number += 1  # 返回码不为0则解压失败，密码失败次数+1
-            elif run_text_command.returncode == 0:
+            run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+            if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
+                the_test_result = '测试成功'
                 break
-        return the_right_password
+            elif run_text_command.returncode == 2:  # 返回码为2则说明文件有问题
+                if "Can't open as archive" in str(run_text_command.stdout):
+                    the_test_result = '不是压缩文件'
+                    break
+                elif "Missing volume" in str(run_text_command.stdout):
+                    the_test_result = '丢失分卷'
+                    break
+        return the_test_result, the_right_password
 
     def start_unzip(self, the_folder, zipfile, zipfile_list, unzip_password):
         zip_name = OnlyUnzip.get_zip_name(zipfile)  # 解压文件名
@@ -104,7 +118,7 @@ class unzip_main(QThread):
         unzip_folder = os.path.join(temporary_folder, zip_name)  # 解压结果路径
         # 组合解压指令
         command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder]  # 组合完整7zip指令
-        subprocess.run(command_unzip, creationflags=subprocess.CREATE_NO_WINDOW)
+        subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
         # 通过比较文件大小检查解压结果
         original_size = OnlyUnzip.get_file_list_size(zipfile_list)  # 原文件大小
         unzip_size = OnlyUnzip.get_folder_size(unzip_folder)  # 压缩结果大小
@@ -210,10 +224,10 @@ class OnlyUnzip(QMainWindow):
             self.ui.label_icon.setEnabled(True)
         else:
             if files:  # 列表或者字典都不为空则执行子线程
-                unzip_files = self.check_zip(files)  # 检查是否是压缩包
-                if unzip_files:
+                need_unzip_files = self.check_zip(files)  # 检查是否是有压缩包
+                if need_unzip_files:
                     self.ui.label_icon.setEnabled(False)  # 拖入文件执行解压前关闭Label控件，防止再次拖入文件导致报错
-                    unzip_files_dict = self.class_multi_volume(unzip_files)  # 将压缩包分类 一般与分卷
+                    unzip_files_dict = self.class_multi_volume(need_unzip_files)  # 将压缩包分类 一般与分卷
                     # 运行子线程，进行测试与解压
                     is_unzip = self.ui.checkBox_model_unzip.isChecked()
                     is_delete = self.ui.checkBox_delect_zip.isChecked()
@@ -252,6 +266,10 @@ class OnlyUnzip(QMainWindow):
         elif the_list[0] == '历史记录-失败':
             item = QListWidgetItem(the_list[1])
             item.setTextColor(QColor(254, 67, 101))
+            self.ui.listWidget_history.addItem(item)
+        elif the_list[0] == '历史记录-跳过':
+            item = QListWidgetItem(the_list[1])
+            item.setTextColor(QColor(255, 182, 193))
             self.ui.listWidget_history.addItem(item)
         elif the_list[0] == '完成解压':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
             if self.ui.checkBox_nested_zip.isChecked():
@@ -508,8 +526,10 @@ class OnlyUnzip(QMainWindow):
         zip_type = ['application/x-rar', 'application/x-gzip', 'application/x-tar', 'application/zip',
                     'application/x-lzh-compressed', 'application/x-7z-compressed', 'application/x-xz',
                     'application/octet-stream', 'application/x-dosexec']
+        exclude_suffix = ['.xlsx', '.xls', '.csv', '.doc', '.docx', '.ppt', '.pptx', '.jar', '.odt', '.epub', '.apk', '.pkg']  # 由于xlsx、docx等文件会被magic库识别为application/zip，所以需要单独排除
         file_type = magic.from_buffer(open(file, 'rb').read(2048), mime=True)
-        if file_type in zip_type:
+        file_suffix = os.path.splitext(file)[1]
+        if file_type.lower() in zip_type and file_suffix.lower() not in exclude_suffix:  # 注意要统一大小写后匹配
             return True
         else:
             return False
