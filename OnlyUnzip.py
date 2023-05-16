@@ -162,6 +162,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.button_page_password.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))  # 切换页面
         self.ui.button_page_setting.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))  # 切换页面
         self.ui.button_page_history.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))  # 切换页面
+        self.ui.button_page_about.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))  # 切换页面
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_button_color)
 
         self.ui.button_update_password.clicked.connect(self.update_password)

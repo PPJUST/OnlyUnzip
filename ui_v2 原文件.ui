@@ -152,9 +152,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="button_page_history_4">
+       <widget class="QPushButton" name="button_page_about">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>
@@ -356,7 +356,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_delect_zip">
           <property name="text">
-           <string>是否删除原文件</string>
+           <string>删除原文件</string>
           </property>
          </widget>
         </item>
@@ -370,7 +370,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_nested_folders">
           <property name="text">
-           <string>是否处理套娃文件夹</string>
+           <string>处理套娃文件夹</string>
           </property>
           <property name="checked">
            <bool>false</bool>
@@ -383,14 +383,14 @@
            <bool>true</bool>
           </property>
           <property name="text">
-           <string>是否处理套娃压缩包</string>
+           <string>处理套娃压缩包（测试）</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="checkBox_check_zip">
           <property name="text">
-           <string>是否仅识别压缩包</string>
+           <string>仅识别压缩包</string>
           </property>
           <property name="checked">
            <bool>false</bool>
@@ -446,7 +446,15 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;源码：https://github.com/PPJUST/only_unzip&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;设置选项说明：&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;解压模式：解压文件到当前文件所在目录&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;测试模式：测试文件密码，可到历史记录查看&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;删除原文件：解压后删除原文件&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;处理套娃文件夹：逻辑类似Bandzip&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;处理套娃压缩包：逻辑是将解压后的文件再次运行解压测试（偷懒的做法）&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;仅识别压缩包：压缩包的识别：基于magic库+排除后缀xlsx、xls、csv、doc、docx、ppt、pptx、jar、odt、epub、apk、pkg（排除项和图种会被检测为不是压缩包，需要解压请关闭该选项）&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;源码：&lt;/span&gt;https://github.com/PPJUST/only_unzip&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�cePVvx.ui'
+## Form generated from reading UI file 'ui_v2 ԭ�ļ�qZGxrI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -85,14 +85,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_6.addWidget(self.button_page_history)
 
-        self.button_page_history_4 = QPushButton(self.centralwidget)
-        self.buttonGroup.addButton(self.button_page_history_4)
-        self.button_page_history_4.setObjectName(u"button_page_history_4")
-        self.button_page_history_4.setEnabled(False)
-        self.button_page_history_4.setMinimumSize(QSize(0, 40))
-        self.button_page_history_4.setMaximumSize(QSize(16777215, 16777215))
+        self.button_page_about = QPushButton(self.centralwidget)
+        self.buttonGroup.addButton(self.button_page_about)
+        self.button_page_about.setObjectName(u"button_page_about")
+        self.button_page_about.setEnabled(True)
+        self.button_page_about.setMinimumSize(QSize(0, 40))
+        self.button_page_about.setMaximumSize(QSize(16777215, 16777215))
 
-        self.verticalLayout_6.addWidget(self.button_page_history_4)
+        self.verticalLayout_6.addWidget(self.button_page_about)
 
 
         self.gridLayout.addLayout(self.verticalLayout_6, 0, 0, 1, 1)
@@ -286,7 +286,7 @@ class Ui_MainWindow(object):
         self.button_page_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801\u6846", None))
         self.button_page_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.button_page_history.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u8bb0\u5f55", None))
-        self.button_page_history_4.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
+        self.button_page_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.label_icon.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
         self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u6587\u4ef6", None))
         self.label_schedule.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u8fdb\u5ea6", None))
@@ -296,14 +296,24 @@ class Ui_MainWindow(object):
         self.button_export_password_with_number.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa(\u542b\u6b21\u6570)", None))
         self.checkBox_model_unzip.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u6a21\u5f0f", None))
         self.checkBox_model_test.setText(QCoreApplication.translate("MainWindow", u"\u6d4b\u8bd5\u6a21\u5f0f", None))
-        self.checkBox_delect_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5220\u9664\u539f\u6587\u4ef6", None))
-        self.checkBox_nested_folders.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939", None))
-        self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305", None))
-        self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u662f\u5426\u4ec5\u8bc6\u522b\u538b\u7f29\u5305", None))
+        self.checkBox_delect_zip.setText(QCoreApplication.translate("MainWindow", u"\u5220\u9664\u539f\u6587\u4ef6", None))
+        self.checkBox_nested_folders.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939", None))
+        self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff08\u6d4b\u8bd5\uff09", None))
+        self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u4ec5\u8bc6\u522b\u538b\u7f29\u5305", None))
         self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u6e90\u7801\uff1ahttps://github.com/PPJUST/only_unzip</p></body></html>", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">\u8bbe\u7f6e\u9009\u9879\u8bf4\u660e\uff1a</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u89e3\u538b\u6a21\u5f0f\uff1a\u89e3\u538b\u6587\u4ef6\u5230\u5f53\u524d\u6587\u4ef6\u6240\u5728\u76ee\u5f55</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u6d4b\u8bd5\u6a21\u5f0f\uff1a\u6d4b\u8bd5\u6587\u4ef6\u5bc6\u7801\uff0c\u53ef\u5230\u5386\u53f2\u8bb0\u5f55\u67e5\u770b"
+                        "</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5220\u9664\u539f\u6587\u4ef6\uff1a\u89e3\u538b\u540e\u5220\u9664\u539f\u6587\u4ef6</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939\uff1a\u903b\u8f91\u7c7b\u4f3cBandzip</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff1a\u903b\u8f91\u662f\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u518d\u6b21\u8fd0\u884c\u89e3\u538b\u6d4b\u8bd5\uff08\u5077\u61d2\u7684\u505a\u6cd5\uff09</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u4ec5\u8bc6\u522b\u538b\u7f29\u5305\uff1a\u538b\u7f29\u5305\u7684\u8bc6\u522b\uff1a\u57fa\u4e8emagic\u5e93+\u6392\u9664\u540e\u7f00xlsx\u3001xl"
+                        "s\u3001csv\u3001doc\u3001docx\u3001ppt\u3001pptx\u3001jar\u3001odt\u3001epub\u3001apk\u3001pkg\uff08\u6392\u9664\u9879\u548c\u56fe\u79cd\u4f1a\u88ab\u68c0\u6d4b\u4e3a\u4e0d\u662f\u538b\u7f29\u5305\uff0c\u9700\u8981\u89e3\u538b\u8bf7\u5173\u95ed\u8be5\u9009\u9879\uff09</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">\u6e90\u7801\uff1a</span>https://github.com/PPJUST/only_unzip</p></body></html>", None))
     # retranslateUi
 
