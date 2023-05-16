@@ -17,7 +17,7 @@ from PySide2.QtGui import QColor, QIcon
 from ui import Ui_MainWindow
 
 
-class unzip_main(QThread):
+class UnzipMainQthread(QThread):
     signal_ui_update = Signal(list)  # 自定义信号
 
     def __init__(self, unzip_files_dict, is_unzip, is_delete, is_nested_folders, parent=None):
@@ -98,17 +98,21 @@ class unzip_main(QThread):
         for password in passwords:
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+            print(f'测试_{run_text_command.returncode}')
+            print(f'测试_{run_text_command.stdout}')
+            print(f'测试_{run_text_command.stderr}')
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
                 the_test_result = '测试成功'
                 break
             elif run_text_command.returncode == 2:  # 返回码为2则说明文件有问题
-                if "Can't open as archive" in str(run_text_command.stdout):
+                if "Cannot open the file as archive" in str(run_text_command.stderr):
                     the_test_result = '不是压缩文件'
                     break
-                elif "Missing volume" in str(run_text_command.stdout):
+                elif "Missing volume" in str(run_text_command.stderr):
                     the_test_result = '丢失分卷'
                     break
+                # 密码错误的提示为：Cannot open encrypted archive. Wrong password?
         return the_test_result, the_right_password
 
     def start_unzip(self, the_folder, zipfile, zipfile_list, unzip_password):
@@ -233,7 +237,7 @@ class OnlyUnzip(QMainWindow):
                     is_unzip = self.ui.checkBox_model_unzip.isChecked()
                     is_delete = self.ui.checkBox_delect_zip.isChecked()
                     is_nested_folders = self.ui.checkBox_nested_folders.isChecked()
-                    self.unzip_qthread = unzip_main(unzip_files_dict, is_unzip, is_delete, is_nested_folders)
+                    self.unzip_qthread = UnzipMainQthread(unzip_files_dict, is_unzip, is_delete, is_nested_folders)
                     self.unzip_qthread.signal_ui_update.connect(self.update_ui)
                     self.unzip_qthread.start()
                 else:  # 有一个为空则说明没有需要解压的文件
