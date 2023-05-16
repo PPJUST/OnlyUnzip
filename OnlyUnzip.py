@@ -222,6 +222,10 @@ class OnlyUnzip(QMainWindow):
 
     def run_unzip_qthread(self, files):
         """解压的子线程"""
+        nested_txt_path = os.path.join(os.getcwd(), 'nested.txt')  # 每次重新启动子线程前删除保留的解压结果文件
+        if os.path.exists(nested_txt_path):
+            os.remove(nested_txt_path)
+
         if self.is_old_temporary_folder_exist(files):  # 如果存在临时文件夹，则不进行后续操作
             self.ui.label_icon.setPixmap('./icon/错误.png')
             self.ui.label_current_file.setText('————————————')
@@ -345,12 +349,11 @@ class OnlyUnzip(QMainWindow):
 
     def nested_zip(self):
         """处理嵌套压缩包，逻辑为解压完成后再检查一遍解压结果，重新解压（偷懒的方法）"""
-        txt_path = os.path.join(os.getcwd(), 'nested.txt')
-        if os.path.exists(txt_path):
+        nested_txt_path = os.path.join(os.getcwd(), 'nested.txt')
+        if os.path.exists(nested_txt_path):
             with open('nested.txt', encoding='utf-8') as nr:
                 lines = nr.readlines()
             if lines:
-                os.remove(txt_path)
                 unzip_nested_zip = [x.strip() for x in lines]
                 self.drop_files(unzip_nested_zip)
 
@@ -358,7 +361,7 @@ class OnlyUnzip(QMainWindow):
     def save_unzip_result(path):
         """保存解压结果，用于处理嵌套压缩包"""
         with open('nested.txt', 'a', encoding='utf-8') as na:
-            if os.path.isfile(path) and OnlyUnzip.is_zip_file(path):
+            if os.path.isfile(path):
                 na.writelines(path + '\n')
             elif os.path.isdir(path):
                 all_files = []
@@ -369,8 +372,7 @@ class OnlyUnzip(QMainWindow):
                         file_path = file_path.replace('/', '\\')  # 替换路径中不同的斜杠
                         all_files.append(file_path)
                 for i in all_files:
-                    if OnlyUnzip.is_zip_file(i):
-                        na.writelines(i + '\n')
+                    na.writelines(i + '\n')
 
     @staticmethod
     def check_folder_depth(path):
