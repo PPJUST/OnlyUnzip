@@ -533,7 +533,7 @@ class OnlyUnzip(QMainWindow):
         zip_type = ['application/x-rar', 'application/x-gzip', 'application/x-tar', 'application/zip',
                     'application/x-lzh-compressed', 'application/x-7z-compressed', 'application/x-xz',
                     'application/octet-stream', 'application/x-dosexec']
-        exclude_suffix = ['.xlsx', '.xls', '.csv', '.doc', '.docx', '.ppt', '.pptx', '.jar', '.odt', '.epub', '.apk', '.pkg']  # 由于xlsx、docx等文件会被magic库识别为application/zip，所以需要单独排除
+        exclude_suffix = ['.xlsx', '.xls', '.csv', '.doc', '.docx', '.ppt', '.pptx', '.jar', '.odt', '.epub', '.apk', '.pkg', '.exe']  # 由于xlsx、docx等文件会被magic库识别为application/zip，所以需要单独排除
         file_type = magic.from_buffer(open(file, 'rb').read(2048), mime=True)
         file_suffix = os.path.splitext(file)[1]
         if file_type.lower() in zip_type and file_suffix.lower() not in exclude_suffix:  # 注意要统一大小写后匹配
