@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>278</width>
-    <height>233</height>
+    <width>267</width>
+    <height>232</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -89,7 +89,7 @@
            </size>
           </property>
           <property name="text">
-           <string>密码框</string>
+           <string>添加密码</string>
           </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroup</string>
@@ -266,10 +266,7 @@
        </layout>
       </widget>
       <widget class="QWidget" name="page_2">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="spacing">
-         <number>6</number>
-        </property>
+       <layout class="QGridLayout" name="gridLayout">
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -280,14 +277,27 @@
          <number>0</number>
         </property>
         <property name="bottomMargin">
-         <number>3</number>
+         <number>0</number>
         </property>
-        <item>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0" colspan="2">
          <widget class="QPlainTextEdit" name="text_password"/>
         </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
+        <item row="1" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_8" stretch="1,2">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="button_read_clipboard">
+            <property name="text">
+             <string>读取剪切板</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="button_update_password">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -296,31 +306,38 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>更新</string>
+             <string>更新密码</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+         </layout>
+        </item>
+        <item row="1" column="1">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
            <widget class="QPushButton" name="button_export_password">
             <property name="text">
-             <string>导出</string>
+             <string>导出密码</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item>
+           <widget class="QPushButton" name="button_export_password_with_number">
+            <property name="text">
+             <string>导出(含次数)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="button_open_password">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>打开文件</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="button_export_password_with_number">
-            <property name="text">
-             <string>导出(含次数)</string>
+             <string>打开导出文件</string>
             </property>
            </widget>
           </item>

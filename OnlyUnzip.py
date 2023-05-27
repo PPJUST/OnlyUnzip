@@ -98,9 +98,6 @@ class UnzipMainQthread(QThread):
         for password in passwords:
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
-            print(f'测试_{run_text_command.returncode}')
-            print(f'测试_{run_text_command.stdout}')
-            print(f'测试_{run_text_command.stderr}')
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
                 the_test_result = '测试成功'
@@ -170,6 +167,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_button_color)
 
         self.ui.button_update_password.clicked.connect(self.update_password)
+        self.ui.button_read_clipboard.clicked.connect(self.read_clipboard)
         self.ui.button_export_password.clicked.connect(self.export_password)
         self.ui.button_export_password_with_number.clicked.connect(self.export_password_with_number)
         self.ui.button_open_password.clicked.connect(lambda: os.startfile('password export.txt'))
@@ -563,9 +561,11 @@ class OnlyUnzip(QMainWindow):
         """启动时更新界面"""
         read_config = configparser.ConfigParser()  # 注意大小写
         read_config.read("config.ini", encoding='utf-8')  # 配置文件的路径
+        """修改密码更新逻辑，不再显示原有密码
         # 更新密码框
         all_password = read_config.sections()  # 获取section
         self.ui.text_password.setPlainText('\n'.join(all_password))
+        """
         # 更新选项
         code_model = read_config.get('DEFAULT', 'model')
         code_nested_folders = read_config.get('DEFAULT', 'nested_folders') == 'True'
@@ -612,6 +612,15 @@ number = 9999"""
                 read_config.set(i, 'number', '0')
                 old_all_password.append(i)
         read_config.write(open('config.ini', 'w', encoding='utf-8'))  # 写入
+
+        # 重置密码框
+        self.ui.text_password.setPlainText('')
+
+    def read_clipboard(self):
+        """读取剪切板"""
+        clipboard = QApplication.clipboard()  # 创建一个剪贴板对象
+        clipboard_text = clipboard.text()  # 读取剪贴板的文本
+        self.ui.text_password.setPlainText(clipboard_text)
 
     @staticmethod
     def export_password():
