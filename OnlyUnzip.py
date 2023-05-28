@@ -174,6 +174,7 @@ class OnlyUnzip(QMainWindow):
 
         # 初始化
         self.create_new_ini()  # 创建初始设置文件
+        self.check_config_version()  # 检查配置文件版本--后期删除该函数
         self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
 
@@ -703,6 +704,15 @@ number = 9999"""
             button.setStyleSheet(original_style)
         clicked_button = self.ui.buttonGroup.button(button_id)
         clicked_button.setStyleSheet(clicked_style)
+
+    @staticmethod
+    def check_config_version():
+        """检查配置文件版本"""
+        read_config = configparser.ConfigParser()  # 注意大小写
+        read_config.read("config.ini", encoding='utf-8')  # 配置文件的路径
+        if 'skip_suffix' not in read_config['DEFAULT']:
+            read_config.set('DEFAULT', 'skip_suffix', '')
+            read_config.write(open('config.ini', 'w', encoding='utf-8'))
 
 
 app = QApplication()
