@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>267</width>
+    <width>262</width>
     <height>232</height>
    </rect>
   </property>
@@ -244,7 +244,7 @@
           <item>
            <widget class="QLabel" name="label_current_file">
             <property name="text">
-             <string>显示文件</string>
+             <string>显示当前文件</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -254,7 +254,7 @@
           <item>
            <widget class="QLabel" name="label_schedule">
             <property name="text">
-             <string>显示进度</string>
+             <string>显示当前进度</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -283,7 +283,14 @@
          <number>0</number>
         </property>
         <item row="0" column="0" colspan="2">
-         <widget class="QPlainTextEdit" name="text_password"/>
+         <widget class="QPlainTextEdit" name="text_password">
+          <property name="plainText">
+           <string/>
+          </property>
+          <property name="placeholderText">
+           <string>添加密码，一个密码占一行，点击“更新密码”即可更新</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_8" stretch="1,2">
@@ -346,76 +353,127 @@
        </layout>
       </widget>
       <widget class="QWidget" name="page_3">
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
-         <widget class="QCheckBox" name="checkBox_model_unzip">
-          <property name="text">
-           <string>解压模式</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_checkbox</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_model_test">
-          <property name="text">
-           <string>测试模式</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_checkbox</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_delect_zip">
-          <property name="text">
-           <string>删除原文件</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_nested_folders">
-          <property name="text">
-           <string>处理套娃文件夹</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_nested_zip">
-          <property name="enabled">
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
            <bool>true</bool>
           </property>
-          <property name="text">
-           <string>处理套娃压缩包（测试）</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_check_zip">
-          <property name="text">
-           <string>仅识别压缩包</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>162</width>
+             <height>229</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QCheckBox" name="checkBox_model_unzip">
+              <property name="text">
+               <string>解压模式</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_model_test">
+              <property name="text">
+               <string>测试模式</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_delect_zip">
+              <property name="text">
+               <string>删除原文件</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_nested_folders">
+              <property name="text">
+               <string>处理套娃文件夹</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_nested_zip">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;用于解压【游戏、复杂结构文件夹】时不建议使用。&lt;/p&gt;&lt;p&gt;逻辑为将解压后的文件重新运行一遍解压。&lt;/p&gt;&lt;p&gt;建议与“仅解压压缩包”选项同时选中。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>处理套娃压缩包**</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_check_zip">
+              <property name="text">
+               <string>仅解压压缩包</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>跳过解压的后缀名：（以,或空格分隔，忽略大小写）</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineedit_unzip_skip_suffix"/>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>

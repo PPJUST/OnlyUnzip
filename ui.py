@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_v2 ԭ�ļ�FzgyCW.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�OQUwrX.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -29,11 +29,12 @@ class MyLabel(QLabel):
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(267, 232)
+        MainWindow.resize(262, 232)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -207,58 +208,86 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.page_2)
         self.page_3 = QWidget()
         self.page_3.setObjectName(u"page_3")
-        self.verticalLayout_4 = QVBoxLayout(self.page_3)
+        self.verticalLayout_9 = QVBoxLayout(self.page_3)
+        self.verticalLayout_9.setSpacing(0)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.scrollArea = QScrollArea(self.page_3)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 162, 229))
+        self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.checkBox_model_unzip = QCheckBox(self.page_3)
-        self.buttonGroup_checkbox = QButtonGroup(MainWindow)
-        self.buttonGroup_checkbox.setObjectName(u"buttonGroup_checkbox")
-        self.buttonGroup_checkbox.addButton(self.checkBox_model_unzip)
+        self.checkBox_model_unzip = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_model_unzip.setObjectName(u"checkBox_model_unzip")
 
         self.verticalLayout_4.addWidget(self.checkBox_model_unzip)
 
-        self.checkBox_model_test = QCheckBox(self.page_3)
-        self.buttonGroup_checkbox.addButton(self.checkBox_model_test)
+        self.checkBox_model_test = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_model_test.setObjectName(u"checkBox_model_test")
 
         self.verticalLayout_4.addWidget(self.checkBox_model_test)
 
-        self.line = QFrame(self.page_3)
+        self.line = QFrame(self.scrollAreaWidgetContents)
         self.line.setObjectName(u"line")
         self.line.setFrameShape(QFrame.HLine)
         self.line.setFrameShadow(QFrame.Sunken)
 
         self.verticalLayout_4.addWidget(self.line)
 
-        self.checkBox_delect_zip = QCheckBox(self.page_3)
+        self.checkBox_delect_zip = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_delect_zip.setObjectName(u"checkBox_delect_zip")
 
         self.verticalLayout_4.addWidget(self.checkBox_delect_zip)
 
-        self.line_2 = QFrame(self.page_3)
+        self.line_2 = QFrame(self.scrollAreaWidgetContents)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.HLine)
         self.line_2.setFrameShadow(QFrame.Sunken)
 
         self.verticalLayout_4.addWidget(self.line_2)
 
-        self.checkBox_nested_folders = QCheckBox(self.page_3)
+        self.checkBox_nested_folders = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_nested_folders.setObjectName(u"checkBox_nested_folders")
         self.checkBox_nested_folders.setChecked(False)
 
         self.verticalLayout_4.addWidget(self.checkBox_nested_folders)
 
-        self.checkBox_nested_zip = QCheckBox(self.page_3)
+        self.checkBox_nested_zip = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_nested_zip.setObjectName(u"checkBox_nested_zip")
         self.checkBox_nested_zip.setEnabled(True)
 
         self.verticalLayout_4.addWidget(self.checkBox_nested_zip)
 
-        self.checkBox_check_zip = QCheckBox(self.page_3)
+        self.checkBox_check_zip = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_check_zip.setObjectName(u"checkBox_check_zip")
         self.checkBox_check_zip.setChecked(False)
 
         self.verticalLayout_4.addWidget(self.checkBox_check_zip)
+
+        self.line_4 = QFrame(self.scrollAreaWidgetContents)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.HLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_4.addWidget(self.line_4)
+
+        self.label = QLabel(self.scrollAreaWidgetContents)
+        self.label.setObjectName(u"label")
+        self.label.setWordWrap(True)
+
+        self.verticalLayout_4.addWidget(self.label)
+
+        self.lineedit_unzip_skip_suffix = QLineEdit(self.scrollAreaWidgetContents)
+        self.lineedit_unzip_skip_suffix.setObjectName(u"lineedit_unzip_skip_suffix")
+
+        self.verticalLayout_4.addWidget(self.lineedit_unzip_skip_suffix)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        self.verticalLayout_9.addWidget(self.scrollArea)
 
         self.stackedWidget.addWidget(self.page_3)
         self.page_4 = QWidget()
@@ -307,8 +336,10 @@ class Ui_MainWindow(object):
         self.button_page_history.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u8bb0\u5f55", None))
         self.button_page_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.label_icon.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
-        self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u6587\u4ef6", None))
-        self.label_schedule.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u8fdb\u5ea6", None))
+        self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u5f53\u524d\u6587\u4ef6", None))
+        self.label_schedule.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u5f53\u524d\u8fdb\u5ea6", None))
+        self.text_password.setPlainText("")
+        self.text_password.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u6dfb\u52a0\u5bc6\u7801\uff0c\u4e00\u4e2a\u5bc6\u7801\u5360\u4e00\u884c\uff0c\u70b9\u51fb\u201c\u66f4\u65b0\u5bc6\u7801\u201d\u5373\u53ef\u66f4\u65b0", None))
         self.button_read_clipboard.setText(QCoreApplication.translate("MainWindow", u"\u8bfb\u53d6\u526a\u5207\u677f", None))
         self.button_update_password.setText(QCoreApplication.translate("MainWindow", u"\u66f4\u65b0\u5bc6\u7801", None))
         self.button_export_password.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa\u5bc6\u7801", None))
@@ -318,8 +349,12 @@ class Ui_MainWindow(object):
         self.checkBox_model_test.setText(QCoreApplication.translate("MainWindow", u"\u6d4b\u8bd5\u6a21\u5f0f", None))
         self.checkBox_delect_zip.setText(QCoreApplication.translate("MainWindow", u"\u5220\u9664\u539f\u6587\u4ef6", None))
         self.checkBox_nested_folders.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939", None))
-        self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff08\u6d4b\u8bd5\uff09", None))
-        self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u4ec5\u8bc6\u522b\u538b\u7f29\u5305", None))
+#if QT_CONFIG(tooltip)
+        self.checkBox_nested_zip.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u7528\u4e8e\u89e3\u538b\u3010\u6e38\u620f\u3001\u590d\u6742\u7ed3\u6784\u6587\u4ef6\u5939\u3011\u65f6\u4e0d\u5efa\u8bae\u4f7f\u7528\u3002</p><p>\u903b\u8f91\u4e3a\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u91cd\u65b0\u8fd0\u884c\u4e00\u904d\u89e3\u538b\u3002</p><p>\u5efa\u8bae\u4e0e\u201c\u4ec5\u89e3\u538b\u538b\u7f29\u5305\u201d\u9009\u9879\u540c\u65f6\u9009\u4e2d\u3002</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305**", None))
+        self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u4ec5\u89e3\u538b\u538b\u7f29\u5305", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"\u8df3\u8fc7\u89e3\u538b\u7684\u540e\u7f00\u540d\uff1a\uff08\u4ee5,\u6216\u7a7a\u683c\u5206\u9694\uff0c\u5ffd\u7565\u5927\u5c0f\u5199\uff09", None))
         self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

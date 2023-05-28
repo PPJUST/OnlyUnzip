@@ -20,12 +20,34 @@ from ui import Ui_MainWindow
 class UnzipMainQthread(QThread):
     signal_ui_update = Signal(list)  # 自定义信号
 
-    def __init__(self, unzip_files_dict, is_unzip, is_delete, is_nested_folders, parent=None):
+    def __init__(self, unzip_files_dict, parent=None):
         super().__init__(parent)
+
+        is_unzip, is_delete, is_nested_folders, skip_rule = self.read_config()
+
         self.unzip_files_dict = unzip_files_dict
         self.is_unzip = is_unzip
         self.is_delete = is_delete
         self.is_nested_folders = is_nested_folders
+        self.skip_rule = skip_rule
+
+    @staticmethod
+    def read_config():
+        """读取配置文件，设置初始参数变量"""
+        read_config = configparser.ConfigParser()
+        read_config.read("config.ini", encoding='utf-8')
+
+        is_unzip = read_config.get('DEFAULT', 'model') == 'unzip'
+        is_delete = read_config.get('DEFAULT', 'delete_zip') == 'True'
+        is_nested_folders = read_config.get('DEFAULT', 'nested_folders') == 'True'
+        skip_suffix = read_config.get('DEFAULT', 'skip_suffix')
+        # 设置7zip的文件后缀过滤规则
+        if skip_suffix:
+            skip_rule = ['-xr!*.' + x for x in skip_suffix.split(' ')]
+        else:
+            skip_rule = []
+
+        return is_unzip, is_delete, is_nested_folders, skip_rule
 
     def run(self):
         total_files_number = len(self.unzip_files_dict)  # 需要解压的文件总数（分卷计数1）
@@ -61,17 +83,18 @@ class UnzipMainQthread(QThread):
                 self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} | {the_right_password}'])
                 self.signal_ui_update.emit(['历史记录-成功', f'{os.path.split(first_file)[1]} | {the_right_password}'])
                 if self.is_unzip:  # 如果解压选项被选中，则执行解压操作
-                    unzip_result = self.start_unzip(the_folder, first_file, file_list, the_right_password)
-                    if unzip_result == '文件损坏':
-                        damaged_file_number += 1
-                        self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 文件损坏(可能)'])
-                    if unzip_result == '解压成功':
-                        success_number += 1
+                    self.start_unzip(the_folder, first_file, file_list, the_right_password)
+                    success_number += 1
+                    # 由于添加了过滤解压功能，不再以解压后文件大小判断是否文件损坏
+                    # if unzip_result == '文件损坏':
+                    #     damaged_file_number += 1
+                    #     self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 文件损坏(可能)'])
+                    # if unzip_result == '解压成功':
+                    #     success_number += 1
                 if the_pre_folder != the_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
                     pre_temporary_folder = os.path.join(the_pre_folder, "UnzipTempFolder")  # 临时文件夹
                     if os.path.exists(pre_temporary_folder):  # 处理遗留的临时文件夹
                         if OnlyUnzip.get_folder_size(pre_temporary_folder) == 0:
-                            # winshell.delete_file(temporary_folder, no_confirm=True)
                             pre_temporary_folder = pre_temporary_folder.replace('/', '\\')
                             send2trash.send2trash(pre_temporary_folder)  # os.remove提示无权限
                     the_pre_folder = the_folder
@@ -79,7 +102,6 @@ class UnzipMainQthread(QThread):
                     temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
                     if os.path.exists(temporary_folder):  # 处理遗留的临时文件夹
                         if OnlyUnzip.get_folder_size(temporary_folder) == 0:
-                            # winshell.delete_file(temporary_folder, no_confirm=True)
                             temporary_folder = temporary_folder.replace('/', '\\')
                             send2trash.send2trash(temporary_folder)  # os.remove提示无权限
         # 全部完成后发送信号
@@ -118,32 +140,29 @@ class UnzipMainQthread(QThread):
         temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
         unzip_folder = os.path.join(temporary_folder, zip_name)  # 解压结果路径
         # 组合解压指令
-        command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder]  # 组合完整7zip指令
+        command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
+        print(f'测试7zip指令_{command_unzip}')
         subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+        # 由于添加了过滤解压功能，不再以解压后文件大小判断是否文件损坏
         # 通过比较文件大小检查解压结果
-        original_size = OnlyUnzip.get_file_list_size(zipfile_list)  # 原文件大小
-        unzip_size = OnlyUnzip.get_folder_size(unzip_folder)  # 压缩结果大小
-        if unzip_size < original_size * 0.95:  # 解压后文件大小如果小于原文件95%，则视为解压失败
-            # winshell.delete_file(unzip_folder, no_confirm=True)  # 删除解压结果
-            unzip_folder = unzip_folder.replace('/', '\\')
-            send2trash.send2trash(unzip_folder)
-            return '文件损坏'
+        # original_size = OnlyUnzip.get_file_list_size(zipfile_list)  # 原文件大小
+        # unzip_size = OnlyUnzip.get_folder_size(unzip_folder)  # 压缩结果大小
+        # if unzip_size < original_size * 0.95:  # 解压后文件大小如果小于原文件95%，则视为解压失败
+        #     unzip_folder = unzip_folder.replace('/', '\\')
+        #     send2trash.send2trash(unzip_folder)
+        #     return '文件损坏'
+        if self.is_delete:  # 根据选项选择是否删除原文件
+            for i in zipfile_list:  # 删除原文件
+                i = i.replace('/', '\\')
+                send2trash.send2trash(i)
+        if self.is_nested_folders:
+            OnlyUnzip.nested_folders_true(temporary_folder)  # 检查解压结果，处理套娃
         else:
-            if self.is_delete:  # 根据选项选择是否删除原文件
-                for i in zipfile_list:  # 删除原文件
-                    # winshell.delete_file(i)
-                    i = i.replace('/', '\\')
-                    send2trash.send2trash(i)
-            if self.is_nested_folders:
-                OnlyUnzip.nested_folders_true(temporary_folder)  # 检查解压结果，处理套娃
-            else:
-                OnlyUnzip.nested_folders_false(temporary_folder)
-            if os.path.exists(unzip_folder):  # 处理遗留的解压结果文件夹
-                if OnlyUnzip.get_folder_size(unzip_folder) == 0:
-                    # winshell.delete_file(unzip_folder, no_confirm=True)
-                    unzip_folder = unzip_folder.replace('/', '\\')
-                    send2trash.send2trash(unzip_folder)
-            return '解压成功'
+            OnlyUnzip.nested_folders_false(temporary_folder)
+        if os.path.exists(unzip_folder):  # 处理遗留的解压结果文件夹
+            if OnlyUnzip.get_folder_size(unzip_folder) == 0:
+                unzip_folder = unzip_folder.replace('/', '\\')
+                send2trash.send2trash(unzip_folder)
 
 
 class OnlyUnzip(QMainWindow):
@@ -181,6 +200,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.checkBox_nested_zip.stateChanged.connect(self.change_setting)
         self.ui.checkBox_delect_zip.stateChanged.connect(self.change_setting)
         self.ui.checkBox_check_zip.stateChanged.connect(self.change_setting)
+        self.ui.lineedit_unzip_skip_suffix.textChanged.connect(self.change_setting)
 
     def drop_files(self, filepaths):
         """检查拖入的文件"""
@@ -236,10 +256,7 @@ class OnlyUnzip(QMainWindow):
                     self.ui.label_icon.setEnabled(False)  # 拖入文件执行解压前关闭Label控件，防止再次拖入文件导致报错
                     unzip_files_dict = self.class_multi_volume(need_unzip_files)  # 将压缩包分类 一般与分卷
                     # 运行子线程，进行测试与解压
-                    is_unzip = self.ui.checkBox_model_unzip.isChecked()
-                    is_delete = self.ui.checkBox_delect_zip.isChecked()
-                    is_nested_folders = self.ui.checkBox_nested_folders.isChecked()
-                    self.unzip_qthread = UnzipMainQthread(unzip_files_dict, is_unzip, is_delete, is_nested_folders)
+                    self.unzip_qthread = UnzipMainQthread(unzip_files_dict)
                     self.unzip_qthread.signal_ui_update.connect(self.update_ui)
                     self.unzip_qthread.start()
                 else:  # 有一个为空则说明没有需要解压的文件
@@ -572,6 +589,7 @@ class OnlyUnzip(QMainWindow):
         code_nested_zip = read_config.get('DEFAULT', 'nested_zip') == 'True'
         code_delete_zip = read_config.get('DEFAULT', 'delete_zip') == 'True'
         code_check_zip = read_config.get('DEFAULT', 'check_zip') == 'True'
+        code_skip_suffix = read_config.get('DEFAULT', 'skip_suffix')
         if code_model == 'unzip':
             self.ui.checkBox_model_unzip.setChecked(True)
         elif code_model == 'test':
@@ -580,6 +598,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.checkBox_nested_zip.setChecked(code_nested_zip)
         self.ui.checkBox_delect_zip.setChecked(code_delete_zip)
         self.ui.checkBox_check_zip.setChecked(code_check_zip)
+        self.ui.lineedit_unzip_skip_suffix.setText(code_skip_suffix)
 
     @staticmethod
     def create_new_ini():
@@ -595,6 +614,7 @@ nested_zip = False
 delete_zip = True
 check_zip = True
 multithreading = 
+skip_suffix = 
 
 [无密码]
 number = 9999"""
@@ -666,6 +686,12 @@ number = 9999"""
         read_config.set('DEFAULT', 'nested_zip', str(self.ui.checkBox_nested_zip.isChecked()))
         read_config.set('DEFAULT', 'delete_zip', str(self.ui.checkBox_delect_zip.isChecked()))
         read_config.set('DEFAULT', 'check_zip', str(self.ui.checkBox_check_zip.isChecked()))
+
+        suffix_text = self.ui.lineedit_unzip_skip_suffix.text()
+        support_delimiters = ",|，| |;|；"
+        the_skip_suffix = set([x for x in re.split(support_delimiters, suffix_text) if x])  # 提取分隔后的列表，去重去空
+        read_config.set('DEFAULT', 'skip_suffix', ' '.join(the_skip_suffix))
+
         read_config.write(open('config.ini', 'w', encoding='utf-8'))  # 写入
 
     def change_button_color(self, button_id):
