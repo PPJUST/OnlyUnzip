@@ -43,7 +43,8 @@ class UnzipMainQthread(QThread):
         skip_suffix = read_config.get('DEFAULT', 'skip_suffix')
         # 设置7zip的文件后缀过滤规则
         if skip_suffix:
-            skip_rule = ['-xr!*.' + x for x in skip_suffix.split(' ')]
+            skip_suffix_set = set(skip_suffix.split(' ') + [x.lower() for x in skip_suffix.split(' ')] + [x.upper() for x in skip_suffix.split(' ')])  # 原本+小写+大写
+            skip_rule = ['-xr!*.' + x for x in skip_suffix_set]
         else:
             skip_rule = []
 
