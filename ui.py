@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�OQUwrX.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�fjkdVJ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -221,11 +221,15 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.checkBox_model_unzip = QCheckBox(self.scrollAreaWidgetContents)
+        self.buttonGroup_check_model = QButtonGroup(MainWindow)
+        self.buttonGroup_check_model.setObjectName(u"buttonGroup_check_model")
+        self.buttonGroup_check_model.addButton(self.checkBox_model_unzip)
         self.checkBox_model_unzip.setObjectName(u"checkBox_model_unzip")
 
         self.verticalLayout_4.addWidget(self.checkBox_model_unzip)
 
         self.checkBox_model_test = QCheckBox(self.scrollAreaWidgetContents)
+        self.buttonGroup_check_model.addButton(self.checkBox_model_test)
         self.checkBox_model_test.setObjectName(u"checkBox_model_test")
 
         self.verticalLayout_4.addWidget(self.checkBox_model_test)

@@ -389,6 +389,9 @@
               <property name="text">
                <string>解压模式</string>
               </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup_check_model</string>
+              </attribute>
              </widget>
             </item>
             <item>
@@ -396,6 +399,9 @@
               <property name="text">
                <string>测试模式</string>
               </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup_check_model</string>
+              </attribute>
              </widget>
             </item>
             <item>
@@ -552,7 +558,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_checkbox"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_check_model"/>
  </buttongroups>
 </ui>
