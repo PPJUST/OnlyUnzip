@@ -433,15 +433,18 @@ class OnlyUnzip(QMainWindow):
     def get_zip_name(file):
         """提取文件名"""
         filename = os.path.split(file)[1]
-        re_rar = r"^(.+)\.part\d+\.rar$"  # 4种压缩文件的命名规则
+        re_rar = r"^(.+)\.part\d+\.rar$"  # 分卷压缩文件的命名规则
         re_7z = r"^(.+)\.7z\.\d+$"
         re_zip_top = r"^(.+)\.zip$"
+        re_zip_type2 = r"^(.+)\.zip.\d+$"
         if re.match(re_7z, filename):
             zip_name = re.match(re_7z, filename).group(1)
         elif re.match(re_zip_top, filename):
             zip_name = re.match(re_zip_top, filename).group(1)
         elif re.match(re_rar, filename):
             zip_name = re.match(re_rar, filename).group(1)
+        elif re.match(re_zip_type2, filename):
+            zip_name = re.match(re_zip_type2, filename).group(1)
         else:
             zip_name = os.path.split(os.path.splitext(file)[0])[1]
         return zip_name
@@ -462,10 +465,11 @@ class OnlyUnzip(QMainWindow):
             # 利用正则匹配分卷压缩包
             filenames = [os.path.split(x)[1] for x in files]
             ordinary_zip = [x for x in filenames]  # 复制
-            re_rar = r"^(.+)\.part\d+\.rar$"  # 4种压缩文件的命名规则
+            re_rar = r"^(.+)\.part\d+\.rar$"  # 分卷压缩文件的命名规则
             re_7z = r"^(.+)\.7z\.\d+$"
             re_zip_top = r"^(.+)\.zip$"
             re_zip_other = r"^(.+)\.z\d+$"
+            re_zip_type2 = r"^(.+)\.zip\.\d+$"
             multi_volume_dict = {}  # 分卷文件字典（键值对为 第一个分卷：文件夹下的全部分卷（不管有没有在变量files中）
             for i in filenames:
                 full_filepath = os.path.join(the_folder, i)
@@ -483,6 +487,13 @@ class OnlyUnzip(QMainWindow):
                         multi_volume_dict[first_multi_volume] = set()
                     multi_volume_dict[first_multi_volume].add(full_filepath)
                     ordinary_zip.remove(i)
+                elif re.match(re_zip_type2, i):  # 匹配zip格式2正则
+                    filename = re.match(re_zip_type2, i).group(1)  # 提取文件名
+                    first_multi_volume = os.path.join(the_folder, filename + r'.zip.001')  # 设置第一个分卷压缩包名，作为键名
+                    if first_multi_volume not in multi_volume_dict:  # 如果文件名不在字典内，则添加一个空键值对
+                        multi_volume_dict[first_multi_volume] = set()  # 用集合添加（目的是为了后面的zip分卷，其实用列表更方便）
+                    multi_volume_dict[first_multi_volume].add(full_filepath)  # 添加键值对（示例.zip.001：示例.zip.001，示例.zip.002）
+                    ordinary_zip.remove(i)  # 将新列表中的分卷压缩包剔除
                 elif re.match(re_zip_other, i) or re.match(re_zip_top, i):  # 只要是zip后缀的，都视为分卷压缩包，因为解压的都是.zip后缀
                     if re.match(re_zip_other, i):
                         filename = re.match(re_zip_other, i).group(1)
@@ -497,16 +508,18 @@ class OnlyUnzip(QMainWindow):
                     if first_multi_volume in ordinary_zip:  # zip分卷特性，如果是分卷删除第一个.zip后缀的文件名，所以需要删除多出来的一个zip文件
                         ordinary_zip.remove(first_multi_volume)
             all_zip_dict.update(OnlyUnzip.find_all_multi_volume_in_folder(the_folder, ordinary_zip, multi_volume_dict))
+        print(all_zip_dict)
         return all_zip_dict
 
     @staticmethod
     def find_all_multi_volume_in_folder(the_folder, ordinary_zip, multi_volume_dict):
         """扩展文件夹下所有的在字典中的分卷压缩包，应对拖入文件少的问题"""
         all_filenames = os.listdir(the_folder)
-        re_rar = r"^(.+)\.part\d+\.rar$"  # 4种压缩文件的命名规则
+        re_rar = r"^(.+)\.part\d+\.rar$"  # 分卷压缩文件的命名规则
         re_7z = r"^(.+)\.7z\.\d+$"
         re_zip_top = r"^(.+)\.zip$"
         re_zip_other = r"^(.+)\.z\d+$"
+        re_zip_type2 = r"^(.+)\.zip\.\d+$"
 
         for i in all_filenames:
             full_filepath = os.path.join(the_folder, i)
@@ -519,6 +532,12 @@ class OnlyUnzip(QMainWindow):
             elif re.match(re_rar, i):
                 filename = re.match(re_rar, i).group(1)
                 guess_first_multi_volume = os.path.join(the_folder, filename + r'.part1.rar')
+                if guess_first_multi_volume in multi_volume_dict:
+                    if full_filepath not in multi_volume_dict[guess_first_multi_volume]:
+                        multi_volume_dict[guess_first_multi_volume].add(full_filepath)
+            elif re.match(re_zip_type2, i):  # 匹配zip格式2正则
+                filename = re.match(re_zip_type2, i).group(1)
+                guess_first_multi_volume = os.path.join(the_folder, filename + r'.zip.001')
                 if guess_first_multi_volume in multi_volume_dict:
                     if full_filepath not in multi_volume_dict[guess_first_multi_volume]:
                         multi_volume_dict[guess_first_multi_volume].add(full_filepath)
