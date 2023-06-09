@@ -68,7 +68,7 @@ class UnzipMainQthread(QThread):
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中'])
             self.signal_ui_update.emit(['图标', None])
             file_list = self.unzip_files_dict[first_file]
-            the_test_result, the_right_password = self.test_password(first_file)
+            the_test_result, the_right_password = self.test_password(first_file, current_number, total_files_number)  # 多传递两个参数current_number、total_files_number，用于保持传递信号的文本一致
             if the_test_result == '密码错误':
                 wrong_password_file_number += 1
                 self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 密码错误'])
@@ -112,13 +112,17 @@ class UnzipMainQthread(QThread):
             ['进度', f'成功:{success_number}，密码错误:{wrong_password_file_number}，损坏:{damaged_file_number}，跳过:{pass_number}'])
         self.signal_ui_update.emit(['完成解压', None])
 
-    @staticmethod
-    def test_password(zipfile):
+    def test_password(self, zipfile, current_number, total_files_number):
+        """测试密码"""
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         passwords, _ = OnlyUnzip.read_password_return_list()  # 调用主程序的函数，提取密码
         the_right_password = ''
         the_test_result = '密码错误'
+        test_password_number = 0
+        total_test_password = len(passwords)
         for password in passwords:
+            test_password_number += 1
+            self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}'])
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
