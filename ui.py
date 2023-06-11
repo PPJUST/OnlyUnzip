@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�fjkdVJ.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�iDUfPI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -374,11 +374,11 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939\uff1a\u903b\u8f91\u7c7b\u4f3cBandzip</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margi"
                         "n-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff1a\u903b\u8f91\u662f\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u518d\u6b21\u8fd0\u884c\u89e3\u538b\u6d4b\u8bd5\uff08\u5077\u61d2\u7684\u505a\u6cd5\uff09</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305\uff1a\u903b\u8f91\u662f\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u518d\u6b21\u8fd0\u884c\u89e3\u538b</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u4ec5\u8bc6\u522b\u538b\u7f29\u5305\uff1a\u538b\u7f29\u5305\u7684\u8bc6\u522b\u57fa\u4e8emagic\u5e93+\u6392\u9664\u540e\u7f00xlsx\u3001xls\u3001csv\u3001doc\u3001docx\u3001ppt\u3001pptx\u3001jar\u3001odt\u3001epub\u3001apk\u3001pkg\uff08\u6392\u9664\u9879\u548c\u56fe\u79cd\u4f1a\u88ab\u68c0\u6d4b\u4e3a\u4e0d\u662f\u538b\u7f29\u5305\uff0c\u9700\u8981"
-                        "\u89e3\u538b\u8bf7\u5173\u95ed\u8be5\u9009\u9879\uff09</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u4ec5\u8bc6\u522b\u538b\u7f29\u5305\uff1a\u538b\u7f29\u5305\u7684\u8bc6\u522b\u57fa\u4e8efiletype\u5e93+\u6307\u5b9a\u7684\u538b\u7f29\u6587\u4ef6\u540e\u7f00\uff08EXE\u6587\u4ef6\u4e0e\u56fe\u79cd\u4e0d\u4f1a\u88ab\u8bc6\u522b\u4e3a\u538b\u7f29\u5305\uff0c\u9700\u8981\u89e3\u538b\u8bf7\u5173\u95ed\u8be5\u9009\u9879\uff09</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0p"
+                        "x; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">\u6e90\u7801\uff1a</span>https://github.com/PPJUST/only_unzip</p></body></html>", None))
     # retranslateUi
 
