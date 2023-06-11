@@ -5,14 +5,14 @@ import shutil
 import subprocess
 import time
 
-import magic
+import filetype
 import natsort
 import qdarktheme
 # import winshell
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread
-from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem
 from PySide2.QtGui import QColor, QIcon
+from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem
 
 from ui import Ui_MainWindow
 
@@ -146,7 +146,6 @@ class UnzipMainQthread(QThread):
         unzip_folder = os.path.join(temporary_folder, zip_name)  # 解压结果路径
         # 组合解压指令
         command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
-        print(f'测试7zip指令_{command_unzip}')
         subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
         # 由于添加了过滤解压功能，不再以解压后文件大小判断是否文件损坏
         # 通过比较文件大小检查解压结果
@@ -512,7 +511,6 @@ class OnlyUnzip(QMainWindow):
                     if first_multi_volume in ordinary_zip:  # zip分卷特性，如果是分卷删除第一个.zip后缀的文件名，所以需要删除多出来的一个zip文件
                         ordinary_zip.remove(first_multi_volume)
             all_zip_dict.update(OnlyUnzip.find_all_multi_volume_in_folder(the_folder, ordinary_zip, multi_volume_dict))
-        print(all_zip_dict)
         return all_zip_dict
 
     @staticmethod
@@ -570,13 +568,17 @@ class OnlyUnzip(QMainWindow):
     @staticmethod
     def is_zip_file(file):
         """检查文件是否是压缩包"""
-        zip_type = ['application/x-rar', 'application/x-gzip', 'application/x-tar', 'application/zip',
-                    'application/x-lzh-compressed', 'application/x-7z-compressed', 'application/x-xz',
-                    'application/octet-stream', 'application/x-dosexec']
-        exclude_suffix = ['.xlsx', '.xls', '.csv', '.doc', '.docx', '.ppt', '.pptx', '.jar', '.odt', '.epub', '.apk', '.pkg', '.exe']  # 由于xlsx、docx等文件会被magic库识别为application/zip，所以需要单独排除
-        file_type = magic.from_buffer(open(file, 'rb').read(2048), mime=True)
-        file_suffix = os.path.splitext(file)[1]
-        if file_type.lower() in zip_type and file_suffix.lower() not in exclude_suffix:  # 注意要统一大小写后匹配
+        file_suffix = os.path.splitext(file)[1]  # 提取文件后缀名
+
+        zip_type = ['zip', 'tar', 'rar', 'gz', '7z', 'xz']
+        suffix_type = ['.zip', '.tar', '.rar', '.gz', '.7z', '.xz', '.iso']
+        kind = filetype.guess(file)
+        if kind is None:
+            type_kind = None
+        else:
+            type_kind = kind.extension
+
+        if type_kind in zip_type or file_suffix.lower() in suffix_type:  # filetype库识别符合或者后缀名符合
             return True
         else:
             return False
