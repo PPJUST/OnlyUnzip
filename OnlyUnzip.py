@@ -143,7 +143,7 @@ class UnzipMainQthread(QThread):
         zip_name = OnlyUnzip.get_zip_name(zipfile)  # 解压文件名
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
-        unzip_folder = os.path.join(temporary_folder, zip_name)  # 解压结果路径
+        unzip_folder = os.path.join(temporary_folder, zip_name).strip()  # 解压结果路径
         # 组合解压指令
         os.makedirs(unzip_folder)  # 创建解压路径的文件夹（碰到某个压缩包解压时7zip自动创建了一个奇怪的文件夹，无创建日期需要管理员权限，导致报错，无法复现）
         command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
