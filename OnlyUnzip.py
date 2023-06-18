@@ -10,9 +10,9 @@ import natsort
 import qdarktheme
 # import winshell
 import send2trash  # win7不能使用winshell，用send2trash替代
-from PySide2.QtCore import Signal, QThread
+from PySide2.QtCore import Signal, QThread, Qt
 from PySide2.QtGui import QColor, QIcon
-from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem
+from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction
 
 from ui import Ui_MainWindow
 
@@ -145,6 +145,7 @@ class UnzipMainQthread(QThread):
         temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
         unzip_folder = os.path.join(temporary_folder, zip_name)  # 解压结果路径
         # 组合解压指令
+        os.makedirs(unzip_folder)  # 创建解压路径的文件夹（碰到某个压缩包解压时7zip自动创建了一个奇怪的文件夹，无创建日期需要管理员权限，导致报错，无法复现）
         command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
         subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
         # 由于添加了过滤解压功能，不再以解压后文件大小判断是否文件损坏
@@ -180,6 +181,7 @@ class OnlyUnzip(QMainWindow):
         self.check_config_version()  # 检查配置文件版本--后期删除该函数
         self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
+        self.ui.listWidget_history.setContextMenuPolicy(Qt.CustomContextMenu)  # 设置历史记录控件的右键菜单属性
 
         # 设置槽函数
         self.ui.label_icon.dropSignal.connect(self.drop_files)  # 拖入文件
@@ -206,16 +208,18 @@ class OnlyUnzip(QMainWindow):
         self.ui.checkBox_delect_zip.stateChanged.connect(self.change_setting)
         self.ui.checkBox_check_zip.stateChanged.connect(self.change_setting)
         self.ui.lineedit_unzip_skip_suffix.textChanged.connect(self.change_setting)
+        self.ui.listWidget_history.customContextMenuRequested.connect(self.show_menu_copy)  # 绑定历史记录控件的右键菜单
 
     def drop_files(self, filepaths):
         """检查拖入的文件"""
         all_files = []
         for i in filepaths:
-            if os.path.isfile(i):
-                all_files.append(i)
-            else:
-                files_in_folder = self.get_all_files_in_folder(i)
-                all_files += files_in_folder
+            if os.path.exists(i):
+                if os.path.isfile(i):
+                    all_files.append(i)
+                else:
+                    files_in_folder = self.get_all_files_in_folder(i)
+                    all_files += files_in_folder
         all_files = list(set(all_files))  # 转为集合再转为列表，用于去重
         self.run_unzip_qthread(all_files)
 
@@ -275,6 +279,22 @@ class OnlyUnzip(QMainWindow):
                 self.ui.label_schedule.setText('没有压缩包')
                 self.ui.label_icon.setEnabled(True)
 
+    def show_menu_copy(self, pos):
+        """历史记录框中设置右键复制密码"""
+        selected_item = self.ui.listWidget_history.currentItem()
+        if selected_item and selected_item.data(Qt.UserRole) == '成功':  # 设置只有正确解压的项目文本才可以右键复制
+            menu = QMenu()
+            menu.adjustSize()
+            copy_action = QAction('复制密码', menu)
+            copy_action.triggered.connect(self.menu_copy_pw)
+            menu.addAction(copy_action)
+            menu.exec_(self.ui.listWidget_history.mapToGlobal(pos))
+
+    def menu_copy_pw(self):
+        selected_item = self.ui.listWidget_history.currentItem()
+        text = selected_item.text().split(' | ')[1]  # 根据文本筛选出解压密码
+        QApplication.clipboard().setText(text)
+
     def update_ui(self, the_list):
         if the_list[0] == '当前文件':
             self.ui.label_current_file.setText(the_list[1])
@@ -289,15 +309,17 @@ class OnlyUnzip(QMainWindow):
             else:
                 self.ui.label_icon.setPixmap(the_list[1])
         elif the_list[0] == '历史记录-成功':
-            item = QListWidgetItem(the_list[1])
+            item = QListWidgetItem(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + the_list[1])
             item.setTextColor(QColor(92, 167, 186))
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)  # 启用UserRole
+            item.setData(Qt.UserRole, '成功')  # 设置 UserRole 的值
             self.ui.listWidget_history.addItem(item)
         elif the_list[0] == '历史记录-失败':
-            item = QListWidgetItem(the_list[1])
+            item = QListWidgetItem(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + the_list[1])
             item.setTextColor(QColor(254, 67, 101))
             self.ui.listWidget_history.addItem(item)
         elif the_list[0] == '历史记录-跳过':
-            item = QListWidgetItem(the_list[1])
+            item = QListWidgetItem(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + the_list[1])
             item.setTextColor(QColor(255, 182, 193))
             self.ui.listWidget_history.addItem(item)
         elif the_list[0] == '完成解压':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
@@ -311,7 +333,7 @@ class OnlyUnzip(QMainWindow):
     def save_unzip_history(zipfile, password):
         """保存解压历史"""
         with open('unzip_history.txt', 'a', encoding='utf-8') as hs:
-            history = f'日期：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())} ' \
+            history = f'日期：{time.strftime("%Y-%m-%d %H:%M:%S ", time.localtime())} ' \
                       f'| 文件：{os.path.split(zipfile)[1]} | 密码：{password}\n\n'
             hs.write(history)
 
