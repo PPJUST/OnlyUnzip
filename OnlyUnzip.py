@@ -143,19 +143,11 @@ class UnzipMainQthread(QThread):
         zip_name = OnlyUnzip.get_zip_name(zipfile)  # 解压文件名
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
-        unzip_folder = os.path.join(temporary_folder, zip_name).strip()  # 解压结果路径
+        unzip_folder = os.path.join(temporary_folder, zip_name).strip().strip('.')  # 解压结果路径
         # 组合解压指令
-        os.makedirs(unzip_folder)  # 创建解压路径的文件夹（碰到某个压缩包解压时7zip自动创建了一个奇怪的文件夹，无创建日期需要管理员权限，导致报错，无法复现）
+        os.makedirs(unzip_folder)  # 创建解压路径的文件夹（如果一个文件名末尾是空格或者. ，则直接调用7zip解压时会创建一个无日期的文件夹，无法正常删除，所以会导致报错）
         command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
         subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
-        # 由于添加了过滤解压功能，不再以解压后文件大小判断是否文件损坏
-        # 通过比较文件大小检查解压结果
-        # original_size = OnlyUnzip.get_file_list_size(zipfile_list)  # 原文件大小
-        # unzip_size = OnlyUnzip.get_folder_size(unzip_folder)  # 压缩结果大小
-        # if unzip_size < original_size * 0.95:  # 解压后文件大小如果小于原文件95%，则视为解压失败
-        #     unzip_folder = unzip_folder.replace('/', '\\')
-        #     send2trash.send2trash(unzip_folder)
-        #     return '文件损坏'
         if self.is_delete:  # 根据选项选择是否删除原文件
             for i in zipfile_list:  # 删除原文件
                 i = i.replace('/', '\\')
