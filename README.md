@@ -1,5 +1,11 @@
 UZIP软件的解压功能的Python复写，个人学习Python期间的练手程序。
 
+
+### 使用
+1. pip install -r requirement.txt
+2. python OnlyUnzip.py
+
+
 ### 实现功能
 1. 拖入文件进行解压、拖入文件夹解压其中所有文件
 2. 支持测试文件夹密码

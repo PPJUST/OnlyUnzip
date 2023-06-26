@@ -1,0 +1,5 @@
+send2trash==1.8.2
+PySide2==5.13.2
+filetype==1.2.0
+pyqtdarktheme==2.1.0
+natsort==8.4.0
