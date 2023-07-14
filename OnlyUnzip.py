@@ -123,7 +123,7 @@ class UnzipMainQthread(QThread):
         for password in passwords:
             test_password_number += 1
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}'])
-            command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
+            command_test = [path_7zip, "t", "-p" + password, "-y", zipfile, '/vl=0']  # 组合完整7zip指令，/vl=0为跳过文件完整性验证的指令
             run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
@@ -133,7 +133,7 @@ class UnzipMainQthread(QThread):
                 if "Cannot open the file as archive" in str(run_text_command.stderr):
                     the_test_result = '不是压缩文件'
                     break
-                elif "Missing volume" in str(run_text_command.stderr):
+                elif "Missing volume" in str(run_text_command.stderr) or 'Unexpected end of archive' in str(run_text_command.stderr):
                     the_test_result = '丢失分卷'
                     break
                 # 密码错误的提示为：Cannot open encrypted archive. Wrong password?
@@ -440,8 +440,14 @@ class OnlyUnzip(QMainWindow):
         final_files = []
         if self.ui.checkBox_check_zip.isChecked():
             for i in files:
-                if self.is_zip_file(i):
-                    final_files.append(i)
+                # 修改判断逻辑：1.如果符合压缩包的正则并且第一个分卷包存在，则用第一个分卷包测试 2.否则按正常流程测试
+                check_file = list(self.class_multi_volume([i]).keys())[0]  # 调用的class_multi_volume函数的输入值是一个列表，返回的是分卷的第一个包（符合分卷规则）或者原始文件（不符合分卷规则）
+                if os.path.exists(check_file):
+                    if self.is_zip_file(check_file):
+                        final_files.append(i)
+                else:
+                    if self.is_zip_file(i):
+                        final_files.append(i)
         else:
             final_files = files
         return final_files
