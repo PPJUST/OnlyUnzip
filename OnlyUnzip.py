@@ -123,7 +123,7 @@ class UnzipMainQthread(QThread):
         for password in passwords:
             test_password_number += 1
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}'])
-            command_test = [path_7zip, "t", "-p" + password, "-y", zipfile, '/vl=0']  # 组合完整7zip指令，/vl=0为跳过文件完整性验证的指令
+            command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
