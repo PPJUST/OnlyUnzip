@@ -93,18 +93,16 @@ class UnzipMainQthread(QThread):
                     # if unzip_result == '解压成功':
                     #     success_number += 1
                 if the_pre_folder != the_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
-                    pre_temporary_folder = os.path.join(the_pre_folder, "UnzipTempFolder")  # 临时文件夹
+                    pre_temporary_folder = os.path.normpath(os.path.join(the_pre_folder, "UnzipTempFolder"))  # 临时文件夹
                     if os.path.exists(pre_temporary_folder):  # 处理遗留的临时文件夹
                         if OnlyUnzip.get_folder_size(pre_temporary_folder) == 0:
-                            pre_temporary_folder = pre_temporary_folder.replace('/', '\\')
-                            send2trash.send2trash(pre_temporary_folder)  # os.remove提示无权限
+                            self.del_empty_folder(pre_temporary_folder)
                     the_pre_folder = the_folder
                 if current_number == total_files_number:  # 完成全部文件处理后，删除临时文件夹
-                    temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
+                    temporary_folder = os.path.normpath(os.path.join(the_folder, "UnzipTempFolder"))  # 临时文件夹
                     if os.path.exists(temporary_folder):  # 处理遗留的临时文件夹
                         if OnlyUnzip.get_folder_size(temporary_folder) == 0:
-                            temporary_folder = temporary_folder.replace('/', '\\')
-                            send2trash.send2trash(temporary_folder)  # os.remove提示无权限
+                            self.del_empty_folder(temporary_folder)
         # 全部完成后发送信号
         self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
         self.signal_ui_update.emit(['当前文件', '————————————'])
@@ -122,7 +120,8 @@ class UnzipMainQthread(QThread):
         total_test_password = len(passwords)
         for password in passwords:
             test_password_number += 1
-            self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}'])
+            if test_password_number % 5 == 0:  # 每5次刷新一次ui
+                self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}'])
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
@@ -143,23 +142,36 @@ class UnzipMainQthread(QThread):
         zip_name = OnlyUnzip.get_zip_name(zipfile)  # 解压文件名
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         temporary_folder = os.path.join(the_folder, "UnzipTempFolder")  # 临时文件夹
-        unzip_folder = os.path.join(temporary_folder, zip_name).strip().strip('.')  # 解压结果路径
+        unzip_folder = os.path.normpath(os.path.join(temporary_folder, zip_name).strip().strip('.'))  # 解压结果路径
         # 组合解压指令
         os.makedirs(unzip_folder)  # 创建解压路径的文件夹（如果一个文件名末尾是空格或者. ，则直接调用7zip解压时会创建一个无日期的文件夹，无法正常删除，所以会导致报错）
         command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
         subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
         if self.is_delete:  # 根据选项选择是否删除原文件
             for i in zipfile_list:  # 删除原文件
-                i = i.replace('/', '\\')
-                send2trash.send2trash(i)
+                send2trash.send2trash(os.path.normpath(i))
         if self.is_nested_folders:
             OnlyUnzip.nested_folders_true(temporary_folder)  # 检查解压结果，处理套娃
         else:
             OnlyUnzip.nested_folders_false(temporary_folder)
         if os.path.exists(unzip_folder):  # 处理遗留的解压结果文件夹
             if OnlyUnzip.get_folder_size(unzip_folder) == 0:
-                unzip_folder = unzip_folder.replace('/', '\\')
-                send2trash.send2trash(unzip_folder)
+                self.del_empty_folder(unzip_folder)
+
+    def del_empty_folder(self, folder):
+        """删除0kb文件夹"""
+        print(f'准备删除 {folder}')
+        try:
+            os.rmdir(folder)
+            print(f'已删除 {folder}')
+        except OSError:
+            all_dirpath = []
+            for dirpath, dirnames, filenames in os.walk(folder):
+                all_dirpath.append(dirpath)
+            for i in all_dirpath[::-1]:
+                os.rmdir(i)
+                print(f'内部不为空 已删除内部文件夹 {i}')
+
 
 
 class OnlyUnzip(QMainWindow):
@@ -222,8 +234,7 @@ class OnlyUnzip(QMainWindow):
         for root, directories, files in os.walk(folder):
             for filename in files:
                 # 获取每个文件的完整路径，并添加到列表中
-                file_path = os.path.join(root, filename)
-                file_path = file_path.replace('/', '\\')
+                file_path = os.path.normpath(os.path.join(root, filename))
                 all_files.append(file_path)
         return all_files
 
@@ -402,8 +413,7 @@ class OnlyUnzip(QMainWindow):
                 for root, directories, files in os.walk(path):
                     for filename in files:
                         # 获取每个文件的完整路径，并添加到列表中
-                        file_path = os.path.join(root, filename)
-                        file_path = file_path.replace('/', '\\')  # 替换路径中不同的斜杠
+                        file_path = os.path.normpath(os.path.join(root, filename))
                         all_files.append(file_path)
                 for i in all_files:
                     na.writelines(i + '\n')
