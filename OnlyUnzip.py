@@ -261,6 +261,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
         self.ui.listWidget_history.setContextMenuPolicy(Qt.CustomContextMenu)  # 设置历史记录控件的右键菜单属性
         self.nested_unzip_filepath = []  # 存放解压结果
+        self.ui.stackedWidget.setCurrentIndex(0)
 
         # 设置槽函数
         self.ui.label_icon.dropSignal.connect(self.drop_files)  # 拖入文件
