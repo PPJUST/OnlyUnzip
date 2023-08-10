@@ -8,7 +8,6 @@ import time
 import filetype
 import natsort
 import qdarktheme
-# import winshell
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread, Qt
 from PySide2.QtGui import QColor, QIcon
@@ -19,6 +18,7 @@ from ui import Ui_MainWindow
 
 class UnzipMainQthread(QThread):
     signal_ui_update = Signal(list)  # 自定义信号
+    signal_send_unzip_result = Signal(list)  # 发送解压后文件的list
 
     def __init__(self, unzip_files_dict, parent=None):
         super().__init__(parent)
@@ -43,7 +43,9 @@ class UnzipMainQthread(QThread):
         skip_suffix = read_config.get('DEFAULT', 'skip_suffix')
         # 设置7zip的文件后缀过滤规则
         if skip_suffix:
-            skip_suffix_set = set(skip_suffix.split(' ') + [x.lower() for x in skip_suffix.split(' ')] + [x.upper() for x in skip_suffix.split(' ')])  # 原本+小写+大写
+            skip_suffix_set = set(skip_suffix.split(' ')
+                                  + [x.lower() for x in skip_suffix.split(' ')]
+                                  + [x.upper() for x in skip_suffix.split(' ')])  # 原本+小写+大写
             skip_rule = ['-xr!*.' + x for x in skip_suffix_set]
         else:
             skip_rule = []
@@ -68,13 +70,15 @@ class UnzipMainQthread(QThread):
             self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中'])
             self.signal_ui_update.emit(['图标', None])
             file_list = self.unzip_files_dict[first_file]
-            the_test_result, the_right_password = self.test_password(first_file, current_number, total_files_number)  # 多传递两个参数current_number、total_files_number，用于保持传递信号的文本一致
+            # 多传递两个参数current_number、total_files_number，用于保持传递信号的文本一致
+            the_test_result, the_right_password = self.test_password(first_file, current_number, total_files_number)
             if the_test_result == '密码错误':
                 wrong_password_file_number += 1
                 self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 密码错误'])
             elif the_test_result == '不是压缩文件':
                 pass_number += 1
-                self.signal_ui_update.emit(['历史记录-跳过', f'{os.path.split(first_file)[1]} | 不是压缩文件（确定），已跳过'])
+                self.signal_ui_update.emit(
+                    ['历史记录-跳过', f'{os.path.split(first_file)[1]} | 不是压缩文件（确定），已跳过'])
             elif the_test_result == '丢失分卷':
                 damaged_file_number += 1
                 self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 丢失分卷'])
@@ -107,7 +111,8 @@ class UnzipMainQthread(QThread):
         self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
         self.signal_ui_update.emit(['当前文件', '————————————'])
         self.signal_ui_update.emit(
-            ['进度', f'成功:{success_number}，密码错误:{wrong_password_file_number}，损坏:{damaged_file_number}，跳过:{pass_number}'])
+            ['进度',
+             f'成功:{success_number}，密码错误:{wrong_password_file_number}，损坏:{damaged_file_number}，跳过:{pass_number}'])
         self.signal_ui_update.emit(['完成解压', None])
 
     def test_password(self, zipfile, current_number, total_files_number):
@@ -121,9 +126,15 @@ class UnzipMainQthread(QThread):
         for password in passwords:
             test_password_number += 1
             if test_password_number % 5 == 0:  # 每5次刷新一次ui
-                self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}'])
+                self.signal_ui_update.emit(
+                    ['进度',
+                     f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}']
+                )
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
-            run_text_command = subprocess.run(command_test, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+            run_text_command = subprocess.run(command_test,
+                                              stdout=subprocess.PIPE,
+                                              stderr=subprocess.PIPE,
+                                              creationflags=subprocess.CREATE_NO_WINDOW)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
                 the_test_result = '测试成功'
@@ -132,7 +143,8 @@ class UnzipMainQthread(QThread):
                 if "Cannot open the file as archive" in str(run_text_command.stderr):
                     the_test_result = '不是压缩文件'
                     break
-                elif "Missing volume" in str(run_text_command.stderr) or 'Unexpected end of archive' in str(run_text_command.stderr):
+                elif "Missing volume" in str(run_text_command.stderr) \
+                        or 'Unexpected end of archive' in str(run_text_command.stderr):
                     the_test_result = '丢失分卷'
                     break
                 # 密码错误的提示为：Cannot open encrypted archive. Wrong password?
@@ -145,20 +157,28 @@ class UnzipMainQthread(QThread):
         unzip_folder = os.path.normpath(os.path.join(temporary_folder, zip_name).strip().strip('.'))  # 解压结果路径
         # 组合解压指令
         os.makedirs(unzip_folder)  # 创建解压路径的文件夹（如果一个文件名末尾是空格或者. ，则直接调用7zip解压时会创建一个无日期的文件夹，无法正常删除，所以会导致报错）
-        command_unzip = [path_7zip, "x", "-p" + unzip_password, "-y", zipfile, "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
-        subprocess.run(command_unzip, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+        command_unzip = [path_7zip,
+                         "x",
+                         "-p" + unzip_password, "-y",
+                         zipfile,
+                         "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
+        subprocess.run(command_unzip,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       creationflags=subprocess.CREATE_NO_WINDOW)
         if self.is_delete:  # 根据选项选择是否删除原文件
             for i in zipfile_list:  # 删除原文件
                 send2trash.send2trash(os.path.normpath(i))
         if self.is_nested_folders:
-            OnlyUnzip.nested_folders_true(temporary_folder)  # 检查解压结果，处理套娃
+            self.nested_folders_true(temporary_folder)  # 检查解压结果，处理套娃
         else:
-            OnlyUnzip.nested_folders_false(temporary_folder)
+            self.nested_folders_false(temporary_folder)
         if os.path.exists(unzip_folder):  # 处理遗留的解压结果文件夹
             if OnlyUnzip.get_folder_size(unzip_folder) == 0:
                 self.del_empty_folder(unzip_folder)
 
-    def del_empty_folder(self, folder):
+    @staticmethod
+    def del_empty_folder(folder):
         """删除0kb文件夹"""
         print(f'准备删除 {folder}')
         try:
@@ -172,6 +192,60 @@ class UnzipMainQthread(QThread):
                 os.rmdir(i)
                 print(f'内部不为空 已删除内部文件夹 {i}')
 
+    def nested_folders_true(self, folder):
+        """处理套娃文件夹"""
+        need_move_path = OnlyUnzip.check_folder_depth(folder)  # 需要移动的文件夹/文件路径
+        need_move_filename = os.path.split(need_move_path)[1]  # 需要移动的文件夹/文件名称
+        parent_folder = os.path.split(folder)[0]  # 临时文件夹的上级目录（原压缩包所在的目录）
+        if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
+            shutil.move(need_move_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(need_move_path)[1])
+            self.emit_unzip_result(new_path)
+        else:
+            rename_filename = OnlyUnzip.rename_recursion(need_move_path, folder)
+            rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
+            os.rename(need_move_path, rename_full_path)
+            shutil.move(rename_full_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(rename_full_path)[1])
+            self.emit_unzip_result(new_path)
+
+    def nested_folders_false(self, folder):
+        """不处理套娃文件夹"""
+        unzip_folder = os.listdir(folder)[0]
+        full_folder_path = os.path.join(folder, unzip_folder)
+        on_folder_files = [os.path.join(full_folder_path, x) for x in os.listdir(full_folder_path)]
+        parent_folder = os.path.split(folder)[0]
+        if len(on_folder_files) == 1:  # 如果文件夹下就一个文件/文件夹，则直接移动
+            need_move_path = on_folder_files[0]
+            need_move_filename = os.path.split(need_move_path)[1]
+        else:  # 如果有多个文件/文件夹，则保留文件夹
+            need_move_path = full_folder_path
+            need_move_filename = os.path.split(need_move_path)[1]
+        if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
+            shutil.move(need_move_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(need_move_path)[1])
+            self.emit_unzip_result(new_path)
+        else:
+            rename_filename = OnlyUnzip.rename_recursion(need_move_path, folder)
+            rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
+            os.rename(need_move_path, rename_full_path)
+            shutil.move(rename_full_path, parent_folder)
+            new_path = os.path.join(parent_folder, os.path.split(rename_full_path)[1])
+            self.emit_unzip_result(new_path)
+
+    def emit_unzip_result(self, path):
+        """发送list信号，包含解压后的所有文件，用于重复解压来处理嵌套压缩包"""
+        nested_unzip_filepath = []
+        if os.path.isfile(path):
+            nested_unzip_filepath.append(path)
+        elif os.path.isdir(path):
+            for dirpath, dirnames, filenames in os.walk(path):
+                for filename in filenames:
+                    # 获取每个文件的完整路径，并添加到列表中
+                    file_path = os.path.normpath(os.path.join(dirpath, filename))
+                    nested_unzip_filepath.append(file_path)
+
+        self.signal_send_unzip_result.emit(nested_unzip_filepath)
 
 
 class OnlyUnzip(QMainWindow):
@@ -186,6 +260,7 @@ class OnlyUnzip(QMainWindow):
         self.start_with_load_setting()  # 加载设置文件
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
         self.ui.listWidget_history.setContextMenuPolicy(Qt.CustomContextMenu)  # 设置历史记录控件的右键菜单属性
+        self.nested_unzip_filepath = []  # 存放解压结果
 
         # 设置槽函数
         self.ui.label_icon.dropSignal.connect(self.drop_files)  # 拖入文件
@@ -193,7 +268,6 @@ class OnlyUnzip(QMainWindow):
         self.ui.button_page_password.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))  # 切换页面
         self.ui.button_page_setting.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))  # 切换页面
         self.ui.button_page_history.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))  # 切换页面
-        self.ui.button_page_about.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))  # 切换页面
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_button_color)
 
         self.ui.button_update_password.clicked.connect(self.update_password)
@@ -231,10 +305,10 @@ class OnlyUnzip(QMainWindow):
     def get_all_files_in_folder(folder):
         """获取文件夹下的所有文件，返回一个列表"""
         all_files = []
-        for root, directories, files in os.walk(folder):
-            for filename in files:
+        for dirpath, dirnames, filenames in os.walk(folder):
+            for filename in filenames:
                 # 获取每个文件的完整路径，并添加到列表中
-                file_path = os.path.normpath(os.path.join(root, filename))
+                file_path = os.path.normpath(os.path.join(dirpath, filename))
                 all_files.append(file_path)
         return all_files
 
@@ -252,10 +326,6 @@ class OnlyUnzip(QMainWindow):
 
     def run_unzip_qthread(self, files):
         """解压的子线程"""
-        nested_txt_path = os.path.join(os.getcwd(), 'nested.txt')  # 每次重新启动子线程前删除保留的解压结果文件
-        if os.path.exists(nested_txt_path):
-            os.remove(nested_txt_path)
-
         if self.is_old_temporary_folder_exist(files):  # 如果存在临时文件夹，则不进行后续操作
             self.ui.label_icon.setPixmap('./icon/错误.png')
             self.ui.label_current_file.setText('————————————')
@@ -270,6 +340,7 @@ class OnlyUnzip(QMainWindow):
                     # 运行子线程，进行测试与解压
                     self.unzip_qthread = UnzipMainQthread(unzip_files_dict)
                     self.unzip_qthread.signal_ui_update.connect(self.update_ui)
+                    self.unzip_qthread.signal_send_unzip_result.connect(self.accept_nested_unzip_filepath)
                     self.unzip_qthread.start()
                 else:  # 有一个为空则说明没有需要解压的文件
                     self.ui.label_icon.setPixmap('./icon/错误.png')
@@ -326,11 +397,11 @@ class OnlyUnzip(QMainWindow):
             item.setTextColor(QColor(255, 182, 193))
             self.ui.listWidget_history.addItem(item)
         elif the_list[0] == '完成解压':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
+            self.ui.label_icon.setEnabled(True)
             if self.ui.checkBox_nested_zip.isChecked():
-                self.ui.label_icon.setEnabled(True)
-                self.nested_zip()
-            else:
-                self.ui.label_icon.setEnabled(True)
+                unzip_path = self.nested_unzip_filepath.copy()
+                self.nested_unzip_filepath = []  # 重置结果
+                self.drop_files(unzip_path)
 
     @staticmethod
     def save_unzip_history(zipfile, password):
@@ -349,74 +420,9 @@ class OnlyUnzip(QMainWindow):
         read_config.set(password, 'number', str(old_number + 1))  # 次数加1
         read_config.write(open('config.ini', 'w', encoding='utf-8'))
 
-    @staticmethod
-    def nested_folders_true(folder):
-        """处理套娃文件夹"""
-        need_move_path = OnlyUnzip.check_folder_depth(folder)  # 需要移动的文件夹/文件路径
-        need_move_filename = os.path.split(need_move_path)[1]  # 需要移动的文件夹/文件名称
-        parent_folder = os.path.split(folder)[0]  # 临时文件夹的上级目录（原压缩包所在的目录）
-        if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
-            shutil.move(need_move_path, parent_folder)
-            new_path = os.path.join(parent_folder, os.path.split(need_move_path)[1])
-            OnlyUnzip.save_unzip_result(new_path)
-        else:
-            rename_filename = OnlyUnzip.rename_recursion(need_move_path, folder)
-            rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
-            os.rename(need_move_path, rename_full_path)
-            shutil.move(rename_full_path, parent_folder)
-            new_path = os.path.join(parent_folder, os.path.split(rename_full_path)[1])
-            OnlyUnzip.save_unzip_result(new_path)
-
-    @staticmethod
-    def nested_folders_false(folder):
-        """不处理套娃文件夹"""
-        unzip_folder = os.listdir(folder)[0]
-        full_folder_path = os.path.join(folder, unzip_folder)
-        on_folder_files = [os.path.join(full_folder_path, x) for x in os.listdir(full_folder_path)]
-        parent_folder = os.path.split(folder)[0]
-        if len(on_folder_files) == 1:  # 如果文件夹下就一个文件/文件夹，则直接移动
-            need_move_path = on_folder_files[0]
-            need_move_filename = os.path.split(need_move_path)[1]
-        else:  # 如果有多个文件/文件夹，则保留文件夹
-            need_move_path = full_folder_path
-            need_move_filename = os.path.split(need_move_path)[1]
-        if need_move_filename not in os.listdir(parent_folder):  # 如果没有重名文件/文件夹
-            shutil.move(need_move_path, parent_folder)
-            new_path = os.path.join(parent_folder, os.path.split(need_move_path)[1])
-            OnlyUnzip.save_unzip_result(new_path)
-        else:
-            rename_filename = OnlyUnzip.rename_recursion(need_move_path, folder)
-            rename_full_path = os.path.join(os.path.split(need_move_path)[0], rename_filename)
-            os.rename(need_move_path, rename_full_path)
-            shutil.move(rename_full_path, parent_folder)
-            new_path = os.path.join(parent_folder, os.path.split(rename_full_path)[1])
-            OnlyUnzip.save_unzip_result(new_path)
-
-    def nested_zip(self):
-        """处理嵌套压缩包，逻辑为解压完成后再检查一遍解压结果，重新解压（偷懒的方法）"""
-        nested_txt_path = os.path.join(os.getcwd(), 'nested.txt')
-        if os.path.exists(nested_txt_path):
-            with open('nested.txt', encoding='utf-8') as nr:
-                lines = nr.readlines()
-            if lines:
-                unzip_nested_zip = [x.strip() for x in lines]
-                self.drop_files(unzip_nested_zip)
-
-    @staticmethod
-    def save_unzip_result(path):
-        """保存解压结果，用于处理嵌套压缩包"""
-        with open('nested.txt', 'a', encoding='utf-8') as na:
-            if os.path.isfile(path):
-                na.writelines(path + '\n')
-            elif os.path.isdir(path):
-                all_files = []
-                for root, directories, files in os.walk(path):
-                    for filename in files:
-                        # 获取每个文件的完整路径，并添加到列表中
-                        file_path = os.path.normpath(os.path.join(root, filename))
-                        all_files.append(file_path)
-                for i in all_files:
-                    na.writelines(i + '\n')
+    def accept_nested_unzip_filepath(self, filepath_list):
+        """接受子线程发送的解压结果list信号"""
+        self.nested_unzip_filepath += filepath_list
 
     @staticmethod
     def check_folder_depth(path):
@@ -451,7 +457,8 @@ class OnlyUnzip(QMainWindow):
         if self.ui.checkBox_check_zip.isChecked():
             for i in files:
                 # 修改判断逻辑：1.如果符合压缩包的正则并且第一个分卷包存在，则用第一个分卷包测试 2.否则按正常流程测试
-                check_file = list(self.class_multi_volume([i]).keys())[0]  # 调用的class_multi_volume函数的输入值是一个列表，返回的是分卷的第一个包（符合分卷规则）或者原始文件（不符合分卷规则）
+                # 调用的class_multi_volume函数的输入值是一个列表，返回的是分卷的第一个包（符合分卷规则）或者原始文件（不符合分卷规则）
+                check_file = list(self.class_multi_volume([i]).keys())[0]
                 if os.path.exists(check_file):
                     if self.is_zip_file(check_file):
                         final_files.append(i)
@@ -772,6 +779,7 @@ number = 9999"""
 
 app = QApplication()
 qdarktheme.setup_theme("light")
+# app.setStyle('Fusion')
 show_ui = OnlyUnzip()
 show_ui.setWindowIcon(QIcon('./icon/程序图标.ico'))
 show_ui.setFixedSize(262, 232)
