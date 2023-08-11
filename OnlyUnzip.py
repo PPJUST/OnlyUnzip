@@ -116,17 +116,13 @@ class UnzipMainQthread(QThread):
         total_test_password = len(passwords)
         for password in passwords:
             test_password_number += 1
-            if test_password_number % 5 == 0:  # 每5次刷新一次ui
-                self.signal_ui_update.emit(
-                    ['更新密码测试进度',
-                     f'{test_password_number}/{total_test_password}'])
+            self.signal_ui_update.emit(['更新密码测试进度',f'{test_password_number}/{total_test_password}'])
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test,
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               creationflags=subprocess.CREATE_NO_WINDOW)
 
-            print(run_text_command.stdout)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
                 the_test_result = '测试成功'
@@ -454,8 +450,8 @@ class OnlyUnzip(QMainWindow):
             if os.path.isfile(os.path.join(path, os.listdir(path)[0])):  # 如果文件夹下只有一个文件，并且是文件
                 last_path = os.path.join(path, os.listdir(path)[0])
                 return last_path
-            else:
-                return OnlyUnzip.check_folder_depth(os.path.join(path, os.listdir(path)[0]))  # 临时文件夹下只有一个文件，但是文件夹，则递归
+            else:  # 临时文件夹下只有一个文件，但是文件夹，则递归
+                return OnlyUnzip.check_folder_depth(os.path.join(path, os.listdir(path)[0]))
         else:
             last_path = path
             return last_path

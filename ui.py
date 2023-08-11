@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�NEewiR.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�WgTQon.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -55,6 +55,13 @@ class Ui_MainWindow(object):
         self.button_page_main.setObjectName(u"button_page_main")
         self.button_page_main.setMinimumSize(QSize(0, 40))
         self.button_page_main.setMaximumSize(QSize(16777215, 16777215))
+        font = QFont()
+        font.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        font.setKerning(True)
+        self.button_page_main.setFont(font)
         self.button_page_main.setAutoRepeat(False)
         self.button_page_main.setAutoDefault(False)
         self.button_page_main.setFlat(False)
@@ -66,6 +73,12 @@ class Ui_MainWindow(object):
         self.button_page_password.setObjectName(u"button_page_password")
         self.button_page_password.setMinimumSize(QSize(0, 40))
         self.button_page_password.setMaximumSize(QSize(16777215, 16777215))
+        font1 = QFont()
+        font1.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font1.setPointSize(10)
+        font1.setBold(True)
+        font1.setWeight(75)
+        self.button_page_password.setFont(font1)
 
         self.verticalLayout_6.addWidget(self.button_page_password)
 
@@ -74,6 +87,7 @@ class Ui_MainWindow(object):
         self.button_page_setting.setObjectName(u"button_page_setting")
         self.button_page_setting.setMinimumSize(QSize(0, 40))
         self.button_page_setting.setMaximumSize(QSize(16777215, 16777215))
+        self.button_page_setting.setFont(font1)
 
         self.verticalLayout_6.addWidget(self.button_page_setting)
 
@@ -82,6 +96,7 @@ class Ui_MainWindow(object):
         self.button_page_history.setObjectName(u"button_page_history")
         self.button_page_history.setMinimumSize(QSize(0, 40))
         self.button_page_history.setMaximumSize(QSize(16777215, 16777215))
+        self.button_page_history.setFont(font1)
 
         self.verticalLayout_6.addWidget(self.button_page_history)
 
