@@ -7,7 +7,6 @@ import time
 
 import filetype
 import natsort
-import qdarktheme
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread, Qt
 from PySide2.QtGui import QColor, QIcon
@@ -17,7 +16,7 @@ from ui import Ui_MainWindow
 
 
 class UnzipMainQthread(QThread):
-    signal_ui_update = Signal(list)  # 自定义信号
+    signal_ui_update = Signal(list)  # 自定义信号，list包含两个元素，1位类型 2为文本
     signal_send_unzip_result = Signal(list)  # 发送解压后文件的list
 
     def __init__(self, unzip_files_dict, parent=None):
@@ -60,42 +59,35 @@ class UnzipMainQthread(QThread):
         pass_number = 0  # 跳过文件数
         success_number = 0
         the_pre_folder = ''  # 上一个文件所在文件夹，用于删除临时文件夹
+        self.signal_ui_update.emit(['更新图标', 'start'])
         for first_file in self.unzip_files_dict:
             the_folder = os.path.split(first_file)[0]  # 文件所在文件夹
             current_number += 1  # 当前文件编号计数+1
             if current_number == 1:
                 the_pre_folder = the_folder
             current_filename = OnlyUnzip.get_zip_name(first_file)  # 提取当前处理的文件名
-            self.signal_ui_update.emit(['当前文件', current_filename])
-            self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} 测试密码中'])
-            self.signal_ui_update.emit(['图标', None])
+            self.signal_ui_update.emit(['更新当前文件', current_filename])
+            self.signal_ui_update.emit(['更新总进度', f'{current_number}/{total_files_number}'])
             file_list = self.unzip_files_dict[first_file]
             # 多传递两个参数current_number、total_files_number，用于保持传递信号的文本一致
-            the_test_result, the_right_password = self.test_password(first_file, current_number, total_files_number)
+            the_test_result, the_right_password = self.test_password(first_file)
             if the_test_result == '密码错误':
                 wrong_password_file_number += 1
-                self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 密码错误'])
+                self.signal_ui_update.emit(['更新历史-失败', f'{os.path.split(first_file)[1]} | 密码错误'])
             elif the_test_result == '不是压缩文件':
                 pass_number += 1
                 self.signal_ui_update.emit(
-                    ['历史记录-跳过', f'{os.path.split(first_file)[1]} | 不是压缩文件（确定），已跳过'])
+                    ['更新历史-跳过', f'{os.path.split(first_file)[1]} | 不是压缩文件，已跳过'])
             elif the_test_result == '丢失分卷':
                 damaged_file_number += 1
-                self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 丢失分卷'])
+                self.signal_ui_update.emit(['更新历史-失败', f'{os.path.split(first_file)[1]} | 丢失分卷'])
             else:
                 OnlyUnzip.right_password_number_add_one(the_right_password)  # 成功解压则密码使用次数+1
                 OnlyUnzip.save_unzip_history(first_file, the_right_password)  # 保存解压历史
-                self.signal_ui_update.emit(['进度', f'{current_number}/{total_files_number} | {the_right_password}'])
-                self.signal_ui_update.emit(['历史记录-成功', f'{os.path.split(first_file)[1]} | {the_right_password}'])
+                self.signal_ui_update.emit(['更新历史-成功', f'{os.path.split(first_file)[1]} | {the_right_password}'])
                 if self.is_unzip:  # 如果解压选项被选中，则执行解压操作
                     self.start_unzip(the_folder, first_file, file_list, the_right_password)
                     success_number += 1
-                    # 由于添加了过滤解压功能，不再以解压后文件大小判断是否文件损坏
-                    # if unzip_result == '文件损坏':
-                    #     damaged_file_number += 1
-                    #     self.signal_ui_update.emit(['历史记录-失败', f'{os.path.split(first_file)[1]} | 文件损坏(可能)'])
-                    # if unzip_result == '解压成功':
-                    #     success_number += 1
                 if the_pre_folder != the_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
                     pre_temporary_folder = os.path.normpath(os.path.join(the_pre_folder, "UnzipTempFolder"))  # 临时文件夹
                     if os.path.exists(pre_temporary_folder):  # 处理遗留的临时文件夹
@@ -108,14 +100,13 @@ class UnzipMainQthread(QThread):
                         if OnlyUnzip.get_folder_size(temporary_folder) == 0:
                             self.del_empty_folder(temporary_folder)
         # 全部完成后发送信号
-        self.signal_ui_update.emit(['图标', './icon/全部完成.png'])
-        self.signal_ui_update.emit(['当前文件', '————————————'])
+        self.signal_ui_update.emit(['更新图标', './icon/全部完成.png'])
+        self.signal_ui_update.emit(['更新当前文件', '————————————'])
         self.signal_ui_update.emit(
-            ['进度',
-             f'成功:{success_number}，密码错误:{wrong_password_file_number}，损坏:{damaged_file_number}，跳过:{pass_number}'])
-        self.signal_ui_update.emit(['完成解压', None])
+            ['完成全部解压任务',
+             f'成功:{success_number},失败:{wrong_password_file_number},损坏:{damaged_file_number},跳过:{pass_number}'])
 
-    def test_password(self, zipfile, current_number, total_files_number):
+    def test_password(self, zipfile):
         """测试密码"""
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
         passwords, _ = OnlyUnzip.read_password_return_list()  # 调用主程序的函数，提取密码
@@ -127,14 +118,15 @@ class UnzipMainQthread(QThread):
             test_password_number += 1
             if test_password_number % 5 == 0:  # 每5次刷新一次ui
                 self.signal_ui_update.emit(
-                    ['进度',
-                     f'{current_number}/{total_files_number} 测试密码中 {test_password_number}/{total_test_password}']
-                )
+                    ['更新密码测试进度',
+                     f'{test_password_number}/{total_test_password}'])
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test,
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               creationflags=subprocess.CREATE_NO_WINDOW)
+
+            print(run_text_command.stdout)
             if run_text_command.returncode == 0:  # 返回码为0则测试成功
                 the_right_password = password
                 the_test_result = '测试成功'
@@ -148,6 +140,8 @@ class UnzipMainQthread(QThread):
                     the_test_result = '丢失分卷'
                     break
                 # 密码错误的提示为：Cannot open encrypted archive. Wrong password?
+            else:  # 处理非0和2的报错
+                break
         return the_test_result, the_right_password
 
     def start_unzip(self, the_folder, zipfile, zipfile_list, unzip_password):
@@ -161,11 +155,31 @@ class UnzipMainQthread(QThread):
                          "x",
                          "-p" + unzip_password, "-y",
                          zipfile,
+                         '-bsp1',
                          "-o" + unzip_folder] + self.skip_rule  # 组合完整7zip指令
-        subprocess.run(command_unzip,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       creationflags=subprocess.CREATE_NO_WINDOW)
+
+        self.signal_ui_update.emit(['更新解压进度', 0])  # 解压前先切换指定页
+        process = subprocess.Popen(command_unzip,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   creationflags=subprocess.CREATE_NO_WINDOW,
+                                   text=True
+                                   )
+
+        last_percent = 0
+        while True:
+            line = process.stdout.readline()
+            if line == '' and process.poll() is not None:
+                break
+            print(line, end='')  # 输出实时信息
+            # 在实时输出中查找进度信息并解析
+            match = re.search(r'(\d{1,3})%', line)
+            if match:
+                progress_percent = int(match.group(1))  # 提取进度百分比（不含%）
+                if progress_percent > last_percent:
+                    self.signal_ui_update.emit(['更新解压进度', progress_percent])
+                    last_percent = progress_percent
+
         if self.is_delete:  # 根据选项选择是否删除原文件
             for i in zipfile_list:  # 删除原文件
                 send2trash.send2trash(os.path.normpath(i))
@@ -180,17 +194,14 @@ class UnzipMainQthread(QThread):
     @staticmethod
     def del_empty_folder(folder):
         """删除0kb文件夹"""
-        print(f'准备删除 {folder}')
         try:
             os.rmdir(folder)
-            print(f'已删除 {folder}')
         except OSError:
             all_dirpath = []
             for dirpath, dirnames, filenames in os.walk(folder):
                 all_dirpath.append(dirpath)
             for i in all_dirpath[::-1]:
                 os.rmdir(i)
-                print(f'内部不为空 已删除内部文件夹 {i}')
 
     def nested_folders_true(self, folder):
         """处理套娃文件夹"""
@@ -261,14 +272,16 @@ class OnlyUnzip(QMainWindow):
         self.ui.label_icon.setPixmap('./icon/初始状态.png')
         self.ui.listWidget_history.setContextMenuPolicy(Qt.CustomContextMenu)  # 设置历史记录控件的右键菜单属性
         self.nested_unzip_filepath = []  # 存放解压结果
-        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.stackedWidget_main.setCurrentIndex(0)
+        self.ui.stackedWidget_schedule.setCurrentIndex(0)
+        self.ui.button_page_main.setStyleSheet(f'background-color: rgb(255, 228, 181);')
 
         # 设置槽函数
         self.ui.label_icon.dropSignal.connect(self.drop_files)  # 拖入文件
-        self.ui.button_page_main.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))  # 切换页面
-        self.ui.button_page_password.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))  # 切换页面
-        self.ui.button_page_setting.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))  # 切换页面
-        self.ui.button_page_history.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))  # 切换页面
+        self.ui.button_page_main.clicked.connect(lambda: self.ui.stackedWidget_main.setCurrentIndex(0))  # 切换页面
+        self.ui.button_page_password.clicked.connect(lambda: self.ui.stackedWidget_main.setCurrentIndex(1))  # 切换页面
+        self.ui.button_page_setting.clicked.connect(lambda: self.ui.stackedWidget_main.setCurrentIndex(2))  # 切换页面
+        self.ui.button_page_history.clicked.connect(lambda: self.ui.stackedWidget_main.setCurrentIndex(3))  # 切换页面
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_button_color)
 
         self.ui.button_update_password.clicked.connect(self.update_password)
@@ -318,7 +331,7 @@ class OnlyUnzip(QMainWindow):
         """检查之前解压的临时文件夹是否存在"""
         all_temporary_folder = set()  # 所有可能存在的临时文件夹
         for file in files:
-            temporary_folder = os.path.join(os.path.split(file)[0], "UnzipTempFolder")
+            temporary_folder = os.path.join(os.path.split(file)[0], 'UnzipTempFolder')
             all_temporary_folder.add(temporary_folder)
         for folder in all_temporary_folder:
             if os.path.exists(folder) and os.listdir(folder):
@@ -330,7 +343,7 @@ class OnlyUnzip(QMainWindow):
         if self.is_old_temporary_folder_exist(files):  # 如果存在临时文件夹，则不进行后续操作
             self.ui.label_icon.setPixmap('./icon/错误.png')
             self.ui.label_current_file.setText('————————————')
-            self.ui.label_schedule.setText('存在遗留临时文件夹')
+            self.ui.label_schedule_file.setText('存在遗留临时文件夹')
             self.ui.label_icon.setEnabled(True)
         else:
             if files:  # 列表或者字典都不为空则执行子线程
@@ -346,12 +359,12 @@ class OnlyUnzip(QMainWindow):
                 else:  # 有一个为空则说明没有需要解压的文件
                     self.ui.label_icon.setPixmap('./icon/错误.png')
                     self.ui.label_current_file.setText('————————————')
-                    self.ui.label_schedule.setText('没有压缩包')
+                    self.ui.label_schedule_file.setText('没有压缩包')
                     self.ui.label_icon.setEnabled(True)
             else:  # 有一个为空则说明没有需要解压的文件
                 self.ui.label_icon.setPixmap('./icon/错误.png')
                 self.ui.label_current_file.setText('————————————')
-                self.ui.label_schedule.setText('没有压缩包')
+                self.ui.label_schedule_file.setText('没有压缩包')
                 self.ui.label_icon.setEnabled(True)
 
     def show_menu_copy(self, pos):
@@ -371,34 +384,43 @@ class OnlyUnzip(QMainWindow):
         QApplication.clipboard().setText(text)
 
     def update_ui(self, the_list):
-        if the_list[0] == '当前文件':
+        if the_list[0] == '更新当前文件':
             self.ui.label_current_file.setText(the_list[1])
-        elif the_list[0] == '进度':
-            self.ui.label_schedule.setText(the_list[1])
-        elif the_list[0] == '图标':
-            if the_list[1] is None:
+        elif the_list[0] == '更新总进度':
+            self.ui.label_schedule_file.setText(the_list[1])
+        elif the_list[0] == '更新密码测试进度':
+            self.ui.label_schedule_test.setText(the_list[1])
+            self.ui.stackedWidget_schedule.setCurrentIndex(1)
+        elif the_list[0] == '更新解压进度':
+            self.ui.progressBar_unzip.setValue(the_list[1])
+            self.ui.stackedWidget_schedule.setCurrentIndex(2)
+        elif the_list[0] == '更新图标':
+            if the_list[1] == 'start':
                 if self.ui.checkBox_model_test.isChecked():  # 按选项设置不同图标
                     self.ui.label_icon.setPixmap('./icon/测试密码.png')
                 else:
                     self.ui.label_icon.setPixmap('./icon/正在解压.png')
             else:
                 self.ui.label_icon.setPixmap(the_list[1])
-        elif the_list[0] == '历史记录-成功':
+        elif the_list[0] == '更新历史-成功':
             item = QListWidgetItem(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + the_list[1])
             item.setTextColor(QColor(92, 167, 186))
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)  # 启用UserRole
             item.setData(Qt.UserRole, '成功')  # 设置 UserRole 的值
             self.ui.listWidget_history.addItem(item)
-        elif the_list[0] == '历史记录-失败':
+        elif the_list[0] == '更新历史-失败':
             item = QListWidgetItem(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + the_list[1])
             item.setTextColor(QColor(254, 67, 101))
             self.ui.listWidget_history.addItem(item)
-        elif the_list[0] == '历史记录-跳过':
+        elif the_list[0] == '更新历史-跳过':
             item = QListWidgetItem(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + the_list[1])
             item.setTextColor(QColor(255, 182, 193))
             self.ui.listWidget_history.addItem(item)
-        elif the_list[0] == '完成解压':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
+        elif the_list[0] == '完成全部解压任务':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
             self.ui.label_icon.setEnabled(True)
+            self.ui.label_schedule_file.setText('全部完成')
+            self.ui.stackedWidget_schedule.setCurrentIndex(0)
+            self.ui.label_schedule_finish.setText(the_list[1])
             if self.ui.checkBox_nested_zip.isChecked():
                 unzip_path = self.nested_unzip_filepath.copy()
                 self.nested_unzip_filepath = []  # 重置结果
@@ -616,6 +638,7 @@ class OnlyUnzip(QMainWindow):
         else:
             type_kind = kind.extension
 
+        print(f'文件【{file}】的文件类型为【{type_kind}】')
         if type_kind in zip_type or file_suffix.lower() in suffix_type:  # filetype库识别符合或者后缀名符合
             return True
         else:
@@ -762,7 +785,7 @@ number = 9999"""
     def change_button_color(self, button_id):
         """高亮点击的按钮"""
         original_style = self.ui.button_update_password.styleSheet()  # 按钮的原始样式
-        clicked_style = f"{original_style} background-color: rgb(232, 221, 203);"  # 被点击后的样式
+        clicked_style = f"{original_style} background-color: rgb(255, 228, 181);"  # 被点击后的样式
         for button in self.ui.buttonGroup.buttons():  # 重置按钮组中所有按钮的样式
             button.setStyleSheet(original_style)
         clicked_button = self.ui.buttonGroup.button(button_id)
@@ -779,8 +802,7 @@ number = 9999"""
 
 
 app = QApplication()
-qdarktheme.setup_theme("light")
-# app.setStyle('Fusion')
+app.setStyle('Fusion')
 show_ui = OnlyUnzip()
 show_ui.setWindowIcon(QIcon('./icon/程序图标.ico'))
 show_ui.setFixedSize(262, 232)
