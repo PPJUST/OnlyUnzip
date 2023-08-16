@@ -167,7 +167,6 @@ class UnzipMainQthread(QThread):
             line = process.stdout.readline()
             if line == '' and process.poll() is not None:
                 break
-            print(line, end='')  # 输出实时信息
             # 在实时输出中查找进度信息并解析
             match = re.search(r'(\d{1,3})%', line)
             if match:
@@ -340,12 +339,12 @@ class OnlyUnzip(QMainWindow):
             self.ui.label_icon.setPixmap('./icon/错误.png')
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('存在遗留临时文件夹')
-            self.ui.label_icon.setEnabled(True)
+            self.set_widget_enable(mode=True)
         else:
             if files:  # 列表或者字典都不为空则执行子线程
                 need_unzip_files = self.check_zip(files)  # 检查是否是有压缩包
                 if need_unzip_files:
-                    self.ui.label_icon.setEnabled(False)  # 拖入文件执行解压前关闭Label控件，防止再次拖入文件导致报错
+                    self.set_widget_enable(mode=False)
                     unzip_files_dict = self.class_multi_volume(need_unzip_files)  # 将压缩包分类 一般与分卷
                     # 运行子线程，进行测试与解压
                     self.unzip_qthread = UnzipMainQthread(unzip_files_dict)
@@ -356,12 +355,42 @@ class OnlyUnzip(QMainWindow):
                     self.ui.label_icon.setPixmap('./icon/错误.png')
                     self.ui.label_current_file.setText('————————————')
                     self.ui.label_schedule_file.setText('没有压缩包')
-                    self.ui.label_icon.setEnabled(True)
+                    self.set_widget_enable(mode=True)
             else:  # 有一个为空则说明没有需要解压的文件
                 self.ui.label_icon.setPixmap('./icon/错误.png')
                 self.ui.label_current_file.setText('————————————')
                 self.ui.label_schedule_file.setText('没有压缩包')
-                self.ui.label_icon.setEnabled(True)
+                self.set_widget_enable(mode=True)
+
+    def set_widget_enable(self, mode=True):
+        """设置相关控件的enable属性。防止解压过程中修改选项导致报错"""
+        if mode:
+            # 图标
+            self.ui.label_icon.setEnabled(True)
+            #密码页
+            self.ui.button_update_password.setEnabled(True)
+            # 设置页
+            self.ui.checkBox_model_unzip.setEnabled(True)
+            self.ui.checkBox_model_test.setEnabled(True)
+            self.ui.checkBox_delect_zip.setEnabled(True)
+            self.ui.checkBox_nested_folders.setEnabled(True)
+            self.ui.checkBox_nested_zip.setEnabled(True)
+            self.ui.checkBox_check_zip.setEnabled(True)
+            self.ui.lineedit_unzip_skip_suffix.setEnabled(True)
+        else:
+            # 图标
+            self.ui.label_icon.setEnabled(False)
+            # 密码页
+            self.ui.button_update_password.setEnabled(False)
+            # 设置页
+            self.ui.checkBox_model_unzip.setEnabled(False)
+            self.ui.checkBox_model_test.setEnabled(False)
+            self.ui.checkBox_delect_zip.setEnabled(False)
+            self.ui.checkBox_nested_folders.setEnabled(False)
+            self.ui.checkBox_nested_zip.setEnabled(False)
+            self.ui.checkBox_check_zip.setEnabled(False)
+            self.ui.lineedit_unzip_skip_suffix.setEnabled(False)
+
 
     def show_menu_copy(self, pos):
         """历史记录框中设置右键复制密码"""
@@ -413,7 +442,7 @@ class OnlyUnzip(QMainWindow):
             item.setTextColor(QColor(255, 182, 193))
             self.ui.listWidget_history.addItem(item)
         elif the_list[0] == '完成全部解压任务':  # 完成解压后如果选择了嵌套压缩包，则在将解压结果重新运行子线程
-            self.ui.label_icon.setEnabled(True)
+            self.set_widget_enable(mode=True)
             self.ui.label_schedule_file.setText('全部完成')
             self.ui.stackedWidget_schedule.setCurrentIndex(0)
             self.ui.label_schedule_finish.setText(the_list[1])
