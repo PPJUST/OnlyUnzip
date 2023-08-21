@@ -116,7 +116,7 @@ class UnzipMainQthread(QThread):
         total_test_password = len(passwords)
         for password in passwords:
             test_password_number += 1
-            self.signal_ui_update.emit(['更新密码测试进度',f'{test_password_number}/{total_test_password}'])
+            self.signal_ui_update.emit(['更新密码测试进度', f'{test_password_number}/{total_test_password}'])
             command_test = [path_7zip, "t", "-p" + password, "-y", zipfile]  # 组合完整7zip指令
             run_text_command = subprocess.run(command_test,
                                               stdout=subprocess.PIPE,
@@ -367,7 +367,7 @@ class OnlyUnzip(QMainWindow):
         if mode:
             # 图标
             self.ui.label_icon.setEnabled(True)
-            #密码页
+            # 密码页
             self.ui.button_update_password.setEnabled(True)
             # 设置页
             self.ui.checkBox_model_unzip.setEnabled(True)
@@ -390,7 +390,6 @@ class OnlyUnzip(QMainWindow):
             self.ui.checkBox_nested_zip.setEnabled(False)
             self.ui.checkBox_check_zip.setEnabled(False)
             self.ui.lineedit_unzip_skip_suffix.setEnabled(False)
-
 
     def show_menu_copy(self, pos):
         """历史记录框中设置右键复制密码"""
@@ -716,7 +715,7 @@ class OnlyUnzip(QMainWindow):
     @staticmethod
     def create_new_ini():
         """如果本地没有config文件则新建"""
-        if not os.path.exists(os.path.join(os.getcwd(), 'config.ini')):
+        if not os.path.exists('config.ini'):
             with open('config.ini', 'w', encoding='utf-8') as cw:
                 the_initialize = """[DEFAULT]
 information = 
@@ -732,9 +731,12 @@ skip_suffix =
 [无密码]
 number = 9999"""
                 cw.write(the_initialize)
+        if not os.path.exists('backup_config'):
+            os.mkdir('backup_config')
 
     def update_password(self):
         """更新密码"""
+        self.backup_config()
         new_all_password = [x for x in self.ui.text_password.toPlainText().split('\n') if x.strip()]
         read_config = configparser.ConfigParser()  # 注意大小写
         read_config.read("config.ini", encoding='utf-8')  # 配置文件的路径
@@ -754,6 +756,12 @@ number = 9999"""
         clipboard = QApplication.clipboard()  # 创建一个剪贴板对象
         clipboard_text = clipboard.text()  # 读取剪贴板的文本
         self.ui.text_password.setPlainText(clipboard_text)
+
+    @staticmethod
+    def backup_config():
+        """在更新密码前备份一次config文件（不删除原备份）"""
+        new_filename = f'config-{time.strftime("%Y_%m_%d_%H_%M_%S ", time.localtime())}.ini'
+        shutil.copyfile('config.ini', f'backup_config/{new_filename}')
 
     @staticmethod
     def export_password():
