@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�WgTQon.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�jsKTCR.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -11,6 +11,7 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+
 
 class MyLabel(QLabel):
     dropSignal = Signal(list)
@@ -28,6 +29,7 @@ class MyLabel(QLabel):
             urls = event.mimeData().urls()
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -276,7 +278,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 137, 243))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -56, 162, 284))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.checkBox_model_unzip = QCheckBox(self.scrollAreaWidgetContents)
@@ -347,6 +349,34 @@ class Ui_MainWindow(object):
         self.lineedit_unzip_skip_suffix.setObjectName(u"lineedit_unzip_skip_suffix")
 
         self.verticalLayout_4.addWidget(self.lineedit_unzip_skip_suffix)
+
+        self.line_5 = QFrame(self.scrollAreaWidgetContents)
+        self.line_5.setObjectName(u"line_5")
+        self.line_5.setFrameShape(QFrame.HLine)
+        self.line_5.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_4.addWidget(self.line_5)
+
+        self.label_4 = QLabel(self.scrollAreaWidgetContents)
+        self.label_4.setObjectName(u"label_4")
+
+        self.verticalLayout_4.addWidget(self.label_4)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setSpacing(0)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.lineedit_unzip_to_folder = QLineEdit(self.scrollAreaWidgetContents)
+        self.lineedit_unzip_to_folder.setObjectName(u"lineedit_unzip_to_folder")
+
+        self.horizontalLayout_6.addWidget(self.lineedit_unzip_to_folder)
+
+        self.button_ask_folder = QToolButton(self.scrollAreaWidgetContents)
+        self.button_ask_folder.setObjectName(u"button_ask_folder")
+
+        self.horizontalLayout_6.addWidget(self.button_ask_folder)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_6)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -422,9 +452,11 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.checkBox_nested_zip.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305**", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_check_zip.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u538b\u7f29\u5305\u7684\u8bc6\u522b\u65b9\u6cd5\uff1a\u4f7f\u7528filetype\u5e93+\u6307\u5b9a\u6587\u4ef6\u540d\u540e\u7f00\uff08exe\u6587\u4ef6\u4e0d\u4f1a\u88ab\u8ba4\u5b9a\u4e3a\u538b\u7f29\u5305\uff09</p></body></html>", None))
+        self.checkBox_check_zip.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u538b\u7f29\u5305\u7684\u8bc6\u522b\u65b9\u6cd5\uff1a\u4f7f\u7528filetype\u5e93+\u6307\u5b9a\u6587\u4ef6\u540d\u540e\u7f00\uff08EXE\u4e0d\u4f1a\u88ab\u8ba4\u5b9a\u4e3a\u538b\u7f29\u5305\uff09</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_check_zip.setText(QCoreApplication.translate("MainWindow", u"\u4ec5\u89e3\u538b\u538b\u7f29\u5305", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u8df3\u8fc7\u89e3\u538b\u7684\u540e\u7f00\u540d\uff1a\uff08\u4ee5,\u6216\u7a7a\u683c\u5206\u9694\uff0c\u5ffd\u7565\u5927\u5c0f\u5199\uff09", None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u5230\u6307\u5b9a\u6587\u4ef6\u5939", None))
+        self.button_ask_folder.setText(QCoreApplication.translate("MainWindow", u"..", None))
     # retranslateUi
 
