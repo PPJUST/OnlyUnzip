@@ -8,7 +8,7 @@ from typing import Tuple
 import natsort
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QColor, QIcon
-from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction, QFileDialog
+from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction, QFileDialog, QMessageBox
 
 import general_method
 from qthread_unzip import UnzipQthread
@@ -43,8 +43,9 @@ class OnlyUnzip(QMainWindow):
         # 设置标签页的切换
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_page)
 
-        # 拖入文件
+        # 主页面
         self.ui.label_icon.dropSignal.connect(self.drop_files)
+        self.ui.button_stop.clicked.connect(self.stop_qthread)
 
         # 密码页的按钮
         self.ui.button_update_password.clicked.connect(self.update_password)  # 更新密码
@@ -135,15 +136,24 @@ class OnlyUnzip(QMainWindow):
             self.update_ui(['存在遗留临时文件夹'])
             self.set_widget_enable()
 
-    @staticmethod
-    def check_temp_folder(filepath_list: list) -> bool:
+    def check_temp_folder(self,filepath_list: list) -> bool:
         """传入文件路径列表list，检查对应路径的同级文件夹是否有临时文件夹（前一次解压未正常删除的）
         如果存在临时文件夹并且其中有相应文件/文件夹，则返回False，终止下一步操作"""
         print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+
         all_temporary_folder = set()  # 所有可能存在的临时文件夹路径（添加后缀自动生成，非真实路径）
-        for path in filepath_list:
-            temporary_folder = os.path.normpath(os.path.join(os.path.split(path)[0], 'UnzipTempFolder'))
-            all_temporary_folder.add(temporary_folder)
+
+        # 如果指定了解压路径文件夹
+        unzip_to_folder = self.ui.lineedit_unzip_to_folder.text()
+        if unzip_to_folder and os.path.exists(unzip_to_folder) and os.path.isdir(unzip_to_folder):  # 如果解压文件夹符合规则
+            all_temporary_folder.add(os.path.normpath(os.path.join(unzip_to_folder, 'UnzipTempFolder')))
+        else:
+            for path in filepath_list:
+                temporary_folder = os.path.normpath(os.path.join(os.path.split(path)[0], 'UnzipTempFolder'))
+                all_temporary_folder.add(temporary_folder)
+
+        print(f'all_temporary_folder {all_temporary_folder}')
+
         for folder in all_temporary_folder:
             if os.path.exists(folder) and os.listdir(folder):
                 return False
@@ -158,28 +168,14 @@ class OnlyUnzip(QMainWindow):
             # 密码页
             self.ui.button_update_password.setEnabled(True)
             # 设置页
-            self.ui.checkBox_model_unzip.setEnabled(True)
-            self.ui.checkBox_model_test.setEnabled(True)
-            self.ui.checkBox_delect_zip.setEnabled(True)
-            self.ui.checkBox_nested_folders.setEnabled(True)
-            self.ui.checkBox_nested_zip.setEnabled(True)
-            self.ui.checkBox_check_zip.setEnabled(True)
-            self.ui.lineedit_unzip_skip_suffix.setEnabled(True)
-            self.ui.lineedit_unzip_to_folder.setEnabled(True)
+            self.ui.scrollAreaWidgetContents.setEnabled(True)
         else:
             # 主页面
             self.ui.label_icon.setEnabled(False)
             # 密码页
             self.ui.button_update_password.setEnabled(False)
             # 设置页
-            self.ui.checkBox_model_unzip.setEnabled(False)
-            self.ui.checkBox_model_test.setEnabled(False)
-            self.ui.checkBox_delect_zip.setEnabled(False)
-            self.ui.checkBox_nested_folders.setEnabled(False)
-            self.ui.checkBox_nested_zip.setEnabled(False)
-            self.ui.checkBox_check_zip.setEnabled(False)
-            self.ui.lineedit_unzip_skip_suffix.setEnabled(False)
-            self.ui.lineedit_unzip_to_folder.setEnabled(False)
+            self.ui.scrollAreaWidgetContents.setEnabled(False)
 
     def show_menu_copy(self, pos):
         """历史记录页中的右键菜单，用于复制密码"""
@@ -204,6 +200,7 @@ class OnlyUnzip(QMainWindow):
         type_list格式：['更新类型', '相关数据']"""
         if type_list[0] == '初始状态':
             self.ui.label_icon.setPixmap('./icon/初始状态.png')
+            self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
         elif type_list[0] == '没有需要解压的文件':
             self.ui.label_icon.setPixmap('./icon/全部完成.png')
             self.ui.label_current_file.setText('————————————')
@@ -213,6 +210,7 @@ class OnlyUnzip(QMainWindow):
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('存在遗留临时文件夹')
         elif type_list[0] == '子线程-开始':
+            self.ui.button_stop.setVisible(True)  # 显示停止按钮
             if self.ui.checkBox_model_test.isChecked():  # 按选项设置不同图标
                 self.ui.label_icon.setPixmap('./icon/测试密码.png')
             else:
@@ -271,6 +269,10 @@ class OnlyUnzip(QMainWindow):
             self.ui.label_schedule_finish.setText(type_list[1])
             self.set_widget_enable(mode=True)
             self.ui.stackedWidget_schedule.setCurrentIndex(0)
+            self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
+        elif type_list[0] == '子线程-中止':
+            self.ui.label_schedule_file.setText('等待当前文件完成执行')
+            self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
 
     @staticmethod
     def save_unzip_history(filepath: str, password: str):
@@ -469,6 +471,16 @@ unzip_to_folder =
         else:
             self.ui.lineedit_unzip_to_folder.setStyleSheet("")
             self.ui.label_icon.setPixmap('./icon/初始状态.png')
+
+    def stop_qthread(self):
+        """中止解压子线程"""
+        reply = QMessageBox.question(self, '确认对话框', f'是否中止当前任务\n'
+                                                         f'（不终止当前正在执行的文件\n仅中止之后的任务）',
+                                     QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.update_ui('子线程-中止')
+            self.qthread_unzip.signal_stop.emit()
+
 
 
 def main():

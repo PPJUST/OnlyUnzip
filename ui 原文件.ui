@@ -251,14 +251,32 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_schedule_file">
-          <property name="text">
-           <string>显示总进度</string>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="spacing">
+           <number>0</number>
           </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
+          <item>
+           <widget class="QLabel" name="label_schedule_file">
+            <property name="text">
+             <string>显示总进度</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="button_stop">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>icon/中止.png</normaloff>icon/中止.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QLabel" name="label_current_file">
@@ -502,7 +520,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-56</y>
+             <y>0</y>
              <width>162</width>
              <height>284</height>
             </rect>

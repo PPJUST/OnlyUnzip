@@ -4,9 +4,11 @@
 import inspect
 import os
 import re
+import string
 import time
 import shutil
 from typing import Union
+import random
 
 import filetype
 
@@ -160,19 +162,14 @@ def get_no_dup_filename(filepath: str, the_dirpath: str) -> str:
         filetitle = filename
         suffix = ''
 
-    all_filename_list = os.listdir(the_dirpath)  # 可能需要考虑原有文件夹中添加后缀-new1后的重名情况 os.listdir(os.path.split(filepath)[0])
-    check_filename_list = [x.lower() for x in all_filename_list]
-    if filename.lower() not in check_filename_list:
-        new_filename = filename
-        return new_filename
-    else:
-        count = 1
-        while True:
-            new_filename = f"{filetitle} -new{count}{suffix}"
-            if new_filename.lower() not in check_filename_list:
-                return new_filename
-            else:
-                count += 1
+    # 可能需要考虑原有文件夹中添加后缀-new1后的重名情况
+    new_filename = filename
+    count = 0
+    while os.path.exists(os.path.join(the_dirpath, new_filename)):  # 一直累加循环直到不存在同名
+        count += 1
+        new_filename = f"{filetitle} -new{count}{suffix}"
+
+    return new_filename
 
 
 def process_nested_folders(folder: str, target_folder: str = None, mode=True) -> str:
@@ -201,13 +198,24 @@ def process_nested_folders(folder: str, target_folder: str = None, mode=True) ->
     else:
         final_folder = os.path.split(folder)[0]  # folder的父目录（移动到该目录下）
     if need_move_filename.lower() not in [x.lower() for x in os.listdir(final_folder)]:  # 如果没有重名的文件/文件夹
-        shutil.move(need_move_path, final_folder)
+        shutil.move(need_move_path, final_folder,copy_function=shutil.copy2)  # 有时报错[WinError 145] 目录不是空的。
         new_path = os.path.normpath(os.path.join(final_folder, need_move_filename))  # 最终路径
     else:
         new_filename = get_no_dup_filename(need_move_path, final_folder)  # 最终文件名
         old_path_with_newname = os.path.normpath(os.path.join(os.path.split(need_move_path)[0], new_filename))
-        os.rename(need_move_path, old_path_with_newname)
-        shutil.move(old_path_with_newname, final_folder)
+        try:
+            try:
+                os.rename(need_move_path, old_path_with_newname)  # 有时报错[WinError 5] 拒绝访问。
+            except PermissionError:
+                time.sleep(1)  # 备忘录-拒绝访问不知道哪里占用了，可能是找非重名文件夹，等1秒让系统处理完
+                os.rename(need_move_path, old_path_with_newname)
+        except PermissionError:  # 如果等1秒还不能解决占用问题，则直接移动到生成的文件夹中
+            # 修改变量
+            old_path_with_newname = need_move_path
+            random_ascii = ''.join(random.choices(string.ascii_lowercase, k=6))  # 随机6位小写字母
+            final_folder = os.path.normpath(os.path.join(final_folder,os.path.split(need_move_path)[1] + f' -{random_ascii}'))
+
+        shutil.move(old_path_with_newname, final_folder,copy_function=shutil.copy2)
         new_path = os.path.normpath(os.path.join(final_folder, new_filename))  # 最终路径
 
     delete_folder_if_empty(folder)  # 如果原文件夹为空，则删除

@@ -15,6 +15,7 @@ import general_method
 class UnzipQthread(QThread):
     signal_update_ui = Signal(list)  # 发送更新主程序ui的信号，发送的list格式：['更新类型', '相关数据']
     signal_nested_zip = Signal(list)  # 发送处理嵌套压缩包的信号，发送的list格式：所有解压后文件路径list
+    signal_stop = Signal()  # 中止操作的信号
 
     def __init__(self, unzip_files_dict, parent=None):
         super().__init__(parent)
@@ -30,6 +31,8 @@ class UnzipQthread(QThread):
         self.unzip_to_folder = unzip_to_folder  # str，解压到指定文件夹，可为空（则为解压文件的上级目录）
 
         self.nested_zip_filelist = []  # 存放解压结果，用于重复解压以处理嵌套压缩包
+        self.code_stop = False
+        self.signal_stop.connect(self.update_code_stop)
 
     @staticmethod
     def load_setting() -> Tuple[bool, bool, bool, bool, list, str]:
@@ -80,62 +83,65 @@ class UnzipQthread(QThread):
         self.signal_update_ui.emit(['子线程-开始'])
 
         for file_key in self.unzip_files_dict:  # 只解压dict中的key
-            if self.unzip_to_folder:  # 如果指定了目标文件夹
-                target_folder = self.unzip_to_folder
-            else:  # 否则为每个文件的上级文件夹
-                target_folder = os.path.split(file_key)[0]  # 文件所在文件夹
-            file_value = self.unzip_files_dict[file_key]  # 提取当前key对应的value，用于删除文件
-            number_current += 1  # 计数+1
-            if number_current == 1:  # 单独处理解压第1个文件时的上一个文件夹
-                pre_folder = target_folder
-            current_filename = os.path.split(file_key)[1]  # 提取当前文件的文件名
-            self.signal_update_ui.emit(['子线程-当前文件', current_filename])
-            self.signal_update_ui.emit(['子线程-总进度', f'{number_current}/{number_total}'])
-
-            test_result, correct_password = self.test_password(file_key)
-            if test_result == '密码错误':
-                number_wrong_pw += 1
-                self.signal_update_ui.emit(['子线程-记录-密码错误', os.path.split(file_key)[1]])
-            elif test_result == '不是压缩文件':
-                number_skip += 1
-                self.signal_update_ui.emit(['子线程-记录-不是压缩文件', os.path.split(file_key)[1]])
-            elif test_result == '文件被占用':
-                number_skip += 1
-                self.signal_update_ui.emit(['子线程-记录-文件被占用', os.path.split(file_key)[1]])
-            elif test_result == '磁盘空间不足':
-                number_skip += 1
-                self.signal_update_ui.emit(['子线程-记录-磁盘空间不足', os.path.split(file_key)[1]])
-            elif test_result == '丢失分卷':
-                number_damaged += 1
-                self.signal_update_ui.emit(['子线程-记录-丢失分卷', os.path.split(file_key)[1]])
-            elif test_result == '未知错误':
-                number_damaged += 1
-                self.signal_update_ui.emit(['子线程-记录-未知错误', os.path.split(file_key)[1]])
-            else:  # 成功的密码测试
-                number_success += 1
-                if correct_password != ' ':
-                    OnlyUnzip.add_password_number(correct_password)  # 正确密码次数+1
-                OnlyUnzip.save_unzip_history(file_key, correct_password)  # 保存解压历史
-                self.signal_update_ui.emit(['子线程-记录-成功', os.path.split(file_key)[1], correct_password])
-
-                if self.code_unzip:  # 如果当前为解压模式，则执行解压操作
-                    self.start_unzip(target_folder, file_key, file_value, correct_password)
-
-                if pre_folder != target_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
-                    pre_temp_folder = os.path.normpath(os.path.join(pre_folder, "UnzipTempFolder"))  # 上一个临时文件夹
-                    if os.path.exists(pre_temp_folder):  # 处理遗留的临时文件夹
-                        general_method.delete_folder_if_empty(pre_temp_folder)
+            if self.code_stop:  # 如果是停止状态，则中止循环
+                break
+            else:
+                if self.unzip_to_folder:  # 如果指定了目标文件夹
+                    target_folder = self.unzip_to_folder
+                else:  # 否则为每个文件的上级文件夹
+                    target_folder = os.path.split(file_key)[0]  # 文件所在文件夹
+                file_value = self.unzip_files_dict[file_key]  # 提取当前key对应的value，用于删除文件
+                number_current += 1  # 计数+1
+                if number_current == 1:  # 单独处理解压第1个文件时的上一个文件夹
                     pre_folder = target_folder
+                current_filename = os.path.split(file_key)[1]  # 提取当前文件的文件名
+                self.signal_update_ui.emit(['子线程-当前文件', current_filename])
+                self.signal_update_ui.emit(['子线程-总进度', f'{number_current}/{number_total}'])
 
-                if number_current == number_total:  # 完成全部文件处理后，删除最后的临时文件夹
-                    temp_folder = os.path.normpath(os.path.join(target_folder, "UnzipTempFolder"))
-                    if os.path.exists(temp_folder):
-                        general_method.delete_folder_if_empty(temp_folder)
+                test_result, correct_password = self.test_password(file_key)
+                if test_result == '密码错误':
+                    number_wrong_pw += 1
+                    self.signal_update_ui.emit(['子线程-记录-密码错误', os.path.split(file_key)[1]])
+                elif test_result == '不是压缩文件':
+                    number_skip += 1
+                    self.signal_update_ui.emit(['子线程-记录-不是压缩文件', os.path.split(file_key)[1]])
+                elif test_result == '文件被占用':
+                    number_skip += 1
+                    self.signal_update_ui.emit(['子线程-记录-文件被占用', os.path.split(file_key)[1]])
+                elif test_result == '磁盘空间不足':
+                    number_skip += 1
+                    self.signal_update_ui.emit(['子线程-记录-磁盘空间不足', os.path.split(file_key)[1]])
+                elif test_result == '丢失分卷':
+                    number_damaged += 1
+                    self.signal_update_ui.emit(['子线程-记录-丢失分卷', os.path.split(file_key)[1]])
+                elif test_result == '未知错误':
+                    number_damaged += 1
+                    self.signal_update_ui.emit(['子线程-记录-未知错误', os.path.split(file_key)[1]])
+                else:  # 成功的密码测试
+                    number_success += 1
+                    if correct_password != ' ':
+                        OnlyUnzip.add_password_number(correct_password)  # 正确密码次数+1
+                    OnlyUnzip.save_unzip_history(file_key, correct_password)  # 保存解压历史
+                    self.signal_update_ui.emit(['子线程-记录-成功', os.path.split(file_key)[1], correct_password])
+
+                    if self.code_unzip:  # 如果当前为解压模式，则执行解压操作
+                        self.start_unzip(target_folder, file_key, file_value, correct_password)
+
+                    if pre_folder != target_folder:  # 如果当前文件所在文件夹与上一个处理的文件所在文件夹不同，则删除上一个的临时文件夹
+                        pre_temp_folder = os.path.normpath(os.path.join(pre_folder, "UnzipTempFolder"))  # 上一个临时文件夹
+                        if os.path.exists(pre_temp_folder):  # 处理遗留的临时文件夹
+                            general_method.delete_folder_if_empty(pre_temp_folder)
+                        pre_folder = target_folder
+
+                    if number_current == number_total:  # 完成全部文件处理后，删除最后的临时文件夹
+                        temp_folder = os.path.normpath(os.path.join(target_folder, "UnzipTempFolder"))
+                        if os.path.exists(temp_folder):
+                            general_method.delete_folder_if_empty(temp_folder)
 
         # 全部完成后发送信号
         self.signal_update_ui.emit(['子线程-结束',
                                     f'成功:{number_success},失败:{number_wrong_pw},损坏:{number_damaged},跳过:{number_skip}'])
-        if self.code_nested_zip:
+        if self.code_nested_zip and not self.code_stop:
             self.signal_nested_zip.emit(self.nested_zip_filelist)
 
     def test_password(self, file: str) -> Tuple[str, str]:
@@ -153,49 +159,55 @@ class UnzipQthread(QThread):
 
         # 逻辑：循环执行命令行，直到全部循环完或者中途碰到特定返回码或错误码后break循环，并返回指定结果，否则使用默认的result
         for password in passwords:
-            current_test_pw_number += 1
-            self.signal_update_ui.emit(['子线程-测试密码进度', f'{current_test_pw_number}/{total_pw_number}'])
-            command_test = [path_7zip,
-                            "t",
-                            "-p" + password,
-                            "-y",
-                            file, ]  # 组合完整7zip指令
+            if self.code_stop:  # 如果停止进程
+                test_result='未知错误'
+                break
+            else:
+                current_test_pw_number += 1
+                self.signal_update_ui.emit(['子线程-测试密码进度', f'{current_test_pw_number}/{total_pw_number}'])
+                command_test = [path_7zip,
+                                "t",
+                                "-p" + password,
+                                "-y",
+                                file, ]  # 组合完整7zip指令
 
-            process = subprocess.run(command_test,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE,
-                                     creationflags=subprocess.CREATE_NO_WINDOW,
-                                     text=True)
+                process = subprocess.run(command_test,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         creationflags=subprocess.CREATE_NO_WINDOW,
+                                         text=True)
 
-            print(f'process.stdout {process.stdout}')
-            print(f'process.stderr {process.stderr}')
+                print(f'process.stdout {process.stdout}')
+                print(f'process.stderr {process.stderr}')
+                print(f'process.returncode {process.returncode}')
 
-            if process.returncode == 0:  # 返回码为0则测试成功
-                correct_password = password
-                test_result = '测试成功'
-                break
-            elif process.returncode == 1:  # 返回码为1则说明文件被占用
-                test_result = '文件被占用'
-                break
-            elif process.returncode == 2:  # 返回码为2则说明无法解压
-                # 密码错误的返回提示为"Cannot open encrypted archive. Wrong password?"
-                if "Cannot open encrypted archive. Wrong password?" not in str(process.stderr):
-                    if "Cannot open the file as archive" in str(process.stderr):
-                        test_result = '不是压缩文件'
-                        break
-                    elif "Missing volume" in str(process.stderr) or 'Unexpected end of archive' in str(process.stderr):
-                        test_result = '丢失分卷'
-                        break
-                    else:
-                        test_result = '未知错误'
-                        break
-                    # 备忘录 需要扩大错误码判断范围
-            elif process.returncode == 8:  # 返回码为8则说明当前磁盘空间不足
-                test_result = '磁盘空间不足'
-                break
-            else:  # 处理其他的报错
-                test_result = '未知错误'
-                break
+                if process.returncode == 0:  # 返回码为0则测试成功
+                    correct_password = password
+                    test_result = '测试成功'
+                    break
+                elif process.returncode == 1:  # 返回码为1则说明文件被占用
+                    test_result = '文件被占用'
+                    break
+                elif process.returncode == 2:  # 返回码为2则说明无法解压
+                    # 密码错误的返回提示为"Cannot open encrypted archive. Wrong password?"
+                    if "Wrong password" not in str(process.stderr):
+                        if "Cannot open the file as archive" in str(process.stderr):
+                            test_result = '不是压缩文件'
+                            break
+                        elif "Missing volume" in str(process.stderr) or 'Unexpected end of archive' in str(process.stderr):
+                            test_result = '丢失分卷'
+                            break
+                        else:
+                            test_result = '未知错误'
+                            break
+                        # 备忘录 需要扩大错误码判断范围
+                elif process.returncode == 8:  # 返回码为8则说明当前磁盘空间不足
+                    test_result = '磁盘空间不足'
+                    break
+                else:  # 处理其他的报错
+                    test_result = '未知错误'
+                    break
+
         return test_result, correct_password
 
     def start_unzip(self, target_folder, zipfile, zipfile_list, unzip_password):
@@ -246,10 +258,10 @@ class UnzipQthread(QThread):
             for i in zipfile_list:
                 send2trash.send2trash(i)  # 删除文件到回收站
 
-        self.process_nested_folders(temp_folder, self.code_nested_folders)  # 是否处理套娃文件夹
+        self.check_nested_folders(temp_folder, self.code_nested_folders)  # 是否处理套娃文件夹
 
-    def process_nested_folders(self, temp_folder: str, code_nested_folders: bool):
-        """传入文件夹路径folder参数，将最深一级非空文件夹移动到该folder外（处理套娃文件夹）
+    def check_nested_folders(self, temp_folder: str, code_nested_folders: bool):
+        """传入文件夹路径folder参数，将最深一级非空文件夹移动到target_folder中（处理套娃文件夹）
         可选参数 code_nested_folders:True 处理套娃文件夹；False 不处理套娃文件夹，仅做1次基础移动操作"""
         print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
         if code_nested_folders:
@@ -281,3 +293,6 @@ class UnzipQthread(QThread):
                     unzip_filepath.append(file_path)
 
         self.nested_zip_filelist += unzip_filepath
+
+    def update_code_stop(self):
+        self.code_stop = True

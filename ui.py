@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�jsKTCR.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�MfpBPS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -11,7 +11,6 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-
 
 class MyLabel(QLabel):
     dropSignal = Signal(list)
@@ -29,7 +28,6 @@ class MyLabel(QLabel):
             urls = event.mimeData().urls()
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -138,11 +136,25 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.line_3)
 
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setSpacing(0)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_schedule_file = QLabel(self.page_main)
         self.label_schedule_file.setObjectName(u"label_schedule_file")
         self.label_schedule_file.setWordWrap(True)
 
-        self.verticalLayout_2.addWidget(self.label_schedule_file)
+        self.horizontalLayout_7.addWidget(self.label_schedule_file)
+
+        self.button_stop = QToolButton(self.page_main)
+        self.button_stop.setObjectName(u"button_stop")
+        icon = QIcon()
+        icon.addFile(u"icon/\u4e2d\u6b62.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.button_stop.setIcon(icon)
+
+        self.horizontalLayout_7.addWidget(self.button_stop)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_7)
 
         self.label_current_file = QLabel(self.page_main)
         self.label_current_file.setObjectName(u"label_current_file")
@@ -278,7 +290,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -56, 162, 284))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 162, 284))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.checkBox_model_unzip = QCheckBox(self.scrollAreaWidgetContents)
@@ -419,6 +431,7 @@ class Ui_MainWindow(object):
         self.button_page_history.setText(QCoreApplication.translate("MainWindow", u"\u5386\u53f2", None))
         self.label_icon.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
         self.label_schedule_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u603b\u8fdb\u5ea6", None))
+        self.button_stop.setText(QCoreApplication.translate("MainWindow", u"...", None))
         self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u5f53\u524d\u6587\u4ef6", None))
         self.label_schedule_finish.setText(QCoreApplication.translate("MainWindow", u"\u5f53\u524d\u72b6\u6001", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u6d4b\u8bd5\u5bc6\u7801\uff1a", None))
