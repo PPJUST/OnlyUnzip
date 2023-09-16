@@ -136,7 +136,7 @@ class OnlyUnzip(QMainWindow):
             self.update_ui(['存在遗留临时文件夹'])
             self.set_widget_enable()
 
-    def check_temp_folder(self,filepath_list: list) -> bool:
+    def check_temp_folder(self, filepath_list: list) -> bool:
         """传入文件路径列表list，检查对应路径的同级文件夹是否有临时文件夹（前一次解压未正常删除的）
         如果存在临时文件夹并且其中有相应文件/文件夹，则返回False，终止下一步操作"""
         print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
@@ -273,27 +273,6 @@ class OnlyUnzip(QMainWindow):
         elif type_list[0] == '子线程-中止':
             self.ui.label_schedule_file.setText('等待当前文件完成执行')
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
-
-    @staticmethod
-    def save_unzip_history(filepath: str, password: str):
-        """保存解压记录到本地"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
-        with open('unzip_history.txt', 'a', encoding='utf-8') as ha:
-            add_text = f'■日期：{time.strftime("%Y-%m-%d %H:%M:%S ", time.localtime())} ' \
-                       f'■文件路径：{filepath} ' \
-                       f'■解压密码：{password}\n' \
-                       f'--------------------------------------------\n'
-            ha.write(add_text)
-
-    @staticmethod
-    def add_password_number(password: str):
-        """将解压密码使用次数+1"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
-        config = configparser.ConfigParser()
-        config.read("config.ini", encoding='utf-8')
-        old_number = int(config.get(password, 'number'))
-        config.set(password, 'number', str(old_number + 1))  # 次数+1
-        config.write(open('config.ini', 'w', encoding='utf-8'))
 
     def load_setting(self):
         """加载配置文件，并更新UI"""
@@ -474,13 +453,12 @@ unzip_to_folder =
 
     def stop_qthread(self):
         """中止解压子线程"""
-        reply = QMessageBox.question(self, '确认对话框', f'是否中止当前任务\n'
-                                                         f'（不终止当前正在执行的文件\n仅中止之后的任务）',
+        reply = QMessageBox.question(self, '确认对话框',
+                                     f'是否中止当前任务\n（不终止当前正在执行的文件，\n仅中止之后的任务）',
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.update_ui('子线程-中止')
+            self.update_ui(['子线程-中止'])
             self.qthread_unzip.signal_stop.emit()
-
 
 
 def main():

@@ -71,7 +71,6 @@ class UnzipQthread(QThread):
 
     def run(self):
         print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
-        from main import OnlyUnzip
 
         number_total = len(self.unzip_files_dict)  # 文件总个数（分卷计数1）
         number_current = 0  # 当前文件编号
@@ -80,6 +79,7 @@ class UnzipQthread(QThread):
         number_skip = 0  # 跳过的文件数（经检测不是压缩包的会跳过）
         number_success = 0  # 成功解压的文件数
         pre_folder = ''  # 上一个解压文件所在文件夹的路径，用于删除遗留的临时文件夹
+        unzip_history_dict = {}  # 保存解压历史
         self.signal_update_ui.emit(['子线程-开始'])
 
         for file_key in self.unzip_files_dict:  # 只解压dict中的key
@@ -117,11 +117,12 @@ class UnzipQthread(QThread):
                 elif test_result == '未知错误':
                     number_damaged += 1
                     self.signal_update_ui.emit(['子线程-记录-未知错误', os.path.split(file_key)[1]])
-                else:  # 成功的密码测试
+                elif test_result == '测试成功':  # 成功的密码测试
                     number_success += 1
                     if correct_password != ' ':
-                        OnlyUnzip.add_password_number(correct_password)  # 正确密码次数+1
-                    OnlyUnzip.save_unzip_history(file_key, correct_password)  # 保存解压历史
+                        self.add_password_number(correct_password)  # 正确密码次数+1
+
+                    unzip_history_dict[file_key] = correct_password  # 添加记录
                     self.signal_update_ui.emit(['子线程-记录-成功', os.path.split(file_key)[1], correct_password])
 
                     if self.code_unzip:  # 如果当前为解压模式，则执行解压操作
@@ -138,7 +139,8 @@ class UnzipQthread(QThread):
                         if os.path.exists(temp_folder):
                             general_method.delete_folder_if_empty(temp_folder)
 
-        # 全部完成后发送信号
+        # 全部完成后
+        self.save_unzip_history(None, None, fp_dict=unzip_history_dict)  # 保存解压历史
         self.signal_update_ui.emit(['子线程-结束',
                                     f'成功:{number_success},失败:{number_wrong_pw},损坏:{number_damaged},跳过:{number_skip}'])
         if self.code_nested_zip and not self.code_stop:
@@ -160,7 +162,7 @@ class UnzipQthread(QThread):
         # 逻辑：循环执行命令行，直到全部循环完或者中途碰到特定返回码或错误码后break循环，并返回指定结果，否则使用默认的result
         for password in passwords:
             if self.code_stop:  # 如果停止进程
-                test_result='未知错误'
+                test_result = '未知错误'
                 break
             else:
                 current_test_pw_number += 1
@@ -177,9 +179,9 @@ class UnzipQthread(QThread):
                                          creationflags=subprocess.CREATE_NO_WINDOW,
                                          text=True)
 
-                print(f'process.stdout {process.stdout}')
-                print(f'process.stderr {process.stderr}')
-                print(f'process.returncode {process.returncode}')
+                # print(f'process.stdout {process.stdout}')
+                print(f'7zip错误信息流： {process.stderr}')
+                # print(f'process.returncode {process.returncode}')
 
                 if process.returncode == 0:  # 返回码为0则测试成功
                     correct_password = password
@@ -194,7 +196,8 @@ class UnzipQthread(QThread):
                         if "Cannot open the file as archive" in str(process.stderr):
                             test_result = '不是压缩文件'
                             break
-                        elif "Missing volume" in str(process.stderr) or 'Unexpected end of archive' in str(process.stderr):
+                        elif "Missing volume" in str(process.stderr) or 'Unexpected end of archive' in str(
+                                process.stderr):
                             test_result = '丢失分卷'
                             break
                         else:
@@ -264,17 +267,13 @@ class UnzipQthread(QThread):
         """传入文件夹路径folder参数，将最深一级非空文件夹移动到target_folder中（处理套娃文件夹）
         可选参数 code_nested_folders:True 处理套娃文件夹；False 不处理套娃文件夹，仅做1次基础移动操作"""
         print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
-        if code_nested_folders:
-            new_path = general_method.process_nested_folders(temp_folder)
-        else:
-            unzip_foldername = os.listdir(temp_folder)[0]  # 获取临时文件夹下自动创建的文件夹名
-            unzip_dirpath = os.path.normpath(os.path.join(temp_folder, unzip_foldername))  # 获取完整路径
-            final_folder = os.path.split(temp_folder)[0]
+        unzip_foldername = os.listdir(temp_folder)[0]  # 获取临时文件夹下自动创建的文件夹名
+        unzip_dirpath = os.path.normpath(os.path.join(temp_folder, unzip_foldername))  # 获取完整路径
+        final_folder = os.path.split(temp_folder)[0]
 
-            # if len(os.listdir(unzip_dirpath)) ==1:
-            #     t_path = os.path.normpath(os.path.join(unzip_dirpath,os.listdir(unzip_dirpath)[0]))
-            #     general_method.process_nested_folders(t_path, target_folder=final_folder, mode=False)
-            # else:
+        if code_nested_folders:
+            new_path = general_method.process_nested_folders(unzip_dirpath, target_folder=final_folder)
+        else:
             new_path = general_method.process_nested_folders(unzip_dirpath, target_folder=final_folder, mode=False)
 
         self.collect_unzip_result(new_path)
@@ -293,6 +292,35 @@ class UnzipQthread(QThread):
                     unzip_filepath.append(file_path)
 
         self.nested_zip_filelist += unzip_filepath
+
+    @staticmethod
+    def save_unzip_history(filepath: str, password: str, fp_dict: dict = None):
+        """保存解压记录到本地"""
+        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        with open('unzip_history.txt', 'a', encoding='utf-8') as ha:
+            add_text = ''
+            if fp_dict:
+                for key in fp_dict:
+                    add_text += f'■日期：{time.strftime("%Y-%m-%d %H:%M:%S ", time.localtime())} ' \
+                                f'■文件路径：{key} ' \
+                                f'■解压密码：{fp_dict[key]}\n' \
+                                f'--------------------------------------------\n'
+            else:
+                add_text = f'■日期：{time.strftime("%Y-%m-%d %H:%M:%S ", time.localtime())} ' \
+                           f'■文件路径：{filepath} ' \
+                           f'■解压密码：{password}\n' \
+                           f'--------------------------------------------\n'
+            ha.write(add_text)
+
+    @staticmethod
+    def add_password_number(password: str):
+        """将解压密码使用次数+1"""
+        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        config = configparser.ConfigParser()
+        config.read("config.ini", encoding='utf-8')
+        old_number = int(config.get(password, 'number'))
+        config.set(password, 'number', str(old_number + 1))  # 次数+1
+        config.write(open('config.ini', 'w', encoding='utf-8'))
 
     def update_code_stop(self):
         self.code_stop = True

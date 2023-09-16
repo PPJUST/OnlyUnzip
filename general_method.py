@@ -198,14 +198,17 @@ def process_nested_folders(folder: str, target_folder: str = None, mode=True) ->
     else:
         final_folder = os.path.split(folder)[0]  # folder的父目录（移动到该目录下）
     if need_move_filename.lower() not in [x.lower() for x in os.listdir(final_folder)]:  # 如果没有重名的文件/文件夹
-        shutil.move(need_move_path, final_folder,copy_function=shutil.copy2)  # 有时报错[WinError 145] 目录不是空的。
+        try:
+            shutil.move(need_move_path, final_folder)  # 有时报错OSError: [WinError 145] 目录不是空的。
+        except OSError:
+            delete_folder_if_empty(need_move_path)
         new_path = os.path.normpath(os.path.join(final_folder, need_move_filename))  # 最终路径
     else:
         new_filename = get_no_dup_filename(need_move_path, final_folder)  # 最终文件名
         old_path_with_newname = os.path.normpath(os.path.join(os.path.split(need_move_path)[0], new_filename))
         try:
             try:
-                os.rename(need_move_path, old_path_with_newname)  # 有时报错[WinError 5] 拒绝访问。
+                os.rename(need_move_path, old_path_with_newname)  # 有时报错PermissionError: [WinError 5] 拒绝访问。
             except PermissionError:
                 time.sleep(1)  # 备忘录-拒绝访问不知道哪里占用了，可能是找非重名文件夹，等1秒让系统处理完
                 os.rename(need_move_path, old_path_with_newname)
@@ -213,9 +216,13 @@ def process_nested_folders(folder: str, target_folder: str = None, mode=True) ->
             # 修改变量
             old_path_with_newname = need_move_path
             random_ascii = ''.join(random.choices(string.ascii_lowercase, k=6))  # 随机6位小写字母
-            final_folder = os.path.normpath(os.path.join(final_folder,os.path.split(need_move_path)[1] + f' -{random_ascii}'))
+            final_folder = os.path.normpath(
+                os.path.join(final_folder, os.path.split(need_move_path)[1] + f' -{random_ascii}'))
 
-        shutil.move(old_path_with_newname, final_folder,copy_function=shutil.copy2)
+        try:
+            shutil.move(old_path_with_newname, final_folder)  # 有时报错OSError: [WinError 145] 目录不是空的。
+        except OSError:
+            delete_folder_if_empty(need_move_path)
         new_path = os.path.normpath(os.path.join(final_folder, new_filename))  # 最终路径
 
     delete_folder_if_empty(folder)  # 如果原文件夹为空，则删除
