@@ -1,15 +1,16 @@
 import configparser
-import inspect
 import os
 import re
-import time
 import subprocess
+import time
 from typing import Tuple
 
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread
 
 import general_method
+
+os.environ["PYTHONIOENCODING"] = "UTF-8"
 
 
 class UnzipQthread(QThread):
@@ -43,7 +44,7 @@ class UnzipQthread(QThread):
         处理套娃文件夹 bool
         处理套娃压缩包 bool
         解压时跳过的后缀名（已转换为7zip指令格式） list"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         config = configparser.ConfigParser()
         config.read("config.ini", encoding='utf-8')
 
@@ -70,8 +71,7 @@ class UnzipQthread(QThread):
         return code_unzip, code_delete, code_nested_folders, code_nested_zip, skip_rule_7zip, unzip_to_folder
 
     def run(self):
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
-
+        general_method.print_current_function()
         number_total = len(self.unzip_files_dict)  # 文件总个数（分卷计数1）
         number_current = 0  # 当前文件编号
         number_wrong_pw = 0  # 密码错误的文件数
@@ -148,7 +148,7 @@ class UnzipQthread(QThread):
 
     def test_password(self, file: str) -> Tuple[str, str]:
         """传入单个文件路径，执行密码测试，并返回解压结果和正确密码"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         from main import OnlyUnzip
 
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
@@ -221,7 +221,7 @@ class UnzipQthread(QThread):
         zipfile_list 解压文件所在的文件组，用于删除
         unzip_password 解压密码
         """
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         # 解压逻辑：指定目录 >> 临时文件夹UnzipTempFolder >> filename名的文件夹 >> 解压结果
         filetitle = general_method.get_filetitle(zipfile)  # 提取不含后缀的文件名
         path_7zip = './7-Zip/7z.exe'  # 设置7zip路径
@@ -245,7 +245,10 @@ class UnzipQthread(QThread):
 
         pre_percent = 0
         while True:
-            line = process.stdout.readline()
+            try:
+                line = process.stdout.readline()
+            except UnicodeDecodeError:  # 编码报错 UnicodeDecodeError: 'gbk' codec can't decode byte 0xae in position 205: illegal multibyte sequence
+                line = ''
             if line == '' and process.poll() is not None:
                 break
             # 在实时输出中查找进度信息并解析
@@ -266,7 +269,7 @@ class UnzipQthread(QThread):
     def check_nested_folders(self, temp_folder: str, code_nested_folders: bool):
         """传入文件夹路径folder参数，将最深一级非空文件夹移动到target_folder中（处理套娃文件夹）
         可选参数 code_nested_folders:True 处理套娃文件夹；False 不处理套娃文件夹，仅做1次基础移动操作"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         unzip_foldername = os.listdir(temp_folder)[0]  # 获取临时文件夹下自动创建的文件夹名
         unzip_dirpath = os.path.normpath(os.path.join(temp_folder, unzip_foldername))  # 获取完整路径
         final_folder = os.path.split(temp_folder)[0]
@@ -280,7 +283,7 @@ class UnzipQthread(QThread):
 
     def collect_unzip_result(self, path: str):
         """传入文件/文件夹路径，保存解压结果（解压后的所有文件路径）的列表list，用于重复解压以处理嵌套压缩包"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         unzip_filepath = []
         if os.path.isfile(path):
             unzip_filepath.append(path)
@@ -296,7 +299,7 @@ class UnzipQthread(QThread):
     @staticmethod
     def save_unzip_history(filepath: str, password: str, fp_dict: dict = None):
         """保存解压记录到本地"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         with open('unzip_history.txt', 'a', encoding='utf-8') as ha:
             add_text = ''
             if fp_dict:
@@ -315,7 +318,7 @@ class UnzipQthread(QThread):
     @staticmethod
     def add_password_number(password: str):
         """将解压密码使用次数+1"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         config = configparser.ConfigParser()
         config.read("config.ini", encoding='utf-8')
         old_number = int(config.get(password, 'number'))

@@ -3,19 +3,29 @@
 """
 import inspect
 import os
+import random
 import re
+import shutil
 import string
 import time
-import shutil
 from typing import Union
-import random
 
 import filetype
 
 
+def print_current_function():
+    """打印当前执行函数名"""
+    # 打印当前运行函数名
+    # print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)
+
+    # 打印前一个运行函数名
+    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()),
+          inspect.getframeinfo(inspect.currentframe().f_back).function)
+
+
 def get_folder_size(path: str) -> int:
     """获取单个文件夹的总大小，返回int值，单位为字节B"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     size = 0
     for dirpath, dirnames, filenames in os.walk(path):
         for i in filenames:
@@ -26,7 +36,7 @@ def get_folder_size(path: str) -> int:
 
 def is_archive(filepath: str) -> bool:
     """判断文件是否是压缩包，返回bool值"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     if not os.path.exists(filepath):
         print(f'{filepath} 不存在')
         return False
@@ -54,7 +64,7 @@ def is_archive(filepath: str) -> bool:
 
 def get_archive_filetitle(filepath: str) -> str:
     """提取传入文件的文件名（不含后缀），返回str值"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     if not os.path.exists(filepath):
         return f'{filepath} 不存在'
     elif os.path.isdir(filepath):
@@ -80,7 +90,7 @@ def get_archive_filetitle(filepath: str) -> str:
 
 def get_filetitle(filepath: str) -> str:
     """提取传入文件的文件名（不含后缀），返回str值"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     if os.path.isdir(filepath):
         filetitle = os.path.splitext(filepath)[1]
     else:
@@ -104,7 +114,7 @@ def get_filetitle(filepath: str) -> str:
 
 def delete_folder_if_empty(folder: str) -> str:
     """如果传入的文件夹为空文件夹，则删除（不经过回收站）"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     if get_folder_size(folder) == 0:
         try:
             os.rmdir(folder)
@@ -126,7 +136,7 @@ def delete_folder_if_empty(folder: str) -> str:
 
 def get_deepest_dirpath(dirpath: str) -> str:
     """检查传入文件夹路径的深度，找出最后一级含多文件/文件夹的文件夹，并返回路径str值"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     if len(os.listdir(dirpath)) == 1:
         the_path = os.path.normpath(os.path.join(dirpath, os.listdir(dirpath)[0]))
         if os.path.isfile(the_path):  # 如果文件夹下只有一个文件，并且是文件
@@ -141,7 +151,7 @@ def get_deepest_dirpath(dirpath: str) -> str:
 
 def get_filelist(dirpath: str) -> list:
     """获取指定文件夹下的所有文件路径，返回list值"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     filelist = []
     for dirpath, dirnames, filenames in os.walk(dirpath):
         for filename in filenames:
@@ -152,7 +162,7 @@ def get_filelist(dirpath: str) -> list:
 
 def get_no_dup_filename(filepath: str, the_dirpath: str) -> str:
     """生成指定文件路径的文件/文件夹在指定文件夹中没有重复名的文件名（如重复添加后缀 -new1）"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     if os.path.isfile(filepath):
         filename = os.path.split(filepath)[1]
         filetitle = os.path.split(os.path.splitext(filepath)[0])[1]
@@ -177,7 +187,7 @@ def process_nested_folders(folder: str, target_folder: str = None, mode=True) ->
     可选参数
     mode:默认True，处理套娃文件夹；可选Flase，不处理套娃文件夹，仅做1次基础移动操作
     target_folder:目标移动文件夹，若为空则移动到folder的父目录下"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     # 提取需要移动的文件/文件夹路径
     if mode:
         need_move_path = get_deepest_dirpath(folder)  # 需要移动的文件夹/文件的路径
@@ -232,7 +242,7 @@ def process_nested_folders(folder: str, target_folder: str = None, mode=True) ->
 
 def get_first_split_archive_filetitle(filename: str) -> Union[str, bool]:
     """通过传入的文件名，判断其是否符合分卷压缩包规则并生成第一个分卷包名，返回str或bool值"""
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     re_rar = r"^(.+)\.part(\d+)\.rar$"  # 分卷压缩文件的命名规则
     re_7z = r"^(.+)\.7z\.\d+$"
     re_zip_first = r"^(.+)\.zip$"
@@ -270,7 +280,7 @@ def get_split_archive_dict(filelist: list) -> dict:
     """传入文件路径列表list，提取其中符合分卷压缩包命名规则的文件，并扩展到其所在文件夹，补全完整的分卷压缩包分卷
     返回分卷压缩包dict {A压缩包第一个分卷包路径:(A压缩包全部分卷路径), ...}
     """
-    print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+    print_current_function()
     split_archive_dict = {}  # 最终结果
     # 按文件所在的父文件夹建立字典 {文件父文件夹:(A文件, B文件), ...}
     folder_dict = {}
@@ -305,10 +315,7 @@ def get_split_archive_dict(filelist: list) -> dict:
             check_title = get_first_split_archive_filetitle(check_filename)
             if check_title:
                 check_path = os.path.normpath(os.path.join(parent_folder, check_title))
-            else:
-                break
-
-            if check_path in split_archive_dict:
-                split_archive_dict[check_path].add(full_path)
+                if check_path in split_archive_dict:
+                    split_archive_dict[check_path].add(full_path)
 
     return split_archive_dict

@@ -11,10 +11,9 @@ from PySide2.QtGui import QColor, QIcon
 from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction, QFileDialog, QMessageBox
 
 import general_method
+import update_config
 from qthread_unzip import UnzipQthread
 from ui import Ui_MainWindow
-import inspect
-import update_config
 
 
 class OnlyUnzip(QMainWindow):
@@ -75,7 +74,7 @@ class OnlyUnzip(QMainWindow):
     def drop_files(self, path_list: list):
         """接收自定义label控件的drop信号，取得所有拖入路径的列表list，如果是文件夹则提取其中所有文件路径
         获取所有文件路径列表list后，调用解压函数"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         filepath_list = set()  # 使用集合存储，方便去重
         for path in path_list:
             path = os.path.normpath(path)  # 格式化路径，防止后续出错
@@ -90,7 +89,7 @@ class OnlyUnzip(QMainWindow):
 
     def start_unzip(self, filepath_list: list):
         """传入文件路径list后，调用子线程进行解压或测试操作"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         if self.check_temp_folder(filepath_list):  # 如果不存在临时文件夹
             if filepath_list:  # 拖入文件列表不为空
                 # 将传入的文件列表list按正则区分为分卷压缩包与非分卷压缩包，格式为dict
@@ -139,7 +138,7 @@ class OnlyUnzip(QMainWindow):
     def check_temp_folder(self, filepath_list: list) -> bool:
         """传入文件路径列表list，检查对应路径的同级文件夹是否有临时文件夹（前一次解压未正常删除的）
         如果存在临时文件夹并且其中有相应文件/文件夹，则返回False，终止下一步操作"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
 
         all_temporary_folder = set()  # 所有可能存在的临时文件夹路径（添加后缀自动生成，非真实路径）
 
@@ -152,8 +151,6 @@ class OnlyUnzip(QMainWindow):
                 temporary_folder = os.path.normpath(os.path.join(os.path.split(path)[0], 'UnzipTempFolder'))
                 all_temporary_folder.add(temporary_folder)
 
-        print(f'all_temporary_folder {all_temporary_folder}')
-
         for folder in all_temporary_folder:
             if os.path.exists(folder) and os.listdir(folder):
                 return False
@@ -161,7 +158,7 @@ class OnlyUnzip(QMainWindow):
 
     def set_widget_enable(self, mode=True):
         """在解压开始前，设置相关控件的enable属性，防止解压过程中修改选项导致报错"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         if mode:
             # 主页面
             self.ui.label_icon.setEnabled(True)
@@ -179,7 +176,7 @@ class OnlyUnzip(QMainWindow):
 
     def show_menu_copy(self, pos):
         """历史记录页中的右键菜单，用于复制密码"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
 
         def menu_copy_pw():
             item = self.ui.listWidget_history.currentItem()
@@ -276,7 +273,7 @@ class OnlyUnzip(QMainWindow):
 
     def load_setting(self):
         """加载配置文件，并更新UI"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         config = configparser.ConfigParser()
         config.read("config.ini", encoding='utf-8')
         # 读取对应数据
@@ -302,7 +299,7 @@ class OnlyUnzip(QMainWindow):
     @staticmethod
     def check_config():
         """检查初始配置文件，若本地不存在则新建"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         if not os.path.exists('config.ini'):
             with open('config.ini', 'w', encoding='utf-8') as cw:
                 the_setting = """[DEFAULT]
@@ -323,7 +320,7 @@ unzip_to_folder =
 
     def update_password(self):
         """更新密码"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         self.backup_config()  # 备份一次配置文件
         add_pw = [n for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
         add_pw_strip = [n.strip() for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
@@ -350,7 +347,7 @@ unzip_to_folder =
 
     def read_clipboard(self):
         """读取剪切板"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         clipboard = QApplication.clipboard()  # 创建一个剪贴板对象
         clipboard_text = clipboard.text()  # 读取剪贴板的文本
         self.ui.text_password.setPlainText(clipboard_text)
@@ -358,14 +355,14 @@ unzip_to_folder =
     @staticmethod
     def backup_config():
         """在更新密码前备份配置文件"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         new_name = f'config_{time.strftime("%Y_%m_%d_%H_%M_%S ", time.localtime())}.ini'
         shutil.copyfile('config.ini', f'backup_config/{new_name}')
 
     @staticmethod
     def export_password(with_number: bool = False):
         """导出当前密码到本地，按传参判断是否添加使用次数"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         sort_passwords, sort_passwords_with_number = OnlyUnzip.get_sorted_pwlist()
         # 导出密码
         with open("password export.txt", "w", encoding="utf-8") as pw:
@@ -377,7 +374,7 @@ unzip_to_folder =
     @staticmethod
     def get_sorted_pwlist() -> Tuple[list, list]:
         """读取配置文件，返回2个密码列表list"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         config = configparser.ConfigParser()
         config.read("config.ini", encoding='utf-8')
         # 按密码的使用次数排序
@@ -394,7 +391,7 @@ unzip_to_folder =
 
     def update_setting(self):
         """点击按钮后更新设置项（选项不多，重写整个配置文件）"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         config = configparser.ConfigParser()
         config.read("config.ini", encoding='utf-8')
 
@@ -419,7 +416,7 @@ unzip_to_folder =
 
     def change_page(self, button_id):
         """切换标签页，并高亮被点击的标签页按钮"""
-        print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()), inspect.currentframe().f_code.co_name)  # 打印当前运行函数名
+        general_method.print_current_function()
         # 高亮按钮
         original_style = self.ui.button_update_password.styleSheet()  # 按钮的原始样式
         clicked_style = f"{original_style} background-color: rgb(255, 228, 181);"  # 被点击后的样式
