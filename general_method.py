@@ -22,6 +22,8 @@ def print_current_function():
     print(time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()),
           inspect.getframeinfo(inspect.currentframe().f_back).function)
 
+    # pass
+
 
 def get_folder_size(path: str) -> int:
     """获取单个文件夹的总大小，返回int值，单位为字节B"""
@@ -198,7 +200,7 @@ def process_nested_folders(folder: str, target_folder: str = None, mode=True) ->
         else:
             need_move_path = folder  # 需要移动的文件夹/文件的路径
 
-    if need_move_path == folder:  # 如果一致，则不进行后续操作
+    if need_move_path == target_folder:  # 如果一致，则不进行后续操作
         return need_move_path
     need_move_filename = os.path.split(need_move_path)[1]  # 需要移动的文件夹/文件的文件名
 
