@@ -224,7 +224,6 @@ class ExtractQthread(QThread):
         test_pw_number = 0  # 当前测试密码的编号
         total_pw_count = len(passwords)  # 总密码个数
 
-
         # 逻辑：循环执行命令行，直到全部循环完或者中途碰到特定返回码或错误码后break循环，并返回指定结果，否则使用默认的结果
         for pw in passwords:
             if self.code_stop:
@@ -256,6 +255,7 @@ class ExtractQthread(QThread):
         """调用7zip，并返回对应信息"""
         function_static.print_function_info()
 
+        print(f'执行指令 {" ".join(command)}')
         process = subprocess.Popen(command,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
@@ -265,40 +265,96 @@ class ExtractQthread(QThread):
         # 读取信息流
         stderr_error_code = '4-5'  # 通过信息流判断返回码为2时的错误码
         pre_progress = 0  # 设置初始解压进度为0
+        # while True:  # 循环检查输出信息，直至获取到程序的退出代码
+        #     if process.poll() is not None:
+        #         break
+        #     else:
+        #         try:
+        #             print(f'测试节点2')
+        #             stdout_line = process.stdout.readline()  # 标准信息流
+        #             stderr_line = process.stderr.readline()  # 错误信息流
+        #             print(f'7zip-stdout：{stdout_line}')
+        #             print(f'7zip-stderrt：{stderr_line}')
+        #         except UnicodeDecodeError:  # 有时编码报错，不知道原因 UnicodeDecodeError: 'gbk' codec can't decode byte 0xae in position 205: illegal multibyte sequence
+        #             stdout_line = ''
+        #             stderr_line = ''
+        #         print(f'测试节点1')
+        #         # 在错误信息流中查找错误信息并解析
+        #         match_wrong_pw = re.search('Wrong password', stderr_line)
+        #         match_lost_volume = re.search('Missing volume', stderr_line) or re.search('Unexpected end of archive', stderr_line)
+        #         match_not_archive = re.search('Cannot open the file as', stderr_line)
+        #         if match_wrong_pw:
+        #             stderr_error_code = '4-1'
+        #         elif match_lost_volume:
+        #             stderr_error_code = '4-2'
+        #         elif match_not_archive:
+        #             stderr_error_code = '4-3'
+        #         print(f'测试节点3')
+        #         # 在标准信息流中查找进度信息并解析
+        #         match_progress = re.search(r'(\d{1,3})%', stdout_line)
+        #         print(f'测试节点4')
+        #         if match_progress:
+        #             current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
+        #             if current_progress > pre_progress:
+        #                 # 更新进度ui
+        #                 self.signal_update_ui.emit('3-4', [current_progress])
+        #                 pre_progress = current_progress
+        code_read_stdout = True  # 决定是否读取数据流，用于解决zip会尝试测试全部文件的问题
+        code_read_stderr = True
+        self.read_stdout = ReadStd(process.stdout)  # 设置子线程，用于处理std输出流堵塞问题
+        self.read_stderr = ReadStd(process.stderr)  # 设置子线程，用于处理std输出流堵塞问题
         while True:  # 循环检查输出信息，直至获取到程序的退出代码
+            print(f'process.poll() {process.poll()}')
             if process.poll() is not None:
                 break
-            else:
-                try:
-                    print(f'测试节点2')
-                    stdout_line = process.stdout.readline()  # 标准信息流
-                    stderr_line = process.stderr.readline()  # 错误信息流
-                    print(f'7zip-stdout：{stdout_line}')
-                    print(f'7zip-stderrt：{stderr_line}')
-                except UnicodeDecodeError:  # 有时编码报错，不知道原因 UnicodeDecodeError: 'gbk' codec can't decode byte 0xae in position 205: illegal multibyte sequence
-                    stdout_line = ''
-                    stderr_line = ''
-                print(f'测试节点1')
-                # 在错误信息流中查找错误信息并解析
-                match_wrong_pw = re.search('Wrong password', stderr_line)
-                match_lost_volume = re.search('Missing volume', stderr_line) or re.search('Unexpected end of archive', stderr_line)
-                match_not_archive = re.search('Cannot open the file as', stderr_line)
-                if match_wrong_pw:
-                    stderr_error_code = '4-1'
-                elif match_lost_volume:
-                    stderr_error_code = '4-2'
-                elif match_not_archive:
-                    stderr_error_code = '4-3'
-                print(f'测试节点3')
+            print(f'测试节点9')
+            # 检查标准信息流
+            if code_read_stdout:
+                stdout_line = self.read_stdout.execute_with_timeout()
+                # stdout_line = process.stdout.readline()
+                print(f'7zip-stdout：【{stdout_line}】')
+                if stdout_line == '' and process.poll() is not None:
+                    break
                 # 在标准信息流中查找进度信息并解析
                 match_progress = re.search(r'(\d{1,3})%', stdout_line)
                 print(f'测试节点4')
                 if match_progress:
                     current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
+                    if current_progress >0:
+                        code_read_stderr = False
                     if current_progress > pre_progress:
                         # 更新进度ui
                         self.signal_update_ui.emit('3-4', [current_progress])
                         pre_progress = current_progress
+
+            # 检查错误信息流
+            if code_read_stderr:
+                stderr_line = self.read_stderr.execute_with_timeout()
+                # stderr_line = process.stderr.readline()
+                print(f'7zip-stderrt：【{stderr_line}】')
+                if stderr_line == '' and process.poll() is not None:
+                    break
+                # 在错误信息流中查找错误信息并解析
+                match_wrong_pw = re.search('Wrong password', stderr_line)
+                match_lost_volume = re.search('Missing volume', stderr_line) or re.search('Unexpected end of archive',
+                                                                                          stderr_line)
+                match_not_archive = re.search('Cannot open the file as', stderr_line)
+                if match_wrong_pw:
+                    stderr_error_code = '4-1'
+                    code_read_stderr = False
+                    code_read_stdout = False
+                elif match_lost_volume:
+                    stderr_error_code = '4-2'
+                    code_read_stderr = False
+                    code_read_stdout = False
+                elif match_not_archive:
+                    stderr_error_code = '4-3'
+                    code_read_stderr = False
+                    code_read_stdout = False
+                print(f'测试节点3')
+
+
+            time.sleep(0.1)
         print(f'测试节点5')
         # 检查调用7zip的返回码
         """
@@ -371,4 +427,22 @@ class ExtractQthread(QThread):
         function_static.print_function_info()
         self.code_stop = True
 
+class ReadStd(QThread):
+    def __init__(self, process_std, timeout=100):
+        super().__init__()
+        self.timeout = timeout  # 以毫秒为单位
+        self.process_std = process_std
+        self.std_readline = ''
 
+    def run(self):
+        self.std_readline = self.process_std.readline()
+
+    def execute_with_timeout(self):
+        self.start()
+        self.wait(self.timeout)  # 等待超时时间（以毫秒为单位）
+
+        if self.isRunning():
+            # 如果线程仍在运行，表示超时
+            self.std_readline = ''
+            # self.quit()  # 不在这里退出，单独一个函数手动退出
+        return self.std_readline
