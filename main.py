@@ -26,15 +26,16 @@ icon_finish = './icon/全部完成.png'
 icon_extract = './icon/正在解压.png'
 icon_stop = './icon/中止.png'
 
-drop_files = sys.argv[1:]
+win_drop_files = sys.argv[1:]
 
 
 
 class OnlyUnzip(QMainWindow):
-    def __init__(self, win_drop_file=None):
+    def __init__(self, win_drop_files=None):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        print(f'win_drop_file {win_drop_files}')
 
         """
         初始化设置
@@ -79,7 +80,11 @@ class OnlyUnzip(QMainWindow):
 
         # 设置页的按钮
         self.ui.checkBox_mode_extract.stateChanged.connect(self.update_setting)
+        self.ui.checkBox_mode_extract.stateChanged.connect(lambda :self.set_checkbox_enable(mode=True))
         self.ui.checkBox_mode_test.stateChanged.connect(self.update_setting)
+        self.ui.checkBox_mode_test.stateChanged.connect(lambda :self.set_checkbox_enable(mode=False))
+
+
         self.ui.checkBox_un_nest_dir.stateChanged.connect(self.update_setting)
         self.ui.checkBox_un_nest_archive.stateChanged.connect(self.update_setting)
         self.ui.checkBox_delete_archive.stateChanged.connect(self.update_setting)
@@ -93,8 +98,8 @@ class OnlyUnzip(QMainWindow):
         self.ui.listWidget_history.customContextMenuRequested.connect(self.history_page_menu)  # 右键菜单
 
         # 设置直接拖入文件到软件时的操作
-        if win_drop_file:
-            self.accept_files(win_drop_file)
+        if win_drop_files:
+            self.accept_files(win_drop_files)
 
     def accept_files(self, path_list: list):
         """接收路径列表，提取出其中所有文件"""
@@ -165,20 +170,23 @@ class OnlyUnzip(QMainWindow):
     def set_widget_enable(self, mode=True):
         """在解压开始前，设置相关控件的enable属性，防止解压过程中修改选项导致报错"""
         function_static.print_function_info()
-        if mode:
-            # 主页面
-            self.ui.label_icon.setEnabled(True)
-            # 密码页
-            self.ui.button_update_password.setEnabled(True)
-            # 设置页
-            self.ui.scrollAreaWidgetContents.setEnabled(True)
-        else:
-            # 主页面
-            self.ui.label_icon.setEnabled(False)
-            # 密码页
-            self.ui.button_update_password.setEnabled(False)
-            # 设置页
-            self.ui.scrollAreaWidgetContents.setEnabled(False)
+        # 主页面
+        self.ui.label_icon.setEnabled(mode)
+        # 密码页
+        self.ui.button_update_password.setEnabled(mode)
+        # 设置页
+        self.ui.scrollAreaWidgetContents.setEnabled(mode)
+
+
+    def set_checkbox_enable(self, mode = True):
+        """点击模式按钮后关闭或开启部分设置项勾选框"""
+        self.ui.checkBox_delete_archive.setEnabled(mode)
+        self.ui.checkBox_check_filetype.setEnabled(mode)
+        self.ui.checkBox_un_nest_dir.setEnabled(mode)
+        self.ui.checkBox_un_nest_archive.setEnabled(mode)
+        self.ui.lineedit_output_dir.setEnabled(mode)
+        self.ui.lineedit_exclude_rule.setEnabled(mode)
+
 
     def history_page_menu(self, pos):
         """历史记录页中的右键菜单，用于复制密码"""
@@ -294,8 +302,10 @@ class OnlyUnzip(QMainWindow):
         # 更新UI
         if code_mode == 'extract':
             self.ui.checkBox_mode_extract.setChecked(True)
+            self.set_checkbox_enable(mode=True)
         elif code_mode == 'test':
             self.ui.checkBox_mode_test.setChecked(True)
+            self.set_checkbox_enable(mode=False)
         self.ui.checkBox_un_nest_dir.setChecked(code_un_nest_dir)
         self.ui.checkBox_un_nest_archive.setChecked(code_un_nest_archive)
         self.ui.checkBox_delete_archive.setChecked(code_delete_archive)
@@ -401,7 +411,7 @@ class OnlyUnzip(QMainWindow):
 def main():
     app = QApplication()
     app.setStyle('Fusion')
-    show_ui = OnlyUnzip(drop_files)
+    show_ui = OnlyUnzip(win_drop_files)
     show_ui.setWindowIcon(QIcon(icon_main))
     show_ui.setFixedSize(262, 232)
     show_ui.show()
