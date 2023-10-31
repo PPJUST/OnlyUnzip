@@ -85,6 +85,17 @@ def check_filetype(filepath: str) -> bool:
 
     return False  # 兜底
 
+def archive_is_zip(filepath: str) -> bool:
+    """判断一个压缩包是否为zip格式"""
+    archive_type = ['zip']  # filetype库支持的压缩文件后缀名（部分）
+    kind = filetype.guess(filepath)
+    if kind is None:
+        type_kind = None
+    else:
+        type_kind = kind.extension
+    if type_kind in archive_type:
+        return True
+
 
 def delete_empty_folder(folder: str):
     """检查文件夹是否为空，是则删除（不经过回收站）"""

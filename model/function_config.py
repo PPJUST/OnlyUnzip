@@ -87,7 +87,7 @@ def update_setting(config_dict:dict):
 def backup_config():
     """备份配置文件"""
     print_function_info()
-    nwe_filename = f'config_{time.strftime("%Y_%m_%d %H_%M_%S ", time.localtime())}.ini'
+    nwe_filename = f'config {time.strftime("%Y_%m_%d %H_%M_%S ", time.localtime())}.ini'
     shutil.copyfile(config_file, f'{backup_dir}/{nwe_filename}')
 
 def read_pw() -> Tuple[list, list]:

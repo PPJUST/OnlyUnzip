@@ -4,6 +4,7 @@ import re
 import shutil
 import time
 from typing import Tuple
+import sys
 
 import natsort
 from PySide2.QtCore import Qt
@@ -25,12 +26,12 @@ icon_finish = './icon/全部完成.png'
 icon_extract = './icon/正在解压.png'
 icon_stop = './icon/中止.png'
 
-
+drop_files = sys.argv[1:]
 
 
 
 class OnlyUnzip(QMainWindow):
-    def __init__(self):
+    def __init__(self, win_drop_file=None):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -91,6 +92,10 @@ class OnlyUnzip(QMainWindow):
         # 历史记录页的操作
         self.ui.listWidget_history.customContextMenuRequested.connect(self.history_page_menu)  # 右键菜单
 
+        # 设置直接拖入文件到软件时的操作
+        if win_drop_file:
+            self.accept_files(win_drop_file)
+
     def accept_files(self, path_list: list):
         """接收路径列表，提取出其中所有文件"""
         function_static.print_function_info()
@@ -140,19 +145,21 @@ class OnlyUnzip(QMainWindow):
                     extract_file_dict.update(all_file_dict)
                 # 将需要执行操作的文件dict传递给子线程
                 if extract_file_dict:
+                    print('测试节点1-0')
                     self.set_widget_enable(mode=False)  # 禁用部分ui
                     # 设置子线程
+                    print('测试节点1-2')
                     self.qthread.reset_setting()  # 更新设置
                     self.qthread.set_extract_files_dict(extract_file_dict)  # 传递解压文件dict
                     self.qthread.start()
+                    print('测试节点1-1')
                 else:  # 没有需解压的文件，则提示
                     self.update_ui('2-1')
             else:  # 没有需解压的文件，则提示
                 self.update_ui('2-1')
         else:  # 如果有遗留的临时文件夹
             self.update_ui('2-2')
-
-        self.set_widget_enable()  # 启用被禁用的ui
+        print('测试节点1-3')
 
 
     def set_widget_enable(self, mode=True):
@@ -270,6 +277,7 @@ class OnlyUnzip(QMainWindow):
         elif code == '1-4':  # 中止任务
             self.ui.label_schedule_file.setText('等待当前文件完成执行')
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
+            self.set_widget_enable(mode=True)  # 启用被禁用的ui
 
     def load_config(self):
         """加载配置文件，并更新UI"""
@@ -393,7 +401,7 @@ class OnlyUnzip(QMainWindow):
 def main():
     app = QApplication()
     app.setStyle('Fusion')
-    show_ui = OnlyUnzip()
+    show_ui = OnlyUnzip(drop_files)
     show_ui.setWindowIcon(QIcon(icon_main))
     show_ui.setFixedSize(262, 232)
     show_ui.show()
