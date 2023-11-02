@@ -4,7 +4,7 @@ import sys
 import time
 
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QColor, QIcon
+from PySide2.QtGui import QColor, QIcon, QMovie, QPalette
 from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction, QFileDialog, QMessageBox
 
 from model import function_config
@@ -12,13 +12,15 @@ from model import function_static
 from qthread_7zip import ExtractQthread
 from ui import Ui_MainWindow
 
-icon_test = './icon/测试密码.png'
-icon_main = './icon/程序图标.png'
+icon_test = './icon/测试.png'
+icon_extract = './icon/解压.png'
+icon_gif_test = './icon/测试.gif'
+icon_gif_extract = './icon/解压.gif'
+icon_main = './icon/程序图标.ico'
 icon_origin = './icon/初始状态.png'
 icon_origin_with_output = './icon/初始状态_指定文件夹.png'
 icon_error = './icon/错误.png'
-icon_finish = './icon/全部完成.png'
-icon_extract = './icon/正在解压.png'
+icon_finish = './icon/完成.png'
 icon_stop = './icon/中止.png'
 
 win_drop_files = sys.argv[1:]
@@ -194,8 +196,7 @@ class OnlyUnzip(QMainWindow):
     def update_ui(self, code: str, data: list = None):
         """根据传入的list，分不同情况更新ui
         type_list格式：['更新类型', '相关数据']"""
-        print(f'接收代码 {code}')
-        function_static.print_function_info('last')
+        function_static.print_function_info()
         if code == '1-1':  # 初始状态
             self.ui.label_drop_file.setPixmap(icon_origin)
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
@@ -210,9 +211,13 @@ class OnlyUnzip(QMainWindow):
         elif code == '1-2':  # 启动子线程
             self.ui.button_stop.setVisible(True)  # 显示停止按钮
             if self.ui.checkBox_mode_test.isChecked():  # 按选项设置不同图标
-                self.ui.label_drop_file.setPixmap(icon_test)
+                # self.ui.label_drop_file.setPixmap(icon_test)
+                self.movie_label_icon = QMovie(icon_gif_test)
             else:
-                self.ui.label_drop_file.setPixmap(icon_extract)
+                # self.ui.label_drop_file.setPixmap(icon_extract)
+                self.movie_label_icon = QMovie(icon_gif_extract)
+            self.ui.label_drop_file.setMovie(self.movie_label_icon)
+            self.movie_label_icon.start()  # 开始动图
         elif code == '3-1':  # 更新当前文件
             self.ui.label_current_file.setText(data[0])
         elif code == '3-2':  # 更新总进度
@@ -268,10 +273,12 @@ class OnlyUnzip(QMainWindow):
             self.set_widget_enable(mode=True)
             self.ui.stackedWidget_schedule.setCurrentIndex(0)
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
+            self.movie_label_icon.stop()  # 停止动图
         elif code == '1-4':  # 中止任务
             self.ui.label_schedule_file.setText('等待当前文件完成执行')
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
             self.set_widget_enable(mode=True)  # 启用被禁用的ui
+            self.movie_label_icon.stop()  # 停止动图
 
     def load_config(self):
         """加载配置文件，并更新UI"""
@@ -394,6 +401,11 @@ class OnlyUnzip(QMainWindow):
 def main():
     app = QApplication()
     app.setStyle('Fusion')
+    # 设置白色背景色
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor(255, 255, 255))
+    app.setPalette(palette)
+
     show_ui = OnlyUnzip(win_drop_files)
     show_ui.setWindowIcon(QIcon(icon_main))
     show_ui.setFixedSize(262, 232)
