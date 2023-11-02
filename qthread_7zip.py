@@ -1,21 +1,20 @@
-import configparser
 import os
 import re
 import shutil
 import subprocess
 import time
 from typing import Tuple
-from model import  function_config
+
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread
 
+from model import function_config
 from model import function_static
 
 os.environ["PYTHONIOENCODING"] = "UTF-8"
 config_file = 'config.ini'
 backup_dir = 'backup'
 path_7zip = './7-Zip/7z.exe'
-
 
 
 class ExtractQthread(QThread):
@@ -43,7 +42,6 @@ class ExtractQthread(QThread):
         # 连接信号
         self.signal_stop.connect(self.update_code_stop)
 
-
     def reset_setting(self):
         """重置设置项与变量"""
         function_static.print_function_info()
@@ -65,18 +63,17 @@ class ExtractQthread(QThread):
         self.extracted_filelist.clear()
         self.pw_list, _ = function_config.read_pw()
 
-    def set_extract_files_dict(self, file_dict:dict):
+    def set_extract_files_dict(self, file_dict: dict):
         """设置需要解压的文件dict变量"""
         function_static.print_function_info()
         self.extract_files_dict = file_dict
         self.code_stop = False
 
-
     def run(self):
         """启动子线程"""
         function_static.print_function_info()
         # 发送更新ui信号
-        self.signal_update_ui.emit('1-1', [])  # 启动子线程
+        self.signal_update_ui.emit('1-2', [])  # 启动子线程
 
         # 设置初始变量
         count_total = len(self.extract_files_dict)  # 文件总个数（分卷计数1）
@@ -111,14 +108,14 @@ class ExtractQthread(QThread):
                 self.signal_update_ui.emit('3-2', [f'{number_current}/{count_total}'])
                 # 调用密码测试函数
                 if self.code_mode == 'test':
-                    code_result, right_pw , test_pw_number, list_files= self.test_pw_command_l(file_key)  # 先使用l命令测试
+                    code_result, right_pw, test_pw_number, list_files = self.test_pw_command_l(file_key)  # 先使用l命令测试
                     if code_result == '4-7' and test_pw_number == 1:  # 如果首个密码就成功，则不信赖该次结果
                         code_result, right_pw = self.test_pw(file_key)
                 else:
                     code_result, right_pw, test_pw_number, list_files = self.test_pw_command_l(file_key)  # 先使用l命令测试
                     if code_result == '4-7' and test_pw_number == 1:  # 如果首个密码就成功，则不信赖该次结果
                         # 如果当前文件是zip，7zip会测试其内部所有文件，如果内部文件数太多，会导致使用x指令测试时很慢
-                        if function_static.archive_is_zip(file_key) and len(list_files) > 500:  # 如果符合上述情况，则先调用t测试在用x解压
+                        if function_static.archive_is_zip(file_key) and len(list_files) > 200:  # 如果符合上述情况，则先调用t测试在用x解压
                             code_result, right_pw = self.test_pw(file_key)
                             if code_result == '4-7':  # 如果测试成功，则添加密码参数调用x指令
                                 code_result, right_pw = self.extract_archive(output_dir, file_key, right_pw)
@@ -144,7 +141,7 @@ class ExtractQthread(QThread):
                     if right_pw != '':
                         function_config.add_pw_count(right_pw)
                     # 更新ui
-                    self.signal_update_ui.emit(code_result,[current_filename, right_pw])
+                    self.signal_update_ui.emit(code_result, [current_filename, right_pw])
                     # 保存历史记录至字典
                     history_dict[file_key] = right_pw
                     # 如果执行的是解压函数，则进行后续检查
@@ -177,7 +174,8 @@ class ExtractQthread(QThread):
         # 全部完成后，保存解压历史
         self.save_pw_history(history_dict=history_dict)
         # 更新ui
-        self.signal_update_ui.emit('1-3', [f'成功:{count_success},失败:{count_wrong_pw},损坏:{count_damaged},跳过:{count_skip}'])
+        self.signal_update_ui.emit('1-3', [
+            f'成功:{count_success},失败:{count_wrong_pw},损坏:{count_damaged},跳过:{count_skip}'])
         # 是否处理套娃压缩包
         if self.code_un_nest_archive and not self.code_stop:
             self.signal_extracted_files.emit(self.extracted_filelist)
@@ -195,6 +193,7 @@ class ExtractQthread(QThread):
         test_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新
         test_pw_number = 0  # 当前测试密码的编号
         total_pw_count = len(passwords)  # 总密码个数
+        list_files = []
 
         # 逻辑：循环执行命令行，直到全部循环完或者中途碰到特定返回码或错误码后break循环，并返回指定结果，否则使用默认的结果
         for pw in passwords:
@@ -222,8 +221,6 @@ class ExtractQthread(QThread):
 
         return test_result, right_pw, test_pw_number, list_files
 
-
-
     def test_pw(self, file: str) -> Tuple[str, any]:
         """传入压缩文件执行密码测试，并返回解压结果和正确密码"""
         function_static.print_function_info()
@@ -248,20 +245,20 @@ class ExtractQthread(QThread):
                 # 组合7zip指令t
                 command_test = [path_7zip, "t", file, "-p" + pw, '-bse2']
                 # 调用7zip函数，获取返回码
-                return_code = self.subprocess_7zip_popen(command_test)
+                return_code, _ = self.subprocess_7zip_run(command_test)
                 test_result = return_code
                 if return_code == '4-7':
                     if pw == ' ':
                         pw = ''  # 如果无密码，实际传递时用空字符串''
                     right_pw = pw
                     break
-                elif return_code in ['4-2','4-3','4-4','4-5','4-6']:
+                elif return_code in ['4-2', '4-3', '4-4', '4-5', '4-6']:
                     break
                 # 对返回码4-1不作处理（即密码错误继续循环）
 
         return test_result, right_pw
 
-    def extract_archive(self, output_dir, archive_file, right_password:str=None) -> Tuple[str, any]:
+    def extract_archive(self, output_dir, archive_file, right_password: str = None) -> Tuple[str, any]:
         """执行解压操作
         传入参数：
         output_dir 解压到该目录
@@ -313,14 +310,14 @@ class ExtractQthread(QThread):
                         pw = ''  # 如果无密码，实际传递时用空字符串''
                     right_pw = pw
                     break
-                elif return_code in ['4-2','4-3','4-4','4-5','4-6']:
+                elif return_code in ['4-2', '4-3', '4-4', '4-5', '4-6']:
                     break
                 # 对返回码4-1不作处理（即密码错误继续循环）
 
         return extract_result, right_pw
 
-    def subprocess_7zip_popen(self, command:list)->str:
-        """使用popen方法调用7zip，并返回对应信息"""
+    def subprocess_7zip_popen(self, command: list) -> str:
+        """使用popen方法调用7zip，并返回对应信息，专用于x命令"""
         function_static.print_function_info()
 
         print(f'执行指令 {" ".join(command)}')
@@ -338,16 +335,12 @@ class ExtractQthread(QThread):
         self.read_stdout = ReadStd(process.stdout)  # 设置子线程，用于处理std输出流堵塞问题
         self.read_stderr = ReadStd(process.stderr)  # 设置子线程，用于处理std输出流堵塞问题
         pro_error = None  # 另一个退出方法的变量
-        pro_output = None   # 另一个退出方法的变量
         code_wait_communicate = False  # 另一个退出方法的变量
         while True:  # 循环检查输出信息，直至获取到程序的退出代码
-            print(f'process.poll() {process.poll()}')
             if process.poll() is not None:
                 break
-            print(f'测试节点9')
             # 检查标准信息流
             if code_read_stdout:
-                print(f'测试节点20')
                 stdout_line = self.read_stdout.execute_with_timeout()
                 # stdout_line = process.stdout.readline()
                 print(f'7zip-stdout：【{stdout_line}】')
@@ -355,10 +348,9 @@ class ExtractQthread(QThread):
                     break
                 # 在标准信息流中查找进度信息并解析
                 match_progress = re.search(r'(\d{1,3})%', stdout_line)
-                print(f'测试节点4')
                 if match_progress:
                     current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
-                    if current_progress >0:
+                    if current_progress > 0:
                         code_read_stderr = False
                     if current_progress > pre_progress:
                         # 更新进度ui
@@ -367,7 +359,6 @@ class ExtractQthread(QThread):
 
             # 检查错误信息流
             if code_read_stderr:
-                print(f'测试节点22')
                 stderr_line = self.read_stderr.execute_with_timeout()
                 # stderr_line = process.stderr.readline()
                 print(f'7zip-stderrt：【{stderr_line}】')
@@ -390,7 +381,6 @@ class ExtractQthread(QThread):
                     stderr_error_code = '4-3'
                     code_read_stderr = False
                     code_read_stdout = False
-                print(f'测试节点3')
             else:  # 由于子线程使用了process，可能导致process被堵塞一直卡循环，所以需要另设一个退出方法
                 if code_wait_communicate:
                     pass
@@ -400,8 +390,6 @@ class ExtractQthread(QThread):
 
             if pro_error:
                 break
-        print(f'pro_output, pro_error {pro_output, pro_error}')
-        print(f'测试节点5')
         # 检查调用7zip的返回码
         """
         Code码	含义
@@ -425,17 +413,18 @@ class ExtractQthread(QThread):
             test_result = '4-5'
         return test_result
 
-    def subprocess_7zip_run(self, command:list)->Tuple[str, list]:
-        """使用run方法调用7zip，并返回对应信息（专用于l指令）"""
+    @staticmethod
+    def subprocess_7zip_run(command: list) -> Tuple[str, list]:
+        """使用run方法调用7zip，并返回对应信息（专用于l和t指令）"""
         function_static.print_function_info()
 
         list_files = []
         process = subprocess.run(command,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   creationflags=subprocess.CREATE_NO_WINDOW,
-                                   text=True,
-                                   universal_newlines=True)
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 creationflags=subprocess.CREATE_NO_WINDOW,
+                                 text=True,
+                                 universal_newlines=True)
 
         if process.returncode == 0:
             test_result = '4-7'
@@ -458,7 +447,6 @@ class ExtractQthread(QThread):
             test_result = '4-5'
 
         return test_result, list_files
-
 
     def check_nested_folders(self, target_folder: str, code_un_nest_dir: bool):
         """传入文件夹路径folder参数，将最深一级非空文件夹移动到target_folder的同级目录（处理套娃文件夹）
@@ -494,7 +482,7 @@ class ExtractQthread(QThread):
         history_suffix = '.txt'
         history_filename = history_filetitle + history_suffix
 
-        if os.path.exists(history_filename) and os.path.getsize(history_filename)>1024*1024:  # 历史记录超过1mb则重置
+        if os.path.exists(history_filename) and os.path.getsize(history_filename) > 1024 * 1024:  # 历史记录超过1mb则重置
             new_history_file = f'{backup_dir}/{history_filetitle} {time.strftime("%Y_%m_%d %H_%M_%S ", time.localtime())}{history_suffix}'
             shutil.move(history_filename, new_history_file)
 
@@ -507,12 +495,10 @@ class ExtractQthread(QThread):
                             f'--------------------------------------------\n'
             ha.write(add_text)
 
-
-
-
     def update_code_stop(self):
         function_static.print_function_info()
         self.code_stop = True
+
 
 class ReadStd(QThread):
     def __init__(self, process_std):

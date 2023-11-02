@@ -1,22 +1,13 @@
-import inspect
 import os
-import random
 import re
-import shutil
-import string
-import time
 from typing import Union
 
 import filetype
 
 
-
-
-
-
 def print_function_info(mode: str = 'current'):
     """打印当前/上一个执行的函数信息
-    传参：mode 'current'或'last'"""
+    传参：mode ：current 或 last"""
     import time
     import inspect
 
@@ -84,6 +75,7 @@ def check_filetype(filepath: str) -> bool:
             return True
 
     return False  # 兜底
+
 
 def archive_is_zip(filepath: str) -> bool:
     """判断一个压缩包是否为zip格式"""
@@ -180,6 +172,7 @@ def get_filetitle(filepath: str) -> str:
                 continue
 
     return filetitle
+
 
 def get_deepest_dirpath(dirpath: str) -> str:
     """检查传入文件夹路径的深度，找出最后一级含多文件/文件夹的文件夹
@@ -289,7 +282,8 @@ def check_temp_folder(check_path: Union[list, str]) -> bool:
             return False
     return True
 
-def check_filetitle(filetitle:str)->str:
+
+def check_filetitle(filetitle: str) -> str:
     """检查文件名首尾是否有空格和."""
     print_function_info()
     while filetitle[0] in [' ', '.'] or filetitle[-1] in [' ', '.']:
@@ -297,6 +291,7 @@ def check_filetitle(filetitle:str)->str:
         filetitle = filetitle.strip('.')
 
     return filetitle
+
 
 def get_first_volume_archive_filetitle(filename: str) -> Union[str, bool]:
     """通过传入的文件名，判断其是否符合分卷压缩包规则并生成第一个分卷包名，返回提取的不含后缀文件名str或bool值"""

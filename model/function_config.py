@@ -1,15 +1,16 @@
-import os
 import configparser
+import os
+import re
 import shutil
 import time
 from typing import Tuple
+
 import natsort
-import re
+
 from model.function_static import print_function_info
 
 config_file = 'config.ini'
 backup_dir = 'backup'
-
 
 """
 变更记录
@@ -25,12 +26,12 @@ unzip_to_folder->output_dir
 
 # exclude_rule在传递时以str格式传递，实际使用时再转换为list
 latest_setting = {'mode': 'extract',
-                 'un_nest_dir': True,
-                 'un_nest_archive': False,
-                 'delete_archive': True,
-                 'check_filetype': True,
-                 'exclude_rule': '',
-                 'output_dir': ''
+                  'un_nest_dir': True,
+                  'un_nest_archive': False,
+                  'delete_archive': True,
+                  'check_filetype': True,
+                  'exclude_rule': '',
+                  'output_dir': ''
                   }
 
 
@@ -44,7 +45,7 @@ def check_config():
         config = configparser.ConfigParser()
         config.read(config_file, encoding='utf-8')
         # config.add_section('DEFAULT')
-        for key,value in latest_setting.items():
+        for key, value in latest_setting.items():
             config.set('DEFAULT', key, str(value))
 
         config.write(open(config_file, 'w', encoding='utf-8'))
@@ -53,7 +54,7 @@ def check_config():
         os.mkdir(backup_dir)
 
 
-def read_setting()->dict:
+def read_setting() -> dict:
     """读取配置文件中的设置项，返回一个dict（将config还原为latest_config格式）"""
     print_function_info()
     config_dict = {}
@@ -73,7 +74,8 @@ def read_setting()->dict:
 
     return config_dict
 
-def update_setting(config_dict:dict):
+
+def update_setting(config_dict: dict):
     """更新配置文件的设置项"""
     print_function_info()
     config = configparser.ConfigParser()
@@ -84,11 +86,13 @@ def update_setting(config_dict:dict):
 
     config.write(open(config_file, 'w', encoding='utf-8'))
 
+
 def backup_config():
     """备份配置文件"""
     print_function_info()
     nwe_filename = f'config {time.strftime("%Y_%m_%d %H_%M_%S ", time.localtime())}.ini'
     shutil.copyfile(config_file, f'{backup_dir}/{nwe_filename}')
+
 
 def read_pw() -> Tuple[list, list]:
     """读取配置文件中的密码，并排序后返回两种list"""
@@ -109,6 +113,7 @@ def read_pw() -> Tuple[list, list]:
 
     return pw_sorted, pw_sorted_with_count
 
+
 def export_pw(with_number: bool = False):
     """导出当前密码到本地
     传参：with_number 密码后是否添加使用次数"""
@@ -122,7 +127,7 @@ def export_pw(with_number: bool = False):
             pw.write("\n".join(pw_sorted))
 
 
-def update_pw(pw_list:list):
+def update_pw(pw_list: list):
     """更新配置文件中的密码"""
     print_function_info()
     config = configparser.ConfigParser()
@@ -136,6 +141,7 @@ def update_pw(pw_list:list):
 
     config.write(open(config_file, 'w', encoding='utf-8'))
 
+
 def add_pw_count(pw: str):
     """在配置文件中将对应的解压密码使用次数+1"""
     print_function_info()
@@ -145,4 +151,3 @@ def add_pw_count(pw: str):
     old_count = int(config.get(pw, 'use_count'))
     config.set(pw, 'use_count', str(old_count + 1))
     config.write(open(config_file, 'w', encoding='utf-8'))
-

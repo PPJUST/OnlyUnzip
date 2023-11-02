@@ -1,21 +1,16 @@
-import configparser
 import os
 import re
-import shutil
-import time
-from typing import Tuple
 import sys
+import time
 
-import natsort
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QColor, QIcon
 from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction, QFileDialog, QMessageBox
 
-from qthread_7zip import ExtractQthread
-from ui import Ui_MainWindow
 from model import function_config
 from model import function_static
-
+from qthread_7zip import ExtractQthread
+from ui import Ui_MainWindow
 
 icon_test = './icon/测试密码.png'
 icon_main = './icon/程序图标.png'
@@ -29,13 +24,11 @@ icon_stop = './icon/中止.png'
 win_drop_files = sys.argv[1:]
 
 
-
 class OnlyUnzip(QMainWindow):
-    def __init__(self, win_drop_files=None):
+    def __init__(self, filelist=None):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        print(f'win_drop_file {win_drop_files}')
 
         """
         初始化设置
@@ -64,7 +57,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_page)
 
         # 主页面
-        self.ui.label_icon.dropSignal.connect(self.accept_files)
+        self.ui.label_drop_file.dropSignal.connect(self.accept_files)
         self.ui.button_stop.clicked.connect(self.stop_qthread)
 
         # 密码页的按钮
@@ -80,10 +73,9 @@ class OnlyUnzip(QMainWindow):
 
         # 设置页的按钮
         self.ui.checkBox_mode_extract.stateChanged.connect(self.update_setting)
-        self.ui.checkBox_mode_extract.stateChanged.connect(lambda :self.set_checkbox_enable(mode=True))
+        self.ui.checkBox_mode_extract.stateChanged.connect(lambda: self.set_checkbox_enable(mode=True))
         self.ui.checkBox_mode_test.stateChanged.connect(self.update_setting)
-        self.ui.checkBox_mode_test.stateChanged.connect(lambda :self.set_checkbox_enable(mode=False))
-
+        self.ui.checkBox_mode_test.stateChanged.connect(lambda: self.set_checkbox_enable(mode=False))
 
         self.ui.checkBox_un_nest_dir.stateChanged.connect(self.update_setting)
         self.ui.checkBox_un_nest_archive.stateChanged.connect(self.update_setting)
@@ -98,8 +90,8 @@ class OnlyUnzip(QMainWindow):
         self.ui.listWidget_history.customContextMenuRequested.connect(self.history_page_menu)  # 右键菜单
 
         # 设置直接拖入文件到软件时的操作
-        if win_drop_files:
-            self.accept_files(win_drop_files)
+        if filelist:
+            self.accept_files(filelist)
 
     def accept_files(self, path_list: list):
         """接收路径列表，提取出其中所有文件"""
@@ -150,35 +142,29 @@ class OnlyUnzip(QMainWindow):
                     extract_file_dict.update(all_file_dict)
                 # 将需要执行操作的文件dict传递给子线程
                 if extract_file_dict:
-                    print('测试节点1-0')
                     self.set_widget_enable(mode=False)  # 禁用部分ui
                     # 设置子线程
-                    print('测试节点1-2')
                     self.qthread.reset_setting()  # 更新设置
                     self.qthread.set_extract_files_dict(extract_file_dict)  # 传递解压文件dict
                     self.qthread.start()
-                    print('测试节点1-1')
                 else:  # 没有需解压的文件，则提示
                     self.update_ui('2-1')
             else:  # 没有需解压的文件，则提示
                 self.update_ui('2-1')
         else:  # 如果有遗留的临时文件夹
             self.update_ui('2-2')
-        print('测试节点1-3')
-
 
     def set_widget_enable(self, mode=True):
         """在解压开始前，设置相关控件的enable属性，防止解压过程中修改选项导致报错"""
         function_static.print_function_info()
         # 主页面
-        self.ui.label_icon.setEnabled(mode)
+        self.ui.label_drop_file.setEnabled(mode)
         # 密码页
         self.ui.button_update_password.setEnabled(mode)
         # 设置页
         self.ui.scrollAreaWidgetContents.setEnabled(mode)
 
-
-    def set_checkbox_enable(self, mode = True):
+    def set_checkbox_enable(self, mode=True):
         """点击模式按钮后关闭或开启部分设置项勾选框"""
         self.ui.checkBox_delete_archive.setEnabled(mode)
         self.ui.checkBox_check_filetype.setEnabled(mode)
@@ -187,10 +173,10 @@ class OnlyUnzip(QMainWindow):
         self.ui.lineedit_output_dir.setEnabled(mode)
         self.ui.lineedit_exclude_rule.setEnabled(mode)
 
-
     def history_page_menu(self, pos):
         """历史记录页中的右键菜单，用于复制密码"""
         function_static.print_function_info()
+
         def menu_copy_pw():
             item = self.ui.listWidget_history.currentItem()
             text = item.text().split(' | ', maxsplit=1)[1]  # 根据文本筛选出解压密码
@@ -205,28 +191,28 @@ class OnlyUnzip(QMainWindow):
             menu.addAction(copy_action)
             menu.exec_(self.ui.listWidget_history.mapToGlobal(pos))
 
-    def update_ui(self, code:str, data:list=None):
+    def update_ui(self, code: str, data: list = None):
         """根据传入的list，分不同情况更新ui
         type_list格式：['更新类型', '相关数据']"""
-        function_static.print_function_info()
-        function_static.print_function_info()
+        print(f'接收代码 {code}')
+        function_static.print_function_info('last')
         if code == '1-1':  # 初始状态
-            self.ui.label_icon.setPixmap(icon_origin)
+            self.ui.label_drop_file.setPixmap(icon_origin)
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
         elif code == '2-1':  # 没有需要解压的文件
-            self.ui.label_icon.setPixmap(icon_finish)
+            self.ui.label_drop_file.setPixmap(icon_finish)
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('没有需要解压的文件')
         elif code == '2-2':  # 存在遗留临时文件夹
-            self.ui.label_icon.setPixmap(icon_error)
+            self.ui.label_drop_file.setPixmap(icon_error)
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('存在遗留临时文件夹')
         elif code == '1-2':  # 启动子线程
             self.ui.button_stop.setVisible(True)  # 显示停止按钮
             if self.ui.checkBox_mode_test.isChecked():  # 按选项设置不同图标
-                self.ui.label_icon.setPixmap(icon_test)
+                self.ui.label_drop_file.setPixmap(icon_test)
             else:
-                self.ui.label_icon.setPixmap(icon_extract)
+                self.ui.label_drop_file.setPixmap(icon_extract)
         elif code == '3-1':  # 更新当前文件
             self.ui.label_current_file.setText(data[0])
         elif code == '3-2':  # 更新总进度
@@ -245,7 +231,7 @@ class OnlyUnzip(QMainWindow):
             item.setTextColor(QColor(254, 67, 101))
             self.ui.listWidget_history.addItem(item)
         elif code == '4-5':  # 历史记录-未知错误
-            item_text = time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) +data[0] + " ■未知错误"
+            item_text = time.strftime("%Y.%m.%d %H:%M:%S ", time.localtime()) + data[0] + " ■未知错误"
             item = QListWidgetItem(item_text)
             item.setTextColor(QColor(254, 67, 101))
             self.ui.listWidget_history.addItem(item)
@@ -275,7 +261,7 @@ class OnlyUnzip(QMainWindow):
             self.ui.progressBar_extract.setValue(data[0])
             self.ui.stackedWidget_schedule.setCurrentIndex(2)
         elif code == '1-3':  # 完成全部任务
-            self.ui.label_icon.setPixmap(icon_finish)
+            self.ui.label_drop_file.setPixmap(icon_finish)
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('全部完成')
             self.ui.label_schedule_finish.setText(data[0])
@@ -313,7 +299,6 @@ class OnlyUnzip(QMainWindow):
         self.ui.lineedit_exclude_rule.setText(code_exclude_rule)
         self.ui.lineedit_output_dir.setText(code_output_dir)
 
-
     def update_password(self):
         """更新密码"""
         function_static.print_function_info()
@@ -321,7 +306,7 @@ class OnlyUnzip(QMainWindow):
 
         add_pw = [n for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
         add_pw_strip = [n.strip() for n in add_pw]
-        pw_list = list(set(add_pw+add_pw_strip))  # 转为集合去重
+        pw_list = list(set(add_pw + add_pw_strip))  # 转为集合去重
         function_config.update_pw(pw_list)
 
         self.ui.text_password.clear()  # 重置密码框
@@ -332,7 +317,6 @@ class OnlyUnzip(QMainWindow):
         clipboard = QApplication.clipboard()
         clipboard_text = clipboard.text()
         self.ui.text_password.setPlainText(clipboard_text)
-
 
     def update_setting(self):
         """更新设置"""
@@ -350,15 +334,14 @@ class OnlyUnzip(QMainWindow):
         exclude_rule = ' '.join(exclude_list)  # 转为字符串
 
         config_dict = {'mode': mode,
-                        'un_nest_dir': un_nest_dir,
-                        'un_nest_archive': un_nest_archive,
-                        'delete_archive': delete_archive,
-                        'check_filetype': check_filetype,
-                        'exclude_rule': exclude_rule,
-                        'output_dir': output_dir}
+                       'un_nest_dir': un_nest_dir,
+                       'un_nest_archive': un_nest_archive,
+                       'delete_archive': delete_archive,
+                       'check_filetype': check_filetype,
+                       'exclude_rule': exclude_rule,
+                       'output_dir': output_dir}
 
         function_config.update_setting(config_dict)  # 调用
-
 
     def change_page(self, button_id):
         """切换标签页，并高亮被点击的标签页按钮"""
@@ -389,13 +372,13 @@ class OnlyUnzip(QMainWindow):
         if output_dir:
             if not os.path.exists(output_dir) or os.path.isfile(output_dir):
                 self.ui.lineedit_output_dir.setStyleSheet('border: 1px solid red;')
-                self.ui.label_icon.setPixmap(icon_origin)
+                self.ui.label_drop_file.setPixmap(icon_origin)
             else:
                 self.ui.lineedit_output_dir.setStyleSheet('')
-                self.ui.label_icon.setPixmap(icon_origin_with_output)
+                self.ui.label_drop_file.setPixmap(icon_origin_with_output)
         else:
             self.ui.lineedit_output_dir.setStyleSheet('')
-            self.ui.label_icon.setPixmap(icon_origin)
+            self.ui.label_drop_file.setPixmap(icon_origin)
 
     def stop_qthread(self):
         """中止解压子线程"""
@@ -404,7 +387,7 @@ class OnlyUnzip(QMainWindow):
                                      f'是否中止当前任务\n（不终止当前正在执行的文件，\n仅中止之后的任务）',
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.update_ui(['子线程-中止'])
+            self.update_ui('1-4')
             self.qthread.signal_stop.emit()
 
 

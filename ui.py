@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�MfpBPS.ui'
+## Form generated from reading UI file 'ui ԭ�ļ�wvYIfB.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -29,6 +29,7 @@ class MyLabel(QLabel):
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
             self.dropSignal.emit(drop_path)  # 发送文件列表信号
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -55,13 +56,10 @@ class Ui_MainWindow(object):
         self.button_page_main.setObjectName(u"button_page_main")
         self.button_page_main.setMinimumSize(QSize(0, 40))
         self.button_page_main.setMaximumSize(QSize(16777215, 16777215))
-        font = QFont()
-        font.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        font.setKerning(True)
-        self.button_page_main.setFont(font)
+        icon = QIcon()
+        icon.addFile(u"icon/\u4e3b\u9875.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.button_page_main.setIcon(icon)
+        self.button_page_main.setIconSize(QSize(16, 16))
         self.button_page_main.setAutoRepeat(False)
         self.button_page_main.setAutoDefault(False)
         self.button_page_main.setFlat(False)
@@ -73,12 +71,9 @@ class Ui_MainWindow(object):
         self.button_page_password.setObjectName(u"button_page_password")
         self.button_page_password.setMinimumSize(QSize(0, 40))
         self.button_page_password.setMaximumSize(QSize(16777215, 16777215))
-        font1 = QFont()
-        font1.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
-        font1.setPointSize(10)
-        font1.setBold(True)
-        font1.setWeight(75)
-        self.button_page_password.setFont(font1)
+        icon1 = QIcon()
+        icon1.addFile(u"icon/\u5bc6\u7801\u9875.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.button_page_password.setIcon(icon1)
 
         self.verticalLayout_6.addWidget(self.button_page_password)
 
@@ -87,7 +82,9 @@ class Ui_MainWindow(object):
         self.button_page_setting.setObjectName(u"button_page_setting")
         self.button_page_setting.setMinimumSize(QSize(0, 40))
         self.button_page_setting.setMaximumSize(QSize(16777215, 16777215))
-        self.button_page_setting.setFont(font1)
+        icon2 = QIcon()
+        icon2.addFile(u"icon/\u8bbe\u7f6e\u9875.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.button_page_setting.setIcon(icon2)
 
         self.verticalLayout_6.addWidget(self.button_page_setting)
 
@@ -96,7 +93,9 @@ class Ui_MainWindow(object):
         self.button_page_history.setObjectName(u"button_page_history")
         self.button_page_history.setMinimumSize(QSize(0, 40))
         self.button_page_history.setMaximumSize(QSize(16777215, 16777215))
-        self.button_page_history.setFont(font1)
+        icon3 = QIcon()
+        icon3.addFile(u"icon/\u5386\u53f2\u8bb0\u5f55\u9875.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.button_page_history.setIcon(icon3)
 
         self.verticalLayout_6.addWidget(self.button_page_history)
 
@@ -121,13 +120,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setSpacing(5)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(3, 0, 3, 3)
-        self.label_icon = MyLabel(self.page_main)
-        self.label_icon.setObjectName(u"label_icon")
-        self.label_icon.setAcceptDrops(True)
-        self.label_icon.setFrameShape(QFrame.NoFrame)
-        self.label_icon.setScaledContents(True)
+        self.label_drop_file = MyLabel(self.page_main)
+        self.label_drop_file.setObjectName(u"label_drop_file")
+        self.label_drop_file.setAcceptDrops(True)
+        self.label_drop_file.setFrameShape(QFrame.NoFrame)
+        self.label_drop_file.setScaledContents(True)
 
-        self.verticalLayout_2.addWidget(self.label_icon)
+        self.verticalLayout_2.addWidget(self.label_drop_file)
 
         self.line_3 = QFrame(self.page_main)
         self.line_3.setObjectName(u"line_3")
@@ -147,9 +146,9 @@ class Ui_MainWindow(object):
 
         self.button_stop = QToolButton(self.page_main)
         self.button_stop.setObjectName(u"button_stop")
-        icon = QIcon()
-        icon.addFile(u"icon/\u4e2d\u6b62.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.button_stop.setIcon(icon)
+        icon4 = QIcon()
+        icon4.addFile(u"icon/\u4e2d\u6b62.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.button_stop.setIcon(icon4)
 
         self.horizontalLayout_7.addWidget(self.button_stop)
 
@@ -207,7 +206,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.addWidget(self.label_3)
 
         self.progressBar_extract = QProgressBar(self.page_unzip)
-        self.progressBar_extract.setObjectName(u"progressBar_unzip")
+        self.progressBar_extract.setObjectName(u"progressBar_extract")
         self.progressBar_extract.setMaximumSize(QSize(16777215, 12))
         self.progressBar_extract.setStyleSheet(u"")
         self.progressBar_extract.setValue(0)
@@ -294,16 +293,16 @@ class Ui_MainWindow(object):
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.checkBox_mode_extract = QCheckBox(self.scrollAreaWidgetContents)
-        self.buttonGroup_check_model = QButtonGroup(MainWindow)
-        self.buttonGroup_check_model.setObjectName(u"buttonGroup_check_model")
-        self.buttonGroup_check_model.addButton(self.checkBox_mode_extract)
-        self.checkBox_mode_extract.setObjectName(u"checkBox_model_unzip")
+        self.buttonGroup_check_mode = QButtonGroup(MainWindow)
+        self.buttonGroup_check_mode.setObjectName(u"buttonGroup_check_mode")
+        self.buttonGroup_check_mode.addButton(self.checkBox_mode_extract)
+        self.checkBox_mode_extract.setObjectName(u"checkBox_mode_extract")
 
         self.verticalLayout_4.addWidget(self.checkBox_mode_extract)
 
         self.checkBox_mode_test = QCheckBox(self.scrollAreaWidgetContents)
-        self.buttonGroup_check_model.addButton(self.checkBox_mode_test)
-        self.checkBox_mode_test.setObjectName(u"checkBox_model_test")
+        self.buttonGroup_check_mode.addButton(self.checkBox_mode_test)
+        self.checkBox_mode_test.setObjectName(u"checkBox_mode_test")
 
         self.verticalLayout_4.addWidget(self.checkBox_mode_test)
 
@@ -315,7 +314,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.line)
 
         self.checkBox_delete_archive = QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox_delete_archive.setObjectName(u"checkBox_delect_zip")
+        self.checkBox_delete_archive.setObjectName(u"checkBox_delete_archive")
 
         self.verticalLayout_4.addWidget(self.checkBox_delete_archive)
 
@@ -327,19 +326,19 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.line_2)
 
         self.checkBox_un_nest_dir = QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox_un_nest_dir.setObjectName(u"checkBox_nested_folders")
+        self.checkBox_un_nest_dir.setObjectName(u"checkBox_un_nest_dir")
         self.checkBox_un_nest_dir.setChecked(False)
 
         self.verticalLayout_4.addWidget(self.checkBox_un_nest_dir)
 
         self.checkBox_un_nest_archive = QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox_un_nest_archive.setObjectName(u"checkBox_nested_zip")
+        self.checkBox_un_nest_archive.setObjectName(u"checkBox_un_nest_archive")
         self.checkBox_un_nest_archive.setEnabled(True)
 
         self.verticalLayout_4.addWidget(self.checkBox_un_nest_archive)
 
         self.checkBox_check_filetype = QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox_check_filetype.setObjectName(u"checkBox_check_zip")
+        self.checkBox_check_filetype.setObjectName(u"checkBox_check_filetype")
         self.checkBox_check_filetype.setChecked(False)
 
         self.verticalLayout_4.addWidget(self.checkBox_check_filetype)
@@ -358,7 +357,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.label)
 
         self.lineedit_exclude_rule = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineedit_exclude_rule.setObjectName(u"lineedit_unzip_skip_suffix")
+        self.lineedit_exclude_rule.setObjectName(u"lineedit_exclude_rule")
 
         self.verticalLayout_4.addWidget(self.lineedit_exclude_rule)
 
@@ -378,7 +377,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setSpacing(0)
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.lineedit_output_dir = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineedit_output_dir.setObjectName(u"lineedit_unzip_to_folder")
+        self.lineedit_output_dir.setObjectName(u"lineedit_output_dir")
 
         self.horizontalLayout_6.addWidget(self.lineedit_output_dir)
 
@@ -417,7 +416,7 @@ class Ui_MainWindow(object):
 
         self.button_page_main.setDefault(False)
         self.stackedWidget_main.setCurrentIndex(0)
-        self.stackedWidget_schedule.setCurrentIndex(2)
+        self.stackedWidget_schedule.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -429,7 +428,7 @@ class Ui_MainWindow(object):
         self.button_page_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801", None))
         self.button_page_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.button_page_history.setText(QCoreApplication.translate("MainWindow", u"\u5386\u53f2", None))
-        self.label_icon.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
+        self.label_drop_file.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u6807", None))
         self.label_schedule_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u603b\u8fdb\u5ea6", None))
         self.button_stop.setText(QCoreApplication.translate("MainWindow", u"...", None))
         self.label_current_file.setText(QCoreApplication.translate("MainWindow", u"\u663e\u793a\u5f53\u524d\u6587\u4ef6", None))
