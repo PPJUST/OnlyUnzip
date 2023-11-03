@@ -23,11 +23,9 @@ icon_error = './icon/错误.png'
 icon_finish = './icon/完成.png'
 icon_stop = './icon/中止.png'
 
-win_drop_files = sys.argv[1:]
-
 
 class OnlyUnzip(QMainWindow):
-    def __init__(self, filelist=None):
+    def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -90,10 +88,6 @@ class OnlyUnzip(QMainWindow):
 
         # 历史记录页的操作
         self.ui.listWidget_history.customContextMenuRequested.connect(self.history_page_menu)  # 右键菜单
-
-        # 设置直接拖入文件到软件时的操作
-        if filelist:
-            self.accept_files(filelist)
 
     def accept_files(self, path_list: list):
         """接收路径列表，提取出其中所有文件"""
@@ -406,7 +400,7 @@ def main():
     palette.setColor(QPalette.Window, QColor(255, 255, 255))
     app.setPalette(palette)
 
-    show_ui = OnlyUnzip(win_drop_files)
+    show_ui = OnlyUnzip()
     show_ui.setWindowIcon(QIcon(icon_main))
     show_ui.setFixedSize(262, 232)
     show_ui.show()
