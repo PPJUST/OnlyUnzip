@@ -1,5 +1,10 @@
+import inspect
 import os
+import random
 import re
+import shutil
+import string
+import time
 from typing import Union
 
 import filetype
@@ -8,9 +13,6 @@ import filetype
 def print_function_info(mode: str = 'current'):
     """打印当前/上一个执行的函数信息
     传参：mode ：current 或 last"""
-    import time
-    import inspect
-
     if mode == 'current':
         print(time.strftime('%H:%M:%S ', time.localtime()),
               inspect.getframeinfo(inspect.currentframe().f_back).function)
@@ -24,8 +26,6 @@ def get_folder_size(folder: str) -> int:
     传参：folder 文件夹路径str
     返回值：total_size 总大小int"""
     print_function_info()
-    import os
-
     folder_size = 0
     for dirpath, dirnames, filenames in os.walk(folder):
         for item in filenames:
@@ -39,8 +39,6 @@ def get_files_list(dirpath: str) -> list:
     传参： dirpath 文件夹路径str
     返回值 filelist 所有文件路径list"""
     print_function_info()
-    import os
-
     filelist = []
     for dirpath, dirnames, filenames in os.walk(dirpath):
         for filename in filenames:
@@ -118,8 +116,6 @@ def get_nodup_filename(path: str, target_dirpath: str) -> str:
     返回值：new_filename 无重复的文件名（非完整路径，仅文件名）
     """
     print_function_info()
-    import os
-
     if os.path.isfile(path):
         filetitle = os.path.split(os.path.splitext(path)[0])[1]
         suffix = os.path.splitext(path)[1]
@@ -179,8 +175,6 @@ def get_deepest_dirpath(dirpath: str) -> str:
     传参：dirpath 文件夹路径str
     返回值：deepest_path 最深的文件夹路径str"""
     print_function_info()
-    import os
-
     if len(os.listdir(dirpath)) == 1:
         the_path = os.path.normpath(os.path.join(dirpath, os.listdir(dirpath)[0]))
         if os.path.isfile(the_path):  # 如果文件夹下只有一个文件，并且是文件
@@ -204,12 +198,6 @@ def un_nest_folders(origin_folder: str, target_folder: str = None, mode_nested: 
     返回值：final_path 最终的路径str
     """
     print_function_info()
-    import os
-    import shutil
-    import time
-    import random
-    import string
-
     # 如果目标文件夹不存在，则新建
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
