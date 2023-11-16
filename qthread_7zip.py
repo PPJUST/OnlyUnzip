@@ -356,7 +356,7 @@ class ExtractQthread(QThread):
                     code_find_error = True
                 # 查询进度信息
                 if not code_find_error:
-                    match_progress = re.search(r'(\d{1,3})% \d+ - ', output)
+                    match_progress = re.search(r'(\d{1,3})% *\d* - ', output)  # 单文件时 34% - 061-090；多文件时 19% 10 - 031-060
                     if match_progress:
                         current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
                         if current_progress > pre_progress:
