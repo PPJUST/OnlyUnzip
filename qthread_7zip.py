@@ -300,7 +300,7 @@ class ExtractQthread(QThread):
                 # 发送信号更新ui
                 self.signal_update_ui.emit('3-3', [f'{test_pw_number}/{total_pw_count}'])
                 # 组合7zip指令，先组合无密码指令，如果有密码则添加指令
-                command_extract = [path_7zip, "x", "-y", archive_file, '-bsp1', '-bse2',
+                command_extract = [path_7zip, "x", "-y", archive_file, '-bsp1', '-bse1', '-bso1',
                                    "-o" + extract_folder, "-p" + pw] + self.exclude_rule
                 # 调用7zip函数，获取返回码
                 return_code = self.subprocess_7zip_popen(command_extract)
@@ -319,8 +319,10 @@ class ExtractQthread(QThread):
     def subprocess_7zip_popen(self, command: list) -> str:
         """使用popen方法调用7zip，并返回对应信息，专用于x命令"""
         function_static.print_function_info()
-
-        print(f'执行指令 {" ".join(command)}')
+        """
+        同时读取stdout和stderr会导致堵塞
+        所以需要在7zip命令行中将3种输出都重定向至一个流中，即 'bso1','bsp1',bse1'"""
+        # print(f'执行指令 {" ".join(command)}')
         process = subprocess.Popen(command,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
@@ -330,67 +332,39 @@ class ExtractQthread(QThread):
         # 读取信息流
         stderr_error_code = '4-1'  # 通过信息流判断返回码为2时的错误码
         pre_progress = 0  # 设置初始解压进度为0
-        code_read_stdout = True  # 决定是否读取数据流，用于解决zip会尝试测试全部文件的问题
-        code_read_stderr = True
-        self.read_stdout = ReadStd(process.stdout)  # 设置子线程，用于处理std输出流堵塞问题
-        self.read_stderr = ReadStd(process.stderr)  # 设置子线程，用于处理std输出流堵塞问题
-        pro_error = None  # 另一个退出方法的变量
-        code_wait_communicate = False  # 另一个退出方法的变量
-        while True:  # 循环检查输出信息，直至获取到程序的退出代码
-            if process.poll() is not None:
-                break
-            # 检查标准信息流
-            if code_read_stdout:
-                stdout_line = self.read_stdout.execute_with_timeout()
-                # stdout_line = process.stdout.readline()
-                print(f'7zip-stdout：【{stdout_line}】')
-                if stdout_line == '' and process.poll() is not None:
-                    break
-                # 在标准信息流中查找进度信息并解析
-                match_progress = re.search(r'(\d{1,3})%', stdout_line)
-                if match_progress:
-                    current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
-                    if current_progress > 0:
-                        code_read_stderr = False
-                    if current_progress > pre_progress:
-                        # 更新进度ui
-                        self.signal_update_ui.emit('3-4', [current_progress])
-                        pre_progress = current_progress
+        code_find_error = False  # 判断是否已经在stdout中找到错误信息，如果已找到则不再读取进度信息
 
-            # 检查错误信息流
-            if code_read_stderr:
-                stderr_line = self.read_stderr.execute_with_timeout()
-                # stderr_line = process.stderr.readline()
-                print(f'7zip-stderrt：【{stderr_line}】')
-                if stderr_line == '' and process.poll() is not None:
-                    break
-                # 在错误信息流中查找错误信息并解析
-                match_wrong_pw = re.search('Wrong password', stderr_line)
-                match_lost_volume = re.search('Missing volume', stderr_line) or re.search('Unexpected end of archive',
-                                                                                          stderr_line)
-                match_not_archive = re.search('Cannot open the file as', stderr_line)
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                # print('【7zip输出流：】', output.strip())
+                # 查询错误信息
+                match_wrong_pw = re.search('Wrong password', output)
+                match_lost_volume = re.search('Missing volume', output) or re.search('Unexpected end of archive',
+                                                                                     output)
+                match_not_archive = re.search('Cannot open the file as', output)
                 if match_wrong_pw:
                     stderr_error_code = '4-1'
-                    code_read_stderr = False
-                    code_read_stdout = False
+                    code_find_error = True
                 elif match_lost_volume:
                     stderr_error_code = '4-2'
-                    code_read_stderr = False
-                    code_read_stdout = False
+                    code_find_error = True
                 elif match_not_archive:
                     stderr_error_code = '4-3'
-                    code_read_stderr = False
-                    code_read_stdout = False
-            else:  # 由于子线程使用了process，可能导致process被堵塞一直卡循环，所以需要另设一个退出方法
-                if code_wait_communicate:
-                    pass
-                else:
-                    code_wait_communicate = True
-                    pro_output, pro_error = process.communicate()
+                    code_find_error = True
+                # 查询进度信息
+                if not code_find_error:
+                    match_progress = re.search(r'(\d{1,3})% \d+ - ', output)
+                    if match_progress:
+                        current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
+                        if current_progress > pre_progress:
+                            # 更新进度ui
+                            self.signal_update_ui.emit('3-4', [current_progress])
+                            pre_progress = current_progress
 
-            if pro_error:
-                break
-        # 检查调用7zip的返回码
+        # 检查7zip的返回码
         """
         Code码	含义
         0	没有错误

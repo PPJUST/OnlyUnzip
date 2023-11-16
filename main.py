@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import time
 
 from PySide2.QtCore import Qt
@@ -38,6 +37,7 @@ class OnlyUnzip(QMainWindow):
         self.load_config()  # 加载设置文件
         self.update_ui('1-1')  # 设置初始图标
         self.check_output_dir()
+        self.movie_label_icon = None  # 设置动图对象
 
         # 设置ui属性
         self.ui.listWidget_history.setContextMenuPolicy(Qt.CustomContextMenu)  # 设置历史记录控件的右键菜单属性
@@ -204,6 +204,7 @@ class OnlyUnzip(QMainWindow):
             self.ui.label_schedule_file.setText('存在遗留临时文件夹')
         elif code == '1-2':  # 启动子线程
             self.ui.button_stop.setVisible(True)  # 显示停止按钮
+            self.movie_label_icon = None
             if self.ui.checkBox_mode_test.isChecked():  # 按选项设置不同图标
                 # self.ui.label_drop_file.setPixmap(icon_test)
                 self.movie_label_icon = QMovie(icon_gif_test)
