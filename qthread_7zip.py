@@ -459,7 +459,7 @@ class ExtractQthread(QThread):
         history_suffix = '.txt'
         history_filename = history_filetitle + history_suffix
 
-        if os.path.exists(history_filename) and os.path.getsize(history_filename) > 1024 * 1024:  # 历史记录超过1mb则重置
+        if os.path.exists(history_filename) and os.path.getsize(history_filename) > 100 * 1024:  # 历史记录超过100kb则重置
             new_history_file = f'{backup_dir}/{history_filetitle} {time.strftime("%Y_%m_%d %H_%M_%S ", time.localtime())}{history_suffix}'
             shutil.move(history_filename, new_history_file)
 
