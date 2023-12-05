@@ -13,12 +13,14 @@ import filetype
 def print_function_info(mode: str = 'current'):
     """打印当前/上一个执行的函数信息
     传参：mode ：current 或 last"""
-    if mode == 'current':
-        print(time.strftime('%H:%M:%S ', time.localtime()),
-              inspect.getframeinfo(inspect.currentframe().f_back).function)
-    elif mode == 'last':
-        print(time.strftime('%H:%M:%S ', time.localtime()),
-              inspect.getframeinfo(inspect.currentframe().f_back.f_back).function)
+    pass
+
+    # if mode == 'current':
+    #     print(time.strftime('%H:%M:%S ', time.localtime()),
+    #           inspect.getframeinfo(inspect.currentframe().f_back).function)
+    # elif mode == 'last':
+    #     print(time.strftime('%H:%M:%S ', time.localtime()),
+    #           inspect.getframeinfo(inspect.currentframe().f_back.f_back).function)
 
 
 def get_folder_size(folder: str) -> int:
@@ -68,7 +70,7 @@ def check_filetype(filepath: str) -> bool:
             type_kind = None
         else:
             type_kind = kind.extension
-        print(f'文件【{filepath}】的文件类型为【{type_kind}】')
+        # print(f'文件【{filepath}】的文件类型为【{type_kind}】')
         if type_kind in archive_type:
             return True
 

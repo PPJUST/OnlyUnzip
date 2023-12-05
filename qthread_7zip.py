@@ -313,7 +313,6 @@ class ExtractQthread(QThread):
                 elif return_code in ['4-2', '4-3', '4-4', '4-5', '4-6']:
                     break
                 # 对返回码4-1不作处理（即密码错误继续循环）
-
         return extract_result, right_pw
 
     def subprocess_7zip_popen(self, command: list) -> str:
@@ -335,7 +334,10 @@ class ExtractQthread(QThread):
         code_find_error = False  # 判断是否已经在stdout中找到错误信息，如果已找到则不再读取进度信息
 
         while True:
-            output = process.stdout.readline()
+            try:
+                output = process.stdout.readline()
+            except UnicodeDecodeError:  # UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 32: illegal multibyte sequence
+                output = ''
             if output == '' and process.poll() is not None:
                 break
             if output:
@@ -391,7 +393,6 @@ class ExtractQthread(QThread):
     def subprocess_7zip_run(command: list) -> Tuple[str, list]:
         """使用run方法调用7zip，并返回对应信息（专用于l和t指令）"""
         function_static.print_function_info()
-
         list_files = []
         process = subprocess.run(command,
                                  stdout=subprocess.PIPE,
@@ -407,7 +408,9 @@ class ExtractQthread(QThread):
             test_result = '4-4'
         elif process.returncode == 2:
             text_stderr = str(process.stderr)
-            if 'Wrong password' in text_stderr:
+            if not text_stderr:  # 解压自解压程序时返回的err流可能为空
+                test_result = '4-1'
+            elif 'Wrong password' in text_stderr:
                 test_result = '4-1'
             elif 'Missing volume' in text_stderr or 'Unexpected end of archive' in text_stderr:
                 test_result = '4-2'
