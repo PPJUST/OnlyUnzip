@@ -6,7 +6,7 @@ import time
 from typing import Tuple
 
 import send2trash  # win7不能使用winshell，用send2trash替代
-from PySide2.QtCore import Signal, QThread
+from PySide6.QtCore import Signal, QThread
 
 import module.function_file
 import module.function_filetype

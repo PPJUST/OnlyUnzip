@@ -8,6 +8,7 @@ import time
 from typing import Union
 
 from constant import _BACKUP_FOLDER
+from module.function_config import Config
 from module.function_file import get_folder_size
 from module.function_folder import get_first_multi_folder
 
@@ -292,3 +293,5 @@ def init_settings():
     """初始化设置文件/文件夹"""
     if not os.path.exists(_BACKUP_FOLDER):
         os.mkdir(_BACKUP_FOLDER)
+
+    Config()

@@ -29,7 +29,7 @@ class Config:
             config = configparser.ConfigParser()
             config.read(_CONFIG_FILE, encoding='utf-8')
             config.set('DEFAULT', 'mode', self.mode)
-            config.set('DEFAULT', 'handling_nested_archive', str(self.handling_nested_archive))
+            config.set('DEFAULT', 'handling_nested_folder', str(self.handling_nested_folder))
             config.set('DEFAULT', 'handling_nested_archive', str(self.handling_nested_archive))
             config.set('DEFAULT', 'delete_original_file', str(self.delete_original_file))
             config.set('DEFAULT', 'check_filetype', str(self.check_filetype))

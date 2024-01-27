@@ -26,9 +26,8 @@ class Main(QMainWindow):
 
 
         # 初始化
-        function_config.init_config()  # 检查配置文件是否存在
+        function_static.init_settings()  # 检查初始文件
         self.load_config()  # 加载设置文件
-        self.update_ui('1-1')  # 设置初始图标
         self.check_output_dir()
         self.movie_label_icon = None  # 设置动图对象
 
@@ -50,7 +49,7 @@ class Main(QMainWindow):
         self.ui.buttonGroup.buttonClicked[int].connect(self.change_page)
 
         # 主页面
-        self.ui.label_drop_file.dropSignal.connect(self.accept_files)
+        self.ui.label_drop_file.signal_dropped.connect(self.accept_files)
         self.ui.button_stop.clicked.connect(self.stop_qthread)
 
         # 密码页的按钮
@@ -154,7 +153,7 @@ class Main(QMainWindow):
         self.ui.scrollAreaWidgetContents.setEnabled(mode)
 
     def set_checkbox_enable(self, mode=True):
-        """点击模式按钮后关闭或开启部分设置项勾选框"""
+        """切换模式后启用/禁用相关设置项"""
         self.ui.checkBox_delete_archive.setEnabled(mode)
         self.ui.checkBox_check_filetype.setEnabled(mode)
         self.ui.checkBox_un_nest_dir.setEnabled(mode)
@@ -269,30 +268,30 @@ class Main(QMainWindow):
             self.movie_label_icon.stop()  # 停止动图
 
     def load_config(self):
-        """加载配置文件，并更新UI"""
-        function_static.print_function_info()
-        # 读取数据
+        """读取配置文件，更新选项"""
+        # 读取
         config = Config()
-        code_mode = config.mode
-        code_un_nest_dir = config.handling_nested_folder
-        code_un_nest_archive = config.handling_nested_archive
-        code_delete_archive = config.delete_original_file
-        code_check_filetype = config.check_filetype
-        code_exclude_rules = config.exclude_rules
-        code_output_dir = config.output_folder
-        # 更新UI
-        if code_mode == 'extract':
+        setting_mode = config.mode
+        setting_handling_nested_folder = config.handling_nested_folder
+        setting_handling_nested_archive = config.handling_nested_archive
+        setting_delete_original_file = config.delete_original_file
+        setting_check_filetype = config.check_filetype
+        setting_exclude_rules = config.exclude_rules
+        setting_output_folder = config.output_folder
+
+        # 更新选项
+        if setting_mode == 'extract':
             self.ui.checkBox_mode_extract.setChecked(True)
             self.set_checkbox_enable(mode=True)
-        elif code_mode == 'test':
+        elif setting_mode == 'test':
             self.ui.checkBox_mode_test.setChecked(True)
             self.set_checkbox_enable(mode=False)
-        self.ui.checkBox_un_nest_dir.setChecked(code_un_nest_dir)
-        self.ui.checkBox_un_nest_archive.setChecked(code_un_nest_archive)
-        self.ui.checkBox_delete_archive.setChecked(code_delete_archive)
-        self.ui.checkBox_check_filetype.setChecked(code_check_filetype)
-        self.ui.lineedit_exclude_rule.setText(code_exclude_rules)
-        self.ui.lineedit_output_dir.setText(code_output_dir)
+        self.ui.checkBox_un_nest_dir.setChecked(setting_handling_nested_folder)
+        self.ui.checkBox_un_nest_archive.setChecked(setting_handling_nested_archive)
+        self.ui.checkBox_delete_archive.setChecked(setting_delete_original_file)
+        self.ui.checkBox_check_filetype.setChecked(setting_check_filetype)
+        self.ui.lineedit_exclude_rule.setText(' '.join(setting_exclude_rules))
+        self.ui.lineedit_output_dir.setText(setting_output_folder)
 
     def update_password(self):
         """更新密码"""

@@ -1,34 +1,52 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui ԭ�ļ�wvYIfB.ui'
+## Form generated from reading UI file 'uibniaIm.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
-class MyLabel(QLabel):
-    dropSignal = Signal(list)
+from constant import _ICON_TEST, _ICON_DEFAULT, _ICON_DROP
+
+
+class DropLabel(QLabel):
+    signal_dropped = Signal(list)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAcceptDrops(True)  # 设置可拖入
+        self.setAcceptDrops(True)
+
+        self.icon = _ICON_DEFAULT
+        self.last_icon = None
+        self.reset_icon(self.icon)
+
+    def reset_icon(self, icon:str):
+        self.icon = icon
+        self.setPixmap(icon)
+
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
+            self.last_icon = self.pixmap()
+            self.setPixmap(_ICON_DROP)
+        else:
+            event.ignore()
+
+    def dragLeaveEvent(self, event):
+        self.setPixmap(self.last_icon)
 
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
             urls = event.mimeData().urls()
             drop_path = [url.toLocalFile() for url in urls]  # 获取多个文件的路径的列表
-            self.dropSignal.emit(drop_path)  # 发送文件列表信号
-
+            self.signal_dropped.emit(drop_path)  # 发送文件列表信号
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -120,7 +138,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setSpacing(5)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(3, 0, 3, 3)
-        self.label_drop_file = MyLabel(self.page_main)
+        self.label_drop_file = DropLabel(self.page_main)
         self.label_drop_file.setObjectName(u"label_drop_file")
         self.label_drop_file.setAcceptDrops(True)
         self.label_drop_file.setFrameShape(QFrame.NoFrame)
@@ -289,7 +307,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 162, 284))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 135, 338))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.checkBox_mode_extract = QCheckBox(self.scrollAreaWidgetContents)
