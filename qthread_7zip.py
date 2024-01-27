@@ -8,8 +8,12 @@ from typing import Tuple
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide2.QtCore import Signal, QThread
 
-from model import function_config
-from model import function_static
+import module.function_file
+import module.function_filetype
+import module.function_password
+from module import function_config
+from module import function_static
+from module.function_config import Config
 
 os.environ["PYTHONIOENCODING"] = "UTF-8"
 config_file = 'config.ini'
@@ -46,22 +50,21 @@ class ExtractQthread(QThread):
         """重置设置项与变量"""
         function_static.print_function_info()
         # 重置设置项
-        config_dict = function_config.read_setting()
-        self.code_mode = config_dict['mode']
-        self.code_un_nest_dir = config_dict['un_nest_dir']
-        self.code_un_nest_archive = config_dict['un_nest_archive']
-        self.code_delete_archive = config_dict['delete_archive']
-        self.output_dir = config_dict['output_dir']
+        config = Config()
+        self.code_mode = config.mode
+        self.code_un_nest_dir = config.handling_nested_folder
+        self.code_un_nest_archive = config.handling_nested_archive
+        self.code_delete_archive = config.delete_original_file
+        self.output_dir = config.output_folder
 
-        rule_str = config_dict['exclude_rule']
-        if rule_str:
-            rule_set = set(rule_str.split(' '))  # 7zip默认大小写不敏感，所以不需要考虑大小写
+        rule_set = config.exclude_rules
+        if rule_set:
             self.exclude_rule = ['-xr!*.' + x for x in rule_set]  # 排除后缀名的语法
 
         # 重置变量
         self.code_stop = True
         self.extracted_filelist.clear()
-        self.pw_list, _ = function_config.read_pw()
+        self.pw_list, _ = module.function_password.read_pw()
 
     def set_extract_files_dict(self, file_dict: dict):
         """设置需要解压的文件dict变量"""
@@ -115,7 +118,7 @@ class ExtractQthread(QThread):
                     code_result, right_pw, test_pw_number, list_files = self.test_pw_command_l(file_key)  # 先使用l命令测试
                     if code_result == '4-7' and test_pw_number == 1:  # 如果首个密码就成功，则不信赖该次结果
                         # 如果当前文件是zip，7zip会测试其内部所有文件，如果内部文件数太多，会导致使用x指令测试时很慢
-                        if function_static.archive_is_zip(file_key) and len(list_files) > 200:  # 如果符合上述情况，则先调用t测试在用x解压
+                        if module.function_filetype.is_zip_archive(file_key) and len(list_files) > 200:  # 如果符合上述情况，则先调用t测试在用x解压
                             code_result, right_pw = self.test_pw(file_key)
                             if code_result == '4-7':  # 如果测试成功，则添加密码参数调用x指令
                                 code_result, right_pw = self.extract_archive(output_dir, file_key, right_pw)
@@ -139,7 +142,7 @@ class ExtractQthread(QThread):
                     count_success += 1
                     # 正确密码次数+1
                     if right_pw != '':
-                        function_config.add_pw_count(right_pw)
+                        module.function_password.add_pw_count(right_pw)
                     # 更新ui
                     self.signal_update_ui.emit(code_result, [current_filename, right_pw])
                     # 保存历史记录至字典
@@ -187,7 +190,7 @@ class ExtractQthread(QThread):
         """
         以下代码参照了测试时的代码
         """
-        passwords, _ = function_config.read_pw()
+        passwords, _ = module.function_password.read_pw()
         passwords.insert(0, ' ')  # 插入一个空格密码，用于测试无密码压缩包
         right_pw = ' '  # 默认为空格密码，即无密码，实际传递时用空字符串''
         test_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新
@@ -225,7 +228,7 @@ class ExtractQthread(QThread):
         """传入压缩文件执行密码测试，并返回解压结果和正确密码"""
         function_static.print_function_info()
         # 设置初始变量
-        passwords, _ = function_config.read_pw()
+        passwords, _ = module.function_password.read_pw()
         passwords.insert(0, ' ')  # 插入一个空格密码，用于测试无密码压缩包
         right_pw = ' '  # 默认为空格密码，即无密码，实际传递时用空字符串''
         test_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新
@@ -282,7 +285,7 @@ class ExtractQthread(QThread):
         if right_password:
             passwords = [right_password]
         else:
-            passwords, _ = function_config.read_pw()
+            passwords, _ = module.function_password.read_pw()
             passwords.insert(0, ' ')  # 插入一个空格密码，用于测试无密码压缩包
         right_pw = ' '  # 默认为空格密码，即无密码，实际传递时用空字符串''
         extract_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新
@@ -447,7 +450,7 @@ class ExtractQthread(QThread):
         if os.path.isfile(path):
             extract_result.append(path)
         else:
-            extract_result = function_static.get_files_list(path)
+            extract_result = module.function_file.get_files_list(path)
 
         self.extracted_filelist += extract_result
 

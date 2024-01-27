@@ -7,86 +7,24 @@ import string
 import time
 from typing import Union
 
-import filetype
+from constant import _BACKUP_FOLDER
+from module.function_file import get_folder_size
+from module.function_folder import get_first_multi_folder
 
 
 def print_function_info(mode: str = 'current'):
-    """打印当前/上一个执行的函数信息
-    传参：mode ：current 或 last"""
-    pass
+    """
+    打印当前/上一个执行的函数信息
+    :param mode: str类型，'current' 或 'last'
+    """
+    # pass
 
-    # if mode == 'current':
-    #     print(time.strftime('%H:%M:%S ', time.localtime()),
-    #           inspect.getframeinfo(inspect.currentframe().f_back).function)
-    # elif mode == 'last':
-    #     print(time.strftime('%H:%M:%S ', time.localtime()),
-    #           inspect.getframeinfo(inspect.currentframe().f_back.f_back).function)
-
-
-def get_folder_size(folder: str) -> int:
-    """获取指定文件夹的总大小/byte
-    传参：folder 文件夹路径str
-    返回值：total_size 总大小int"""
-    print_function_info()
-    folder_size = 0
-    for dirpath, dirnames, filenames in os.walk(folder):
-        for item in filenames:
-            filepath = os.path.join(dirpath, item)
-            folder_size += os.path.getsize(filepath)
-    return folder_size
-
-
-def get_files_list(dirpath: str) -> list:
-    """获取指定文件夹中的所有文件路径list
-    传参： dirpath 文件夹路径str
-    返回值 filelist 所有文件路径list"""
-    print_function_info()
-    filelist = []
-    for dirpath, dirnames, filenames in os.walk(dirpath):
-        for filename in filenames:
-            file_path = os.path.normpath(os.path.join(dirpath, filename))
-            filelist.append(file_path)
-    return filelist
-
-
-def check_filetype(filepath: str) -> bool:
-    """检查文件是否存在以及其是否为压缩包，返回bool值"""
-    print_function_info()
-    if not os.path.exists(filepath):
-        print(f'错误：{filepath} 不存在')
-    elif os.path.isdir(filepath):
-        print(f'错误：{filepath} 为文件夹')
-    else:
-        # 通过后缀判断
-        suffix_type = ['.zip', '.tar', '.rar', '.gz', '.7z', '.xz', '.iso']
-        file_suffix = os.path.splitext(filepath)[1]  # 提取文件后缀名
-        if file_suffix.lower() in suffix_type:
-            return True
-
-        # 通过filetype库判断
-        archive_type = ['zip', 'tar', 'rar', 'gz', '7z', 'xz']  # filetype库支持的压缩文件后缀名（部分）
-        kind = filetype.guess(filepath)
-        if kind is None:
-            type_kind = None
-        else:
-            type_kind = kind.extension
-        # print(f'文件【{filepath}】的文件类型为【{type_kind}】')
-        if type_kind in archive_type:
-            return True
-
-    return False  # 兜底
-
-
-def archive_is_zip(filepath: str) -> bool:
-    """判断一个压缩包是否为zip格式"""
-    archive_type = ['zip']  # filetype库支持的压缩文件后缀名（部分）
-    kind = filetype.guess(filepath)
-    if kind is None:
-        type_kind = None
-    else:
-        type_kind = kind.extension
-    if type_kind in archive_type:
-        return True
+    if mode == 'current':
+        print(time.strftime('%H:%M:%S ', time.localtime()),
+              inspect.getframeinfo(inspect.currentframe().f_back).function)
+    elif mode == 'last':
+        print(time.strftime('%H:%M:%S ', time.localtime()),
+              inspect.getframeinfo(inspect.currentframe().f_back.f_back).function)
 
 
 def delete_empty_folder(folder: str):
@@ -172,23 +110,6 @@ def get_filetitle(filepath: str) -> str:
     return filetitle
 
 
-def get_deepest_dirpath(dirpath: str) -> str:
-    """检查传入文件夹路径的深度，找出最后一级含多文件/文件夹的文件夹
-    传参：dirpath 文件夹路径str
-    返回值：deepest_path 最深的文件夹路径str"""
-    print_function_info()
-    if len(os.listdir(dirpath)) == 1:
-        the_path = os.path.normpath(os.path.join(dirpath, os.listdir(dirpath)[0]))
-        if os.path.isfile(the_path):  # 如果文件夹下只有一个文件，并且是文件
-            deepest_path = the_path
-            return deepest_path
-        else:  # 临时文件夹下只有一个文件，但是是文件夹，则递归
-            return get_deepest_dirpath(the_path)
-    else:
-        deepest_path = dirpath
-        return deepest_path
-
-
 def un_nest_folders(origin_folder: str, target_folder: str = None, mode_nested: bool = True) -> str:
     """解除文件夹的嵌套
     将指定文件夹中的最深一级非空文件夹移动到目标文件夹中，并返回最终路径str
@@ -206,7 +127,7 @@ def un_nest_folders(origin_folder: str, target_folder: str = None, mode_nested: 
 
     # 根据选项提取需要移动的文件/文件夹路径
     if mode_nested:  # 提取最深一级
-        need_move_path = get_deepest_dirpath(origin_folder)
+        need_move_path = get_first_multi_folder(origin_folder)
     else:  # 仅下级
         number_in_folder = len(os.listdir(origin_folder))
         if number_in_folder == 1:
@@ -365,3 +286,9 @@ def get_volume_archive_dict(filelist: list) -> dict:
                     volume_archive_dict[check_path].add(full_path)
 
     return volume_archive_dict
+
+
+def init_settings():
+    """初始化设置文件/文件夹"""
+    if not os.path.exists(_BACKUP_FOLDER):
+        os.mkdir(_BACKUP_FOLDER)

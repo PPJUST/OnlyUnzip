@@ -2,38 +2,31 @@ import os
 import re
 import time
 
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QColor, QIcon, QMovie, QPalette
-from PySide2.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QAction, QFileDialog, QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QIcon, QMovie, QPalette
+from PySide6.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QFileDialog, QMessageBox
 
-from model import function_config
-from model import function_static
+import module.function_file
+import module.function_filetype
+import module.function_password
+from constant import _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _ICON_MAIN, _ICON_DEFAULT, _ICON_DEFAULT_WITH_OUTPUT, _ICON_ERROR, \
+    _ICON_FINISH
+from module import function_config
+from module import function_static
+from module.function_config import Config
 from qthread_7zip import ExtractQthread
 from ui import Ui_MainWindow
 
-icon_test = './icon/测试.png'
-icon_extract = './icon/解压.png'
-icon_gif_test = './icon/测试.gif'
-icon_gif_extract = './icon/解压.gif'
-icon_main = './icon/程序图标.ico'
-icon_origin = './icon/初始状态.png'
-icon_origin_with_output = './icon/初始状态_指定文件夹.png'
-icon_error = './icon/错误.png'
-icon_finish = './icon/完成.png'
-icon_stop = './icon/中止.png'
 
-
-class OnlyUnzip(QMainWindow):
+class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        """
-        初始化设置
-        """
-        # 初始设置
-        function_config.check_config()  # 检查配置文件是否存在
+
+        # 初始化
+        function_config.init_config()  # 检查配置文件是否存在
         self.load_config()  # 加载设置文件
         self.update_ui('1-1')  # 设置初始图标
         self.check_output_dir()
@@ -63,9 +56,9 @@ class OnlyUnzip(QMainWindow):
         # 密码页的按钮
         self.ui.button_update_password.clicked.connect(self.update_password)  # 更新密码
         self.ui.button_read_clipboard.clicked.connect(self.read_clipboard)  # 读取剪切板
-        self.ui.button_export_password.clicked.connect(lambda: function_config.export_pw(with_number=False))  # 导出密码
+        self.ui.button_export_password.clicked.connect(lambda: module.function_password.export_pw(with_number=False))  # 导出密码
         self.ui.button_export_password_with_number.clicked.connect(
-            lambda: function_config.export_pw(with_number=True))  # 导出含次数的密码
+            lambda: module.function_password.export_pw(with_number=True))  # 导出含次数的密码
         self.ui.button_export_password.clicked.connect(lambda: self.ui.button_open_password.setEnabled(True))
         self.ui.button_export_password_with_number.clicked.connect(
             lambda: self.ui.button_open_password.setEnabled(True))
@@ -99,7 +92,7 @@ class OnlyUnzip(QMainWindow):
                 if os.path.isfile(path):
                     file_list.add(path)
                 else:
-                    walk_files = function_static.get_files_list(path)
+                    walk_files = module.function_file.get_files_list(path)
                     file_list.update(walk_files)
         file_list = list(file_list)  # 转为列表，方便后续使用
         self.start_thread(file_list)
@@ -132,7 +125,7 @@ class OnlyUnzip(QMainWindow):
                 extract_file_dict = {}  # 最终执行操作的文件
                 if self.ui.checkBox_check_filetype.isChecked():  # 仅压缩包
                     for file in all_file_dict:
-                        if function_static.check_filetype(file):
+                        if module.function_filetype.is_archive(file):
                             extract_file_dict[file] = all_file_dict[file]
                 else:
                     extract_file_dict.update(all_file_dict)
@@ -192,14 +185,14 @@ class OnlyUnzip(QMainWindow):
         type_list格式：['更新类型', '相关数据']"""
         function_static.print_function_info()
         if code == '1-1':  # 初始状态
-            self.ui.label_drop_file.setPixmap(icon_origin)
+            self.ui.label_drop_file.setPixmap(_ICON_DEFAULT)
             self.ui.button_stop.setVisible(False)  # 隐藏停止按钮
         elif code == '2-1':  # 没有需要解压的文件
-            self.ui.label_drop_file.setPixmap(icon_finish)
+            self.ui.label_drop_file.setPixmap(_ICON_FINISH)
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('没有需要解压的文件')
         elif code == '2-2':  # 存在遗留临时文件夹
-            self.ui.label_drop_file.setPixmap(icon_error)
+            self.ui.label_drop_file.setPixmap(_ICON_ERROR)
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('存在遗留临时文件夹')
         elif code == '1-2':  # 启动子线程
@@ -207,10 +200,10 @@ class OnlyUnzip(QMainWindow):
             self.movie_label_icon = None
             if self.ui.checkBox_mode_test.isChecked():  # 按选项设置不同图标
                 # self.ui.label_drop_file.setPixmap(icon_test)
-                self.movie_label_icon = QMovie(icon_gif_test)
+                self.movie_label_icon = QMovie(_ICON_TEST_GIF)
             else:
                 # self.ui.label_drop_file.setPixmap(icon_extract)
-                self.movie_label_icon = QMovie(icon_gif_extract)
+                self.movie_label_icon = QMovie(_ICON_EXTRACT_GIF)
             self.ui.label_drop_file.setMovie(self.movie_label_icon)
             self.movie_label_icon.start()  # 开始动图
         elif code == '3-1':  # 更新当前文件
@@ -261,7 +254,7 @@ class OnlyUnzip(QMainWindow):
             self.ui.progressBar_extract.setValue(data[0])
             self.ui.stackedWidget_schedule.setCurrentIndex(2)
         elif code == '1-3':  # 完成全部任务
-            self.ui.label_drop_file.setPixmap(icon_finish)
+            self.ui.label_drop_file.setPixmap(_ICON_FINISH)
             self.ui.label_current_file.setText('————————————')
             self.ui.label_schedule_file.setText('全部完成')
             self.ui.label_schedule_finish.setText(data[0])
@@ -279,14 +272,14 @@ class OnlyUnzip(QMainWindow):
         """加载配置文件，并更新UI"""
         function_static.print_function_info()
         # 读取数据
-        config_dict = function_config.read_setting()
-        code_mode = config_dict['mode']
-        code_un_nest_dir = config_dict['un_nest_dir']
-        code_un_nest_archive = config_dict['un_nest_archive']
-        code_delete_archive = config_dict['delete_archive']
-        code_check_filetype = config_dict['check_filetype']
-        code_exclude_rule = config_dict['exclude_rule']
-        code_output_dir = config_dict['output_dir']
+        config = Config()
+        code_mode = config.mode
+        code_un_nest_dir = config.handling_nested_folder
+        code_un_nest_archive = config.handling_nested_archive
+        code_delete_archive = config.delete_original_file
+        code_check_filetype = config.check_filetype
+        code_exclude_rules = config.exclude_rules
+        code_output_dir = config.output_folder
         # 更新UI
         if code_mode == 'extract':
             self.ui.checkBox_mode_extract.setChecked(True)
@@ -298,7 +291,7 @@ class OnlyUnzip(QMainWindow):
         self.ui.checkBox_un_nest_archive.setChecked(code_un_nest_archive)
         self.ui.checkBox_delete_archive.setChecked(code_delete_archive)
         self.ui.checkBox_check_filetype.setChecked(code_check_filetype)
-        self.ui.lineedit_exclude_rule.setText(code_exclude_rule)
+        self.ui.lineedit_exclude_rule.setText(code_exclude_rules)
         self.ui.lineedit_output_dir.setText(code_output_dir)
 
     def update_password(self):
@@ -309,7 +302,7 @@ class OnlyUnzip(QMainWindow):
         add_pw = [n for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
         add_pw_strip = [n.strip() for n in add_pw]
         pw_list = list(set(add_pw + add_pw_strip))  # 转为集合去重
-        function_config.update_pw(pw_list)
+        module.function_password.update_pw(pw_list)
 
         self.ui.text_password.clear()  # 重置密码框
 
@@ -335,15 +328,16 @@ class OnlyUnzip(QMainWindow):
         exclude_list = set([i for i in re.split(support_delimiters, exclude_text) if i])  # 提取分隔后的数据，去重去空值
         exclude_rule = ' '.join(exclude_list)  # 转为字符串
 
-        config_dict = {'mode': mode,
-                       'un_nest_dir': un_nest_dir,
-                       'un_nest_archive': un_nest_archive,
-                       'delete_archive': delete_archive,
-                       'check_filetype': check_filetype,
-                       'exclude_rule': exclude_rule,
-                       'output_dir': output_dir}
 
-        function_config.update_setting(config_dict)  # 调用
+
+        Config.update_config_mode(mode)
+        Config.update_config_handling_nested_folder(un_nest_dir)
+        Config.update_config_handling_nested_archive(un_nest_archive)
+        Config.update_config_delete_original_file(delete_archive)
+        Config.update_config_check_filetype(check_filetype)
+        Config.update_exclude_rules(exclude_rule)
+        Config.update_config_output_folder(output_dir)
+
 
     def change_page(self, button_id):
         """切换标签页，并高亮被点击的标签页按钮"""
@@ -374,13 +368,13 @@ class OnlyUnzip(QMainWindow):
         if output_dir:
             if not os.path.exists(output_dir) or os.path.isfile(output_dir):
                 self.ui.lineedit_output_dir.setStyleSheet('border: 1px solid red;')
-                self.ui.label_drop_file.setPixmap(icon_origin)
+                self.ui.label_drop_file.setPixmap(_ICON_DEFAULT)
             else:
                 self.ui.lineedit_output_dir.setStyleSheet('')
-                self.ui.label_drop_file.setPixmap(icon_origin_with_output)
+                self.ui.label_drop_file.setPixmap(_ICON_DEFAULT_WITH_OUTPUT)
         else:
             self.ui.lineedit_output_dir.setStyleSheet('')
-            self.ui.label_drop_file.setPixmap(icon_origin)
+            self.ui.label_drop_file.setPixmap(_ICON_DEFAULT)
 
     def stop_qthread(self):
         """中止解压子线程"""
@@ -401,8 +395,8 @@ def main():
     palette.setColor(QPalette.Window, QColor(255, 255, 255))
     app.setPalette(palette)
 
-    show_ui = OnlyUnzip()
-    show_ui.setWindowIcon(QIcon(icon_main))
+    show_ui = Main()
+    show_ui.setWindowIcon(QIcon(_ICON_MAIN))
     show_ui.setFixedSize(262, 232)
     show_ui.show()
     app.exec_()
