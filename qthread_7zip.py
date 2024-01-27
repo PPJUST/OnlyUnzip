@@ -64,7 +64,7 @@ class ExtractQthread(QThread):
         # 重置变量
         self.code_stop = True
         self.extracted_filelist.clear()
-        self.pw_list, _ = module.function_password.read_pw()
+        self.pw_list, _ = module.function_password.read_passwords()
 
     def set_extract_files_dict(self, file_dict: dict):
         """设置需要解压的文件dict变量"""
@@ -190,7 +190,7 @@ class ExtractQthread(QThread):
         """
         以下代码参照了测试时的代码
         """
-        passwords, _ = module.function_password.read_pw()
+        passwords, _ = module.function_password.read_passwords()
         passwords.insert(0, ' ')  # 插入一个空格密码，用于测试无密码压缩包
         right_pw = ' '  # 默认为空格密码，即无密码，实际传递时用空字符串''
         test_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新
@@ -228,7 +228,7 @@ class ExtractQthread(QThread):
         """传入压缩文件执行密码测试，并返回解压结果和正确密码"""
         function_static.print_function_info()
         # 设置初始变量
-        passwords, _ = module.function_password.read_pw()
+        passwords, _ = module.function_password.read_passwords()
         passwords.insert(0, ' ')  # 插入一个空格密码，用于测试无密码压缩包
         right_pw = ' '  # 默认为空格密码，即无密码，实际传递时用空字符串''
         test_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新
@@ -285,7 +285,7 @@ class ExtractQthread(QThread):
         if right_password:
             passwords = [right_password]
         else:
-            passwords, _ = module.function_password.read_pw()
+            passwords, _ = module.function_password.read_passwords()
             passwords.insert(0, ' ')  # 插入一个空格密码，用于测试无密码压缩包
         right_pw = ' '  # 默认为空格密码，即无密码，实际传递时用空字符串''
         extract_result = '4-1'  # 默认为4-1，即密码错误，在循环过程中更新

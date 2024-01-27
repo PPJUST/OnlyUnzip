@@ -16,4 +16,5 @@ _ICON_DROP = './icon/state_drop.png'
 # 配置文件
 _CONFIG_FILE = 'config.ini'
 _BACKUP_FOLDER = 'backup'
-_PASSWORD_FILE = 'password.pickle'
+_PASSWORD_FILE = 'password.pickle'  # 密码数据库格式说明：存储一个dict，键为密码str，值为对应的使用次数int
+_PASSWORD_EXPORT = '密码导出.txt'

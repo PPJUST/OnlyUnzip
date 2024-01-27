@@ -47,7 +47,7 @@
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <item>
-         <widget class="QPushButton" name="button_page_main">
+         <widget class="QPushButton" name="button_page_home">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -62,10 +62,6 @@
           </property>
           <property name="text">
            <string>主页</string>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>icon/主页.png</normaloff>icon/主页.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -107,10 +103,6 @@
           <property name="text">
            <string>密码</string>
           </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>icon/密码页.png</normaloff>icon/密码页.png</iconset>
-          </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroup</string>
           </attribute>
@@ -133,10 +125,6 @@
           <property name="text">
            <string>设置</string>
           </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>icon/设置页.png</normaloff>icon/设置页.png</iconset>
-          </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroup</string>
           </attribute>
@@ -158,10 +146,6 @@
           </property>
           <property name="text">
            <string>历史</string>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>icon/历史记录页.png</normaloff>icon/历史记录页.png</iconset>
           </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroup</string>
@@ -196,19 +180,19 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="page_main">
+      <widget class="QWidget" name="page_home">
        <property name="acceptDrops">
         <bool>false</bool>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,0,0,0">
         <property name="spacing">
-         <number>5</number>
+         <number>3</number>
         </property>
         <property name="leftMargin">
          <number>3</number>
         </property>
         <property name="topMargin">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="rightMargin">
          <number>3</number>
@@ -217,20 +201,14 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_drop_file">
-          <property name="acceptDrops">
-           <bool>true</bool>
+         <layout class="QVBoxLayout" name="verticalLayout_dropped_label">
+          <property name="spacing">
+           <number>0</number>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
           </property>
-          <property name="text">
-           <string>图标</string>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-         </widget>
+         </layout>
         </item>
         <item>
          <widget class="Line" name="line_3">
@@ -245,7 +223,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_schedule_file">
+           <widget class="QLabel" name="label_schedule_total">
             <property name="text">
              <string>显示总进度</string>
             </property>
@@ -258,10 +236,6 @@
            <widget class="QToolButton" name="button_stop">
             <property name="text">
              <string>...</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>icon/中止.png</normaloff>icon/中止.png</iconset>
             </property>
            </widget>
           </item>
@@ -306,7 +280,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QLabel" name="label_schedule_finish">
+             <widget class="QLabel" name="label_schedule_state">
               <property name="text">
                <string>当前状态</string>
               </property>
@@ -463,13 +437,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="button_export_password_with_number">
-            <property name="text">
-             <string>导出(含次数)</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="button_open_password">
             <property name="enabled">
              <bool>false</bool>
@@ -510,8 +477,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>162</width>
-             <height>284</height>
+             <width>135</width>
+             <height>338</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -549,7 +516,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_delete_archive">
+             <widget class="QCheckBox" name="checkBox_delete_original_file">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压完成后删除原文件（到回收站）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -566,7 +533,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_un_nest_dir">
+             <widget class="QCheckBox" name="checkBox_handling_nested_folder">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;逻辑类似于Bandzip&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -579,7 +546,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_un_nest_archive">
+             <widget class="QCheckBox" name="checkBox_handling_nested_archive">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -622,7 +589,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineedit_exclude_rule"/>
+             <widget class="QLineEdit" name="lineEdit_exclude_rules"/>
             </item>
             <item>
              <widget class="Line" name="line_5">
@@ -644,7 +611,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QLineEdit" name="lineedit_output_dir"/>
+               <widget class="QLineEdit" name="lineEdit_output_folder"/>
               </item>
               <item>
                <widget class="QToolButton" name="button_ask_folder">
@@ -679,11 +646,11 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QListWidget" name="listWidget_history">
-          <property name="wordWrap">
-           <bool>true</bool>
+         <layout class="QVBoxLayout" name="verticalLayout_history">
+          <property name="spacing">
+           <number>0</number>
           </property>
-         </widget>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -695,7 +662,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_check_mode"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

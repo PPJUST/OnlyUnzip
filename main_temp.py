@@ -25,17 +25,7 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
 
 
-        # 初始化
-        function_static.init_settings()  # 检查初始文件
-        self.load_config()  # 加载设置文件
-        self.check_output_dir()
-        self.movie_label_icon = None  # 设置动图对象
 
-        # 设置ui属性
-        self.ui.listWidget_history.setContextMenuPolicy(Qt.CustomContextMenu)  # 设置历史记录控件的右键菜单属性
-        self.ui.stackedWidget_main.setCurrentIndex(0)  # 将主页面设为第1页
-        self.ui.stackedWidget_schedule.setCurrentIndex(0)  # 将信息页设为第1页
-        self.change_page(self.ui.buttonGroup.id(self.ui.buttonGroup.buttons()[0]))  # 设置第一个按钮的颜色
 
         # 实例化子线程
         self.qthread = ExtractQthread()
@@ -45,15 +35,12 @@ class Main(QMainWindow):
         """
         连接信号与槽函数
         """
-        # 设置标签页的切换
-        self.ui.buttonGroup.buttonClicked[int].connect(self.change_page)
 
-        # 主页面
-        self.ui.label_drop_file.signal_dropped.connect(self.accept_files)
-        self.ui.button_stop.clicked.connect(self.stop_qthread)
+
+
 
         # 密码页的按钮
-        self.ui.button_update_password.clicked.connect(self.update_password)  # 更新密码
+
         self.ui.button_read_clipboard.clicked.connect(self.read_clipboard)  # 读取剪切板
         self.ui.button_export_password.clicked.connect(lambda: module.function_password.export_password(
             with_count=False))  # 导出密码
@@ -82,20 +69,7 @@ class Main(QMainWindow):
         # 历史记录页的操作
         self.ui.listWidget_history.customContextMenuRequested.connect(self.history_page_menu)  # 右键菜单
 
-    def accept_files(self, path_list: list):
-        """接收路径列表，提取出其中所有文件"""
-        function_static.print_function_info()
-        file_list = set()
-        for path in path_list:
-            path = os.path.normpath(path)  # 格式化路径，防止后续出错
-            if os.path.exists(path):
-                if os.path.isfile(path):
-                    file_list.add(path)
-                else:
-                    walk_files = module.function_file.get_files_list(path)
-                    file_list.update(walk_files)
-        file_list = list(file_list)  # 转为列表，方便后续使用
-        self.start_thread(file_list)
+
 
     def start_thread(self, file_list: list):
         """调用子线程进行后续操作"""
@@ -153,14 +127,7 @@ class Main(QMainWindow):
         # 设置页
         self.ui.scrollAreaWidgetContents.setEnabled(mode)
 
-    def set_checkbox_enable(self, mode=True):
-        """切换模式后启用/禁用相关设置项"""
-        self.ui.checkBox_delete_archive.setEnabled(mode)
-        self.ui.checkBox_check_filetype.setEnabled(mode)
-        self.ui.checkBox_un_nest_dir.setEnabled(mode)
-        self.ui.checkBox_un_nest_archive.setEnabled(mode)
-        self.ui.lineedit_output_dir.setEnabled(mode)
-        self.ui.lineedit_exclude_rule.setEnabled(mode)
+
 
     def history_page_menu(self, pos):
         """历史记录页中的右键菜单，用于复制密码"""
@@ -268,50 +235,11 @@ class Main(QMainWindow):
             self.set_widget_enable(mode=True)  # 启用被禁用的ui
             self.movie_label_icon.stop()  # 停止动图
 
-    def load_config(self):
-        """读取配置文件，更新选项"""
-        # 读取
-        config = Config()
-        setting_mode = config.mode
-        setting_handling_nested_folder = config.handling_nested_folder
-        setting_handling_nested_archive = config.handling_nested_archive
-        setting_delete_original_file = config.delete_original_file
-        setting_check_filetype = config.check_filetype
-        setting_exclude_rules = config.exclude_rules
-        setting_output_folder = config.output_folder
 
-        # 更新选项
-        if setting_mode == 'extract':
-            self.ui.checkBox_mode_extract.setChecked(True)
-            self.set_checkbox_enable(mode=True)
-        elif setting_mode == 'test':
-            self.ui.checkBox_mode_test.setChecked(True)
-            self.set_checkbox_enable(mode=False)
-        self.ui.checkBox_un_nest_dir.setChecked(setting_handling_nested_folder)
-        self.ui.checkBox_un_nest_archive.setChecked(setting_handling_nested_archive)
-        self.ui.checkBox_delete_archive.setChecked(setting_delete_original_file)
-        self.ui.checkBox_check_filetype.setChecked(setting_check_filetype)
-        self.ui.lineedit_exclude_rule.setText(' '.join(setting_exclude_rules))
-        self.ui.lineedit_output_dir.setText(setting_output_folder)
 
-    def update_password(self):
-        """更新密码"""
-        function_static.print_function_info()
-        function_config.backup_config()  # 更新前备份配置文件
 
-        add_pw = [n for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
-        add_pw_strip = [n.strip() for n in add_pw]
-        pw_list = list(set(add_pw + add_pw_strip))  # 转为集合去重
-        module.function_password.update_password(pw_list)
 
-        self.ui.text_password.clear()  # 重置密码框
 
-    def read_clipboard(self):
-        """读取剪切板"""
-        function_static.print_function_info()
-        clipboard = QApplication.clipboard()
-        clipboard_text = clipboard.text()
-        self.ui.text_password.setPlainText(clipboard_text)
 
     def update_setting(self):
         """更新设置"""
@@ -339,20 +267,7 @@ class Main(QMainWindow):
         Config.update_config_output_folder(output_dir)
 
 
-    def change_page(self, button_id):
-        """切换标签页，并高亮被点击的标签页按钮"""
-        function_static.print_function_info()
-        original_style = self.ui.button_update_password.styleSheet()  # 按钮的原始样式
-        clicked_style = f'background-color: rgb(255, 228, 181);'  # 被点击后的样式
-        # 重置按钮组中所有按钮的样式
-        for button in self.ui.buttonGroup.buttons():
-            button.setStyleSheet(original_style)
-        # 高亮被点击的按钮
-        clicked_button = self.ui.buttonGroup.button(button_id)
-        clicked_button.setStyleSheet(clicked_style)
-        # 切换标签页
-        new_page_number = self.ui.buttonGroup.buttons().index(self.ui.buttonGroup.button(button_id))
-        self.ui.stackedWidget_main.setCurrentIndex(new_page_number)
+
 
     def choose_output_dir(self):
         """弹出对话框选择输出文件夹"""
@@ -361,20 +276,6 @@ class Main(QMainWindow):
         if dirpath:
             self.ui.lineedit_output_dir.setText(os.path.normpath(dirpath))
 
-    def check_output_dir(self):
-        """检查是否指定了解压输出路径，并修改相关ui显示"""
-        function_static.print_function_info()
-        output_dir = self.ui.lineedit_output_dir.text()
-        if output_dir:
-            if not os.path.exists(output_dir) or os.path.isfile(output_dir):
-                self.ui.lineedit_output_dir.setStyleSheet('border: 1px solid red;')
-                self.ui.label_drop_file.setPixmap(_ICON_DEFAULT)
-            else:
-                self.ui.lineedit_output_dir.setStyleSheet('')
-                self.ui.label_drop_file.setPixmap(_ICON_DEFAULT_WITH_OUTPUT)
-        else:
-            self.ui.lineedit_output_dir.setStyleSheet('')
-            self.ui.label_drop_file.setPixmap(_ICON_DEFAULT)
 
     def stop_qthread(self):
         """中止解压子线程"""
