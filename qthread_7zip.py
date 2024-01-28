@@ -8,17 +8,17 @@ from typing import Tuple
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide6.QtCore import Signal, QThread
 
+import module.function_archive
 import module.function_file
 import module.function_filetype
 import module.function_password
-from module import function_config
+from constant import _PATH_7ZIP
 from module import function_static
 from module.function_config import Config
 
 os.environ["PYTHONIOENCODING"] = "UTF-8"
 config_file = 'config.ini'
 backup_dir = 'backup'
-path_7zip = './7-Zip/7z.exe'
 
 
 class ExtractQthread(QThread):
@@ -118,7 +118,7 @@ class ExtractQthread(QThread):
                     code_result, right_pw, test_pw_number, list_files = self.test_pw_command_l(file_key)  # 先使用l命令测试
                     if code_result == '4-7' and test_pw_number == 1:  # 如果首个密码就成功，则不信赖该次结果
                         # 如果当前文件是zip，7zip会测试其内部所有文件，如果内部文件数太多，会导致使用x指令测试时很慢
-                        if module.function_filetype.is_zip_archive(file_key) and len(list_files) > 200:  # 如果符合上述情况，则先调用t测试在用x解压
+                        if module.function_archive.is_zip_archive(file_key) and len(list_files) > 200:  # 如果符合上述情况，则先调用t测试在用x解压
                             code_result, right_pw = self.test_pw(file_key)
                             if code_result == '4-7':  # 如果测试成功，则添加密码参数调用x指令
                                 code_result, right_pw = self.extract_archive(output_dir, file_key, right_pw)
@@ -209,7 +209,7 @@ class ExtractQthread(QThread):
                 # 发送信号更新ui
                 self.signal_update_ui.emit('3-3', [f'{test_pw_number}/{total_pw_count}'])
                 # 组合7zip指令t
-                command_test = [path_7zip, "l", file, "-p" + pw, '-bse2']
+                command_test = [_PATH_7ZIP, "l", file, "-p" + pw, '-bse2']
                 # 调用7zip函数，获取返回码
                 return_code, list_files = self.subprocess_7zip_run(command_test)
                 test_result = return_code
@@ -246,7 +246,7 @@ class ExtractQthread(QThread):
                 # 发送信号更新ui
                 self.signal_update_ui.emit('3-3', [f'{test_pw_number}/{total_pw_count}'])
                 # 组合7zip指令t
-                command_test = [path_7zip, "t", file, "-p" + pw, '-bse2']
+                command_test = [_PATH_7ZIP, "t", file, "-p" + pw, '-bse2']
                 # 调用7zip函数，获取返回码
                 return_code, _ = self.subprocess_7zip_run(command_test)
                 test_result = return_code
@@ -303,7 +303,7 @@ class ExtractQthread(QThread):
                 # 发送信号更新ui
                 self.signal_update_ui.emit('3-3', [f'{test_pw_number}/{total_pw_count}'])
                 # 组合7zip指令，先组合无密码指令，如果有密码则添加指令
-                command_extract = [path_7zip, "x", "-y", archive_file, '-bsp1', '-bse1', '-bso1',
+                command_extract = [_PATH_7ZIP, "x", "-y", archive_file, '-bsp1', '-bse1', '-bso1',
                                    "-o" + extract_folder, "-p" + pw] + self.exclude_rule
                 # 调用7zip函数，获取返回码
                 return_code = self.subprocess_7zip_popen(command_extract)

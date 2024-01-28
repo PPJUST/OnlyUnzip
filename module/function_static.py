@@ -7,7 +7,7 @@ import string
 import time
 from typing import Union
 
-from constant import _BACKUP_FOLDER
+from constant import _BACKUP_FOLDER, _Unzip_Temp_Folder
 from module.function_config import Config
 from module.function_file import get_folder_size
 from module.function_folder import get_first_multi_folder
@@ -26,6 +26,65 @@ def print_function_info(mode: str = 'current'):
     elif mode == 'last':
         print(time.strftime('%H:%M:%S ', time.localtime()),
               inspect.getframeinfo(inspect.currentframe().f_back.f_back).function)
+
+
+def is_temp_folder_exists(check_path: Union[list, str]) -> bool:
+    """检查传入路径的同级文件夹中是否存在临时文件夹（前一次解压未正常删除的）"""
+    if type(check_path) is str:
+        check_path = [check_path]
+
+    temp_folders = set()  # 所有可能存在的临时文件夹路径（添加后缀自动生成，非真实路径）
+
+    for path in check_path:
+        if os.path.isfile(path):
+            dirpath = os.path.join(os.path.split(path)[0], _Unzip_Temp_Folder)
+            temp_folders.add(dirpath)
+        else:
+            dirpath = os.path.join(path, _Unzip_Temp_Folder)
+            temp_folders.add(dirpath)
+
+    for folder in temp_folders:
+        if os.path.exists(folder) and os.listdir(folder):
+            return True
+
+    return False
+
+
+def create_nodup_filename(path: str, target_dirpath: str, add_suffix: str = ' -New') -> str:
+    """
+    生成传入的文件或文件夹在指定文件夹中没有重复的文件名（添加自定义后缀）
+    :param path: 文件或文件夹路径str
+    :param target_dirpath: 指定文件夹路径str
+    :param add_suffix: 自定义后缀
+    :return: str，无重复的文件名（非完整路径，仅文件名）
+    """
+    if os.path.isfile(path):
+        filetitle = os.path.split(os.path.splitext(path)[0])[1]
+        suffix = os.path.splitext(path)[1]
+    else:
+        filename = os.path.split(path)[1]
+        filetitle = filename
+        suffix = ''
+
+    # 剔除原文件名中已包含的后缀
+    check = filetitle.rfind(add_suffix)
+    if check != -1 and filetitle[check + len(add_suffix):].isdigit():
+        new_filetitle = filetitle[0:check]
+    else:
+        new_filetitle = filetitle
+    new_filename = new_filetitle + suffix
+    temp_filename = new_filetitle + add_suffix + '1' + suffix
+
+    # 生成无重复的文件名
+    count = 0
+    # 一直累加循环直到不存在同名（同级目录也要检查，防止改名报错）
+    while os.path.exists(os.path.join(target_dirpath, new_filename)) or os.path.exists(
+            os.path.join(os.path.split(path)[0], temp_filename)):
+        count += 1
+        new_filename = f'{filetitle}{add_suffix}{count}{suffix}'
+        temp_filename = new_filename
+
+    return new_filename
 
 
 def delete_empty_folder(folder: str):
@@ -48,41 +107,6 @@ def delete_empty_folder(folder: str):
                 os.rmdir(i)
     else:
         print(f'{folder} 不为空')
-
-
-def get_nodup_filename(path: str, target_dirpath: str) -> str:
-    """生成传入的文件或文件夹在指定文件夹中没有重复的文件名（添加自定义后缀）
-    传参：path 文件或文件夹路径str
-    target_dirpath 指定文件夹路径str
-    返回值：new_filename 无重复的文件名（非完整路径，仅文件名）
-    """
-    print_function_info()
-    if os.path.isfile(path):
-        filetitle = os.path.split(os.path.splitext(path)[0])[1]
-        suffix = os.path.splitext(path)[1]
-    else:
-        filename = os.path.split(path)[1]
-        filetitle = filename
-        suffix = ''
-
-    add_suffix = ' -New'  # 添加的后缀格式
-    # 剔除原文件名中已包含的后缀 -New
-    check = filetitle.rfind(add_suffix)
-    if check != -1 and filetitle[check + len(add_suffix):].isdigit():
-        new_filetitle = filetitle[0:check]
-    else:
-        new_filetitle = filetitle
-    new_filename = new_filetitle + suffix
-    temp_filename = new_filetitle + add_suffix + '1' + suffix
-    # 生成无重复的文件名
-    count = 0
-    # 一直累加循环直到不存在同名（同级目录也要检查，防止改名报错）
-    while os.path.exists(os.path.join(target_dirpath, new_filename)) or os.path.exists(
-            os.path.join(os.path.split(path)[0], temp_filename)):
-        count += 1
-        new_filename = f'{filetitle}{add_suffix}{count}{suffix}'
-        temp_filename = new_filename
-    return new_filename
 
 
 def get_filetitle(filepath: str) -> str:
@@ -145,7 +169,7 @@ def un_nest_folders(origin_folder: str, target_folder: str = None, mode_nested: 
         final_folder = target_folder
     else:
         final_folder = os.path.split(origin_folder)[0]
-    new_filename = get_nodup_filename(need_move_path, final_folder)
+    new_filename = create_nodup_filename(need_move_path, final_folder)
 
     # 先改名，再移动
     old_path_with_newname = os.path.normpath(os.path.join(os.path.split(need_move_path)[0], new_filename))
@@ -173,28 +197,6 @@ def un_nest_folders(origin_folder: str, target_folder: str = None, mode_nested: 
     return final_path
 
 
-def check_temp_folder(check_path: Union[list, str]) -> bool:
-    """传入路径列表list，检查对应路径的同级/下级文件夹中是否存在临时文件夹（前一次解压未正常删除的）
-    如果存在临时文件夹并且其中有相应文件/文件夹，则返回False，并终止下一步操作"""
-    print_function_info()
-    if type(check_path) is str:
-        check_path = [check_path]
-
-    all_temp_folder = set()  # 所有可能存在的临时文件夹路径（添加后缀自动生成，非真实路径）
-
-    for path in check_path:
-        if os.path.isfile(path):
-            temp_folder = os.path.normpath(os.path.join(os.path.split(path)[0], 'UnzipTempFolder'))
-            all_temp_folder.add(temp_folder)
-        else:
-            temp_folder = os.path.normpath(os.path.join(path, 'UnzipTempFolder'))
-            all_temp_folder.add(temp_folder)
-    for folder in all_temp_folder:
-        if os.path.exists(folder) and os.listdir(folder):
-            return False
-    return True
-
-
 def check_filetitle(filetitle: str) -> str:
     """检查文件名首尾是否有空格和."""
     print_function_info()
@@ -203,90 +205,6 @@ def check_filetitle(filetitle: str) -> str:
         filetitle = filetitle.strip('.')
 
     return filetitle
-
-
-def get_first_volume_archive_filetitle(filename: str) -> Union[str, bool]:
-    """通过传入的文件名，判断其是否符合分卷压缩包规则并生成第一个分卷包名，返回提取的不含后缀文件名str或bool值"""
-    print_function_info()
-    re_rar = r"^(.+)\.part(\d+)\.rar$"
-    re_rar_without_suffix = r"^(.+)\.part(\d+)$"
-    re_7z = r"^(.+)\.7z\.\d+$"
-    re_zip = r"^(.+)\.zip$"
-    re_zip_volume = r"^(.+)\.z\d+$"
-    re_zip_type2 = r"^(.+)\.zip\.\d+$"
-
-    # 匹配7z正则
-    if re.match(re_7z, filename):
-        archive_filetitle = re.match(re_7z, filename).group(1)  # 提取文件名
-        first_volume_archive_filetitle = archive_filetitle + r'.7z.001'  # 生成第一个分卷压缩包名
-    # 匹配rar正则
-    elif re.match(re_rar, filename):
-        archive_filetitle = re.match(re_rar, filename).group(1)
-        number_type = len(re.match(re_rar, filename).group(2))
-        first_volume_archive_filetitle = archive_filetitle + rf'.part{str(1).zfill(number_type)}.rar'
-    # 匹配无后缀的rar正则
-    elif re.match(re_rar_without_suffix, filename):
-        archive_filetitle = re.match(re_rar_without_suffix, filename).group(1)
-        number_type = len(re.match(re_rar_without_suffix, filename).group(2))
-        first_volume_archive_filetitle = archive_filetitle + rf'.part{str(1).zfill(number_type)}'
-    # 匹配zip正则
-    elif re.match(re_zip_volume, filename) or re.match(re_zip, filename):  # 一般的zip分卷包的第一个包都是.zip后缀，所以都是为分卷即可
-        if re.match(re_zip_volume, filename):
-            archive_filetitle = re.match(re_zip_volume, filename).group(1)
-        else:
-            archive_filetitle = re.match(re_zip, filename).group(1)
-        first_volume_archive_filetitle = archive_filetitle + r'.zip'
-    # 匹配zip格式2正则
-    elif re.match(re_zip_type2, filename):
-        archive_filetitle = re.match(re_zip_type2, filename).group(1)  # 提取文件名
-        first_volume_archive_filetitle = archive_filetitle + r'.zip.001'
-    else:
-        return False
-
-    return first_volume_archive_filetitle
-
-
-def get_volume_archive_dict(filelist: list) -> dict:
-    """传入文件路径列表list，提取其中符合分卷压缩包命名规则的文件，并扩展到其所在文件夹，补全完整的分卷压缩包分卷
-    返回分卷压缩包dict {A压缩包第一个分卷包路径:(A压缩包全部分卷路径), ...}"""
-    print_function_info()
-    volume_archive_dict = {}  # 最终结果
-
-    folder_dict = {}  # 按文件所在的父文件夹建立字典 {文件父文件夹:(A文件, B文件), ...}
-    for file in filelist:
-        parent_folder = os.path.split(file)[0]
-        if parent_folder not in folder_dict:
-            folder_dict[parent_folder] = set()
-        folder_dict[parent_folder].add(file)
-    # 按文件夹逐个处理其中的文件
-    for parent_folder in folder_dict:
-        files_set = folder_dict[parent_folder]
-        filenames_in_parent_folder = os.listdir(parent_folder)
-        # 利用正则匹配分卷压缩包
-        all_filenames = [os.path.split(i)[1] for i in files_set]  # 提取出文件名
-        for filename in all_filenames:
-            full_filepath = os.path.normpath(os.path.join(parent_folder, filename))  # 还原当前处理文件的完整文件路径
-            first_volume_archive_filetitle = get_first_volume_archive_filetitle(filename)
-            if first_volume_archive_filetitle:
-                first_volume_archive = os.path.normpath(os.path.join(parent_folder, first_volume_archive_filetitle))
-            else:
-                break
-
-            # 处理识别出来的第一个分卷包
-            if first_volume_archive not in volume_archive_dict:  # 如果文件名不在字典内，则添加一个空键值对
-                volume_archive_dict[first_volume_archive] = set()
-            volume_archive_dict[first_volume_archive].add(full_filepath)  # 添加键值对 {示例.7z.001:(示例.7z.001,示例.7z.002)}
-            volume_archive_dict[first_volume_archive].add(first_volume_archive)
-        # 扩展压缩包识别范围，补全完整的分卷压缩包分卷
-        for check_filename in filenames_in_parent_folder:
-            full_path = os.path.normpath(os.path.join(parent_folder, check_filename))
-            check_title = get_first_volume_archive_filetitle(check_filename)
-            if check_title:
-                check_path = os.path.normpath(os.path.join(parent_folder, check_title))
-                if check_path in volume_archive_dict:
-                    volume_archive_dict[check_path].add(full_path)
-
-    return volume_archive_dict
 
 
 def init_settings():

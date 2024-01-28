@@ -1,6 +1,7 @@
 # 自定义拖入控件
 
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QLabel
 from constant import _ICON_DEFAULT, _ICON_DROP
 
@@ -18,19 +19,19 @@ class DropLabel(QLabel):
 
     def reset_icon(self, icon:str):
         self.icon = icon
-        self.setPixmap(icon)
+        self.setPixmap(QPixmap(icon))
 
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
             self.last_icon = self.pixmap()
-            self.setPixmap(_ICON_DROP)
+            self.setPixmap(QPixmap(_ICON_DROP))
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        self.setPixmap(self.last_icon)
+        self.setPixmap(QPixmap(self.last_icon))
 
     def dropEvent(self, event):
         if event.mimeData().hasUrls():

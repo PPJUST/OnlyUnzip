@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QIcon, QMovie, QPalette
 from PySide6.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QMenu, QFileDialog, QMessageBox
 
+import module.function_archive
 import module.function_file
 import module.function_filetype
 import module.function_password
@@ -102,11 +103,11 @@ class Main(QMainWindow):
         function_static.print_function_info()
         output_dir = self.ui.lineedit_output_dir.text()
         # 先检查是否存在遗留的临时文件夹
-        if function_static.check_temp_folder(file_list) and function_static.check_temp_folder(output_dir):
+        if function_static.is_temp_folder_exists(file_list) and function_static.is_temp_folder_exists(output_dir):
             # 再检查文件列表是否为空
             if file_list:
                 # 对传入的文件列表进行处理，利用正则检查文件名是否符合分卷命名规则，将符合项转换为{第一个包:(全部分卷)..}的格式
-                volume_archive_dict = function_static.get_volume_archive_dict(file_list)
+                volume_archive_dict = module.function_archive.find_volume_archives(file_list)
                 # 提取上述方法识别出的所有分卷文件
                 all_volume_archive_files = set()
                 for value in volume_archive_dict.values():
@@ -125,7 +126,7 @@ class Main(QMainWindow):
                 extract_file_dict = {}  # 最终执行操作的文件
                 if self.ui.checkBox_check_filetype.isChecked():  # 仅压缩包
                     for file in all_file_dict:
-                        if module.function_filetype.is_archive(file):
+                        if module.function_archive.is_archive(file):
                             extract_file_dict[file] = all_file_dict[file]
                 else:
                     extract_file_dict.update(all_file_dict)
