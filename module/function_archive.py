@@ -1,8 +1,11 @@
 import os
 import re
+import subprocess
 from typing import Union
-
+from constant import _PATH_7ZIP
 import filetype
+
+from module.class_state import State7zResult
 
 
 def find_volume_archives(files_list: list) -> dict:
@@ -141,3 +144,65 @@ def is_zip_archive(filepath: str) -> bool:
             return True
 
     return False
+
+
+def subprocess_run_7z(command_type, file, password):
+    """使用run调用7z，仅用于l和t命令"""
+    command = [_PATH_7ZIP,
+               command_type,
+               file,
+               "-p" + password,
+               '-bse2']
+    process = subprocess.run(command,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             creationflags=subprocess.CREATE_NO_WINDOW,
+                             text=True,
+                             universal_newlines=True)
+
+    """7z.exe返回值代码
+    Code码	含义
+    0	没有错误
+    1	警告（非致命错误，例如被占用）
+    2	致命错误
+    7	命令行错误
+    8	内存不足，无法进行操作
+    255	用户已停止进程
+    """
+
+    if process.returncode == 0:
+        result = State7zResult.Success(file, password)
+    elif process.returncode == 1:
+        result = State7zResult.FileOccupied(file)
+    elif process.returncode == 2:
+        stderr = str(process.stderr)
+        if not stderr:  # 处理自解压文件时，返回的stderr流可能为空
+            result = State7zResult.WrongPassword(file)
+        elif 'Wrong password' in stderr:
+            result = State7zResult.WrongPassword(file)
+        elif 'Missing volume' in stderr or 'Unexpected end of archive' in stderr:
+            result = State7zResult.MissingVolume(file)
+        elif 'Cannot open the file as' in stderr:
+            result = State7zResult.NotArchiveOrDamaged(file)
+        else:
+            result = State7zResult.UnknownError(file)
+    elif process.returncode == 8:
+        result = State7zResult.NotEnoughSpace(file)
+    else:
+        result = State7zResult.UnknownError(file)
+
+    return result
+
+def subprocess_7z_l(file, password):
+    """调用7z的l指令"""
+
+    result = subprocess_run_7z('l', file, password)
+
+
+
+def subprocess_7z_t(file, password):
+    """调用7z的t指令"""
+    result = subprocess_run_7z('t', file, password)
+
+
+

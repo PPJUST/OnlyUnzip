@@ -235,7 +235,7 @@
           <item>
            <widget class="QToolButton" name="button_stop">
             <property name="text">
-             <string>...</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -478,7 +478,7 @@
              <x>0</x>
              <y>0</y>
              <width>135</width>
-             <height>338</height>
+             <height>326</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">

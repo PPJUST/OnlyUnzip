@@ -1,21 +1,30 @@
 # 各种状态码的类
 
-from constant import _ICON_ERROR, _ICON_FINISH, _COLOR_ERROR, _COLOR_WARNING, _COLOR_SUCCESS
+from constant import _ICON_DEFAULT,_ICON_FINISH,_COLOR_ERROR,_ICON_ERROR,_COLOR_WARNING,_COLOR_SUCCESS
 
 
 class StateSchedule:
     """状态-进度信息"""
 
-    class Default:
+    class _Template:
+        def __init__(self, icon):
+            self.icon = icon
+
+
+    class Default(_Template):
         """初始状态"""
+        def __init__(self):
+            super().__init__(_ICON_DEFAULT)
 
-    class Running:
+    class Running(_Template):
         """运行"""
+        def __init__(self):
+            super().__init__(_ICON_DEFAULT)
 
-    class Finish:
+    class Finish(_Template):
         """结束"""
 
-    class Stop:
+    class Stop(_Template):
         """终止"""
 
 
@@ -73,8 +82,8 @@ class StateUpdateUI:
             super().__init__(text)
 
 
-class StateUpdateHistory:
-    """状态-更新历史记录"""
+class State7zResult:
+    """状态-7z处理结果"""
 
     class _Template:
         def __init__(self, file, type_text, color):

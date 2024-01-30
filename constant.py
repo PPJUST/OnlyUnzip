@@ -10,8 +10,13 @@ _ICON_DEFAULT = './icon/state_default.png'
 _ICON_DEFAULT_WITH_OUTPUT = './icon/state_default_with_output.png'
 _ICON_ERROR = './icon/state_error.png'
 _ICON_FINISH = './icon/state_finish.png'
-_ICON_STOP = './icon/state_button_stop.png'
+_ICON_STOP = './icon/button_stop.png'
 _ICON_DROP = './icon/state_drop.png'
+_ICON_PAGE_EXTRACT = './icon/page_extract.png'
+_ICON_PAGE_HOME = './icon/page_home.png'
+_ICON_PAGE_HISTORY = './icon/page_history.png'
+_ICON_PAGE_PASSWORD = './icon/page_password.png'
+_ICON_PAGE_SETTING = './icon/page_setting.png'
 
 # 配置文件
 _CONFIG_FILE = 'config.ini'
@@ -23,3 +28,4 @@ _COLOR_ERROR = (254, 67, 101)
 _COLOR_WARNING = (255,215,0)
 _COLOR_SUCCESS = (0,0,0)
 _PATH_7ZIP = './7-Zip/7z.exe'
+_PASSWORD_NONE = 'NonePassword'  # 用于测试是否存在密码的临时密码

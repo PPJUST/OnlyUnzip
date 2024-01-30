@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QAction
 from PySide6.QtWidgets import QListWidget, QMenu, QListWidgetItem, QApplication
 
-from module.class_state import StateUpdateHistory
+from module.class_state import State7zResult
 
 
 class HistoryListWidget(QListWidget):
@@ -28,7 +28,7 @@ class HistoryListWidget(QListWidget):
         item.setForeground(QColor(color[0], color[1], color[2]))
 
         # 单独处理成功的记录，添加右键菜单，设置UserRole由于右键获取密码
-        if type(state_class) is StateUpdateHistory.Success:
+        if type(state_class) is State7zResult.Success:
             info_password = state_class.password
             item_text += '■' + info_password
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)

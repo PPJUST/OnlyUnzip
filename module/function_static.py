@@ -87,6 +87,21 @@ def create_nodup_filename(path: str, target_dirpath: str, add_suffix: str = ' -N
     return new_filename
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def delete_empty_folder(folder: str):
     """检查文件夹是否为空，是则删除（不经过回收站）"""
     print_function_info()

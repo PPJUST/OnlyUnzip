@@ -8,7 +8,8 @@ from module import function_archive
 import module.function_file
 import module.function_password
 from constant import _ICON_MAIN, _ICON_DEFAULT, _ICON_DEFAULT_WITH_OUTPUT, \
-    _PASSWORD_EXPORT
+    _PASSWORD_EXPORT, _ICON_PAGE_EXTRACT, _ICON_PAGE_HISTORY, _ICON_PAGE_PASSWORD, _ICON_PAGE_SETTING, _ICON_PAGE_HOME, \
+    _ICON_STOP
 from module import function_password
 from module import function_static
 from module.class_state import StateError, StateUpdateUI, StateSchedule
@@ -41,6 +42,11 @@ class Main(QMainWindow):
         self.ui.stackedWidget_main.setCurrentIndex(0)  # 将主页面设为第1页
         self.ui.stackedWidget_schedule.setCurrentIndex(0)  # 将信息页设为第1页
         self.change_page(self.ui.buttonGroup.id(self.ui.buttonGroup.buttons()[0]))  # 设置第一个按钮的颜色
+        self.ui.button_page_home.setIcon(QIcon(_ICON_PAGE_HOME))
+        self.ui.button_page_history.setIcon(QIcon(_ICON_PAGE_HISTORY))
+        self.ui.button_page_password.setIcon(QIcon(_ICON_PAGE_PASSWORD))
+        self.ui.button_page_setting.setIcon(QIcon(_ICON_PAGE_SETTING))
+        self.ui.button_stop.setIcon(QIcon(_ICON_STOP))
 
         # 实例化子线程
         # self.qthread = ExtractQthread()
@@ -290,6 +296,8 @@ class Main(QMainWindow):
                 self.ui.progressBar_extract.setValue(text)
                 if self.ui.stackedWidget_schedule.currentIndex() != 2:
                     self.ui.stackedWidget_schedule.setCurrentIndex(2)
+        elif type(state_class) in StateSchedule.__dict__.values():
+            pass
 
 
 def main():
