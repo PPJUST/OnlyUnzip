@@ -27,6 +27,12 @@ def print_function_info(mode: str = 'current'):
         print(time.strftime('%H:%M:%S ', time.localtime()),
               inspect.getframeinfo(inspect.currentframe().f_back.f_back).function)
 
+def init_settings():
+    """初始化设置文件/文件夹"""
+    if not os.path.exists(_BACKUP_FOLDER):
+        os.mkdir(_BACKUP_FOLDER)
+
+    Config()
 
 def is_temp_folder_exists(check_path: Union[list, str]) -> bool:
     """检查传入路径的同级文件夹中是否存在临时文件夹（前一次解压未正常删除的）"""
@@ -87,6 +93,35 @@ def create_nodup_filename(path: str, target_dirpath: str, add_suffix: str = ' -N
     return new_filename
 
 
+def get_filetitle(path: str) -> str:
+    """提取路径对应的文件/文件夹不含后缀的文件名"""
+    if os.path.isdir(path):
+        filetitle = os.path.splitext(path)[1]
+    else:
+        # 一般情况
+        filetitle = os.path.split(os.path.splitext(path)[0])[1]
+        # 单独处理压缩文件
+        pattern_7z = r"^(.+)\.7z\.\d+$"
+        pattern_rar = r"^(.+)\.part(\d+)\.rar$"
+        pattern_rar_without_suffix = r"^(.+)\.part(\d+)$"
+        pattern_zip = r"^(.+)\.zip$"
+        pattern_zip_volume = r"^(.+)\.z\d+$"
+        pattern_zip_type2 = r"^(.+)\.zip\.\d+$"
+        rules = [pattern_7z, pattern_rar, pattern_rar_without_suffix, pattern_zip, pattern_zip_volume, pattern_zip_type2]
+        filename = os.path.split(path)[1]
+        for rule in rules:
+            try:
+                filetitle = re.match(rule, filename).group(1)
+                break
+            except:
+                continue
+
+    # 处理文件两端多余的空格和.
+    while filetitle[0] in [' ', '.'] or filetitle[-1] in [' ', '.']:
+        filetitle = filetitle.strip()
+        filetitle = filetitle.strip('.')
+
+    return filetitle
 
 
 
@@ -124,107 +159,3 @@ def delete_empty_folder(folder: str):
         print(f'{folder} 不为空')
 
 
-def get_filetitle(filepath: str) -> str:
-    """提取传入文件的不含后缀的文件名"""
-    print_function_info()
-    if os.path.isdir(filepath):
-        filetitle = os.path.splitext(filepath)[1]
-    else:
-        filetitle = os.path.split(os.path.splitext(filepath)[0])[1]  # 兜底
-
-        re_rar = r"^(.+)\.part(\d+)\.rar$"
-        re_rar_without_suffix = r"^(.+)\.part(\d+)$"
-        re_7z = r"^(.+)\.7z\.\d+$"
-        re_zip = r"^(.+)\.zip$"
-        re_zip_volume = r"^(.+)\.z\d+$"
-        re_zip_type2 = r"^(.+)\.zip\.\d+$"
-        re_rules = [re_rar, re_rar_without_suffix, re_7z, re_zip, re_zip_volume, re_zip_type2]
-        filename = os.path.split(filepath)[1]
-        for rule in re_rules:
-            try:
-                filetitle = re.match(rule, filename).group(1)
-                break
-            except:
-                continue
-
-    return filetitle
-
-
-def un_nest_folders(origin_folder: str, target_folder: str = None, mode_nested: bool = True) -> str:
-    """解除文件夹的嵌套
-    将指定文件夹中的最深一级非空文件夹移动到目标文件夹中，并返回最终路径str
-
-    传参：origin_folder 原始文件夹路径str
-    可选传参：
-    target_folder 移动到目标文件夹，默认移动到原始文件夹的父目录中（即同级）
-    mode_nested 是否处理嵌套文件夹，默认处理；可选False，不处理套娃文件夹，仅做1次下级移动操作
-    返回值：final_path 最终的路径str
-    """
-    print_function_info()
-    # 如果目标文件夹不存在，则新建
-    if not os.path.exists(target_folder):
-        os.makedirs(target_folder)
-
-    # 根据选项提取需要移动的文件/文件夹路径
-    if mode_nested:  # 提取最深一级
-        need_move_path = get_first_multi_folder(origin_folder)
-    else:  # 仅下级
-        number_in_folder = len(os.listdir(origin_folder))
-        if number_in_folder == 1:
-            need_move_path = os.path.normpath(os.path.join(origin_folder, os.listdir(origin_folder)[0]))
-        else:
-            need_move_path = origin_folder
-
-    # 检查需移动的路径和目标文件夹是否一致，如果一致，则不进行后续操作
-    if need_move_path == target_folder:
-        return need_move_path
-
-    # 提取文件名，生成目标文件夹下无重复的文件/文件夹名
-    if target_folder:
-        final_folder = target_folder
-    else:
-        final_folder = os.path.split(origin_folder)[0]
-    new_filename = create_nodup_filename(need_move_path, final_folder)
-
-    # 先改名，再移动
-    old_path_with_newname = os.path.normpath(os.path.join(os.path.split(need_move_path)[0], new_filename))
-    try:
-        try:
-            os.rename(need_move_path, old_path_with_newname)
-        except PermissionError:  # 如果报错【PermissionError: [WinError 5] 拒绝访问。】，可能是找无重名占用了，等0.5秒让系统处理完
-            time.sleep(0.5)
-            os.rename(need_move_path, old_path_with_newname)
-    except PermissionError:  # 如果上述方法还不能解决占用问题，则直接移动到随机生成的文件夹中
-        old_path_with_newname = need_move_path
-        random_ascii = ''.join(random.choices(string.ascii_lowercase, k=6))  # 随机6位小写字母
-        final_folder = os.path.normpath(
-            os.path.join(final_folder, os.path.split(need_move_path)[1] + f'_{random_ascii}'))
-
-    try:
-        shutil.move(old_path_with_newname, final_folder)
-    except OSError:  # 如果报错【OSError: [WinError 145] 目录不是空的。】，原路径下有残留的空文件夹，则尝试直接删除
-        delete_empty_folder(need_move_path)
-
-    # 组合最终路径
-    final_path = os.path.normpath(os.path.join(final_folder, new_filename))
-    delete_empty_folder(origin_folder)  # 如果原文件夹为空，则删除
-
-    return final_path
-
-
-def check_filetitle(filetitle: str) -> str:
-    """检查文件名首尾是否有空格和."""
-    print_function_info()
-    while filetitle[0] in [' ', '.'] or filetitle[-1] in [' ', '.']:
-        filetitle = filetitle.strip()
-        filetitle = filetitle.strip('.')
-
-    return filetitle
-
-
-def init_settings():
-    """初始化设置文件/文件夹"""
-    if not os.path.exists(_BACKUP_FOLDER):
-        os.mkdir(_BACKUP_FOLDER)
-
-    Config()

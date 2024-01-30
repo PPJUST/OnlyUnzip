@@ -38,48 +38,102 @@ class Thread7z(QThread):
 
     def run(self):
         mode = Config().mode
+        passwords = function_password.read_passwords()
+        exclude_rules = Config().exclude_rules
+        output_folder = Config().output_folder
+        handling_nested_folder = Config().handling_nested_folder
 
         for index, file in enumerate(self.file_dict.keys(), start=1):
             # 不论哪个模式，都先使用7z的l命令进行测试
             # 先使用临时密码测试，如果返回成功则说明该文件无法使用l指令进行正常测试（无密码或者内部文件名未加密）
             # 如果返回其余情况，则按不同情况进行单独处理
-            right_password_by_l = _PASSWORD_NONE  # 尝试使用l指令寻找的正确密码
-            result_fake = function_archive.subprocess_run_7z('l', file, _PASSWORD_NONE)
-            if type(result_fake) is  State7zResult.WrongPassword:  # 返回密码错误。则继续使用密码字典寻找正确密码
-                test_passwords = function_password.read_passwords()
-                for password in test_passwords:
+            result_fake = self.test_fake_password(file)
+            if result_fake is  True:  # 使用l命令寻找密码，找到正确密码后直接进行处理
+
+                right_password= _PASSWORD_NONE
+                for password in passwords:
                     result = function_archive.subprocess_run_7z('l', file, password)
                     if type(result) is State7zResult.Success:  # 找到正确密码
-                        right_password_by_l = result.password
+                        right_password = result.password
+                        if mode == 'test':
+                            self.signal_schedule.emit(result)
+                        elif mode == 'extract':
+                            result = self.extract_file(file, right_password,exclude_rules, output_folder)
+                            self.signal_schedule.emit(result)
                         break
-            elif type(result_fake) is  State7zResult.FileOccupied:  # 返回文件占用，则不再处理该文件
-                pass  # 备忘录
-            elif type(result_fake) is State7zResult.NotArchiveOrDamaged:
-                pass
-            elif type(result_fake) is State7zResult.UnknownError:
-                pass
+                if right_password == _PASSWORD_NONE:  # 没有找到正确密码
+                    self.signal_schedule.emit(State7zResult.WrongPassword(file))
+                    continue
 
-            if right_password_by_l != _PASSWORD_NONE:  # 如果找到了正确密码，则直接按正确密码执行
+            elif type(result_fake) in State7zResult.__dict__.values():  # 文件本身存在问题，跳过
+                self.signal_schedule.emit(result_fake)
+                continue
+
+            else:  # 无法使用l命令，执行一般流程
                 if mode == 'test':
-                    self.signal_schedule.emit(State7zResult.Success(file, right_password_by_l))
+                    for password in passwords:
+                        result = function_archive.subprocess_7z_t(file, password)
+                        if type(result) is State7zResult.WrongPassword:
+                            continue
+                        else:
+                            self.signal_schedule.emit(result)
+                            break
                 elif mode == 'extract':
-                    pass # 备忘录
-            else:  # 未找到则按正常流程执行
-                pass
+                    for password in passwords:
+                        result = self.extract_file(file, password,exclude_rules, output_folder)
+                        if type(result) is State7zResult.WrongPassword:
+                            continue
+                        else:
+                            self.signal_schedule.emit(result)
+                            break
 
-    def extract_archive(self):
+
+
+    def test_fake_password(self, file):
+        """使用临时密码测试文件，判断是否进行进一步操作
+        :return: True: 可以使用l命令进行测试；
+                 State7zResult类: 文件本身存在问题；
+                 False: 不能使用l命令进行测试。
+        """
+        result_fake = function_archive.subprocess_run_7z('l', file, _PASSWORD_NONE)
+
+        # 返回密码错误。则说明可以使用l命令进行测试
+        if type(result_fake) is State7zResult.WrongPassword:
+            return True
+        # 返回文件占用/非压缩文件/空间不足/缺失分卷/未知错误，则说明文件本身存在问题
+        elif type(result_fake) in [State7zResult.NotArchiveOrDamaged,
+             State7zResult.FileOccupied,
+             State7zResult.NotEnoughSpace,
+             State7zResult.UnknownError,
+             State7zResult.MissingVolume]:
+            return result_fake
+        # 返回成功，则不信赖l命令的结果
+        elif type(result_fake) is State7zResult.Success:
+            return False
+
+    def extract_file(self, file, password,exclude_rules=(), output_folder=None, handling_nested_folder=False):
         """解压文件"""
+        # 生成解压目标路径
+        filetitle = function_static.get_filetitle(file)
+        if output_folder:
+            temp_folder = os.path.normpath(os.path.join(output_folder, _Unzip_Temp_Folder))
+        else:  # 如果未指定输出文件夹，则输出路径为文件同级目录下的临时文件夹的文件名文件夹
+            parent_folder = os.path.split(file)[0]
+            temp_folder = os.path.normpath(os.path.join(parent_folder, _Unzip_Temp_Folder))
+        extract_folder = os.path.normpath(os.path.join(temp_folder, filetitle))
+
+        # 调用7z
+        result =  self.process_7z_extract(file, password, exclude_rules,extract_folder)
+
+        # 处理套娃文件夹
+        if handling_nested_folder:
 
 
 
-    def process_7z_extract(self, file, password, exclude_rules,output_folder=None):
+
+    def process_7z_extract(self, file, password, exclude_rules,output_folder):
         """使用popen方法调用7z进行解压操作，并实时发送进度信息"""
         # 同时读取stdout和stderr会导致管道堵塞，需要将这3个流重定向至1个管道中，使用switch 'bso1','bsp1',bse1'
-        if output_folder:
-            output_folder = os.path.normpath(os.path.join(output_folder,_Unzip_Temp_Folder))  # 输出的临时文件夹
-            extract_folder = os.path.normpath(os.path.join(output_folder, filetitle))  # 生成解压文件夹的路径
-
-
         command = [_PATH_7ZIP,
                    'x',
                    'y',
@@ -87,7 +141,8 @@ class Thread7z(QThread):
                    '-bsp1', '-bse1', '-bso1',
                    '-o' + output_folder,
                    '-p' + password]
-        command += exclude_rules
+        exclude_rules_str = ['-xr!*.' + i for i in exclude_rules if i]
+        command += exclude_rules_str
         process = subprocess.Popen(command,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
