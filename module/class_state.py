@@ -1,6 +1,7 @@
 # 各种状态码的类
 
-from constant import _ICON_DEFAULT,_ICON_FINISH,_COLOR_ERROR,_ICON_ERROR,_COLOR_WARNING,_COLOR_SUCCESS
+from constant import _ICON_DEFAULT, _ICON_FINISH, _COLOR_ERROR, _ICON_ERROR, _COLOR_WARNING, _COLOR_SUCCESS, \
+    _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _ICON_STOP
 
 
 class StateSchedule:
@@ -10,22 +11,34 @@ class StateSchedule:
         def __init__(self, icon):
             self.icon = icon
 
-
     class Default(_Template):
         """初始状态"""
+
         def __init__(self):
             super().__init__(_ICON_DEFAULT)
 
-    class Running(_Template):
-        """运行"""
+    class RunningTest(_Template):
+        """运行测试"""
+
         def __init__(self):
-            super().__init__(_ICON_DEFAULT)
+            super().__init__(_ICON_TEST_GIF)
+
+    class RunningExtract(_Template):
+        """运行解压"""
+
+        def __init__(self):
+            super().__init__(_ICON_EXTRACT_GIF)
 
     class Finish(_Template):
         """结束"""
+        def __init__(self):
+            super().__init__(_ICON_FINISH)
+
 
     class Stop(_Template):
         """终止"""
+        def __init__(self):
+            super().__init__(_ICON_STOP)
 
 
 class StateError:

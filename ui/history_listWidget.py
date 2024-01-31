@@ -1,5 +1,4 @@
 # 自定义历史记录控件
-import sys
 import time
 
 from PySide6.QtCore import Qt
@@ -51,6 +50,3 @@ class HistoryListWidget(QListWidget):
         selected_item = self.currentItem()
         password = selected_item.data(Qt.UserRole)
         QApplication.clipboard().setText(password)
-
-
-

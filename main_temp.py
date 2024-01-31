@@ -13,7 +13,7 @@ import module.function_password
 from constant import _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _ICON_MAIN, _ICON_DEFAULT, _ICON_DEFAULT_WITH_OUTPUT, _ICON_ERROR, \
     _ICON_FINISH
 from module import function_config
-from module import function_static
+from module import function_normal
 from module.function_config import Config
 from qthread_7zip import ExtractQthread
 from ui import Ui_MainWindow
