@@ -11,7 +11,7 @@ from module import function_archive
 from module import function_file
 from module import function_normal
 from module import function_password
-from module.class_state import StateError, StateUpdateUI, StateSchedule
+from module.class_state import StateError, StateUpdateUI, StateSchedule, State7zResult
 from module.function_config import Config
 from qthread_7zip import Thread7z
 from ui.drop_label import DropLabel
@@ -306,8 +306,13 @@ class Main(QMainWindow):
                     self.ui.stackedWidget_schedule.setCurrentIndex(2)
         # StateSchedule类，测试/解压情况
         elif type(state_class) in StateSchedule.__dict__.values():
-            icon = state_class.cion
+            icon = state_class.icon
             self.dropped_label.reset_icon(icon)
+        # State7zResult类，7z调用结果
+        elif type(state_class) in State7zResult.__dict__.values():
+            pass  # 备忘录 更新主ui和历史记录
+
+
 
 
 def main():

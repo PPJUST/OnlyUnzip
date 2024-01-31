@@ -1,10 +1,10 @@
 # 自定义拖入控件
 
 from PySide6.QtCore import Signal
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWidgets import QLabel
 
-from constant import _ICON_DEFAULT, _ICON_DROP
+from constant import _ICON_DEFAULT, _ICON_DROP, _ICON_EXTRACT_GIF
 
 
 class DropLabel(QLabel):
@@ -15,13 +15,20 @@ class DropLabel(QLabel):
         self.setAcceptDrops(True)
 
         self.icon = _ICON_DEFAULT
-        self.movie_icon = None  # 动图对象，用于显示GIF
+        self.movie_icon = QMovie(_ICON_EXTRACT_GIF)  # 动图对象，用于显示GIF
         self.last_icon = None
         self.reset_icon(self.icon)
 
     def reset_icon(self, icon: str):
-        self.icon = icon
-        self.setPixmap(QPixmap(icon))
+        if icon.endswith('.gif'):
+            self.movie_icon = QMovie(icon)
+            self.setMovie(self.movie_icon)
+            self.movie_icon.start()
+        else:
+            self.movie_icon.stop()
+
+            self.icon = icon
+            self.setPixmap(QPixmap(icon))
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
