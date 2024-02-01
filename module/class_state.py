@@ -1,7 +1,7 @@
 # 各种状态码的类
 
 from constant import _ICON_DEFAULT, _ICON_FINISH, _COLOR_ERROR, _ICON_ERROR, _COLOR_WARNING, _COLOR_SUCCESS, \
-    _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _ICON_STOP
+    _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _ICON_STOP, _COLOR_SKIP
 
 
 class StateSchedule:
@@ -103,6 +103,12 @@ class State7zResult:
             self.file = file
             self.color = color
             self.type_text = type_text
+
+    class Skip(_Template):
+        """跳过（不是通过7z判断，而是通过filetype库判断后手工发送"""
+
+        def __init__(self, file):
+            super().__init__(file, '跳过', _COLOR_SKIP)
 
     class WrongPassword(_Template):
         """密码错误"""

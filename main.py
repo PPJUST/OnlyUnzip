@@ -11,6 +11,7 @@ from module import function_archive
 from module import function_file
 from module import function_normal
 from module import function_password
+from module.class_count_7z_result import Count7zResult
 from module.class_state import StateError, StateUpdateUI, StateSchedule, State7zResult
 from module.function_config import Config
 from qthread_7zip import Thread7z
@@ -36,6 +37,7 @@ class Main(QMainWindow):
         function_normal.init_settings()  # 检查初始文件
         self.load_config()
         self.check_output_folder()
+        self.count_7z_result = Count7zResult()  # 用于收集结果
 
         # 设置ui
         self.ui.stackedWidget_main.setCurrentIndex(0)  # 将主页面设为第1页
@@ -270,7 +272,7 @@ class Main(QMainWindow):
 
         # 检查
         if not final_file_dict:
-            self.update_info_on_ui(StateError.NoArchive)
+            self.update_info_on_ui(StateError.NoArchive())
             return
 
         # 将dict传递给子线程
@@ -284,6 +286,7 @@ class Main(QMainWindow):
         :param state_class: 自定义State类
         """
         function_normal.print_function_info()
+        print(f'state_class {state_class}')
         # StateError类，错误信息
         if type(state_class) in StateError.__dict__.values():
             self.dropped_label.setPixmap(state_class.icon)
@@ -306,11 +309,19 @@ class Main(QMainWindow):
                     self.ui.stackedWidget_schedule.setCurrentIndex(2)
         # StateSchedule类，测试/解压情况
         elif type(state_class) in StateSchedule.__dict__.values():
+            # 修改图标
             icon = state_class.icon
             self.dropped_label.reset_icon(icon)
+            # 切页及修改结果文本
+            if type(state_class) is StateSchedule.Finish:  # 结束后切回主页
+                self.ui.stackedWidget_schedule.setCurrentIndex(0)
+                result_text = self.count_7z_result.get_result_text()
+                self.ui.label_schedule_state.setText(result_text)
+                self.ui.label_current_file.setText('')
         # State7zResult类，7z调用结果
         elif type(state_class) in State7zResult.__dict__.values():
-            pass  # 备忘录 更新主ui和历史记录
+            self.count_7z_result.collect_result(state_class)  # 收集结果
+            self.history_listWidget.insert_item(state_class)  # 添加历史记录
 
 
 

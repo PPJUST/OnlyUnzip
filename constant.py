@@ -24,6 +24,8 @@ _BACKUP_FOLDER = 'backup'
 _PASSWORD_FILE = 'password.pickle'  # 密码数据库格式说明：存储一个dict，键为密码str，值为对应的使用次数int
 _PASSWORD_EXPORT = '密码导出.txt'
 _Unzip_Temp_Folder = 'UnzipTempFolder'
+
+_COLOR_SKIP = (128,128,128)
 _COLOR_ERROR = (254, 67, 101)
 _COLOR_WARNING = (255, 215, 0)
 _COLOR_SUCCESS = (0, 0, 0)
