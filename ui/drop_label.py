@@ -13,6 +13,7 @@ class DropLabel(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAcceptDrops(True)
+        self.setScaledContents(True)
 
         self.icon = _ICON_DEFAULT
         self.movie_icon = QMovie(_ICON_EXTRACT_GIF)  # 动图对象，用于显示GIF

@@ -17,6 +17,8 @@ _ICON_PAGE_HOME = './icon/page_home.png'
 _ICON_PAGE_HISTORY = './icon/page_history.png'
 _ICON_PAGE_PASSWORD = './icon/page_password.png'
 _ICON_PAGE_SETTING = './icon/page_setting.png'
+_ICON_SKIP = './icon/state_skip.png'
+_ICON_STOP_STATE = './icon/state_stop.png'
 
 # 配置文件
 _CONFIG_FILE = 'config.ini'
@@ -24,8 +26,8 @@ _BACKUP_FOLDER = 'backup'
 _PASSWORD_FILE = 'password.pickle'  # 密码数据库格式说明：存储一个dict，键为密码str，值为对应的使用次数int
 _PASSWORD_EXPORT = '密码导出.txt'
 _Unzip_Temp_Folder = 'UnzipTempFolder'
-
-_COLOR_SKIP = (128,128,128)
+_HISTORY_FILE = 'history.txt'
+_COLOR_SKIP = (128, 128, 128)
 _COLOR_ERROR = (254, 67, 101)
 _COLOR_WARNING = (255, 215, 0)
 _COLOR_SUCCESS = (0, 0, 0)

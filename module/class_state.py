@@ -1,7 +1,8 @@
 # 各种状态码的类
+import os.path
 
 from constant import _ICON_DEFAULT, _ICON_FINISH, _COLOR_ERROR, _ICON_ERROR, _COLOR_WARNING, _COLOR_SUCCESS, \
-    _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _ICON_STOP, _COLOR_SKIP
+    _ICON_TEST_GIF, _ICON_EXTRACT_GIF, _COLOR_SKIP, _PASSWORD_NONE, _ICON_SKIP, _ICON_STOP_STATE
 
 
 class StateSchedule:
@@ -31,14 +32,15 @@ class StateSchedule:
 
     class Finish(_Template):
         """结束"""
+
         def __init__(self):
             super().__init__(_ICON_FINISH)
 
-
     class Stop(_Template):
         """终止"""
+
         def __init__(self):
-            super().__init__(_ICON_STOP)
+            super().__init__(_ICON_STOP_STATE)
 
 
 class StateError:
@@ -54,13 +56,13 @@ class StateError:
         """存在临时文件夹"""
 
         def __init__(self):
-            super().__init__(_ICON_ERROR, '————————————', '存在临时文件夹，请检查目录')
+            super().__init__(_ICON_ERROR, '', '存在临时文件夹，请检查目录')
 
     class NoArchive(_Template):
         """没有压缩文件"""
 
         def __init__(self):
-            super().__init__(_ICON_FINISH, '————————————', '没有需要解压的文件')
+            super().__init__(_ICON_SKIP, '', '没有需要解压的文件')
 
 
 class StateUpdateUI:
@@ -75,6 +77,8 @@ class StateUpdateUI:
 
         def __init__(self, text):
             super().__init__(text)
+            filename = os.path.split(text)[1]
+            self.text = filename
 
     class ScheduleTotal(_Template):
         """总进度"""
@@ -82,8 +86,8 @@ class StateUpdateUI:
         def __init__(self, text):
             super().__init__(text)
 
-    class ScheduleTest(_Template):
-        """测试密码进度"""
+    class SchedulePassword(_Template):
+        """搜索密码进度"""
 
         def __init__(self, text):
             super().__init__(text)
@@ -151,4 +155,4 @@ class State7zResult:
 
         def __init__(self, file, password):
             super().__init__(file, '成功', _COLOR_SUCCESS)
-            self.password = password
+            self.password = password if password != _PASSWORD_NONE else ''

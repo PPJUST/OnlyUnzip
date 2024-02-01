@@ -20,6 +20,7 @@ class Thread7z(QThread):
     def __init__(self):
         super().__init__()
         self.file_dict = {}  # 需要处理的文件字典，{文件路径:(文件路径,...)..}
+        self.stop_thread = False
 
     def reset_file_dict(self, file_dict: dict):
         """重置参数"""
@@ -28,6 +29,7 @@ class Thread7z(QThread):
 
     def run(self):
         function_normal.print_function_info()
+        self.stop_thread = False
         # 读取参数
         mode = Config().mode
         passwords = [_PASSWORD_NONE] + function_password.read_passwords()  # 插入一个假密码，用于判断无密码压缩文件
@@ -44,22 +46,26 @@ class Thread7z(QThread):
         pre_temp_folder = None  # 上一个处理的文件生成的temp文件夹目录，用于删除
 
         for index_file, file in enumerate(self.file_dict.keys(), start=1):
+            if self.stop_thread:
+                break
             self.signal_schedule.emit(StateUpdateUI.CurrentFile(file))
             self.signal_schedule.emit(StateUpdateUI.ScheduleTotal(f'{index_file} / {len(self.file_dict)}'))
             # 不论哪个模式，都先使用7z的l命令进行测试
             # 先使用临时密码测试，如果返回成功则说明该文件无法使用l指令进行正常测试（无密码或者内部文件名未加密）
             # 如果返回其余情况，则按不同情况进行单独处理
-            result_fake = self.test_fake_password(file)
+            result_fake = self._test_fake_password(file)
             if result_fake is True:  # 使用l命令寻找密码，找到正确密码后直接进行处理
                 right_password = _PASSWORD_NONE
                 for index_pw, password in enumerate(passwords):
-                    self.signal_schedule.emit(StateUpdateUI.ScheduleTest(f'{index_pw} / {len(passwords)}'))
-                    is_continue = self.test_file(file, password, command_type='l')
+                    if self.stop_thread:
+                        break
+                    self.signal_schedule.emit(StateUpdateUI.SchedulePassword(f'{index_pw} / {len(passwords)}'))
+                    is_continue = self._test_file(file, password, command_type='l')
                     if not is_continue:
                         right_password = password
                         if mode == 'extract':
-                            self.extract_file(file, right_password, None, exclude_rules, output_folder,
-                                              handling_nested_folder, delete_original_file)
+                            self._extract_file(file, right_password, None, exclude_rules, output_folder,
+                                               handling_nested_folder, delete_original_file)
                         break
                 if right_password == _PASSWORD_NONE:  # 没有找到正确密码
                     continue
@@ -71,23 +77,27 @@ class Thread7z(QThread):
             else:  # 无法使用l命令，执行一般流程
                 if mode == 'test':
                     for index_pw, password in enumerate(passwords):
-                        self.signal_schedule.emit(StateUpdateUI.ScheduleTest(f'{index_pw} / {len(passwords)}'))
-                        is_continue = self.test_file(file, password)
+                        if self.stop_thread:
+                            break
+                        self.signal_schedule.emit(StateUpdateUI.SchedulePassword(f'{index_pw} / {len(passwords)}'))
+                        is_continue = self._test_file(file, password)
                         if not is_continue:
                             break
                 elif mode == 'extract':
                     files_list = self.file_dict[file]
                     for index_pw, password in enumerate(passwords):
-                        self.signal_schedule.emit(StateUpdateUI.ScheduleTest(f'{index_pw} / {len(passwords)}'))
-                        is_continue = self.extract_file(file, password, files_list, exclude_rules, output_folder,
-                                                        handling_nested_folder, delete_original_file)
+                        if self.stop_thread:
+                            break
+                        self.signal_schedule.emit(StateUpdateUI.SchedulePassword(f'{index_pw} / {len(passwords)}'))
+                        is_continue = self._extract_file(file, password, files_list, exclude_rules, output_folder,
+                                                         handling_nested_folder, delete_original_file)
                         if not is_continue:
                             break
 
             # 处理temp文件夹
             if mode == 'extract':
                 if output_folder and index_file == len(self.file_dict):
-                    current_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _Unzip_Temp_Folder))
+                    current_temp_folder = os.path.normpath(os.path.join(output_folder, _Unzip_Temp_Folder))
                     function_file.delete_empty_folder(current_temp_folder)
                 elif not output_folder:
                     if not pre_temp_folder:
@@ -98,12 +108,21 @@ class Thread7z(QThread):
                         pre_temp_folder = current_temp_folder
                     if index_file == len(self.file_dict):
                         function_file.delete_empty_folder(current_temp_folder)
-
+            if self.stop_thread:
+                if output_folder:
+                    current_temp_folder = os.path.normpath(os.path.join(output_folder, _Unzip_Temp_Folder))
+                    function_file.delete_empty_folder(current_temp_folder)
+                elif not output_folder:
+                    current_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _Unzip_Temp_Folder))
+                    function_file.delete_empty_folder(current_temp_folder)
         # 发送结束信号
-        self.signal_schedule.emit(StateSchedule.Finish())
+        if self.stop_thread:
+            self.signal_schedule.emit(StateSchedule.Stop())
+        else:
+            self.signal_schedule.emit(StateSchedule.Finish())
 
     @staticmethod
-    def test_fake_password(file):
+    def _test_fake_password(file):
         """使用临时密码测试文件，判断是否进行进一步操作
         :return: True: 可以使用l命令进行测试；
                  State7zResult类: 文件本身存在问题；
@@ -126,7 +145,7 @@ class Thread7z(QThread):
         elif type(result_fake) is State7zResult.Success:
             return False
 
-    def test_file(self, file, password, command_type='t'):
+    def _test_file(self, file, password, command_type='t'):
         """测试文件
         :return: bool值，是否继续"""
         function_normal.print_function_info()
@@ -141,8 +160,8 @@ class Thread7z(QThread):
         else:
             return False
 
-    def extract_file(self, file, password, files_list=None, exclude_rules=(), output_folder=None,
-                     handling_nested_folder=False, delete_original_file=False):
+    def _extract_file(self, file, password, files_list=None, exclude_rules=(), output_folder=None,
+                      handling_nested_folder=False, delete_original_file=False):
         """解压文件，并进行后续相关操作
         :return: bool值，是否继续"""
         function_normal.print_function_info()
@@ -159,7 +178,7 @@ class Thread7z(QThread):
         extract_folder = os.path.normpath(os.path.join(temp_folder, filetitle))
 
         # 调用7z
-        result = self.process_7z_extract(file, password, exclude_rules, extract_folder)
+        result = self._process_7z_extract(file, password, exclude_rules, extract_folder)
         self.signal_schedule.emit(result)
 
         # 检查结果
@@ -192,7 +211,7 @@ class Thread7z(QThread):
         else:
             return False
 
-    def process_7z_extract(self, file, password, exclude_rules, output_folder):
+    def _process_7z_extract(self, file, password, exclude_rules, output_folder):
         """使用popen方法调用7z进行解压操作，并实时发送进度信息"""
         function_normal.print_function_info()
         # 同时读取stdout和stderr会导致管道堵塞，需要将这3个流重定向至1个管道中，使用switch 'bso1','bsp1',bse1'
@@ -278,3 +297,7 @@ class Thread7z(QThread):
             result = State7zResult.UnknownError(file)
 
         return result
+
+    def stop(self):
+        """停止"""
+        self.stop_thread = True

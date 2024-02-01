@@ -181,7 +181,7 @@ def get_filetitle(path: str) -> str:
 def delete_empty_folder(folder: str) -> bool:
     """检查文件夹是否为空，是则删除"""
     function_normal.print_function_info()
-    if get_folder_size(folder) == 0:
+    if os.path.exists(folder) and get_folder_size(folder) == 0:
         send2trash.send2trash(folder)
         return True
     else:

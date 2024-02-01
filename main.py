@@ -2,7 +2,7 @@ import os
 import re
 
 from PySide6.QtGui import QColor, QIcon, QPalette
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 
 from constant import _ICON_MAIN, _ICON_DEFAULT, _ICON_DEFAULT_WITH_OUTPUT, \
     _PASSWORD_EXPORT, _ICON_PAGE_HISTORY, _ICON_PAGE_PASSWORD, _ICON_PAGE_SETTING, _ICON_PAGE_HOME, \
@@ -48,6 +48,7 @@ class Main(QMainWindow):
         self.ui.button_page_password.setIcon(QIcon(_ICON_PAGE_PASSWORD))
         self.ui.button_page_setting.setIcon(QIcon(_ICON_PAGE_SETTING))
         self.ui.button_stop.setIcon(QIcon(_ICON_STOP))
+        self.ui.button_stop.setEnabled(False)
 
         # 实例化子线程
         self.thread_7z = Thread7z()
@@ -58,7 +59,7 @@ class Main(QMainWindow):
         self.ui.buttonGroup.buttonClicked.connect(self.change_page)
         # 主页
         self.dropped_label.signal_dropped.connect(self.dropped_files)
-        # self.ui.button_stop.clicked.connect(self.stop_qthread)
+        self.ui.button_stop.clicked.connect(self.stop_thread_7z)
         # 密码
         self.ui.button_update_password.clicked.connect(self.update_password)
         self.ui.button_read_clipboard.clicked.connect(self.read_clipboard)
@@ -277,8 +278,17 @@ class Main(QMainWindow):
 
         # 将dict传递给子线程
         if final_file_dict:
+            self.ui.button_stop.setEnabled(True)
             self.thread_7z.reset_file_dict(final_file_dict)
             self.thread_7z.start()
+
+    def stop_thread_7z(self):
+        """停止7z子线程"""
+        function_normal.print_function_info()
+        info = '是否中止当前任务\n（不终止当前正在解压的文件，\n仅中止之后的任务）'
+        reply = QMessageBox.question(self, '确认对话框', info, QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.thread_7z.stop()
 
     def update_info_on_ui(self, state_class):
         """
@@ -286,12 +296,12 @@ class Main(QMainWindow):
         :param state_class: 自定义State类
         """
         function_normal.print_function_info()
-        print(f'state_class {state_class}')
         # StateError类，错误信息
         if type(state_class) in StateError.__dict__.values():
-            self.dropped_label.setPixmap(state_class.icon)
+            self.dropped_label.reset_icon(state_class.icon)
             self.ui.label_current_file.setText(state_class.current_file)
             self.ui.label_schedule_state.setText(state_class.schedule_state)
+            self.ui.button_stop.setEnabled(False)
         # StateUpdateUI类，更新进度ui
         elif type(state_class) in StateUpdateUI.__dict__.values():
             text = state_class.text
@@ -299,7 +309,7 @@ class Main(QMainWindow):
                 self.ui.label_current_file.setText(text)
             elif type(state_class) is StateUpdateUI.ScheduleTotal:  # 总文件进度
                 self.ui.label_schedule_total.setText(text)
-            elif type(state_class) is StateUpdateUI.ScheduleTest:  # 测试密码进度
+            elif type(state_class) is StateUpdateUI.SchedulePassword:  # 测试密码进度
                 self.ui.label_schedule_test.setText(text)
                 if self.ui.stackedWidget_schedule.currentIndex() != 1:
                     self.ui.stackedWidget_schedule.setCurrentIndex(1)
@@ -313,17 +323,16 @@ class Main(QMainWindow):
             icon = state_class.icon
             self.dropped_label.reset_icon(icon)
             # 切页及修改结果文本
-            if type(state_class) is StateSchedule.Finish:  # 结束后切回主页
+            if type(state_class) in [StateSchedule.Finish, StateSchedule.Stop]:  # 结束后切回主页
                 self.ui.stackedWidget_schedule.setCurrentIndex(0)
                 result_text = self.count_7z_result.get_result_text()
                 self.ui.label_schedule_state.setText(result_text)
                 self.ui.label_current_file.setText('')
+                self.ui.button_stop.setEnabled(False)
         # State7zResult类，7z调用结果
         elif type(state_class) in State7zResult.__dict__.values():
             self.count_7z_result.collect_result(state_class)  # 收集结果
             self.history_listWidget.insert_item(state_class)  # 添加历史记录
-
-
 
 
 def main():
