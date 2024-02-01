@@ -14,10 +14,10 @@ def create_empty_keywords():
         pickle.dump({}, f)
 
 
-def read_passwords() -> list:
+def read_passwords(pickle_file = _PASSWORD_FILE) -> list:
     """读取密码，按使用次数排序后返回"""
     function_normal.print_function_info()
-    with open(_PASSWORD_FILE, 'rb') as f:
+    with open(pickle_file, 'rb') as f:
         password_dict = pickle.load(f)
 
     # 排序
@@ -63,3 +63,4 @@ def add_pw_count(pw: str):
     old_count = int(config.get(pw, 'use_count'))
     config.set(pw, 'use_count', str(old_count + 1))
     config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+

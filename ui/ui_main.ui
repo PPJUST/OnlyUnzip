@@ -393,7 +393,7 @@
            <string/>
           </property>
           <property name="placeholderText">
-           <string>添加密码，支持拖入文件，一个密码占一行，点击“更新密码”即可更新</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -477,8 +477,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>162</width>
-             <height>311</height>
+             <width>135</width>
+             <height>326</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">

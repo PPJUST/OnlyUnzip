@@ -49,6 +49,8 @@ class Main(QMainWindow):
         self.ui.button_page_setting.setIcon(QIcon(_ICON_PAGE_SETTING))
         self.ui.button_stop.setIcon(QIcon(_ICON_STOP))
         self.ui.button_stop.setEnabled(False)
+        self.ui.text_password.setPlaceholderText(
+            '添加密码，一个密码占一行，点击“更新密码”即可更新\n支持拖入密码数据库文件直接更新')
 
         # 实例化子线程
         self.thread_7z = Thread7z()
@@ -66,6 +68,7 @@ class Main(QMainWindow):
         self.ui.button_export_password.clicked.connect(function_password.export_password)
         self.ui.button_export_password.clicked.connect(lambda: self.ui.button_open_password.setEnabled(True))
         self.ui.button_open_password.clicked.connect(lambda: os.startfile(_PASSWORD_EXPORT))
+        self.ui.text_password.textChanged.connect(self.drop_password_pickle)
         # 设置页
         self.ui.checkBox_mode_extract.stateChanged.connect(lambda: self.set_checkbox_enable(mode=True))
         self.ui.checkBox_mode_test.stateChanged.connect(lambda: self.set_checkbox_enable(mode=False))
@@ -333,6 +336,18 @@ class Main(QMainWindow):
         elif type(state_class) in State7zResult.__dict__.values():
             self.count_7z_result.collect_result(state_class)  # 收集结果
             self.history_listWidget.insert_item(state_class)  # 添加历史记录
+            if type(state_class) is State7zResult.Success:
+                password = state_class.password
+                function_password.add_pw_count(password)
+
+    def drop_password_pickle(self):
+        """向密码框拖入了密码数据库"""
+        text = self.ui.text_password.toPlainText()
+        if text.startswith('file:///') and text.endswith('.pickle'):
+            pickle_file = text[8:]
+            passwords = function_password.read_passwords(pickle_file)
+            function_password.update_password(passwords)
+            self.ui.text_password.clear()
 
 
 def main():
