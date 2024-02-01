@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_mainkhWlhz.ui'
+## Form generated from reading UI file 'ui_mainZhRqho.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -404,36 +404,36 @@ class Ui_MainWindow(object):
         self.label_schedule_test.setText(QCoreApplication.translate("MainWindow", u"0/0", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\uff1a", None))
         self.text_password.setPlainText("")
-        self.text_password.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u6dfb\u52a0\u5bc6\u7801\uff0c\u652f\u6301\u62d6\u5165\u6587\u4ef6\uff0c\u4e00\u4e2a\u5bc6\u7801\u5360\u4e00\u884c\uff0c\u70b9\u51fb\u201c\u66f4\u65b0\u5bc6\u7801\u201d\u5373\u53ef\u66f4\u65b0", None))
+        self.text_password.setPlaceholderText("")
         self.button_read_clipboard.setText(QCoreApplication.translate("MainWindow", u"\u8bfb\u53d6\u526a\u5207\u677f", None))
         self.button_export_password.setText(QCoreApplication.translate("MainWindow", u"\u5bfc\u51fa\u5bc6\u7801", None))
         self.button_open_password.setText(QCoreApplication.translate("MainWindow", u"\u6253\u5f00\u5bfc\u51fa\u6587\u4ef6", None))
         self.button_update_password.setText(QCoreApplication.translate("MainWindow", u"\u66f4\u65b0\u5bc6\u7801", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_mode_extract.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u89e3\u538b\u538b\u7f29\u5305\u5230\u5f53\u524d\u6587\u4ef6\u6240\u5728\u76ee\u5f55</p></body></html>", None))
+        self.checkBox_mode_extract.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u89e3\u538b\u6587\u4ef6</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_mode_extract.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u6a21\u5f0f", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_mode_test.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u4ec5\u641c\u7d22\u538b\u7f29\u5305\u7684\u5bc6\u7801\u800c\u4e0d\u8fdb\u884c\u89e3\u538b\uff0c\u7ed3\u679c\u663e\u793a\u5728\u201c\u5386\u53f2\u8bb0\u5f55\u201d\u9875</p></body></html>", None))
+        self.checkBox_mode_test.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u4ec5\u641c\u7d22\u6587\u4ef6\u7684\u5bc6\u7801\uff0c\u7ed3\u679c\u663e\u793a\u5728\u5386\u53f2\u8bb0\u5f55\u4e2d</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_mode_test.setText(QCoreApplication.translate("MainWindow", u"\u6d4b\u8bd5\u6a21\u5f0f", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_delete_original_file.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u89e3\u538b\u5b8c\u6210\u540e\u5220\u9664\u539f\u6587\u4ef6\uff08\u5230\u56de\u6536\u7ad9\uff09</p></body></html>", None))
+        self.checkBox_delete_original_file.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u89e3\u538b\u5b8c\u6210\u540e\uff0c\u5220\u9664\u6587\u4ef6\u81f3\u56de\u6536\u7ad9</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_delete_original_file.setText(QCoreApplication.translate("MainWindow", u"\u5220\u9664\u539f\u6587\u4ef6", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_handling_nested_folder.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u903b\u8f91\u7c7b\u4f3c\u4e8eBandzip</p></body></html>", None))
+        self.checkBox_handling_nested_folder.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u81ea\u52a8\u89e3\u9664\u5d4c\u5957\u6587\u4ef6\u5939\u7ed3\u6784</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.checkBox_handling_nested_folder.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u6587\u4ef6\u5939", None))
+        self.checkBox_handling_nested_folder.setText(QCoreApplication.translate("MainWindow", u"\u81ea\u52a8\u89e3\u5957\u5d4c\u5957\u6587\u4ef6\u5939", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_handling_nested_archive.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u903b\u8f91\u4e3a\uff1a\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u91cd\u65b0\u8fd0\u884c\u4e00\u6b21\u89e3\u538b</p><p><br/></p><p>\u5efa\u8bae\u4e0e\u201c<span style=\" font-weight:600;\">\u4ec5\u89e3\u538b\u538b\u7f29\u5305</span>\u201d\u9009\u9879\u540c\u65f6\u9009\u4e2d</p><p><br/></p><p>\u7528\u4e8e\u89e3\u538b\u3010<span style=\" font-weight:600;\">\u6e38\u620f\u3001\u590d\u6742\u7ed3\u6784\u6587\u4ef6</span>\u3011\u65f6\u4e0d\u5efa\u8bae\u4f7f\u7528</p></body></html>", None))
+        self.checkBox_handling_nested_archive.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u5c06\u89e3\u538b\u540e\u7684\u6587\u4ef6\u91cd\u65b0\u8fd0\u884c\u4e00\u6b21\u89e3\u538b</p><p>\u5efa\u8bae\u4e0e\u201c<span style=\" font-weight:600;\">\u4ec5\u89e3\u538b\u538b\u7f29\u5305</span>\u201d\u9009\u9879\u540c\u65f6\u9009\u4e2d</p><p>\u7528\u4e8e\u89e3\u538b\u3010<span style=\" font-weight:600;\">\u6e38\u620f\u7b49\u590d\u6742\u7ed3\u6784\u6587\u4ef6</span>\u3011\u65f6\u4e0d\u5efa\u8bae\u4f7f\u7528</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.checkBox_handling_nested_archive.setText(QCoreApplication.translate("MainWindow", u"\u5904\u7406\u5957\u5a03\u538b\u7f29\u5305**", None))
+        self.checkBox_handling_nested_archive.setText(QCoreApplication.translate("MainWindow", u"\u81ea\u52a8\u89e3\u538b\u5957\u5a03\u538b\u7f29\u5305", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_check_filetype.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u538b\u7f29\u5305\u7684\u8bc6\u522b\u65b9\u6cd5\uff1a\u4f7f\u7528filetype\u5e93+\u6307\u5b9a\u6587\u4ef6\u540d\u540e\u7f00\uff08EXE\u4e0d\u4f1a\u88ab\u8ba4\u5b9a\u4e3a\u538b\u7f29\u5305\uff09</p></body></html>", None))
+        self.checkBox_check_filetype.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u8bc6\u522b\u538b\u7f29\u6587\u4ef6\uff08EXE\u81ea\u89e3\u538b\u683c\u5f0f\u4e0d\u4f1a\u88ab\u8ba4\u5b9a\u4e3a\u538b\u7f29\u5305\uff09</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_check_filetype.setText(QCoreApplication.translate("MainWindow", u"\u4ec5\u89e3\u538b\u538b\u7f29\u5305", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"\u8df3\u8fc7\u89e3\u538b\u7684\u540e\u7f00\u540d\uff1a\uff08\u4ee5,\u6216\u7a7a\u683c\u5206\u9694\uff0c\u5ffd\u7565\u5927\u5c0f\u5199\uff09", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"\u8df3\u8fc7\u89e3\u538b\u7684\u540e\u7f00\u540d:\uff08\u4ee5\u7a7a\u683c\u6216\u9017\u53f7\u5206\u9694\uff09", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u89e3\u538b\u5230\u6307\u5b9a\u6587\u4ef6\u5939", None))
         self.button_ask_folder.setText(QCoreApplication.translate("MainWindow", u"..", None))
     # retranslateUi

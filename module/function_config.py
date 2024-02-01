@@ -12,7 +12,7 @@ class Config:
         self.mode = 'extract'  # 模式，解压或测试
         self.handling_nested_folder = True  # 是否处理嵌套文件夹
         self.handling_nested_archive = False  # 是否处理嵌套压缩文件
-        self.delete_original_file = True  # 是否删除解压的原文件
+        self.delete_original_file = False  # 是否删除解压的原文件
         self.check_filetype = True  # 是否检查文件类型（即是否仅处理压缩包）
         self.exclude_rules = []  # 解压时排除文件的后缀列表（在配置文件中以|为间隔转换为字符串存储）
         self.output_folder = ''  # 指定解压到某文件夹的路径

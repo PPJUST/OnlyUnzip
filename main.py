@@ -82,6 +82,7 @@ class Main(QMainWindow):
         self.ui.checkBox_check_filetype.stateChanged.connect(lambda: self.update_config('check_filetype'))
         self.ui.lineEdit_exclude_rules.textChanged.connect(lambda: self.update_config('exclude_rules'))
         self.ui.lineEdit_output_folder.textChanged.connect(lambda: self.update_config('output_folder'))
+        self.ui.checkBox_handling_nested_archive.stateChanged.connect(self.set_nested_checkbox)
 
     def load_config(self):
         """读取配置文件，更新选项"""
@@ -197,7 +198,7 @@ class Main(QMainWindow):
             mode = 'extract' if self.ui.checkBox_mode_extract.isChecked() else 'test'
             Config.update_config_mode(mode)
         elif setting_item == 'nested_folder':
-            handling_nested_folder = self.ui.lineEdit_output_folder.isChecked()
+            handling_nested_folder = self.ui.checkBox_handling_nested_folder.isChecked()
             Config.update_config_handling_nested_folder(handling_nested_folder)
         elif setting_item == 'nested_archive':
             handling_nested_archive = self.ui.checkBox_handling_nested_archive.isChecked()
@@ -349,6 +350,10 @@ class Main(QMainWindow):
             function_password.update_password(passwords)
             self.ui.text_password.clear()
 
+    def set_nested_checkbox(self):
+        """联动checkbox选项"""
+        if self.ui.checkBox_handling_nested_archive.isChecked():
+            self.ui.checkBox_check_filetype.setChecked(True)
 
 def main():
     app = QApplication()

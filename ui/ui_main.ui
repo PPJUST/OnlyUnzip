@@ -477,15 +477,15 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>135</width>
-             <height>326</height>
+             <width>162</width>
+             <height>311</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="QCheckBox" name="checkBox_mode_extract">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压压缩包到当前文件所在目录&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压文件&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>解压模式</string>
@@ -498,7 +498,7 @@
             <item>
              <widget class="QCheckBox" name="checkBox_mode_test">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅搜索压缩包的密码而不进行解压，结果显示在“历史记录”页&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅搜索文件的密码，结果显示在历史记录中&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>测试模式</string>
@@ -518,7 +518,7 @@
             <item>
              <widget class="QCheckBox" name="checkBox_delete_original_file">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压完成后删除原文件（到回收站）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压完成后，删除文件至回收站&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>删除原文件</string>
@@ -535,10 +535,10 @@
             <item>
              <widget class="QCheckBox" name="checkBox_handling_nested_folder">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;逻辑类似于Bandzip&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;自动解除嵌套文件夹结构&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>处理套娃文件夹</string>
+               <string>自动解套嵌套文件夹</string>
               </property>
               <property name="checked">
                <bool>false</bool>
@@ -551,17 +551,17 @@
                <bool>true</bool>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;逻辑为：将解压后的文件重新运行一次解压&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;建议与“&lt;span style=&quot; font-weight:600;&quot;&gt;仅解压压缩包&lt;/span&gt;”选项同时选中&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;用于解压【&lt;span style=&quot; font-weight:600;&quot;&gt;游戏、复杂结构文件&lt;/span&gt;】时不建议使用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;将解压后的文件重新运行一次解压&lt;/p&gt;&lt;p&gt;建议与“&lt;span style=&quot; font-weight:600;&quot;&gt;仅解压压缩包&lt;/span&gt;”选项同时选中&lt;/p&gt;&lt;p&gt;用于解压【&lt;span style=&quot; font-weight:600;&quot;&gt;游戏等复杂结构文件&lt;/span&gt;】时不建议使用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>处理套娃压缩包**</string>
+               <string>自动解压套娃压缩包</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="checkBox_check_filetype">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;压缩包的识别方法：使用filetype库+指定文件名后缀（EXE不会被认定为压缩包）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;识别压缩文件（EXE自解压格式不会被认定为压缩包）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>仅解压压缩包</string>
@@ -581,7 +581,7 @@
             <item>
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>跳过解压的后缀名：（以,或空格分隔，忽略大小写）</string>
+               <string>跳过解压的后缀名:（以空格或逗号分隔）</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>
