@@ -33,6 +33,7 @@ class HistoryListWidget(QListWidget):
         if type(state_class) is State7zResult.Success:
             info_password = state_class.password
             item_text += '■' + info_password
+            item.setText(item_text)
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setData(Qt.UserRole, info_password)
 

@@ -20,7 +20,8 @@ class Thread7z(QThread):
     def __init__(self):
         super().__init__()
         self.file_dict = {}  # 需要处理的文件字典，{文件路径:(文件路径,...)..}
-        self.stop_thread = False
+        self.stop_thread = False  # 是否终止任务
+        self.extract_result_paths = []  # 解压后移动文件/文件夹的最终路径，用于再次解压
 
     def reset_file_dict(self, file_dict: dict):
         """重置参数"""
@@ -30,6 +31,7 @@ class Thread7z(QThread):
     def run(self):
         function_normal.print_function_info()
         self.stop_thread = False
+        self.extract_result_paths = []
         # 读取参数
         mode = Config().mode
         passwords = [_PASSWORD_NONE] + function_password.read_passwords()  # 插入一个假密码，用于判断无密码压缩文件
@@ -192,7 +194,7 @@ class Thread7z(QThread):
             if handling_nested_folder:
                 # 移动内部首个多重文件夹/唯一文件
                 move_path = function_file.get_first_multi_folder(extract_folder)
-                function_file.move_file(move_path, top_folder)
+                final_path = function_file.move_file(move_path, top_folder)
                 # 删除多余文件夹（temp文件夹不在此清理）
                 function_file.delete_empty_folder(extract_folder)
             else:  # 类似于bandizip自动解压的文件夹逻辑
@@ -200,11 +202,13 @@ class Thread7z(QThread):
                 if len(listdir) == 1:
                     # 移动下级路径
                     move_path = os.path.join(extract_folder, listdir[0])
-                    function_file.move_file(move_path, top_folder)
+                    final_path = function_file.move_file(move_path, top_folder)
                     # 删除多余文件夹（temp文件夹不在此清理）
                     function_file.delete_empty_folder(extract_folder)
                 else:
-                    function_file.move_file(extract_folder, top_folder)
+                    final_path = function_file.move_file(extract_folder, top_folder)
+            # 收集移动后的最终路径
+            self._collect_extract_result_path(final_path)
             return False
         elif type(result) is State7zResult.WrongPassword:
             return True
@@ -222,7 +226,6 @@ class Thread7z(QThread):
                    '-bsp1', '-bse1', '-bso1',
                    '-o' + output_folder,
                    '-p' + password]
-        print(command)
         exclude_rules_str = ['-xr!*.' + i for i in exclude_rules if i]
         command += exclude_rules_str
         process = subprocess.Popen(command,
@@ -301,3 +304,7 @@ class Thread7z(QThread):
     def stop(self):
         """停止"""
         self.stop_thread = True
+
+    def _collect_extract_result_path(self, path):
+        """收集成功解压后移动文件/文件夹的最终路径，用于再次解压"""
+        self.extract_result_paths.append(path)

@@ -65,7 +65,7 @@ class Main(QMainWindow):
         # 密码
         self.ui.button_update_password.clicked.connect(self.update_password)
         self.ui.button_read_clipboard.clicked.connect(self.read_clipboard)
-        self.ui.button_export_password.clicked.connect(function_password.export_password)
+        self.ui.button_export_password.clicked.connect(function_password.export_passwords)
         self.ui.button_export_password.clicked.connect(lambda: self.ui.button_open_password.setEnabled(True))
         self.ui.button_open_password.clicked.connect(lambda: os.startfile(_PASSWORD_EXPORT))
         self.ui.text_password.textChanged.connect(self.drop_password_pickle)
@@ -222,10 +222,11 @@ class Main(QMainWindow):
     def update_password(self):
         """更新密码"""
         function_normal.print_function_info()
+        function_password.backup_passwords()
         add_pw = [n for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
         add_pw_strip = [n.strip() for n in add_pw]
         pw_list = list(set(add_pw + add_pw_strip))  # 考虑到密码两端的空格，需要添加两种形式的密码
-        function_password.update_password(pw_list)
+        function_password.update_passwords(pw_list)
         self.ui.text_password.clear()
 
     def read_clipboard(self):
@@ -327,12 +328,17 @@ class Main(QMainWindow):
             icon = state_class.icon
             self.dropped_label.reset_icon(icon)
             # 切页及修改结果文本
-            if type(state_class) in [StateSchedule.Finish, StateSchedule.Stop]:  # 结束后切回主页
+            if type(state_class) in [StateSchedule.Finish, StateSchedule.Stop]:
                 self.ui.stackedWidget_schedule.setCurrentIndex(0)
                 result_text = self.count_7z_result.get_result_text()
                 self.ui.label_schedule_state.setText(result_text)
                 self.ui.label_current_file.setText('')
                 self.ui.button_stop.setEnabled(False)
+            # 选中解套压缩包，则在结束后再次解压
+            if type(state_class) is StateSchedule.Finish and self.ui.checkBox_handling_nested_archive.isChecked():
+                extract_result_paths = self.thread_7z.extract_result_paths
+                self.dropped_files(extract_result_paths)
+
         # State7zResult类，7z调用结果
         elif type(state_class) in State7zResult.__dict__.values():
             self.count_7z_result.collect_result(state_class)  # 收集结果
@@ -343,17 +349,19 @@ class Main(QMainWindow):
 
     def drop_password_pickle(self):
         """向密码框拖入了密码数据库"""
+        function_password.backup_passwords()
         text = self.ui.text_password.toPlainText()
         if text.startswith('file:///') and text.endswith('.pickle'):
             pickle_file = text[8:]
             passwords = function_password.read_passwords(pickle_file)
-            function_password.update_password(passwords)
+            function_password.update_passwords(passwords)
             self.ui.text_password.clear()
 
     def set_nested_checkbox(self):
         """联动checkbox选项"""
         if self.ui.checkBox_handling_nested_archive.isChecked():
             self.ui.checkBox_check_filetype.setChecked(True)
+
 
 def main():
     app = QApplication()

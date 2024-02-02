@@ -59,8 +59,8 @@ def is_temp_folder_exists(check_path: Union[list, str]) -> bool:
 
     return False
 
-def save_history(text:str):
+
+def save_history(text: str):
     """保存历史记录"""
     with open(_HISTORY_FILE, 'a', encoding='utf-8') as f:
-        f.write(text+'\n')
-
+        f.write(text + '\n')

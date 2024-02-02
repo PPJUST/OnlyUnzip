@@ -30,27 +30,24 @@ class Count7zResult:
             if type(result_class) is State7zResult.WrongPassword:
                 wrong_password += 1
             elif type(result_class) is State7zResult.MissingVolume:
-                missing_volume +=1
+                missing_volume += 1
             elif type(result_class) is State7zResult.NotArchiveOrDamaged:
-                not_archive_or_damaged +=1
+                not_archive_or_damaged += 1
             elif type(result_class) is State7zResult.UnknownError:
-                unknown_error +=1
+                unknown_error += 1
             elif type(result_class) is State7zResult.FileOccupied:
-                file_occupied +=1
+                file_occupied += 1
             elif type(result_class) is State7zResult.NotEnoughSpace:
-                not_enough_space +=1
+                not_enough_space += 1
             elif type(result_class) is State7zResult.Success:
-                success +=1
+                success += 1
 
         total_count_success = success
         total_count_wrong_password = wrong_password
-        total_count_error = missing_volume+not_archive_or_damaged+unknown_error+file_occupied+not_enough_space
+        total_count_error = missing_volume + not_archive_or_damaged + unknown_error + file_occupied + not_enough_space
 
         join_text = f'成功:{total_count_success} 失败:{total_count_wrong_password} 错误:{total_count_error}'
 
         self.reset_count()  # 重置
 
         return join_text
-
-
-
