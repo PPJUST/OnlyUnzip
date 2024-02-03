@@ -284,6 +284,7 @@ class Main(QMainWindow):
         # 将dict传递给子线程
         if final_file_dict:
             self.ui.button_stop.setEnabled(True)
+            self.dropped_label.setEnabled(False)
             self.thread_7z.reset_file_dict(final_file_dict)
             self.thread_7z.start()
 
@@ -334,10 +335,12 @@ class Main(QMainWindow):
                 self.ui.label_schedule_state.setText(result_text)
                 self.ui.label_current_file.setText('')
                 self.ui.button_stop.setEnabled(False)
-            # 选中解套压缩包，则在结束后再次解压
-            if type(state_class) is StateSchedule.Finish and self.ui.checkBox_handling_nested_archive.isChecked():
-                extract_result_paths = self.thread_7z.extract_result_paths
-                self.dropped_files(extract_result_paths)
+                self.dropped_label.setEnabled(True)
+            # 选中解套压缩包，且有解压结果，则在结束后再次解压
+            if (type(state_class) is StateSchedule.Finish and
+                    self.ui.checkBox_handling_nested_archive.isChecked() and
+                    self.thread_7z.extract_result_paths):
+                self.dropped_files(self.thread_7z.extract_result_paths)
 
         # State7zResult类，7z调用结果
         elif type(state_class) in State7zResult.__dict__.values():
