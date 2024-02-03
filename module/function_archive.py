@@ -160,8 +160,7 @@ def subprocess_run_7z(command_type, file, password):
     command = [_PATH_7ZIP,
                command_type,
                file,
-               "-p" + password,
-               '-bse2']
+               "-p" + password]
     process = subprocess.run(command,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
@@ -184,7 +183,7 @@ def subprocess_run_7z(command_type, file, password):
     elif process.returncode == 1:
         result = State7zResult.FileOccupied(file)
     elif process.returncode == 2:
-        stderr = str(process.stderr)
+        stderr = str(process.stderr) + str(process.stdout)  # 错误信息在stdout流中
         if not stderr:  # 处理自解压文件时，返回的stderr流可能为空
             result = State7zResult.WrongPassword(file)
         elif 'Wrong password' in stderr:
