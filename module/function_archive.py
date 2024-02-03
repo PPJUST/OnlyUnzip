@@ -58,6 +58,7 @@ def find_volume_archives(files_list: list) -> dict:
                 if first_volume_archive in volume_archive_dict:
                     volume_archive_dict[first_volume_archive].add(filepath)
 
+    print(f'volume_archive_dict {volume_archive_dict}')
     return volume_archive_dict
 
 

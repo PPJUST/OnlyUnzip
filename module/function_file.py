@@ -164,11 +164,9 @@ def get_filetitle(path: str) -> str:
                  pattern_zip_type2]
         filename = os.path.split(path)[1]
         for rule in rules:
-            try:
+            if re.match(rule, filename):
                 filetitle = re.match(rule, filename).group(1)
                 break
-            except:
-                continue
 
     # 处理文件两端多余的空格和.
     while filetitle[0] in [' ', '.'] or filetitle[-1] in [' ', '.']:

@@ -48,6 +48,7 @@ class Thread7z(QThread):
         pre_temp_folder = None  # 上一个处理的文件生成的temp文件夹目录，用于删除
 
         for index_file, file in enumerate(self.file_dict.keys(), start=1):
+            files_list = self.file_dict[file]  # 对应的分卷文件列表
             if self.stop_thread:
                 break
             self.signal_schedule.emit(StateUpdateUI.CurrentFile(file))
@@ -66,7 +67,7 @@ class Thread7z(QThread):
                     if not is_continue:
                         right_password = password
                         if mode == 'extract':
-                            self._extract_file(file, right_password, None, exclude_rules, output_folder,
+                            self._extract_file(file, right_password, files_list, exclude_rules, output_folder,
                                                handling_nested_folder, delete_original_file)
                         break
                 if right_password == _PASSWORD_NONE:  # 没有找到正确密码
@@ -86,7 +87,6 @@ class Thread7z(QThread):
                         if not is_continue:
                             break
                 elif mode == 'extract':
-                    files_list = self.file_dict[file]
                     for index_pw, password in enumerate(passwords):
                         if self.stop_thread:
                             break

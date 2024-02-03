@@ -33,3 +33,4 @@ _COLOR_WARNING = (255, 215, 0)
 _COLOR_SUCCESS = (0, 0, 0)
 _PATH_7ZIP = '7-Zip/7z.exe'
 _PASSWORD_NONE = 'NonePassword'  # 用于测试是否存在密码的临时密码
+_HISTORY_FILE_MAX_SIZE = 10240  # 历史记录文件大小的最大值（单位：字节）

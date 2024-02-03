@@ -211,7 +211,7 @@ class Main(QMainWindow):
             Config.update_config_check_filetype(check_filetype)
         elif setting_item == 'exclude_rules':
             exclude_text = self.ui.lineEdit_exclude_rules.text()
-            support_delimiters = ",|，| |;|；"
+            support_delimiters = ',|，| |;|；'
             exclude_list = set([i for i in re.split(support_delimiters, exclude_text) if i])
             exclude_rule = ' '.join(exclude_list)
             Config.update_exclude_rules(exclude_rule)

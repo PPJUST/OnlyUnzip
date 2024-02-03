@@ -2,10 +2,11 @@
 
 import inspect
 import os
+import shutil
 import time
 from typing import Union
 
-from constant import _BACKUP_FOLDER, _Unzip_Temp_Folder, _PASSWORD_FILE, _HISTORY_FILE
+from constant import _BACKUP_FOLDER, _Unzip_Temp_Folder, _PASSWORD_FILE, _HISTORY_FILE, _HISTORY_FILE_MAX_SIZE
 from module import function_password
 from module.function_config import Config
 
@@ -62,5 +63,15 @@ def is_temp_folder_exists(check_path: Union[list, str]) -> bool:
 
 def save_history(text: str):
     """保存历史记录"""
+    if os.path.getsize(_HISTORY_FILE) > _HISTORY_FILE_MAX_SIZE:
+        backup_history()
     with open(_HISTORY_FILE, 'a', encoding='utf-8') as f:
         f.write(text + '\n')
+
+
+def backup_history():
+    """备份历史记录"""
+    time_text = time.strftime("%Y%m%d %H_%M_%S", time.localtime())
+    copy_filename = f'{time_text}.'.join(_HISTORY_FILE.split('.'))
+    copy_path = os.path.join(_BACKUP_FOLDER, copy_filename)
+    shutil.move(_HISTORY_FILE, copy_path)
