@@ -99,8 +99,9 @@ def move_file(path, target_folder) -> str:
     # 为了防止文件名重复而报错，先改名再移动
     parent_folder, _ = os.path.split(path)
     nodup_name = create_nodup_filename(path, target_folder)
-    new_path_renamed = os.path.join(parent_folder, nodup_name)
-    os.rename(path, new_path_renamed)
+    new_path_renamed = os.path.normpath(os.path.join(parent_folder, nodup_name))
+    if new_path_renamed != path:
+        os.rename(path, new_path_renamed)
     shutil.move(new_path_renamed, target_folder)
 
     new_path_final = os.path.normpath(os.path.join(target_folder, nodup_name))
@@ -180,7 +181,7 @@ def delete_empty_folder(folder: str) -> bool:
     """检查文件夹是否为空，是则删除"""
     function_normal.print_function_info()
     if os.path.exists(folder) and get_folder_size(folder) == 0:
-        send2trash.send2trash(folder)
+        shutil.rmtree(folder)
         return True
     else:
         return False
