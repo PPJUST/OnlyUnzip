@@ -16,8 +16,9 @@ class Count7zResult:
         file = result_class.file
         self.files_result[file] = result_class
 
-    def get_result_text(self):
-        """获取结果文本"""
+    def get_result_text(self, is_reset: bool = True):
+        """获取结果文本
+        :param is_reset: bool值，提取文本后是否重置原始数据"""
         wrong_password = 0
         missing_volume = 0
         not_archive_or_damaged = 0
@@ -48,6 +49,7 @@ class Count7zResult:
 
         join_text = f'成功:{total_count_success} 失败:{total_count_wrong_password} 错误:{total_count_error}'
 
-        self.reset_count()  # 重置
+        if is_reset:
+            self.reset_count()  # 重置
 
         return join_text

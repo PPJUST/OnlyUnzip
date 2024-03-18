@@ -6,7 +6,7 @@ import shutil
 import time
 from typing import Union
 
-from constant import _BACKUP_FOLDER, _Unzip_Temp_Folder, _PASSWORD_FILE, _HISTORY_FILE, _HISTORY_FILE_MAX_SIZE
+from constant import _BACKUP_FOLDER, _UNZIP_TEMP_FOLDER, _PASSWORD_FILE, _HISTORY_FILE, _HISTORY_FILE_MAX_SIZE
 from module import function_password
 from module.function_config import Config
 
@@ -48,10 +48,10 @@ def is_temp_folder_exists(check_path: Union[list, str]) -> bool:
 
     for path in check_path:
         if os.path.isfile(path):
-            dirpath = os.path.join(os.path.split(path)[0], _Unzip_Temp_Folder)
+            dirpath = os.path.join(os.path.split(path)[0], _UNZIP_TEMP_FOLDER)
             temp_folders.add(dirpath)
         else:
-            dirpath = os.path.join(path, _Unzip_Temp_Folder)
+            dirpath = os.path.join(path, _UNZIP_TEMP_FOLDER)
             temp_folders.add(dirpath)
 
     for folder in temp_folders:

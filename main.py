@@ -115,7 +115,6 @@ class Main(QMainWindow):
         """切换模式后启用/禁用相关设置项"""
         function_normal.print_function_info()
         self.ui.checkBox_delete_original_file.setEnabled(mode)
-        self.ui.checkBox_check_filetype.setEnabled(mode)
         self.ui.checkBox_handling_nested_folder.setEnabled(mode)
         self.ui.checkBox_handling_nested_archive.setEnabled(mode)
         self.ui.lineEdit_output_folder.setEnabled(mode)
@@ -308,6 +307,15 @@ class Main(QMainWindow):
             self.ui.label_current_file.setText(state_class.current_file)
             self.ui.label_schedule_state.setText(state_class.schedule_state)
             self.ui.button_stop.setEnabled(False)
+            if type(state_class) is StateError.NoArchive:  # 因为没有可解压文件而返回错误码
+                self.ui.stackedWidget_schedule.setCurrentIndex(0)
+                result_text = self.count_7z_result.get_result_text()
+                self.ui.label_schedule_state.setText(result_text)
+                self.ui.label_current_file.setText('')
+                self.ui.button_stop.setEnabled(False)
+                self.dropped_label.setEnabled(True)
+                self.ui.page_setting.setEnabled(True)
+
         # StateUpdateUI类，更新进度ui
         elif type(state_class) in StateUpdateUI.__dict__.values():
             text = state_class.text
@@ -328,17 +336,21 @@ class Main(QMainWindow):
             # 修改图标
             icon = state_class.icon
             self.dropped_label.reset_icon(icon)
+            # 锁定设置页（防止修改选项后出错）
+            self.ui.page_setting.setEnabled(False)
             # 切页及修改结果文本
+            is_handling_nested_archive = self.ui.checkBox_handling_nested_archive.isChecked()
             if type(state_class) in [StateSchedule.Finish, StateSchedule.Stop]:
                 self.ui.stackedWidget_schedule.setCurrentIndex(0)
-                result_text = self.count_7z_result.get_result_text()
+                result_text = self.count_7z_result.get_result_text(is_reset=not is_handling_nested_archive)
                 self.ui.label_schedule_state.setText(result_text)
                 self.ui.label_current_file.setText('')
                 self.ui.button_stop.setEnabled(False)
                 self.dropped_label.setEnabled(True)
+                self.ui.page_setting.setEnabled(True)
             # 选中解套压缩包，且有解压结果，则在结束后再次解压
             if (type(state_class) is StateSchedule.Finish and
-                    self.ui.checkBox_handling_nested_archive.isChecked() and
+                    is_handling_nested_archive and
                     self.thread_7z.extract_result_paths):
                 self.dropped_files(self.thread_7z.extract_result_paths)
 

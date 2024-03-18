@@ -5,7 +5,7 @@ import subprocess
 import send2trash  # win7不能使用winshell，用send2trash替代
 from PySide6.QtCore import Signal, QThread
 
-from constant import _PATH_7ZIP, _PASSWORD_NONE, _Unzip_Temp_Folder
+from constant import _PATH_7ZIP, _PASSWORD_NONE, _UNZIP_TEMP_FOLDER
 from module import function_file, function_normal
 from module import function_password, function_archive
 from module.class_state import State7zResult, StateUpdateUI, StateSchedule
@@ -99,12 +99,12 @@ class Thread7z(QThread):
             # 处理temp文件夹
             if mode == 'extract':
                 if output_folder and index_file == len(self.file_dict):
-                    current_temp_folder = os.path.normpath(os.path.join(output_folder, _Unzip_Temp_Folder))
+                    current_temp_folder = os.path.normpath(os.path.join(output_folder, _UNZIP_TEMP_FOLDER))
                     function_file.delete_empty_folder(current_temp_folder)
                 elif not output_folder:
                     if not pre_temp_folder:
-                        pre_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _Unzip_Temp_Folder))
-                    current_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _Unzip_Temp_Folder))
+                        pre_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _UNZIP_TEMP_FOLDER))
+                    current_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _UNZIP_TEMP_FOLDER))
                     if current_temp_folder != pre_temp_folder:
                         function_file.delete_empty_folder(pre_temp_folder)
                         pre_temp_folder = current_temp_folder
@@ -112,10 +112,10 @@ class Thread7z(QThread):
                         function_file.delete_empty_folder(current_temp_folder)
             if self.stop_thread:
                 if output_folder:
-                    current_temp_folder = os.path.normpath(os.path.join(output_folder, _Unzip_Temp_Folder))
+                    current_temp_folder = os.path.normpath(os.path.join(output_folder, _UNZIP_TEMP_FOLDER))
                     function_file.delete_empty_folder(current_temp_folder)
                 elif not output_folder:
-                    current_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _Unzip_Temp_Folder))
+                    current_temp_folder = os.path.normpath(os.path.join(os.path.split(file)[0], _UNZIP_TEMP_FOLDER))
                     function_file.delete_empty_folder(current_temp_folder)
         # 发送结束信号
         if self.stop_thread:
@@ -173,10 +173,10 @@ class Thread7z(QThread):
         # 生成解压目标路径
         filetitle = function_file.get_filetitle(file)
         if output_folder:
-            temp_folder = os.path.normpath(os.path.join(output_folder, _Unzip_Temp_Folder))
+            temp_folder = os.path.normpath(os.path.join(output_folder, _UNZIP_TEMP_FOLDER))
         else:  # 如果未指定输出文件夹，则输出路径为文件同级目录下的临时文件夹的文件名文件夹
             parent_folder = os.path.split(file)[0]
-            temp_folder = os.path.normpath(os.path.join(parent_folder, _Unzip_Temp_Folder))
+            temp_folder = os.path.normpath(os.path.join(parent_folder, _UNZIP_TEMP_FOLDER))
         extract_folder = os.path.normpath(os.path.join(temp_folder, filetitle))
 
         # 调用7z
