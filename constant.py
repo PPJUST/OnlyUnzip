@@ -1,8 +1,9 @@
 # 存放常量
 import os
+import sys
 
 # 程序所在路径
-_PROGRAM_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/'
+_PROGRAM_FOLDER = os.path.dirname(sys.executable) + '/'
 
 # 图标
 _ICON_FOLDER = _PROGRAM_FOLDER + 'icon/'
