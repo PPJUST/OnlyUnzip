@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 
 from PySide6.QtGui import QColor, QIcon, QPalette
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
@@ -19,6 +20,18 @@ from ui.drop_label import DropLabel
 from ui.history_listWidget import HistoryListWidget
 from ui.ui_main import Ui_MainWindow
 
+try:  # 提取拖入路径
+    _drop_filepaths = []
+    _drop_paths = sys.argv[1:]
+    _drop_parent = os.getcwd()
+    for _i in _drop_paths:
+        if os.path.isabs(_i):
+            _drop_filepaths.append(_i)
+        else:
+            _drop_filepaths.append(os.path.normpath(os.path.join(_drop_parent, _i)))
+except IndexError:
+    _drop_filepaths = None
+
 
 class Main(QMainWindow):
     def __init__(self):
@@ -34,6 +47,7 @@ class Main(QMainWindow):
         self.ui.verticalLayout_history.addWidget(self.history_listWidget)
 
         # 初始化
+        self.auto_quit = False  # 完成后是否自动退出，用于拖入文件启动/命令行启动
         function_normal.init_settings()  # 检查初始文件
         self.load_config()
         self.check_output_folder()
@@ -83,6 +97,11 @@ class Main(QMainWindow):
         self.ui.lineEdit_exclude_rules.textChanged.connect(lambda: self.update_config('exclude_rules'))
         self.ui.lineEdit_output_folder.textChanged.connect(lambda: self.update_config('output_folder'))
         self.ui.checkBox_handling_nested_archive.stateChanged.connect(self.set_nested_checkbox)
+
+        # 响应拖入文件操作
+        if _drop_filepaths:
+            self.auto_quit = True
+            self.dropped_files(_drop_filepaths)
 
     def load_config(self):
         """读取配置文件，更新选项"""
@@ -316,6 +335,9 @@ class Main(QMainWindow):
                 self.dropped_label.setEnabled(True)
                 self.ui.page_setting.setEnabled(True)
 
+                if self.auto_quit:  # 拖入文件启动/命令行启动时，在无需解压时自动退出
+                    self.close()
+
         # StateUpdateUI类，更新进度ui
         elif type(state_class) in StateUpdateUI.__dict__.values():
             text = state_class.text
@@ -353,6 +375,11 @@ class Main(QMainWindow):
                     is_handling_nested_archive and
                     self.thread_7z.extract_result_paths):
                 self.dropped_files(self.thread_7z.extract_result_paths)
+
+            else:
+                # 拖入文件启动/命令行启动时，在非解套模式且完成解压时自动退出
+                if type(state_class) is StateSchedule.Finish and self.auto_quit:
+                    self.close()
 
         # State7zResult类，7z调用结果
         elif type(state_class) in State7zResult.__dict__.values():
