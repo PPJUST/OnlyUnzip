@@ -240,7 +240,6 @@ class Main(QMainWindow):
     def update_password(self):
         """更新密码"""
         function_normal.print_function_info()
-        function_password.backup_passwords()
         add_pw = [n for n in self.ui.text_password.toPlainText().split('\n') if n.strip()]
         add_pw_strip = [n.strip() for n in add_pw]
         pw_list = list(set(add_pw + add_pw_strip))  # 考虑到密码两端的空格，需要添加两种形式的密码
@@ -391,7 +390,6 @@ class Main(QMainWindow):
 
     def drop_password_pickle(self):
         """向密码框拖入了密码数据库"""
-        function_password.backup_passwords()
         text = self.ui.text_password.toPlainText()
         if text.startswith('file:///') and text.endswith('.pickle'):
             pickle_file = text[8:]

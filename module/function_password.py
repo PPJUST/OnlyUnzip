@@ -5,7 +5,7 @@ import pickle
 import shutil
 import time
 
-from constant import _PASSWORD_FILE, _PASSWORD_EXPORT, _BACKUP_FOLDER
+from constant import _PASSWORD_FILE, _PASSWORD_EXPORT, _BACKUP_FOLDER, _PROGRAM_FOLDER
 from module import function_normal
 
 
@@ -41,6 +41,7 @@ def export_passwords():
 def update_passwords(passwords: list):
     """更新密码"""
     function_normal.print_function_info()
+    backup_passwords()
     # 密码数据库格式说明：存储一个dict，键为密码str，值为对应的使用次数int
     # 读取
     with open(_PASSWORD_FILE, 'rb') as f:
@@ -74,6 +75,7 @@ def backup_passwords():
     """备份密码数据库"""
     function_normal.print_function_info()
     time_text = time.strftime("%Y%m%d %H_%M_%S", time.localtime())
-    copy_filename = f'{time_text}.'.join(_PASSWORD_FILE.split('.'))
+    temp_filename = _PASSWORD_FILE.replace(_PROGRAM_FOLDER,'')
+    copy_filename = temp_filename.replace('.pickle', f'{time_text}.pickle')
     copy_path = os.path.join(_BACKUP_FOLDER, copy_filename)
     shutil.copyfile(_PASSWORD_FILE, copy_path)

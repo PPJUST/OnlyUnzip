@@ -6,7 +6,8 @@ import shutil
 import time
 from typing import Union
 
-from constant import _BACKUP_FOLDER, _UNZIP_TEMP_FOLDER, _PASSWORD_FILE, _HISTORY_FILE, _HISTORY_FILE_MAX_SIZE
+from constant import _BACKUP_FOLDER, _UNZIP_TEMP_FOLDER, _PASSWORD_FILE, _HISTORY_FILE, _HISTORY_FILE_MAX_SIZE, \
+    _PROGRAM_FOLDER
 from module import function_password
 from module.function_config import Config
 
@@ -72,6 +73,7 @@ def save_history(text: str):
 def backup_history():
     """备份历史记录"""
     time_text = time.strftime("%Y%m%d %H_%M_%S", time.localtime())
-    copy_filename = f'{time_text}.'.join(_HISTORY_FILE.split('.'))
-    copy_path = os.path.join(_BACKUP_FOLDER, copy_filename)
+    temp_filename = _HISTORY_FILE.replace(_PROGRAM_FOLDER, '')
+    copy_filename = temp_filename.replace('.txt', f'{time_text}.txt')
+    copy_path = os.path.normpath(os.path.join(_BACKUP_FOLDER, copy_filename))
     shutil.move(_HISTORY_FILE, copy_path)
