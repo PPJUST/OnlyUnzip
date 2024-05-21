@@ -1,6 +1,8 @@
+import ctypes
 import os
 import re
 import sys
+import tkinter.messagebox
 
 from PySide6.QtGui import QColor, QIcon, QPalette
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
@@ -418,5 +420,19 @@ def main():
     app.exec()
 
 
+def check_software_is_running():
+    """使用互斥体检查是否已经打开了一个实例"""
+    mutex_name = 'OnlyUnzip'
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, mutex_name)
+    if ctypes.windll.kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+        ctypes.windll.kernel32.CloseHandle(mutex)
+        return True
+    return False
+
+
 if __name__ == "__main__":
-    main()
+    if check_software_is_running():
+        tkinter.messagebox.showinfo('提示', '程序已经运行，请勿重复打开')
+        sys.exit(1)
+    else:
+        main()

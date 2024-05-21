@@ -184,6 +184,7 @@ def subprocess_run_7z(command_type, file, password):
         result = State7zResult.FileOccupied(file)
     elif process.returncode == 2:
         stderr = str(process.stderr) + str(process.stdout)  # 错误信息在stdout流中
+        print('【7zip测试信息：', stderr, '】')  # 测试用
         if not stderr:  # 处理自解压文件时，返回的stderr流可能为空
             result = State7zResult.WrongPassword(file)
         elif 'Wrong password' in stderr:

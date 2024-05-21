@@ -3,7 +3,8 @@ import os
 import sys
 
 # 程序所在路径
-_PROGRAM_FOLDER = os.path.dirname(sys.executable) + '/'
+_PROGRAM_FOLDER = ''  # 源码使用
+# _PROGRAM_FOLDER = os.path.dirname(sys.executable) + '/'  # 打包使用
 
 # 图标
 _ICON_FOLDER = _PROGRAM_FOLDER + 'icon/'

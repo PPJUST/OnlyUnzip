@@ -244,6 +244,7 @@ class Thread7z(QThread):
         while True:
             try:
                 output = process.stdout.readline()
+                print('【7zip解压信息：',output,'】')  # 测试用
             except UnicodeDecodeError:  # 编码错误 UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 32: illegal multibyte sequence
                 output = ''
             if output == '' and process.poll() is not None:  # 终止事件
