@@ -6,93 +6,135 @@ import os
 from constant import _CONFIG_FILE
 
 
-class Config:
-    def __init__(self):
-        # 设置初始参数
-        self.mode = 'extract'  # 模式，解压或测试
-        self.handling_nested_folder = True  # 是否处理嵌套文件夹
-        self.handling_nested_archive = False  # 是否处理嵌套压缩文件
-        self.delete_original_file = False  # 是否删除解压的原文件
-        self.check_filetype = True  # 是否检查文件类型（即是否仅处理压缩包）
-        self.exclude_rules = []  # 解压时排除文件的后缀列表（在配置文件中以|为间隔转换为字符串存储）
-        self.output_folder = ''  # 指定解压到某文件夹的路径
-
-        # 初始化
-        self._reset_config()
-
-    def _reset_config(self):
-        """从配置文件中读取并更新参数"""
-        if not os.path.exists(_CONFIG_FILE):
-            with open(_CONFIG_FILE, 'w', encoding='utf-8') as cw:
-                cw.write('[DEFAULT]')
-
+def create_default_config():
+    """创建默认配置文件"""
+    if not os.path.exists(_CONFIG_FILE):
+        with open(_CONFIG_FILE, 'w', encoding='utf-8') as _:
             config = configparser.ConfigParser()
             config.read(_CONFIG_FILE, encoding='utf-8')
-            config.set('DEFAULT', 'mode', self.mode)
-            config.set('DEFAULT', 'handling_nested_folder', str(self.handling_nested_folder))
-            config.set('DEFAULT', 'handling_nested_archive', str(self.handling_nested_archive))
-            config.set('DEFAULT', 'delete_original_file', str(self.delete_original_file))
-            config.set('DEFAULT', 'check_filetype', str(self.check_filetype))
-            config.set('DEFAULT', 'exclude_rules', ' '.join(self.exclude_rules))
-            config.set('DEFAULT', 'output_folder', self.output_folder)
+
+            config.add_section('OPTION')
+            config.set('OPTION', 'mode_extract', 'True')  # 解压模式
+            config.set('OPTION', 'mode_test', 'False')  # 测试模式
+            config.set('OPTION', 'smart_extract', 'True')  # 智能解压
+            config.set('OPTION', 'extract_to_folder', 'False')  # 解压至同名文件夹
+            config.set('OPTION', 'delete_file', 'False')  # 解压后删除源文件
+            config.set('OPTION', 'handle_multi_folder', 'True')  # 处理多层嵌套文件夹
+            config.set('OPTION', 'handle_multi_archive', 'True')  # 处理多层嵌套压缩包
+            config.set('OPTION', 'check_filetype', 'True')  # 检查文件类型（仅处理压缩包）
+            config.set('OPTION', 'output_folder', '')  # 解压至指定目录
+            config.set('OPTION', 'filter_suffix', '')  # 解压时排除的文件后缀
+
             config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
-        else:
-            config = configparser.ConfigParser()
-            config.read(_CONFIG_FILE, encoding='utf-8')
 
-            self.mode = config.get('DEFAULT', 'mode')
-            self.handling_nested_folder = eval(config.get('DEFAULT', 'handling_nested_folder'))
-            self.handling_nested_archive = eval(config.get('DEFAULT', 'handling_nested_archive'))
-            self.delete_original_file = eval(config.get('DEFAULT', 'delete_original_file'))
-            self.check_filetype = eval(config.get('DEFAULT', 'check_filetype'))
-            self.exclude_rules = config.get('DEFAULT', 'exclude_rules').split(' ')
-            self.output_folder = config.get('DEFAULT', 'output_folder')
 
-    @staticmethod
-    def update_config_mode(setting_item: str):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'mode', setting_item)
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+def _get_value_normal(section, key):
+    """获取指定section的key的value（原始格式）"""
+    config = configparser.ConfigParser()
+    config.read(_CONFIG_FILE, encoding='utf-8')
+    value = config.get(section, key)
+    return eval(value)
 
-    @staticmethod
-    def update_config_handling_nested_folder(setting_item: bool):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'handling_nested_folder', str(setting_item))
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
 
-    @staticmethod
-    def update_config_handling_nested_archive(setting_item: bool):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'handling_nested_archive', str(setting_item))
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+def _get_value_str(section, key):
+    """获取指定section的key的value（文本格式）"""
+    config = configparser.ConfigParser()
+    config.read(_CONFIG_FILE, encoding='utf-8')
+    value = config.get(section, key)
+    return value
+
+
+def _reset_value(section, key, value):
+    """设置指定section的key的value"""
+    config = configparser.ConfigParser()
+    config.read(_CONFIG_FILE, encoding='utf-8')
+    if isinstance(value, (list, set)):
+        value = ' '.join(value)
+    config.set(section, key, str(value))
+    config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+
+
+class GetSetting:
 
     @staticmethod
-    def update_config_delete_original_file(setting_item: bool):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'delete_original_file', str(setting_item))
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+    def mode_extract():
+        return _get_value_normal('OPTION', 'mode_extract')
 
     @staticmethod
-    def update_config_check_filetype(setting_item: bool):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'check_filetype', str(setting_item))
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+    def mode_test():
+        return _get_value_normal('OPTION', 'mode_test')
 
     @staticmethod
-    def update_exclude_rules(setting_item: str):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'exclude_rules', setting_item)
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+    def smart_extract():
+        return _get_value_normal('OPTION', 'smart_extract')
 
     @staticmethod
-    def update_config_output_folder(setting_item: str):
-        config = configparser.ConfigParser()
-        config.read(_CONFIG_FILE, encoding='utf-8')
-        config.set('DEFAULT', 'output_folder', setting_item)
-        config.write(open(_CONFIG_FILE, 'w', encoding='utf-8'))
+    def extract_to_folder():
+        return _get_value_normal('OPTION', 'extract_to_folder')
+
+    @staticmethod
+    def delete_file():
+        return _get_value_normal('OPTION', 'delete_file')
+
+    @staticmethod
+    def handle_multi_folder():
+        return _get_value_normal('OPTION', 'handle_multi_folder')
+
+    @staticmethod
+    def handle_multi_archive():
+        return _get_value_normal('OPTION', 'handle_multi_archive')
+
+    @staticmethod
+    def check_filetype():
+        return _get_value_normal('OPTION', 'check_filetype')
+
+    @staticmethod
+    def output_folder():
+        return _get_value_str('OPTION', 'output_folder')
+
+    @staticmethod
+    def filter_suffix():
+        return _get_value_str('OPTION', 'filter_suffix')
+
+
+class ResetSetting:
+
+    @staticmethod
+    def mode_extract(value):
+        _reset_value('OPTION', 'mode_extract', value)
+
+    @staticmethod
+    def mode_test(value):
+        _reset_value('OPTION', 'mode_test', value)
+
+    @staticmethod
+    def smart_extract(value):
+        _reset_value('OPTION', 'smart_extract', value)
+
+    @staticmethod
+    def extract_to_folder(value):
+        _reset_value('OPTION', 'extract_to_folder', value)
+
+    @staticmethod
+    def delete_file(value):
+        _reset_value('OPTION', 'delete_file', value)
+
+    @staticmethod
+    def handle_multi_folder(value):
+        _reset_value('OPTION', 'handle_multi_folder', value)
+
+    @staticmethod
+    def handle_multi_archive(value):
+        _reset_value('OPTION', 'handle_multi_archive', value)
+
+    @staticmethod
+    def check_filetype(value):
+        _reset_value('OPTION', 'check_filetype', value)
+
+    @staticmethod
+    def output_folder(value):
+        _reset_value('OPTION', 'output_folder', value)
+
+    @staticmethod
+    def filter_suffix(value):
+        _reset_value('OPTION', 'filter_suffix', value)
