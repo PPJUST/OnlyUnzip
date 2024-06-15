@@ -275,7 +275,11 @@ class Thread7zip(QThread):
 
         # 读取返回码
         if process.poll() == 0:  # 没有错误
-            result = Result7zip.Success(file, password)
+            # 实测有个特例，某个压缩包为rar格式，后缀为zip格式，解压时不会处理任何内部文件，没有生成解压结果，最终报错
+            if os.path.exists(extract_folder):
+                result = Result7zip.Success(file, password)
+            else:
+                result = Result7zip.UnknownError(file)
         elif process.poll() == 1:  # 警告（非致命错误，例如被占用）
             result = Result7zip.FileOccupied(file)
         elif process.poll() == 2:  # 致命错误

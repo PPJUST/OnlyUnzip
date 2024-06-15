@@ -210,9 +210,16 @@ def delete_files(files):
             send2trash.send2trash(file)
         except OSError:
             # 尝试重新删除
-            time.sleep(0.2)
-            if os.path.exists(file):
-                send2trash.send2trash(file)
+            try:
+                for _ in range(10):
+                    time.sleep(0.5)
+                    if os.path.exists(file):
+                        send2trash.send2trash(file)
+                    else:
+                        break
+            except OSError:
+                # 放弃删除
+                pass
 
 
 def get_filetitle(path: str) -> str:

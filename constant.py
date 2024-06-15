@@ -3,8 +3,8 @@ import os
 import sys
 
 # 程序路径
-# _PROGRAM_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/'  # 源码使用
-_PROGRAM_FOLDER = os.path.dirname(sys.executable) + '/'  # 打包使用
+_PROGRAM_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/'  # 源码使用
+# _PROGRAM_FOLDER = os.path.dirname(sys.executable) + '/'  # 打包使用
 print('程序路径', _PROGRAM_FOLDER)
 
 # 程序文件路径
