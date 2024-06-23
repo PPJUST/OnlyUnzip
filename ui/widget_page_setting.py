@@ -26,6 +26,7 @@ class WidgetPageSetting(QWidget):
 
         # 初始化
         self._load_setting()
+        self._set_extract_checkbox_state()  # 刷新一次，防止测试模式时没有禁用设置
 
         # 绑定槽函数
         self.ui.checkBox_mode_extract.stateChanged.connect(self._change_setting_mode)
@@ -101,6 +102,8 @@ class WidgetPageSetting(QWidget):
         self.ui.checkBox_handle_multi_archive.setEnabled(state)
         self.ui.lineEdit_output_path.setEnabled(state)
         self.ui.toolButton_ask_path.setEnabled(state)
+        self.ui.toolButton_clear_path.setEnabled(state)
+        self.ui.toolButton_open_path.setEnabled(state)
         self.ui.lineEdit_filter_suffix.setEnabled(state)
 
     def _change_setting_smart_extract(self):

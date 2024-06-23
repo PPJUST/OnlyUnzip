@@ -45,7 +45,10 @@ class WidgetPagePassword(QWidget):
         text = self.ui.plainTextEdit_password.toPlainText()
         passwords = [i for i in text.split('\n') if i.strip()]
         passwords_strip = [i.strip() for i in passwords]  # 考虑到密码两端的空格，同时添加两种形式的密码
-        passwords_join = list(set(passwords + passwords_strip))
+        passwords_join = []
+        for i in passwords+passwords_strip:
+            if i not in passwords_join:
+                passwords_join.append(i)
         function_password.update_password(passwords_join)
 
         self.ui.plainTextEdit_password.clear()

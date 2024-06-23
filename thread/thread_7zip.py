@@ -85,14 +85,19 @@ class Thread7zip(QThread):
             self.signal_schedule_file.emit(f'{index}/{count_file}')
             # 不论是测试模式还是解压模式，都先使用7zip的l命令进行一次测试（l命令在l/t/x中最快）
             # 在使用l命令前，先使用虚拟密码进行一次测试，判断该文件是否可以使用l命令进行正常测试
-            fake_test_result = function_7zip.test_fake_password(file_first)
+            fake_test_result, archive_info_dict = function_7zip.test_fake_password(file_first)
             if fake_test_result is True:  # 可以使用l命令进行后续测试
                 self._test_file_command_l(file_first, self._passwords)
             elif fake_test_result is False:  # 无法使用l命令进行测试，执行对应模式操作
                 if self._mode_extract:  # 使用x命令进行解压
                     self._extract_file(file_first, self._passwords)
                 else:  # 使用t命令进行测试
-                    self._test_file(file_first, self._passwords)
+                    paths_inside = archive_info_dict['paths']
+                    if paths_inside:
+                        check_path_inside = paths_inside[0]  # 仅测试一个文件即可
+                    else:
+                        check_path_inside = None
+                    self._test_file(file_first, self._passwords, check_path_inside=check_path_inside)
             else:  # 文件本身存在问题，不进行后续操作
                 self.signal_7zip_result.emit(fake_test_result)
 
@@ -109,7 +114,7 @@ class Thread7zip(QThread):
             else:
                 self.signal_finish.emit()
 
-    def _test_file(self, file, passwords):
+    def _test_file(self, file, passwords, check_path_inside=None):
         """调用7zip的t命令测试文件"""
         count_password = len(passwords)
         result = Result7zip.WrongPassword  # 兜底
@@ -117,7 +122,7 @@ class Thread7zip(QThread):
             if self._is_stop_thread:
                 break
             self.signal_schedule_test.emit(f'{index_password}/{count_password}')
-            result = function_7zip.call_7zip('t', file, password)
+            result, _ = function_7zip.call_7zip('t', file, password, check_path_inside=check_path_inside)
             if not isinstance(result, Result7zip.WrongPassword):  # 测试结果不为“错误密码”时，确定正确密码
                 break
 
@@ -134,7 +139,7 @@ class Thread7zip(QThread):
             if self._is_stop_thread:
                 break
             self.signal_schedule_test.emit(f'{index_password}/{count_password}')
-            result = function_7zip.call_7zip('l', file, password)
+            result, _ = function_7zip.call_7zip('l', file, password)
             if not isinstance(result, Result7zip.WrongPassword):  # 测试结果不为“错误密码”时，确定正确密码
                 right_password = password
                 break
@@ -249,8 +254,7 @@ class Thread7zip(QThread):
                 break
             if output and is_read_stderr:  # 读取错误事件
                 is_wrong_password = re.search('Wrong password', output)
-                is_missing_volume = (re.search('Missing volume', output) or
-                                     re.search('Unexpected end of archive', output))
+                is_missing_volume = re.search('Missing volume', output)
                 is_not_archive = re.search('Cannot open the file as', output)
                 if is_wrong_password:
                     result_error = Result7zip.WrongPassword(file)

@@ -5,15 +5,18 @@ import subprocess
 from constant import _PATH_7ZIP, _PASSWORD_FAKE, _COLOR_SKIP, _COLOR_ERROR, _COLOR_WARNING, _COLOR_SUCCESS
 
 
-def call_7zip(command: str, filepath: str, password: str):
+def call_7zip(command_type: str, filepath: str, password: str, check_path_inside=None):
     """调用7zip的l和t命令，返回测试结果
-    :param command: 7zip的command，l/t
+    :param command_type: 7zip的command，l/t
     :param filepath: 文件路径
-    :param password: 需要测试的密码"""
+    :param password: 需要测试的密码
+    :param check_path_inside: 指定测试的内部文件路径（只在t指令时使用）"""
     command = [_PATH_7ZIP,
-               command,
+               command_type,
                filepath,
                "-p" + password]
+    if command_type == 't' and check_path_inside:  # 只在t指令使用，l指令不需要，t指令中使用时可以加快速度
+        command.append(check_path_inside)
     print('测试 7zip命令', command)
     process = subprocess.run(command,
                              stdout=subprocess.PIPE,
@@ -45,7 +48,7 @@ def call_7zip(command: str, filepath: str, password: str):
         # 备忘录-如何更好的处理自解压文件
         if 'Wrong password' in stderr:
             result_class = Result7zip.WrongPassword(filepath)
-        elif 'Missing volume' in stderr or 'Unexpected end of archive' in stderr:
+        elif 'Missing volume' in stderr:
             result_class = Result7zip.MissingVolume(filepath)
         elif 'Cannot open the file as' in stderr:  # 备忘录-如果是这个报错可能可以按其指定的文件类型进行测试
             result_class = Result7zip.NotArchiveOrDamaged(filepath)
@@ -56,7 +59,10 @@ def call_7zip(command: str, filepath: str, password: str):
     else:  # 兜底
         result_class = Result7zip.UnknownError(filepath)
 
-    return result_class
+    # 处理输出流
+    archive_info_dict = get_info_from_stdout(process.stdout)
+
+    return result_class, archive_info_dict
 
 
 def test_fake_password(file):
@@ -65,17 +71,17 @@ def test_fake_password(file):
             False: 无法使用l命令进行后续测试;
             Result7zip类: 文件本身存在问题.
     """
-    result_class = call_7zip('l', file, _PASSWORD_FAKE)
+    result_class, archive_info_dict = call_7zip('l', file, _PASSWORD_FAKE)
     # 返回密码错误，则该压缩文件已加密且可以使用l命令进行后续测试
     if isinstance(result_class, Result7zip.WrongPassword):
-        return True
+        return True, archive_info_dict
     # 返回成功，则该压缩文件无法使用l命令进行后续测试（内部文件名未加密或无密码时无法使用l命令测试密码，需要使用t/x）
     elif isinstance(result_class, Result7zip.Success):
-        return False
+        return False, archive_info_dict
     # 返回其他类型，则该压缩文件本身存在问题，中断后续操作
     # 返回文件占用/非压缩文件/空间不足/缺失分卷/未知错误，则说明文件本身存在问题
     else:
-        return result_class
+        return result_class, archive_info_dict
 
 
 class Result7zip:
@@ -202,3 +208,30 @@ class Collect7zipResult:
         join_text = f'成功:{count_success} 失败:{count_wrong_password} 错误:{count_error}'
 
         return join_text
+
+
+def get_info_from_stdout(stdout_text):
+    """从7zip的stdout中获取相关信息"""
+    data_dict = {'filetype': None, 'paths': None}
+    text_split = stdout_text.splitlines()
+    # 提取文件类型
+    cut_ = [i for i in text_split if i.startswith('Type = ')]
+    if cut_:
+        cut_text = [i for i in text_split if i.startswith('Type = ')][0]
+        filetype = cut_text[len('Type = '):]
+        data_dict['filetype'] = filetype
+    # 提取内部文件路径
+    start_index = None
+    end_index = None
+    for index, i in enumerate(text_split):
+        if i.startswith('   Date'):
+            start_index = index
+        if i.startswith('----------'):
+            end_index = index
+    if start_index or end_index:
+        column_name_index = text_split[start_index].find('Name')
+        cut_text = text_split[start_index + 2:end_index]
+        paths = [i[column_name_index:] for i in cut_text if 'D....' not in i]
+        data_dict['paths'] = paths
+
+    return data_dict
