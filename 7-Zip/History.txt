@@ -6,6 +6,11 @@ The full changelog file can be downloaded here:
 https://7-zip.org/history.txt
 
 
+24.07          2024-06-19
+-------------------------
+- The bug was fixed: 7-Zip could crash for some incorrect ZSTD archives.
+
+
 24.06          2024-05-26
 -------------------------
 - The bug was fixed: 7-Zip could not unpack some ZSTD archives.
@@ -15,7 +20,7 @@ https://7-zip.org/history.txt
 -------------------------
 - New switch -myv={MMNN} to set decoder compatibility version for 7z archive creating.
   {MMNN} is 4-digit number that represents the version of 7-Zip without a dot.
-  If -myv={MMNN} switch is specified, 7-Zip will only use compression methods that can 
+  If -myv={MMNN} switch is specified, 7-Zip will only use compression methods that can
   be decoded by the specified version {MMNN} of 7-Zip and newer versions.
   If -myv={MMNN} switch is not specified, -myv=2300 is used, and 7-Zip will only
   use compression methods that can be decoded by 7-Zip 23.00 and newer versions.
@@ -28,7 +33,7 @@ https://7-zip.org/history.txt
 -------------------------
 - New menu item in 7-Zip File Manager: "Tools / Delete Temporary Files...".
   This menu item opens a window showing temporary folders and files
-  created by 7-Zip in the user's "Temp" folder on a Windows system. 
+  created by 7-Zip in the user's "Temp" folder on a Windows system.
   In this window, the user can delete temporary files.
 
 
@@ -46,7 +51,7 @@ https://7-zip.org/history.txt
 - 7zg.exe (7-Zip GUI): -y switch disables user requests and messages.
 - 7-Zip shows hash methods XXH64 and BLAKE2sp in context menu.
 - -slmu switch : to show timestamps as UTC instead of LOCAL TIME.
-- -slsl switch : in console 7-Zip for Windows : to show file paths with 
+- -slsl switch : in console 7-Zip for Windows : to show file paths with
   linux path separator slash '/' instead of backslash separator '\'.
 - 7-Zip supports .sha256 files that use backslash path separator '\'.
 - Some bugs were fixed.
