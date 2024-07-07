@@ -268,8 +268,9 @@ class Thread7zip(QThread):
                     result_error = Result7zip.NotArchiveOrDamaged(file)
 
             if output and is_read_progress:  # 读取进度事件
-                match_progress = re.search(r'(\d{1,3})% *\d* - ',
-                                           output)  # 单文件输出信息：34% - 061-090；多文件输出信息：19% 10 - 031-060
+                # 单文件输出信息：34% - 061-090；多文件输出信息：19% 10 - 031-060。适用正则表达式 '(\d{1,3})% *\d* - '
+                # 某些压缩包的输出信息：80% 13。适用正则表达式 '(\d{1,3})% *\d*'
+                match_progress = re.search(r'(\d{1,3})% *\d*', output)
                 if match_progress:
                     is_read_stderr = False
                     current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
