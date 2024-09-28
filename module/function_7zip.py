@@ -210,10 +210,14 @@ class Collect7zipResult:
         return join_text
 
 
-def get_info_from_stdout(stdout_text):
+def get_info_from_stdout(stdout_text: str):
     """从7zip的stdout中获取相关信息"""
     data_dict = {'filetype': None, 'paths': None}
-    text_split = stdout_text.splitlines()
+    if stdout_text:
+        text_split = stdout_text.splitlines()
+    else:
+        return data_dict
+
     # 提取文件类型
     cut_ = [i for i in text_split if i.startswith('Type = ')]
     if cut_:
