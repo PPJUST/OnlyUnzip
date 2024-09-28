@@ -6,7 +6,7 @@ from PySide6.QtGui import QPalette, QColor, QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from constant import _ICON_APP
-from module import function_normal
+from module import function_normal, function_password
 from ui.OnlyUnzip import OnlyUnzip
 
 paths = []
@@ -56,4 +56,5 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         function_normal.check_default_files()
+        function_password.backup_password()
         main()

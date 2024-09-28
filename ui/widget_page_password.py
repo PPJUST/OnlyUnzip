@@ -50,6 +50,7 @@ class WidgetPagePassword(QWidget):
             if i not in passwords_join:
                 passwords_join.append(i)
         function_password.update_password(passwords_join)
+        function_password.backup_password()
 
         self.ui.plainTextEdit_password.clear()
 

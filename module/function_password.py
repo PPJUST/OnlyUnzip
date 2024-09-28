@@ -48,7 +48,6 @@ def open_export():
 def update_password(key: Union[list, str]):
     """更新密码"""
     function_normal.print_function_info()
-    _backup_password()
     # 统一格式
     if isinstance(key, str):
         key = [key]
@@ -66,7 +65,7 @@ def update_password(key: Union[list, str]):
         pickle.dump(password_dict, f)
 
 
-def _backup_password():
+def backup_password():
     """备份密码数据库"""
     function_normal.print_function_info()
     time_text = time.strftime(_TIME_STAMP, time.localtime())
