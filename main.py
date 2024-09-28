@@ -55,6 +55,5 @@ if __name__ == "__main__":
         messagebox.exec()
         sys.exit(1)
     else:
-
         function_normal.check_default_files()
         main()

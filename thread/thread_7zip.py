@@ -28,7 +28,7 @@ class Thread7zip(QThread):
     def __init__(self):
         super().__init__()
         self._is_stop_thread = False  # 是否终止线程
-        self._file_dict = None  # dict结构：key为第一个分卷包路径/非分卷则为其本身，value为list，内部元素为其对应的所有分卷包
+        self._file_dict = dict()  # dict结构：key为第一个分卷包路径/非分卷则为其本身，value为list，内部元素为其对应的所有分卷包
         # 读取密码
         self._passwords = None
         # 读取配置
@@ -54,7 +54,9 @@ class Thread7zip(QThread):
     def _update_setting(self):
         """更新设置"""
         # 读取密码
-        self._passwords = [_PASSWORD_FAKE] + function_password.read_password()  # 虚拟密码放首位，用于测试无密码文件
+        # 虚拟密码放首位，用于测试无密码文件，文件名中提取的密码放第二位，密码表的密码放最后
+        passwords_filename = function_password.read_password_from_files(list(self._file_dict.keys()))
+        self._passwords = [_PASSWORD_FAKE] + passwords_filename + function_password.read_password()
         # 读取配置
         self._mode_extract = GetSetting.mode_extract()
         self._extract_to_folder = GetSetting.extract_to_folder()  # 解压到同名文件夹
@@ -248,7 +250,9 @@ class Thread7zip(QThread):
             try:
                 output = process.stdout.readline()
                 print('【7zip解压信息：', output, '】')  # 测试用
-            except UnicodeDecodeError:  # 编码错误 UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 32: illegal multibyte sequence
+            except UnicodeDecodeError:
+                # 有时会报错编码错误
+                # UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 32: illegal multibyte sequence
                 output = ''
             if output == '' and process.poll() is not None:  # 读取到空文本或返回码时，结束读取操作
                 break
