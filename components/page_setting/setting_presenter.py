@@ -1,20 +1,26 @@
 # 设置模块的桥梁组件
 # 用于接收Viewer的信号，并在选项修改时通过Model修改本地配置文件，并通知Viewer更新
+from PySide6.QtCore import QObject, Signal
+
 from common.class_7zip import ModelArchive, ModelExtract
 from components.page_setting.setting_model import SettingModel
 from components.page_setting.setting_viewer import SettingViewer
 
 
-class SettingPresenter:
+class SettingPresenter(QObject):
     """设置模块的桥梁组件"""
+    SignalTopWindow = Signal( bool,name='是否置顶窗口')
+    SignalLockSize = Signal( bool,name='是否锁定窗口大小')
 
     def __init__(self, viewer: SettingViewer, model: SettingModel):
+        super().__init__()
         self.viewer = viewer
         self.model = model
 
         # 初始化
         self._load_setting()  # 注意 必须在绑定信号前加载初始设置更新UI，否则更新时会触发对应信号
         self._bind_signal()
+
 
     def get_archive_model(self):
         """获取当前的压缩文件处理模式 解压/测试"""
@@ -55,7 +61,9 @@ class SettingPresenter:
         self.viewer.ChangeExtractFilter.connect(self.model.set_extract_filter_is_enable)
         self.viewer.ChangeExtractFilterRule.connect(self.model.set_extract_filter_rules)
         self.viewer.ChangeTopWindow.connect(self.model.set_top_window_is_enable)
+        self.viewer.ChangeTopWindow.connect(self.SignalTopWindow.emit)
         self.viewer.ChangeLockSize.connect(self.model.set_lock_size_is_enable)
+        self.viewer.ChangeLockSize.connect(self.SignalLockSize.emit)
 
     def _load_setting(self):
         """加载初始设置，更新Viewer"""
@@ -104,3 +112,4 @@ class SettingPresenter:
         self.viewer.set_top_window(self.model.get_top_window_is_enable())
 
         self.viewer.set_lock_size(self.model.get_lock_size_is_enable())
+

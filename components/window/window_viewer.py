@@ -1,6 +1,6 @@
 # 主窗口的界面组件
-
-from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
+from PySide6.QtGui import Qt
+from PySide6.QtWidgets import QWidget, QApplication, QMainWindow, QSizePolicy
 from lzytools._qt_pyside6 import base64_to_pixmap
 
 from components.window.res.icon_base64 import _ICON_APP, _ICON_HOMEPAGE, _ICON_PASSWORD, _ICON_SETTING, _ICON_HISTORY
@@ -64,6 +64,26 @@ class WindowViewer(QMainWindow):
                 button.setStyleSheet(_HIGHLIGHT_BUTTON_STYLE)
             else:
                 button.setStyleSheet(_DEFAULT_BUTTON_STYLE)
+
+    def top_window(self):
+        """设置窗口置顶"""
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        self.show()  # 使用 setWindowFlags() 后需要重新调用 show() 方法才能使更改生效
+
+    def disable_top_window(self):
+        """取消窗口置顶"""
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, False)
+        self.show() # 使用 setWindowFlags() 后需要重新调用 show() 方法才能使更改生效
+    def lock_size(self):
+        """锁定窗口大小"""
+        self.setFixedSize(self.size())
+
+    def disable_lock_size(self):
+        """取消锁定窗口大小"""
+        # setFixedSize()实际上是同时设置了最小和最大尺寸为相同值，取消锁定直接重新设置最大最小值即可
+        self.setMinimumSize(0, 0)
+        self.setMaximumSize(16777215, 16777215)
+
 
 
 if __name__ == "__main__":

@@ -247,4 +247,5 @@ class ModelExtractFile(TemplateModelSignal):
         self.thread_extract.extract_model =self.extract_model
         self.thread_extract.is_break_folder =self.is_break_folder
         self.thread_extract.break_folder_model =self.break_folder_model
+        self.thread_extract.is_delete_file =self.is_delete_file
 

@@ -29,7 +29,12 @@ class WindowPresenter:
         # 传参
         self.set_model_setting()
 
+        # 修改窗口属性
+        self._get_window_setting()
+
         # 绑定信号
+        self.page_setting.SignalTopWindow.connect(self.top_window)
+        self.page_setting.SignalLockSize.connect(self.lock_size)
         self.page_home.FileInfo.connect(self.accept_files)  # 接收文件信息类
         self._bind_model_signal()
 
@@ -114,6 +119,28 @@ class WindowPresenter:
         for file_info in results.get_file_infos():
             result = file_info.get_7zip_result()
             self.result_collector.add_result(result)
+
+    def top_window(self, is_enable: bool):
+        """设置窗口置顶"""
+        if is_enable:
+            self.viewer.top_window()
+        else:
+            self.viewer.disable_top_window()
+
+    def lock_size(self, is_enable: bool):
+        """锁定窗口大小"""
+        if is_enable:
+            self.viewer.lock_size()
+        else:
+            self.viewer.disable_lock_size()
+
+    def _get_window_setting(self):
+        """提取window相关设置"""
+        is_top_window = self.page_setting.model.get_top_window_is_enable()
+        self.top_window(is_top_window)
+
+        is_lock_size = self.page_setting.model.get_lock_size_is_enable()
+        self.lock_size(is_lock_size)
 
     def _bind_model_signal(self):
         """绑定模型信号，链接到其他组件"""

@@ -2,6 +2,7 @@ import os
 import time
 from typing import Union
 
+import lzytools.file
 from PySide6.QtCore import QThread, Signal
 
 from common import function_7zip, function_move, function_file
@@ -36,7 +37,12 @@ class TemplateThread(QThread):
     def set_passwords(self, passwords: list):
         """设置密码清单"""
         print('设置密码清单')
-        self.passwords = passwords
+        self.passwords = passwords.copy()
+
+        if _FAKE_PASSWORD not in self.passwords:
+            self.passwords.insert(0,_FAKE_PASSWORD)
+
+
 
     def _run_command_l_with_fake_password(self, file: str):
         """使用虚拟密码进行l指令测试，根据返回结果决定后续指令的使用
@@ -131,6 +137,7 @@ class ThreadExtract(TemplateThread):
         self.extract_output_path: str = ''
         self.is_filter: bool = False
         self.filter_rules: str = ''
+        self.is_delete_file: bool = False
 
         # 解压后参数
         self.extract_model :Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct]= None  # 解压模式
@@ -239,6 +246,9 @@ class ThreadExtract(TemplateThread):
                         extract_path = function_file.break_folder_files(extract_path)
                     else:
                         pass
+            # 是否删除原文件
+            if self.is_delete_file:
+                lzytools.file.delete( file)
 
             print("处理文件:",file,"处理结果",result_7zip,"解压路径",extract_path)
             return result_7zip, extract_path
