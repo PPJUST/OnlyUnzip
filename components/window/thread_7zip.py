@@ -248,7 +248,7 @@ class ThreadExtract(TemplateThread):
                         pass
             # 是否删除原文件
             if self.is_delete_file:
-                lzytools.file.delete( file)
+                lzytools.file.delete( file,send_to_trash=True)
 
             print("处理文件:",file,"处理结果",result_7zip,"解压路径",extract_path)
             return result_7zip, extract_path
