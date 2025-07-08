@@ -164,6 +164,8 @@ class HomePresenter(QObject):
         self.viewer.set_runtime_current('0:00:00')
         self.viewer.set_progress_test('-/-')
         self.viewer.set_current_password('...')
+        # 停止计时器
+        self.model.stop_timing()
 
     def set_info_exists_temp_folder(self):
         """设置运行状态 终止（存在非空的临时解压文件夹）"""
@@ -176,6 +178,8 @@ class HomePresenter(QObject):
         self.viewer.set_runtime_current('0:00:00')
         self.viewer.set_progress_test('-/-')
         self.viewer.set_current_password('...')
+        # 停止计时器
+        self.model.stop_timing()
     def set_info_finished(self,finish_info:str,tooltip:str=''):
         """设置运行状态 完成所有任务，结束"""
         # 修改图标
@@ -187,6 +191,8 @@ class HomePresenter(QObject):
         self.viewer.set_runtime_current('-:-:-')
         self.viewer.set_progress_test('-/-')
         self.viewer.set_current_password('...')
+        # 停止计时器
+        self.model.stop_timing()
 
     """icon方法"""
 

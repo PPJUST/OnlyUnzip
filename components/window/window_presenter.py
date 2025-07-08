@@ -96,17 +96,17 @@ class WindowPresenter:
     def finished(self, results: FileInfoList):
         """处理结束信号"""
         # 接收到结束信号后，先传递给收集器，收集处理结果
-        # 如果有成功处理的文件，则判断是否进行递归解压
-        # 如果不需要进行递归解压，则结束本批次任务，显示结束信息
-        # 否则，进行递归解压，并累计处理结果
         self.collect_result(results)
 
+        # 如果有成功处理的文件，则判断是否进行递归解压
         print('接收结束信号参数', results)
         if results.count_success():
             is_recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
+            # 进行递归解压，并累计处理结果
             if is_recursive_extract:
                 success_filepaths = results.get_success_files()
                 self.page_home.drop_paths(success_filepaths)
+            # 如果不需要进行递归解压，则结束本批次任务，显示结束信息
             else:
                 finish_info_simple, file_info_detail = self.result_collector.get_result_info()
                 self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)

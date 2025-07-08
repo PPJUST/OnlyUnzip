@@ -112,7 +112,7 @@ class Result7zip:
         return_code = 0
         return_text = '成功'  # success
         _7zip_return = 'No error'
-        color = [255, 255, 255]
+        color = [0, 0, 0]
 
         def __init__(self, password: str=None):
             self.password = password
