@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import lzytools.file
 
@@ -7,15 +8,24 @@ from common import function_file
 TEMP_EXTRACT_FOLDER = 'UnzipTempFolder'
 
 
-def move_to_smart(dirpath: str, target_dirpath:str):
+def move_to_smart(dirpath: str, target_dirpath:str, dirname_=None):
     """移动内部文件至指定文件夹（智能模式）
     :param dirpath: 需要检查的文件夹
-    :param target_dirpath: 移动至目标文件夹"""
+    :param target_dirpath: 移动至目标文件夹
+    :param dirname_: 指定的文件夹名称，特殊情况使用"""
     # 找出最深一级的存在多文件的文件夹/或文件
     deepest_file = lzytools.file.get_first_multi_file_dirpath(dirpath)
 
-    # 移动找到的文件
-    new_file_dict = function_file.move_file_to_folder(deepest_file, target_dirpath)
+    # 如果找到的文件夹是其自身，则需要新建一个文件夹，移动到该文件夹下
+    # （传入的dirpath路径为临时文件夹的路径，如果为其自身会导致该临时文件夹作为解压文件夹的外部文件夹）
+    if deepest_file == dirpath:
+        # 先新建指定文件名的文件夹，将内部文件移动至该文件夹下，然后在移动到外部
+        move_dirpath = os.path.normpath(os.path.join(dirpath, dirname_))
+        _move_inside_file_to_folder(deepest_file, move_dirpath)
+        new_file_dict = function_file.move_file_to_folder(move_dirpath, target_dirpath)
+    else:
+        # 移动找到的文件
+        new_file_dict = function_file.move_file_to_folder(deepest_file, target_dirpath)
 
     move_path:str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
     return move_path
@@ -57,7 +67,29 @@ def move_to_same_dirname(dirpath: str, target_dirpath, dirname_=None):
     dirpath_ = os.path.normpath(os.path.join(target_dirpath, dirname_))
     os.mkdir(dirpath_)
 
-    # 移动
-    move_path :str  = move_to_smart(dirpath, dirpath_)
+    # 如果原目录下仅有一个文件夹且文件名与目标文件夹同名，则移动该子文件夹下的文件
+    inside  = os.listdir(dirpath)
+    if len(inside)==1 and inside[0] == dirname_:
+        child_filepath = os.path.normpath(os.path.join(dirpath, inside[0]))
+        move_path = _move_inside_file_to_folder(child_filepath, dirpath_)
+    else:
+        move_path = _move_inside_file_to_folder(dirpath, dirpath_)
 
     return move_path
+
+def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str):
+    """移动一个文件夹内部的文件到另一个文件夹"""
+    if not os.path.exists(origin_dirpath):
+        raise Exception(origin_dirpath,'目录不存在')
+    if not os.path.exists(target_dirpath):
+        os.mkdir(target_dirpath)
+
+    # 提取原目录文件
+    filenames= os.listdir(origin_dirpath)
+    files = [os.path.normpath(os.path.join(origin_dirpath, i)) for i in filenames]
+
+    # 移动
+    for file in files:
+        shutil.move(file, target_dirpath)
+
+    return target_dirpath

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_page_historypaLcHe.ui'
+## Form generated from reading UI file 'page_historyMoaJVR.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,9 @@ class Ui_Form(object):
             Form.setObjectName(u"Form")
         Form.resize(320, 240)
         self.verticalLayout = QVBoxLayout(Form)
+        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.listWidget_records = QListWidget(Form)
         self.listWidget_records.setObjectName(u"listWidget_records")
 

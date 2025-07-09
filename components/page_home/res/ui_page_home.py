@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_page_homejuGjFk.ui'
+## Form generated from reading UI file 'page_homeLLCexr.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,9 @@ class Ui_Form(object):
             Form.setObjectName(u"Form")
         Form.resize(289, 314)
         self.verticalLayout_3 = QVBoxLayout(Form)
+        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_label_drop = QVBoxLayout()
         self.verticalLayout_label_drop.setObjectName(u"verticalLayout_label_drop")
 
@@ -113,7 +115,9 @@ class Ui_Form(object):
         self.page = QWidget()
         self.page.setObjectName(u"page")
         self.verticalLayout_2 = QVBoxLayout(self.page)
+        self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_9 = QLabel(self.page)
@@ -142,6 +146,7 @@ class Ui_Form(object):
 
         self.horizontalLayout_6.addWidget(self.label_current_password)
 
+        self.horizontalLayout_6.setStretch(1, 1)
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
 
@@ -149,7 +154,9 @@ class Ui_Form(object):
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
         self.verticalLayout = QVBoxLayout(self.page_2)
+        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_13 = QLabel(self.page_2)
@@ -180,7 +187,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(Form)

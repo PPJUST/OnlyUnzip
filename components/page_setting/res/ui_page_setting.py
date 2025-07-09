@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_page_settingJRsall.ui'
+## Form generated from reading UI file 'page_settinguxHJgI.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,15 +26,19 @@ class Ui_Form(object):
             Form.setObjectName(u"Form")
         Form.resize(320, 240)
         self.verticalLayout_2 = QVBoxLayout(Form)
+        self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.scrollArea = QScrollArea(Form)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 283, 712))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 620))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.radioButton_mode1_test = QRadioButton(self.scrollAreaWidgetContents)
         self.buttonGroup = QButtonGroup(Form)
         self.buttonGroup.setObjectName(u"buttonGroup")
@@ -72,6 +76,7 @@ class Ui_Form(object):
         self.widget_test.setObjectName(u"widget_test")
         self.verticalLayout_3 = QVBoxLayout(self.widget_test)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.checkBox_write_filename = QCheckBox(self.widget_test)
         self.checkBox_write_filename.setObjectName(u"checkBox_write_filename")
 
@@ -157,7 +162,9 @@ class Ui_Form(object):
         self.widget_extract = QWidget(self.scrollAreaWidgetContents)
         self.widget_extract.setObjectName(u"widget_extract")
         self.verticalLayout_4 = QVBoxLayout(self.widget_extract)
+        self.verticalLayout_4.setSpacing(3)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.radioButton_mode2_smart_extract = QRadioButton(self.widget_extract)
         self.radioButton_mode2_smart_extract.setObjectName(u"radioButton_mode2_smart_extract")
 
@@ -203,6 +210,9 @@ class Ui_Form(object):
         self.comboBox_cover_file.addItem("")
         self.comboBox_cover_file.addItem("")
         self.comboBox_cover_file.setObjectName(u"comboBox_cover_file")
+        self.comboBox_cover_file.setFocusPolicy(Qt.FocusPolicy.WheelFocus)
+        self.comboBox_cover_file.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
+        self.comboBox_cover_file.setDuplicatesEnabled(False)
 
         self.horizontalLayout.addWidget(self.comboBox_cover_file)
 

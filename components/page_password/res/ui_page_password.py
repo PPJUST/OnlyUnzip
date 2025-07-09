@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_page_passwordOfnyZo.ui'
+## Form generated from reading UI file 'page_passwordIJoBTd.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,9 @@ class Ui_Form(object):
             Form.setObjectName(u"Form")
         Form.resize(320, 240)
         self.verticalLayout_2 = QVBoxLayout(Form)
+        self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.plainTextEdit_password = QPlainTextEdit(Form)
         self.plainTextEdit_password.setObjectName(u"plainTextEdit_password")
 
@@ -54,12 +56,18 @@ class Ui_Form(object):
 
         self.pushButton_update = QPushButton(Form)
         self.pushButton_update.setObjectName(u"pushButton_update")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_update.sizePolicy().hasHeightForWidth())
+        self.pushButton_update.setSizePolicy(sizePolicy)
 
         self.horizontalLayout.addWidget(self.pushButton_update)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
+        self.verticalLayout_2.setStretch(0, 1)
 
         self.retranslateUi(Form)
 

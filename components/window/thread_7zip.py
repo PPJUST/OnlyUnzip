@@ -222,15 +222,18 @@ class ThreadExtract(TemplateThread):
                                                               output_folder=part_extract_to,
                                                               filter_rule=filter_rule)
 
+        # 提取原文件的文件名（剔除压缩文件后缀格式）
+        filename_origin = lzytools.archive.get_filetitle(os.path.basename(file))
+
         # 如果处理成功，则进行进一步处理
         if isinstance(result_7zip, Result7zip.Success):
             # 根据对应模式移动临时文件夹下的文件/文件夹
             temp_folder = function_7zip.get_temp_dirpath(part_extract_to)  # 要移动的文件夹
             parent_folder = os.path.dirname(temp_folder)  # 移动至该文件夹下
             if isinstance(self.extract_model, ModelExtract.Smart):
-                extract_path = function_move.move_to_smart(temp_folder, parent_folder)
+                extract_path = function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
             elif isinstance(self.extract_model, ModelExtract.SameFolder):
-                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder)
+                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder,dirname_=filename_origin)
             elif isinstance(self.extract_model, ModelExtract.Direct):
                 extract_path = function_move.move_to_no_deal(temp_folder, parent_folder)
             else:
