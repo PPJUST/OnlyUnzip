@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settinguxHJgI.ui'
+## Form generated from reading UI file 'page_settingDjlcql.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 620))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -258, 301, 620))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -231,6 +231,7 @@ class Ui_Form(object):
         self.comboBox_break_folder.addItem("")
         self.comboBox_break_folder.addItem("")
         self.comboBox_break_folder.setObjectName(u"comboBox_break_folder")
+        self.comboBox_break_folder.setFocusPolicy(Qt.FocusPolicy.WheelFocus)
 
         self.horizontalLayout_2.addWidget(self.comboBox_break_folder)
 

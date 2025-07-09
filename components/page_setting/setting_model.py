@@ -366,7 +366,10 @@ class _ChildSettingWriteFilename(_ModuleChildSetting):
 
     def set_position(self, value: Union[Position.Left, Position.Right]):
         """设置设置项 密码位置"""
-        value_str = value.text
+        if isinstance(value, (Position.Left, Position.Right)):
+            value_str = value.text
+        else:
+            value_str = value
         self._set_value(self.section, self.key_position, value_str)
 
 
@@ -465,7 +468,7 @@ class _ChildSettingBreakFolder(_ModuleChildSetting):
         self._default_value_is_enable = False
         # 解散模式
         self.key_model = 'model'
-        self._default_value_model = ModelBreakFolder.MoveBottom()
+        self._default_value_model = ModelBreakFolder.MoveToTop()
 
     def read_is_enable(self) -> bool:
         """读取设置项 是否启用"""

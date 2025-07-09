@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-258</y>
         <width>301</width>
         <height>620</height>
        </rect>
@@ -325,6 +325,9 @@
             </item>
             <item>
              <widget class="QComboBox" name="comboBox_break_folder">
+              <property name="focusPolicy">
+               <enum>Qt::FocusPolicy::WheelFocus</enum>
+              </property>
               <item>
                <property name="text">
                 <string>移动到顶层目录</string>
