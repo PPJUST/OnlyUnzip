@@ -1,3 +1,4 @@
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication
 
 from components import window
@@ -9,6 +10,12 @@ if __name__ == "__main__":
     # palette = QPalette()
     # palette.setColor(QPalette.Window, QColor(255, 255, 255))
     # app_.setPalette(palette)
+
+    # 设置全局字体
+    font = QFont("Microsoft YaHei", 10)  # 字体名称和大小
+    app_.setFont(font)
+
+
     presenter = window.get_presenter()
     viewer = presenter.viewer
     model = presenter.model

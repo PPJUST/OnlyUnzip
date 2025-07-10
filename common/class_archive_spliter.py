@@ -22,10 +22,11 @@ class ArchiveSpliter:
         self._archive_members = dict()
         # 先拆分为普通压缩文件和分卷压缩文件
         normal_archives, volume_archives = self._split(files)
+        print('普通压缩文件和分卷压缩文件', normal_archives, volume_archives)
         # 普通压缩文件写入对象
         for archive in normal_archives:
             self.archives.append(archive)
-            self._archive_members[archive] = archive
+            self._archive_members[archive] = [archive]
             self._archive_roles[archive] = ArchiveRole.Normal()
         # 进一步处理分卷压缩文件
         first_volume_archives, volume_members = self._analyse_volume_archive(volume_archives)

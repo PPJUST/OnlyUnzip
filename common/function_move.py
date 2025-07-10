@@ -5,10 +5,8 @@ import lzytools.file
 
 from common import function_file
 
-TEMP_EXTRACT_FOLDER = 'UnzipTempFolder'
 
-
-def move_to_smart(dirpath: str, target_dirpath:str, dirname_=None):
+def move_to_smart(dirpath: str, target_dirpath: str, dirname_=None):
     """移动内部文件至指定文件夹（智能模式）
     :param dirpath: 需要检查的文件夹
     :param target_dirpath: 移动至目标文件夹
@@ -27,7 +25,7 @@ def move_to_smart(dirpath: str, target_dirpath:str, dirname_=None):
         # 移动找到的文件
         new_file_dict = function_file.move_file_to_folder(deepest_file, target_dirpath)
 
-    move_path:str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
+    move_path: str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
     return move_path
 
 
@@ -42,7 +40,7 @@ def move_to_no_deal(dirpath: str, target_dirpath):
     # 移动
     new_file_dict = function_file.move_file_to_folder(files, target_dirpath)
 
-    move_path :str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
+    move_path: str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
     return move_path
 
 
@@ -68,8 +66,8 @@ def move_to_same_dirname(dirpath: str, target_dirpath, dirname_=None):
     os.mkdir(dirpath_)
 
     # 如果原目录下仅有一个文件夹且文件名与目标文件夹同名，则移动该子文件夹下的文件
-    inside  = os.listdir(dirpath)
-    if len(inside)==1 and inside[0] == dirname_:
+    inside = os.listdir(dirpath)
+    if len(inside) == 1 and inside[0] == dirname_:
         child_filepath = os.path.normpath(os.path.join(dirpath, inside[0]))
         move_path = _move_inside_file_to_folder(child_filepath, dirpath_)
     else:
@@ -77,15 +75,16 @@ def move_to_same_dirname(dirpath: str, target_dirpath, dirname_=None):
 
     return move_path
 
+
 def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str):
     """移动一个文件夹内部的文件到另一个文件夹"""
     if not os.path.exists(origin_dirpath):
-        raise Exception(origin_dirpath,'目录不存在')
+        raise Exception(origin_dirpath, '目录不存在')
     if not os.path.exists(target_dirpath):
         os.mkdir(target_dirpath)
 
     # 提取原目录文件
-    filenames= os.listdir(origin_dirpath)
+    filenames = os.listdir(origin_dirpath)
     files = [os.path.normpath(os.path.join(origin_dirpath, i)) for i in filenames]
 
     # 移动

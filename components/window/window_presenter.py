@@ -98,6 +98,9 @@ class WindowPresenter:
         # 接收到结束信号后，先传递给收集器，收集处理结果
         self.collect_result(results)
 
+        # 删除创建的临时解压文件夹
+        # 备忘录
+
         # 如果有成功处理的文件，则判断是否进行递归解压
         print('接收结束信号参数', results)
         if results.count_success():

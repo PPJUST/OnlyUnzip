@@ -10,7 +10,7 @@ class FileInfo:
 
     def __init__(self, filepath: str,
                  file_role: Tuple[ArchiveRole.Normal, ArchiveRole.VolumeFirst, ArchiveRole.VolumeMember],
-                 related_files=None):
+                 related_files:list=None):
         # 一般属性
         self.filepath = filepath  # 文件路径
         self.file_role: Tuple[
