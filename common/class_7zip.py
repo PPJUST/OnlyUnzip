@@ -1,3 +1,5 @@
+_FAKE_PASSWORD = 'FAKEPASSWORD'
+
 class ModelArchive:
     """压缩包处理模式，解压/测试"""
 
@@ -115,6 +117,8 @@ class Result7zip:
         color = [0, 0, 0]
 
         def __init__(self, password: str=None):
+            if not password or password == _FAKE_PASSWORD :
+                password = '无密码'
             self.password = password
 
     class Skip:
