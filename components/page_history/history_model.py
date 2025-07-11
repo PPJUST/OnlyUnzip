@@ -25,7 +25,6 @@ class HistoryModel:
         _7zip_result = file_info._7zip_result
         part_7zip_result = _7zip_result.return_text
         color = _7zip_result.color
-        password = _7zip_result.password
         text_join = (split_line +
                      split_word + part_time +
                      split_word + part_filetitle +
@@ -33,6 +32,7 @@ class HistoryModel:
 
         # 只在解压结果为成功时才添加密码文本行和返回密码
         if isinstance(_7zip_result, Result7zip.Success):
+            password = _7zip_result.password
             text_join += (split_word + '解压密码：' + password)
             return text_join, color, password
         else:

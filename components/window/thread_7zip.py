@@ -40,9 +40,7 @@ class TemplateThread(QThread):
         self.passwords = passwords.copy()
 
         if _FAKE_PASSWORD not in self.passwords:
-            self.passwords.insert(0,_FAKE_PASSWORD)
-
-
+            self.passwords.insert(0, _FAKE_PASSWORD)
 
     def _run_command_l_with_fake_password(self, file: str):
         """使用虚拟密码进行l指令测试，根据返回结果决定后续指令的使用
@@ -140,9 +138,10 @@ class ThreadExtract(TemplateThread):
         self.is_delete_file: bool = False
 
         # 解压后参数
-        self.extract_model :Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct]= None  # 解压模式
-        self.is_break_folder: bool = False # 是否解散文件夹
-        self.break_folder_model :Union[ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveBottom,ModelBreakFolder.MoveFiles]= None
+        self.extract_model: Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct] = None  # 解压模式
+        self.is_break_folder: bool = False  # 是否解散文件夹
+        self.break_folder_model: Union[
+            ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveFiles] = None
 
     def run(self):
         print('执行解压子线程')
@@ -157,7 +156,6 @@ class ThreadExtract(TemplateThread):
             self.SignalCurrentFile.emit(file_first)
             print('当前处理的文件：', file_first)
             extract_result, extract_path = self.extract_file(file_first, self.passwords)
-
 
             # 将结果写入文件信息类，并发送信号
             file_info.set_7zip_result(extract_result)
@@ -186,9 +184,9 @@ class ThreadExtract(TemplateThread):
         else:  # 压缩文件存在致命错误，不进行后续操作
             print('虚拟密码测试检测出文件存在问题，不进行后续测试')
             final_result = fake_result
-            extract_path=None
+            extract_path = None
 
-        return final_result,   extract_path
+        return final_result, extract_path
 
     def extract(self, file, password):
         """解压操作"""
@@ -218,9 +216,9 @@ class ThreadExtract(TemplateThread):
             filter_rule = ''
 
         result_7zip = function_7zip.progress_7zip_x_with_temp_folder(_7ZIP_PATH, file, password,
-                                                              cover_model=part_cover,
-                                                              output_folder=part_extract_to,
-                                                              filter_rule=filter_rule)
+                                                                     cover_model=part_cover,
+                                                                     output_folder=part_extract_to,
+                                                                     filter_rule=filter_rule)
 
         # 提取原文件的文件名（剔除压缩文件后缀格式）
         filename_origin = lzytools.archive.get_filetitle(os.path.basename(file))
@@ -233,11 +231,11 @@ class ThreadExtract(TemplateThread):
             if isinstance(self.extract_model, ModelExtract.Smart):
                 extract_path = function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
             elif isinstance(self.extract_model, ModelExtract.SameFolder):
-                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder,dirname_=filename_origin)
+                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder, dirname_=filename_origin)
             elif isinstance(self.extract_model, ModelExtract.Direct):
                 extract_path = function_move.move_to_no_deal(temp_folder, parent_folder)
             else:
-                extract_path=None
+                extract_path = None
             # 是否解散文件夹（仅在解压结果为文件夹时才执行）
             if self.is_break_folder:
                 if os.path.isdir(extract_path):
@@ -251,13 +249,22 @@ class ThreadExtract(TemplateThread):
                         pass
             # 是否删除原文件
             if self.is_delete_file:
-                lzytools.file.delete( file,send_to_trash=True)
+                lzytools.file.delete(file, send_to_trash=True)
 
-            print("处理文件:",file,"处理结果",result_7zip,"解压路径",extract_path)
+            # 删除空的临时解压文件夹
+            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+            if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
+                lzytools.file.delete(guess_temp_folder)
+
+            print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
             return result_7zip, extract_path
         else:
-            return result_7zip, None
+            # 删除空的临时解压文件夹
+            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+            if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
+                lzytools.file.delete(guess_temp_folder)
 
+            return result_7zip, None
 
     def extract_after_test_l(self, filepath: str, passwords: list):
         """使用l命令进行测试，并在搜索到正确密码后执行解压操作，返回最终结果类"""
@@ -270,7 +277,7 @@ class ThreadExtract(TemplateThread):
             if isinstance(final_result, Result7zip.Success):
                 print('搜索到正确密码，执行解压操作')
                 true_password = pw
-                final_result,extract_path = self.extract(filepath, true_password)
+                final_result, extract_path = self.extract(filepath, true_password)
                 break
 
         return final_result, extract_path

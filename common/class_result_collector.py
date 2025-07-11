@@ -43,7 +43,11 @@ class ResultCollector:
     def get_result_info(self):
         """获取两种格式的结果文本
         :return: 精简文本，详细文本"""
-        return self._get_result_info_simple(), self._get_result_info_detail()
+        info_simple = self._get_result_info_simple()
+        info_detail = self._get_result_info_detail()
+        # 提取文本后重置计数
+        self._reset()
+        return info_simple, info_detail
     def _get_result_info_simple(self):
         """获取精简的结果文本，仅区分成功和失败"""
         success_count = len(self._success)
@@ -72,7 +76,7 @@ class ResultCollector:
                 f'用户停止:{len(self._user_stopped)}\n')
 
 
-    def reset(self):
+    def _reset(self):
         """重置结果"""
         self._success.clear()
         self._skip.clear()
