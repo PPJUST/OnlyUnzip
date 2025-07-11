@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainWindowwRGtbR.ui'
+## Form generated from reading UI file 'mainWindowRuVikt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -120,8 +120,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"OnlyUnzip", None))
         self.pushButton_home.setText(QCoreApplication.translate("MainWindow", u"\u4e3b\u9875", None))
-        self.pushButton_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801\u672c", None))
+        self.pushButton_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801", None))
         self.pushButton_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
-        self.pushButton_history.setText(QCoreApplication.translate("MainWindow", u"\u5386\u53f2\u8bb0\u5f55", None))
+        self.pushButton_history.setText(QCoreApplication.translate("MainWindow", u"\u5386\u53f2", None))
     # retranslateUi
 

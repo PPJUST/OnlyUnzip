@@ -41,6 +41,8 @@ class WindowPresenter:
         self.page_setting.SignalTopWindow.connect(self.top_window)
         self.page_setting.SignalLockSize.connect(self.lock_size)
         self.page_home.FileInfo.connect(self.accept_files)  # 接收文件信息类
+        self.page_home.SignalNoFiles.connect(self.finished_by_no_files)
+        self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self._bind_model_signal()
 
     def accept_files(self, file_info: FileInfoList):
@@ -118,6 +120,18 @@ class WindowPresenter:
         else:
             finish_info_simple, file_info_detail = self.result_collector.get_result_info()
             self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)
+
+    def finished_by_no_files(self):
+        """提前终止：由于主页模块信号-没有需要处理的文件"""
+        # 如果没有处理任何文件就结束，则直接显示Skip提示，否则显示正常计数信息（递归解压到没有需要解压的文件）
+        if not self.result_collector.get_count_all_result():
+            self.page_home.set_info_skip()
+        else:
+            finish_info_simple, file_info_detail = self.result_collector.get_result_info()
+            self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)
+    def finished_by_temp_folder(self):
+        """提前终止：由于主页模块信号-存在临时文件夹"""
+        self.page_home.set_info_exists_temp_folder()
 
     def collect_result(self, results: FileInfoList):
         """收集结果，用于展示当前批次任务的结果情况"""

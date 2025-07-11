@@ -48,6 +48,24 @@ class ResultCollector:
         # 提取文本后重置计数
         self._reset()
         return info_simple, info_detail
+
+
+    def get_count_all_result(self)->int:
+        """获取所有结果的计数"""
+        count = (len(self._success)+
+                      len(self._skip) +
+                      len(self._warning) +
+                      len(self._wrong_password) +
+                      len(self._missing_volume) +
+                      len(self._wrong_filetype) +
+                      len(self._unknown_error) +
+                      len(self._error_command) +
+                      len(self._not_enough_memory) +
+                      len(self._user_stopped))
+
+        return count
+
+
     def _get_result_info_simple(self):
         """获取精简的结果文本，仅区分成功和失败"""
         success_count = len(self._success)

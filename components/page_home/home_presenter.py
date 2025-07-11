@@ -15,6 +15,8 @@ from components.page_home.res.icon_base64 import *
 class HomePresenter(QObject):
     """主页模块的桥梁组件"""
     FileInfo = Signal(FileInfoList, name='提取的文件信息类')
+    SignalNoFiles = Signal(name='没有需要处理的文件')
+    SignalExistsTempFolder = Signal(name='存在临时文件夹')
 
     def __init__(self, viewer: HomeViewer, model: HomeModel):
         super().__init__()
@@ -42,7 +44,7 @@ class HomePresenter(QObject):
         files = self.model.get_files(paths)
         # 如果没有提取到文件，则不需要进行后续处理，直接终止
         if not files:
-            self.set_info_skip()
+            self.SignalNoFiles.emit()
             return
 
         # 如果是解压模式，则检查文件路径同目录中是否存在解压用临时文件夹，如果存在且不为空文件夹，则直接终止
@@ -55,7 +57,7 @@ class HomePresenter(QObject):
             else:  # 否则检查所有文件所在路径
                 is_temp_exists = function_extract.is_exists_temp_folder(files)
             if is_temp_exists:
-                self.set_info_exists_temp_folder()
+                self.SignalExistsTempFolder.emit()
                 return
 
         # 如果勾选了仅处理压缩文件，则进行一次筛选，剔除非压缩文件
@@ -73,7 +75,7 @@ class HomePresenter(QObject):
 
         # 如果没有需要处理的文件，则直接终止
         if not archive_spliter.is_has_archives():
-            self.set_info_skip()
+            self.SignalNoFiles.emit()
             return
 
         # 将分类对象转换为文件信息类
