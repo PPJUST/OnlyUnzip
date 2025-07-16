@@ -24,10 +24,13 @@ class HomePresenter(QObject):
         self.model = model
 
         # 统计变量
-        self._task_count:int = 0
-        self._task_index:int = 0
-        self._password_count:int=0
-        self._password_index:int = 0
+        self._task_count: int = 0
+        self._task_index: int = 0
+        self._password_count: int = 0
+        self._password_index: int = 0
+
+        # 初始化
+        self.set_icon_home()
 
         # 绑定信号
         self.viewer.Stop.connect(self.stop)
@@ -92,23 +95,14 @@ class HomePresenter(QObject):
         """终止当前任务"""
         self.stop_timer()
 
-
-
-
     def set_task_count(self, count: int):
         """设置总进度：任务总数"""
         self._task_count = count
-
 
     def set_task_index(self, index: int):
         """设置总进度：当前任务索引"""
         self._task_index = index
         self.viewer.set_progress_total(f'{self._task_index}/{self._task_count}')
-
-
-
-
-
 
     def set_current_file(self, filename: str):
         """设置当前处理的文件名"""
@@ -133,14 +127,6 @@ class HomePresenter(QObject):
         self._password_index = index
         self.viewer.set_progress_test(f'{self._password_index}/{self._password_count}')
 
-
-
-
-
-
-
-
-
     def set_current_password(self, password: str):
         """设置当前测试的密码"""
         self.viewer.set_current_password(password)
@@ -153,7 +139,11 @@ class HomePresenter(QObject):
     def stop_timer(self):
         """停止模型组件的计时器"""
         self.model.stop_timing()
+
     """各类状态"""
+
+    def set_default(self):
+        """设置默认状态"""
 
     def set_info_skip(self):
         """设置运行状态 跳过（没有需要处理的文件时）"""
@@ -182,7 +172,8 @@ class HomePresenter(QObject):
         self.viewer.set_current_password('...')
         # 停止计时器
         self.model.stop_timing()
-    def set_info_finished(self,finish_info:str,tooltip:str=''):
+
+    def set_info_finished(self, finish_info: str, tooltip: str = ''):
         """设置运行状态 完成所有任务，结束"""
         # 修改图标
         self.set_icon_complete()
@@ -198,13 +189,9 @@ class HomePresenter(QObject):
 
     """icon方法"""
 
-    def set_default_icon_test(self):
-        """设置默认图标为测试模式"""
-        self.viewer.set_default_icon(ICON_TEST)
-
-    def set_default_icon_extract(self):
-        """设置默认图标为解压模式"""
-        self.viewer.set_default_icon(ICON_EXTRACT)
+    def set_icon_home(self):
+        """设置主页图标"""
+        self.viewer.set_gif_icon(ICON_MIKU)
 
     def set_icon_complete(self):
         """设置完成图标"""

@@ -21,7 +21,8 @@ class HomeViewer(QWidget):
         self.setAcceptDrops(True)
 
         # 初始化
-        self.default_icon: bytes = b''  # 对应模式的图标，用于拖放文件后复原
+        self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
+        self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
 
         # 添加自定义Label
         self.label_icon = LabelIcon()
@@ -35,7 +36,7 @@ class HomeViewer(QWidget):
         :param progress: "-/-"格式的字符串"""
         self.ui.label_progress_total.setText(progress)
 
-    def set_current_file(self, filename: str,tooltip:str=''):
+    def set_current_file(self, filename: str, tooltip: str = ''):
         """设置当前处理的文件名"""
         self.ui.label_current_file.setText(filename)
         if tooltip:
@@ -90,21 +91,26 @@ class HomeViewer(QWidget):
         """设置显示的图标"""
         self.label_icon.set_icon(icon)
 
+        # 赋值给变量，用于拖放后复原
+        self.last_icon = icon
+        self.last_icon_gif = None
+
     def set_gif_icon(self, icon: Union[bytes, str]):
         """设置显示的图标"""
         self.label_icon.set_gif_icon(icon)
 
-    def set_default_icon(self, icon: Union[bytes, str]):
-        """设置默认图标"""
-        self.default_icon = icon
+        # 赋值给变量，用于拖放后复原
+        self.last_icon = None
+        self.last_icon_gif = icon
 
-    def set_icon_drop(self):
-        """设置拖入文件图标"""
-        self.set_icon(ICON_DROP)
-
-    def _set_icon_default(self):
+    def _show_last_icon(self):
         """设置默认图标"""
-        self.set_icon(self.default_icon)
+        if self.last_icon:
+            print('显示静态图标')
+            self.set_icon(self.last_icon)
+        elif self.last_icon_gif:
+            print('显示动态图标')
+            self.set_gif_icon(self.last_icon_gif)
 
     """拖入事件"""
 
@@ -121,12 +127,12 @@ class HomeViewer(QWidget):
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
-            self.set_icon_drop()
+            self.label_icon.set_icon(ICON_DROP)  # 显示拖入图标
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
-        self._set_icon_default()
+        self._show_last_icon()
 
 
 if __name__ == "__main__":
