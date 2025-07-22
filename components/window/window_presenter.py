@@ -3,10 +3,11 @@ import os
 
 import lzytools.file
 
-from common import function_7zip
+from common import function_7zip, function_queue
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
 from components import page_home, page_password, page_setting, page_history
+from components.window.thread_queue_receiver import ThreadQueueReceiver
 from components.window.window_model import WindowModel
 from components.window.window_viewer import WindowViewer
 
@@ -30,6 +31,11 @@ class WindowPresenter:
         self.viewer.add_page_setting(self.page_setting.viewer)
         self.page_history = page_history.get_presenter()
         self.viewer.add_page_history(self.page_history.viewer)
+
+        # 绑定接收线程
+        self.queue_receiver = ThreadQueueReceiver()
+        self.queue_receiver.Data.connect(self.update_extract_progress)
+        self.queue_receiver.start()
 
         # 传参
         self.set_model_setting()
@@ -133,6 +139,10 @@ class WindowPresenter:
         """提前终止：由于主页模块信号-存在临时文件夹"""
         self.page_home.set_info_exists_temp_folder()
 
+    def update_extract_progress(self, progress: int):
+        """更新解压进度"""
+        self.page_home.set_page_extract()
+        self.page_home.set_progress_extract(progress)
     def collect_result(self, results: FileInfoList):
         """收集结果，用于展示当前批次任务的结果情况"""
         for file_info in results.get_file_infos():

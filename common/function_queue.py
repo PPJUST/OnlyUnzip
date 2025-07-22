@@ -60,9 +60,10 @@ class QueueReceiver(QObject):
                 self.queue.task_done()
             time.sleep(0.1)  # 避免CPU占用过高
 
-    def stop(self):
+    def set_stop(self):
         self._running = False
-
+    def set_start(self):
+        self._running = True
 
 # 模块级别创建单例，用于其他模块调用
 # 创建共享队列和信号对象
@@ -74,7 +75,7 @@ queue_sender = QueueSender(shared_queue)
 queue_receiver = QueueReceiver(shared_queue, signals_communication)
 
 # 创建接收线程
-receiver_thread = Thread(target=queue_receiver.receive_data)
+# receiver_thread = Thread(target=queue_receiver.receive_data)
 
 
 # 提供访问接口
@@ -84,9 +85,9 @@ def get_sender():
 def get_receiver():
     """获取接收器对象"""
     return queue_receiver
-def get_receiver_thread():
-    """获取接收线程"""
-    return receiver_thread
+# def get_receiver_thread():
+#     """获取接收线程"""
+#     return receiver_thread
 def get_signals():
     """获取信号对象"""
     return signals_communication

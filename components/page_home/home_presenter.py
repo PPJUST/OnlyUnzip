@@ -140,6 +140,13 @@ class HomePresenter(QObject):
         """停止模型组件的计时器"""
         self.model.stop_timing()
 
+    def set_page_test(self):
+        """切换运行信息页为测试模式"""
+        self.viewer.set_page_test()
+
+    def set_page_extract(self):
+        """切换运行信息页为解压模式"""
+        self.viewer.set_page_extract()
     """各类状态"""
 
     def set_default(self):
