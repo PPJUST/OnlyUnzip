@@ -1,4 +1,7 @@
+from typing import Union
+
 _FAKE_PASSWORD = 'FAKEPASSWORD'
+
 
 class ModelArchive:
     """压缩包处理模式，解压/测试"""
@@ -75,8 +78,6 @@ class ModelBreakFolder:
         value = 'move_files'
 
 
-
-
 class ArchiveRole:
     """压缩包角色，普通压缩包/分卷压缩包（首个分卷）/分卷压缩包（非首个的成员）"""
 
@@ -116,8 +117,8 @@ class Result7zip:
         _7zip_return = 'No error'
         color = [0, 0, 0]
 
-        def __init__(self, password: str=None):
-            if not password or password == _FAKE_PASSWORD :
+        def __init__(self, password: str = None):
+            if not password or password == _FAKE_PASSWORD:
                 password = '无密码'
             self.password = password
 
@@ -194,6 +195,19 @@ class Position:
     class Left:
         """左端"""
         text = '最左端'
+
     class Right:
         """左端"""
         text = '最右端'
+
+
+TYPES_MODEL_ARCHIVE = Union[ModelArchive.Extract, ModelArchive.Test]
+TYPES_MODEL_EXTRACT = Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct]
+TYPES_MODEL_COVER_FILE = Union[
+    ModelCoverFile.Skip, ModelCoverFile.Overwrite, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]
+TYPES_MODEL_BREAK_FOLDER = Union[ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]
+TYPES_ARCHIVE_ROLE = Union[ArchiveRole.Normal, ArchiveRole.VolumeFirst, ArchiveRole.VolumeMember]
+TYPES_MODEL_7ZIP = Union[Model7zip.L, Model7zip.T, Model7zip.X]
+TYPES_RESULT_7ZIP = Union[
+    Result7zip.Success, Result7zip.Skip, Result7zip.Warning, Result7zip.WrongPassword, Result7zip.MissingVolume, Result7zip.WrongFiletype, Result7zip.UnknownError, Result7zip.ErrorCommand, Result7zip.NotEnoughMemory, Result7zip.UserStopped]
+TYPES_POSITION = Union[Position.Left, Position.Right]

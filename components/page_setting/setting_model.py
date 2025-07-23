@@ -2,9 +2,9 @@
 # 用于配置文件的具体方法，包括读取、修改、保存、获取等
 import configparser
 import os
-from typing import Union
 
-from common.class_7zip import ModelArchive, Position, ModelExtract, ModelCoverFile, ModelBreakFolder
+from common.class_7zip import ModelArchive, Position, ModelExtract, ModelCoverFile, ModelBreakFolder, \
+    TYPES_MODEL_ARCHIVE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_COVER_FILE, TYPES_MODEL_EXTRACT
 
 _CONFIG_FILE = 'setting.ini'  # 配置文件的相对路径（默认在主程序的同目录下）
 
@@ -44,7 +44,7 @@ class SettingModel:
     def get_model_archive(self):
         return self._model_archive.read()
 
-    def set_model_archive(self, model: Union[ModelArchive.Test, ModelArchive.Extract]):
+    def set_model_archive(self, model: TYPES_MODEL_ARCHIVE):
         self._model_archive.set(model)
 
     def set_model_archive_extract(self):
@@ -83,7 +83,7 @@ class SettingModel:
     def get_write_filename_position_str(self):
         return self.get_write_filename_position().text
 
-    def set_write_filename_position(self, position: Union[Position.Left, Position.Right]):
+    def set_write_filename_position(self, position: TYPES_POSITION):
         self._write_filename.set_position(position)
 
     def get_write_filename_preview(self):
@@ -92,7 +92,7 @@ class SettingModel:
     def get_model_extract(self):
         return self._model_extract.read()
 
-    def set_model_extract(self, model: Union[ModelExtract.Smart, ModelExtract.Direct, ModelExtract.SameFolder]):
+    def set_model_extract(self, model: TYPES_MODEL_EXTRACT):
         self._model_extract.set(model)
 
     def set_model_extract_smart(self):
@@ -122,8 +122,7 @@ class SettingModel:
     def get_model_cover_str(self):
         return self.get_model_cover().text
 
-    def set_model_cover(self, model: Union[
-        ModelCoverFile.Overwrite, ModelCoverFile.Skip, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]):
+    def set_model_cover(self, model: TYPES_MODEL_COVER_FILE):
         self._mode_cover_file.set(model)
 
     def get_break_folder_is_enable(self):
@@ -138,8 +137,7 @@ class SettingModel:
     def get_break_folder_model_str(self):
         return self.get_break_folder_model().text
 
-    def set_break_folder_model(self, model: Union[
-        ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]):
+    def set_break_folder_model(self, model: TYPES_MODEL_BREAK_FOLDER):
         self._break_folder.set_model(model)
 
     def get_extract_output_folder_is_enable(self):
@@ -263,7 +261,7 @@ class _ChildSettingModelArchive(_ModuleChildSetting):
         self.key = 'model'
         self._default_value = ModelArchive.Test()
 
-    def read(self) -> Union[ModelArchive.Test, ModelArchive.Extract]:
+    def read(self) -> TYPES_MODEL_ARCHIVE:
         """读取设置项"""
         value = self._read_key(self.section, self.key, self._default_value)
         # 将读取的文本值转换为对应的自定义类
@@ -276,7 +274,7 @@ class _ChildSettingModelArchive(_ModuleChildSetting):
         else:
             raise ValueError(self.section, self.key, '无效的设置项值')
 
-    def set(self, value: Union[ModelArchive.Test, ModelArchive.Extract]):
+    def set(self, value: TYPES_MODEL_ARCHIVE):
         """设置设置项"""
         value_str = value.value
         self._set_value(self.section, self.key, value_str)
@@ -352,7 +350,7 @@ class _ChildSettingWriteFilename(_ModuleChildSetting):
         """设置设置项 密码右侧字符"""
         self._set_value(self.section, self.key_right_word, str(value))
 
-    def read_position(self) -> Union[Position.Left, Position.Right]:
+    def read_position(self) -> TYPES_POSITION:
         """读取设置项 密码位置"""
         value = self._read_key(self.section, self.key_position, self._default_value_position)
         if isinstance(value, (Position.Left, Position.Right)):
@@ -364,7 +362,7 @@ class _ChildSettingWriteFilename(_ModuleChildSetting):
         else:
             raise ValueError(self.section, self.key_position, '无效的设置项值')
 
-    def set_position(self, value: Union[Position.Left, Position.Right]):
+    def set_position(self, value: TYPES_POSITION):
         """设置设置项 密码位置"""
         if isinstance(value, (Position.Left, Position.Right)):
             value_str = value.text
@@ -382,7 +380,7 @@ class _ChildSettingModelExtract(_ModuleChildSetting):
         self.key = 'model'
         self._default_value = ModelExtract.Smart()
 
-    def read(self) -> Union[ModelExtract.Smart, ModelExtract.Direct, ModelExtract.SameFolder]:
+    def read(self) -> TYPES_MODEL_EXTRACT:
         """读取设置项"""
         value = self._read_key(self.section, self.key, self._default_value)
         # 将读取的文本值转换为对应的自定义类
@@ -397,7 +395,7 @@ class _ChildSettingModelExtract(_ModuleChildSetting):
         else:
             raise ValueError(self.section, self.key, '无效的设置项值')
 
-    def set(self, value: Union[ModelExtract.Smart, ModelExtract.Direct, ModelExtract.SameFolder]):
+    def set(self, value: TYPES_MODEL_EXTRACT):
         """设置设置项"""
         value_str = value.value
         self._set_value(self.section, self.key, value_str)
@@ -430,8 +428,7 @@ class _ChildSettingModelCover(_ModuleChildSetting):
         self.key = 'model'
         self._default_value = ModelCoverFile.Overwrite()
 
-    def read(self) -> Union[
-        ModelCoverFile.Overwrite, ModelCoverFile.Skip, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]:
+    def read(self) -> TYPES_MODEL_COVER_FILE:
         """读取设置项"""
         value = self._read_key(self.section, self.key, self._default_value)
         # 将读取的文本值转换为对应的自定义类
@@ -449,8 +446,7 @@ class _ChildSettingModelCover(_ModuleChildSetting):
         else:
             raise ValueError(self.section, self.key, '无效的设置项值')
 
-    def set(self, value: Union[
-        ModelCoverFile.Overwrite, ModelCoverFile.Skip, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]):
+    def set(self, value: TYPES_MODEL_COVER_FILE):
         """设置设置项"""
         if not isinstance(value, str):
             value = value.value
@@ -486,7 +482,7 @@ class _ChildSettingBreakFolder(_ModuleChildSetting):
         """设置设置项 是否启用"""
         self._set_value(self.section, self.key_is_enable, str(value))
 
-    def read_model(self) -> Union[ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]:
+    def read_model(self) -> TYPES_MODEL_BREAK_FOLDER:
         """读取设置项 解散模式"""
         value = self._read_key(self.section, self.key_model, self._default_value_model)
         # 将读取的文本值转换为对应的自定义类
@@ -502,7 +498,7 @@ class _ChildSettingBreakFolder(_ModuleChildSetting):
             raise ValueError(self.section, self.key_model, '无效的设置项值')
 
     def set_model(self,
-                  value: Union[ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]):
+                  value: TYPES_MODEL_BREAK_FOLDER):
         """设置设置项 解散模式"""
         if not isinstance(value, str):
             value = value.value

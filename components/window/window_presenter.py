@@ -3,7 +3,7 @@ import os
 
 import lzytools.file
 
-from common import function_7zip, function_queue
+from common import function_7zip
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
 from components import page_home, page_password, page_setting, page_history
@@ -135,6 +135,7 @@ class WindowPresenter:
         else:
             finish_info_simple, file_info_detail = self.result_collector.get_result_info()
             self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)
+
     def finished_by_temp_folder(self):
         """提前终止：由于主页模块信号-存在临时文件夹"""
         self.page_home.set_info_exists_temp_folder()
@@ -143,6 +144,7 @@ class WindowPresenter:
         """更新解压进度"""
         self.page_home.set_page_extract()
         self.page_home.set_progress_extract(progress)
+
     def collect_result(self, results: FileInfoList):
         """收集结果，用于展示当前批次任务的结果情况"""
         for file_info in results.get_file_infos():
@@ -158,7 +160,7 @@ class WindowPresenter:
                 parent_folder = os.path.dirname(extract_path)
                 temp_folder = function_7zip.get_temp_dirpath(parent_folder)
                 if os.path.exists(temp_folder):
-                    lzytools.file.delete_empty_folder(temp_folder,send_to_trash=False)
+                    lzytools.file.delete_empty_folder(temp_folder, send_to_trash=False)
 
     def top_window(self, is_enable: bool):
         """设置窗口置顶"""

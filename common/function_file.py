@@ -66,7 +66,7 @@ def break_folder_top(dirpath: str):
     deepest_file = lzytools.file.get_first_multi_file_dirpath(dirpath)
 
     # 移动到目录之下
-    new_file_dict = move_file_to_folder(deepest_file, dirpath)
+    _ = move_file_to_folder(deepest_file, dirpath)
 
     # 如果底层目录为空，则删除
     if not lzytools.file.get_size(deepest_file):

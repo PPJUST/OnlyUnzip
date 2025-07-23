@@ -1,12 +1,12 @@
 # 主窗口的模型组件
 
-from typing import Union
-
 from PySide6.QtCore import Signal, QObject
 
-from common.class_7zip import Position, ModelExtract, ModelBreakFolder, ModelCoverFile, ModelArchive
+from common.class_7zip import Position, ModelExtract, ModelBreakFolder, ModelCoverFile, ModelArchive, \
+    TYPES_MODEL_EXTRACT, TYPES_MODEL_COVER_FILE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_ARCHIVE
 from common.class_file_info import FileInfoList, FileInfo
 from components.window.thread_7zip import ThreadTest, ThreadExtract, TemplateThread
+
 
 class TemplateModelSignal(QObject):
     """模式模版，用于添加通用信号"""
@@ -18,9 +18,10 @@ class TemplateModelSignal(QObject):
     SignalResult = Signal(FileInfo, name='自定义文件信息类')
     SignalStart = Signal(name='开始')
     SignalFinish = Signal(FileInfoList, name='结束，传递最终的文件信息类清单')
-    
+
     def __init__(self):
         super().__init__()
+
     def _transfer_signal(self, child_thread: TemplateThread):
         """中转信号"""
         child_thread.SignalCurrentFile.connect(self.SignalCurrentFile)
@@ -53,10 +54,11 @@ class WindowModel(QObject):
         # 中转信号
         self._transfer_signal(self.model_test_file)
         self._transfer_signal(self.model_extract_file)
+
     def accept_files(self, file_info: FileInfoList):
         """接收文件信息类，执行解压/测试操作"""
         print('接受处理后的文件信息')
-        if  isinstance(self.archive_model, ModelArchive.Test):
+        if isinstance(self.archive_model, ModelArchive.Test):
             print('执行测试操作')
             self.model_test_file.process_file(file_info)
         elif isinstance(self.archive_model, ModelArchive.Extract):
@@ -66,10 +68,11 @@ class WindowModel(QObject):
     def set_passwords(self, passwords: list):
         self.model_extract_file.set_passwords(passwords)
         self.model_test_file.set_passwords(passwords)
-    def set_archive_model(self, archive_model: Union[ModelArchive.Test, ModelArchive.Extract]):
+
+    def set_archive_model(self, archive_model: TYPES_MODEL_ARCHIVE):
         self.archive_model = archive_model
 
-    def set_extract_model(self, extract_model: Union[ModelExtract.Smart, ModelExtract.Direct, ModelExtract.SameFolder]):
+    def set_extract_model(self, extract_model: TYPES_MODEL_EXTRACT):
         self.model_extract_file.set_extract_model(extract_model)
 
     def set_is_delete_file(self, value: bool):
@@ -78,15 +81,13 @@ class WindowModel(QObject):
     def set_is_recursive_extract(self, value: bool):
         self.model_extract_file.set_is_recursive_extract(value)
 
-    def set_cover_model(self, cover_model: Union[
-        ModelCoverFile.Overwrite, ModelCoverFile.Skip, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]):
+    def set_cover_model(self, cover_model: TYPES_MODEL_COVER_FILE):
         self.model_extract_file.set_cover_model(cover_model)
 
     def set_is_break_folder(self, value: bool):
         self.model_extract_file.set_is_break_folder(value)
 
-    def set_break_folder_model(self, break_folder_model: Union[
-        ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]):
+    def set_break_folder_model(self, break_folder_model: TYPES_MODEL_BREAK_FOLDER):
         self.model_extract_file.set_break_folder_model(break_folder_model)
 
     def set_is_extract_to_folder(self, value: bool):
@@ -110,10 +111,10 @@ class WindowModel(QObject):
     def set_write_filename_right_word(self, value: str):
         self.model_test_file.set_write_filename_right_word(value)
 
-    def set_write_filename_position(self, value: Union[Position.Left, Position.Right]):
+    def set_write_filename_position(self, value: TYPES_POSITION):
         self.model_test_file.set_write_filename_position(value)
 
-    def _transfer_signal(self, child_thread:TemplateModelSignal):
+    def _transfer_signal(self, child_thread: TemplateModelSignal):
         """中转信号"""
         child_thread.SignalCurrentFile.connect(self.SignalCurrentFile)
         child_thread.SignalTaskCount.connect(self.SignalTaskCount)
@@ -123,11 +124,6 @@ class WindowModel(QObject):
         child_thread.SignalResult.connect(self.SignalResult)
         child_thread.SignalStart.connect(self.SignalStart)
         child_thread.SignalFinish.connect(self.SignalFinish)
-
-
-
-
-
 
 
 class ModelTestFile(TemplateModelSignal):
@@ -149,12 +145,14 @@ class ModelTestFile(TemplateModelSignal):
     def set_passwords(self, passwords: list):
         """设置密码"""
         self.passwords = passwords
+
     def process_file(self, file_info: FileInfoList):
         """测试文件"""
         print('传递参数给测试子线程，并执行')
         self.thread_test.set_task(file_info)
         self.thread_test.set_passwords(self.passwords)
         self.thread_test.start()
+
     def set_is_write_filename(self, value: bool):
         self.is_write_filename = value
 
@@ -164,9 +162,8 @@ class ModelTestFile(TemplateModelSignal):
     def set_write_filename_right_word(self, value: str):
         self.write_filename_right_word = value
 
-    def set_write_filename_position(self, value: Union[Position.Left, Position.Right]):
+    def set_write_filename_position(self, value: TYPES_POSITION):
         self.write_filename_position = value
-
 
 
 class ModelExtractFile(TemplateModelSignal):
@@ -193,6 +190,7 @@ class ModelExtractFile(TemplateModelSignal):
 
     def set_passwords(self, passwords: list):
         self.passwords = passwords
+
     def process_file(self, file_info: FileInfoList):
         """解压文件"""
         print('传递参数给解压子线程，并执行')
@@ -200,7 +198,7 @@ class ModelExtractFile(TemplateModelSignal):
         self.thread_extract.set_passwords(self.passwords)
         self.thread_extract.start()
 
-    def set_extract_model(self, extract_model: Union[ModelExtract.Smart, ModelExtract.Direct, ModelExtract.SameFolder]):
+    def set_extract_model(self, extract_model: TYPES_MODEL_EXTRACT):
         self.extract_model = extract_model
 
     def set_is_delete_file(self, value: bool):
@@ -209,16 +207,14 @@ class ModelExtractFile(TemplateModelSignal):
     def set_is_recursive_extract(self, value: bool):
         self.is_recursive_extract = value
 
-    def set_cover_model(self, cover_model: Union[
-        ModelCoverFile.Overwrite, ModelCoverFile.Skip, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]):
+    def set_cover_model(self, cover_model: TYPES_MODEL_COVER_FILE):
         self.cover_model = cover_model
         self._set_thread_args()
 
     def set_is_break_folder(self, value: bool):
         self.is_break_folder = value
 
-    def set_break_folder_model(self, break_folder_model: Union[
-        ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]):
+    def set_break_folder_model(self, break_folder_model: TYPES_MODEL_BREAK_FOLDER):
         self.break_folder_model = break_folder_model
 
     def set_is_extract_to_folder(self, value: bool):
@@ -239,13 +235,15 @@ class ModelExtractFile(TemplateModelSignal):
 
     def _set_thread_args(self):
         """设置子线程的参数"""
-        self.thread_extract.cover_model=self.cover_model.switch
-        self.thread_extract.is_extract_to_folder=self.is_extract_to_folder
-        self.thread_extract.extract_output_path=self.extract_output_folder
-        self.thread_extract.is_filter=self.is_filter
-        self.thread_extract.filter_rules=self.filter_rules
-        self.thread_extract.extract_model =self.extract_model
-        self.thread_extract.is_break_folder =self.is_break_folder
-        self.thread_extract.break_folder_model =self.break_folder_model
-        self.thread_extract.is_delete_file =self.is_delete_file
+        # 测试子线程
 
+        # 解压子线程
+        self.thread_extract.cover_model = self.cover_model.switch
+        self.thread_extract.is_extract_to_folder = self.is_extract_to_folder
+        self.thread_extract.extract_output_path = self.extract_output_folder
+        self.thread_extract.is_filter = self.is_filter
+        self.thread_extract.filter_rules = self.filter_rules
+        self.thread_extract.extract_model = self.extract_model
+        self.thread_extract.is_break_folder = self.is_break_folder
+        self.thread_extract.break_folder_model = self.break_folder_model
+        self.thread_extract.is_delete_file = self.is_delete_file

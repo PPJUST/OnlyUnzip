@@ -14,10 +14,10 @@ class PasswordPresenter:
         self._show_pw_count()
         self._bind_signal()
 
-
     def get_passwords(self):
         """获取密码清单"""
         return self.model.get_passwords()
+
     def _bind_signal(self):
         """绑定Viewer信号"""
         self.viewer.ReadClipboard.connect(self._read_clipboard)

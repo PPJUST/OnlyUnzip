@@ -1,5 +1,5 @@
 # 7zip结果收集类
-from common.class_7zip import Result7zip
+from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
 
 
 class ResultCollector:
@@ -17,7 +17,7 @@ class ResultCollector:
         self._not_enough_memory = []
         self._user_stopped = []
 
-    def add_result(self, result: Result7zip):
+    def add_result(self, result: TYPES_RESULT_7ZIP):
         """添加结果"""
         if isinstance(result, Result7zip.Success):
             self._success.append(result)
@@ -49,22 +49,20 @@ class ResultCollector:
         self._reset()
         return info_simple, info_detail
 
-
-    def get_count_all_result(self)->int:
+    def get_count_all_result(self) -> int:
         """获取所有结果的计数"""
-        count = (len(self._success)+
-                      len(self._skip) +
-                      len(self._warning) +
-                      len(self._wrong_password) +
-                      len(self._missing_volume) +
-                      len(self._wrong_filetype) +
-                      len(self._unknown_error) +
-                      len(self._error_command) +
-                      len(self._not_enough_memory) +
-                      len(self._user_stopped))
+        count = (len(self._success) +
+                 len(self._skip) +
+                 len(self._warning) +
+                 len(self._wrong_password) +
+                 len(self._missing_volume) +
+                 len(self._wrong_filetype) +
+                 len(self._unknown_error) +
+                 len(self._error_command) +
+                 len(self._not_enough_memory) +
+                 len(self._user_stopped))
 
         return count
-
 
     def _get_result_info_simple(self):
         """获取精简的结果文本，仅区分成功和失败"""
@@ -92,7 +90,6 @@ class ResultCollector:
                 f'命令行错误:{len(self._error_command)}\n'
                 f'磁盘空间不足:{len(self._not_enough_memory)}\n'
                 f'用户停止:{len(self._user_stopped)}\n')
-
 
     def _reset(self):
         """重置结果"""

@@ -1,10 +1,10 @@
 # 压缩文件拆分类
 import os
-from typing import Tuple, Dict, Union
+from typing import Tuple, Dict
 
 import lzytools
 
-from common.class_7zip import ArchiveRole
+from common.class_7zip import ArchiveRole, TYPES_ARCHIVE_ROLE
 
 
 class ArchiveSpliter:
@@ -12,8 +12,9 @@ class ArchiveSpliter:
 
     def __init__(self):
         self.archives = []  # 压缩文件列表（如果是分卷压缩文件，则仅包含首个分卷包）
-        self._archive_members:Dict[str,list] = dict()  # 压缩文件成员字典，格式为{首个文件:[该组的所有文件], ...}
-        self._archive_roles:Dict[str,Union[ArchiveRole.Normal, ArchiveRole.VolumeFirst, ArchiveRole.VolumeMember]] = dict()  # 压缩文件角色字典，格式为{文件路径:压缩文件角色类, ...}
+        self._archive_members: Dict[str, list] = dict()  # 压缩文件成员字典，格式为{首个文件:[该组的所有文件], ...}
+        self._archive_roles: Dict[str, TYPES_ARCHIVE_ROLE] = dict()  # 压缩文件角色字典，格式为{文件路径:压缩文件角色类, ...}
+
     def analyse_files(self, files: list):
         """处理文件列表
         :param files: 需要拆分的文件列表"""
@@ -57,6 +58,7 @@ class ArchiveSpliter:
     def get_members(self, filepath: str):
         """获取文件路径对应的压缩文件成员列表"""
         return self._archive_members[filepath].copy()
+
     @staticmethod
     def _split(files) -> Tuple[list, list]:
         """"按类型拆分压缩文件
@@ -71,7 +73,7 @@ class ArchiveSpliter:
         return normal_archives, volume_archives
 
     @staticmethod
-    def _analyse_volume_archive(volume_archives:list) -> Tuple[list, dict]:
+    def _analyse_volume_archive(volume_archives: list) -> Tuple[list, dict]:
         """"进一步处理分卷压缩文件
         :return: 首个分卷包列表，分卷包成员字典（格式为{首个文件:[该组的所有文件], ...}）"""
         parent_dirpaths = set()  # 父目录集合，用于后续补充缺失的分卷包

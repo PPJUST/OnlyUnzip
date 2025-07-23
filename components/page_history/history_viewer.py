@@ -35,7 +35,6 @@ class HistoryViewer(QWidget):
         self.ui.listWidget_records.addItem(item)
         self.ui.listWidget_records.scrollToBottom()  # 滚动到底部
 
-
     def _context_menu(self, pos):
         """右键菜单"""
         selected_item = self.ui.listWidget_records.currentItem()

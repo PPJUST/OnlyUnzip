@@ -9,8 +9,8 @@ from components.page_setting.setting_viewer import SettingViewer
 
 class SettingPresenter(QObject):
     """设置模块的桥梁组件"""
-    SignalTopWindow = Signal( bool,name='是否置顶窗口')
-    SignalLockSize = Signal( bool,name='是否锁定窗口大小')
+    SignalTopWindow = Signal(bool, name='是否置顶窗口')
+    SignalLockSize = Signal(bool, name='是否锁定窗口大小')
 
     def __init__(self, viewer: SettingViewer, model: SettingModel):
         super().__init__()
@@ -20,7 +20,6 @@ class SettingPresenter(QObject):
         # 初始化
         self._load_setting()  # 注意 必须在绑定信号前加载初始设置更新UI，否则更新时会触发对应信号
         self._bind_signal()
-
 
     def get_archive_model(self):
         """获取当前的压缩文件处理模式 解压/测试"""
@@ -112,4 +111,3 @@ class SettingPresenter(QObject):
         self.viewer.set_top_window(self.model.get_top_window_is_enable())
 
         self.viewer.set_lock_size(self.model.get_lock_size_is_enable())
-

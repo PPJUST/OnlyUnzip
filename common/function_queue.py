@@ -1,6 +1,5 @@
 import time
 from queue import Queue
-from threading import Thread
 
 from PySide6.QtCore import Signal, QObject
 
@@ -14,11 +13,9 @@ class CommunicationSignals(QObject):
         self.data_received.emit(data)
 
 
-
 class QueueSender:
     _instance = None
     _is_init = False
-
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -29,7 +26,6 @@ class QueueSender:
         if not hasattr(self, 'queue'):  # 防止重复初始化
             self.queue = queue or Queue()
 
-
     def send_data(self, data):
         print(f"Sender: 发送数据 {data}")
         self.queue.put(data)
@@ -38,11 +34,11 @@ class QueueSender:
 class QueueReceiver(QObject):
     _instance = None
 
-
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
+
     def __init__(self, queue, signal):
         super().__init__()
         self.queue = queue
@@ -62,8 +58,10 @@ class QueueReceiver(QObject):
 
     def set_stop(self):
         self._running = False
+
     def set_start(self):
         self._running = True
+
 
 # 模块级别创建单例，用于其他模块调用
 # 创建共享队列和信号对象
@@ -74,6 +72,7 @@ signals_communication = CommunicationSignals()
 queue_sender = QueueSender(shared_queue)
 queue_receiver = QueueReceiver(shared_queue, signals_communication)
 
+
 # 创建接收线程
 # receiver_thread = Thread(target=queue_receiver.receive_data)
 
@@ -82,9 +81,13 @@ queue_receiver = QueueReceiver(shared_queue, signals_communication)
 def get_sender():
     """获取发送器对象"""
     return queue_sender
+
+
 def get_receiver():
     """获取接收器对象"""
     return queue_receiver
+
+
 # def get_receiver_thread():
 #     """获取接收线程"""
 #     return receiver_thread

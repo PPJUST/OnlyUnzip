@@ -19,6 +19,7 @@ class PasswordModel:
     def get_passwords(self):
         """获取密码列表"""
         return self.password_db.get_passwords()
+
     @staticmethod
     def read_clipboard():
         """读取剪切板，并返回读取的内容"""

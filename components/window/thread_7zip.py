@@ -1,12 +1,12 @@
 import os
 import time
-from typing import Union
 
 import lzytools.file
 from PySide6.QtCore import QThread, Signal
 
 from common import function_7zip, function_move, function_file
-from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder
+from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
+    TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
 
 _FAKE_PASSWORD = 'FAKEPASSWORD'
@@ -69,6 +69,13 @@ class TemplateThread(QThread):
 class ThreadTest(TemplateThread):
     """测试子线程"""
 
+    def __init__(self):
+        super().__init__()
+        self.is_write_filename = False
+        self.write_left_part = ''
+        self.write_right_part = ''
+        self.write_position = Position.Left()
+
     def run(self):
         print('执行测试子线程')
         self.SignalStart.emit()
@@ -82,6 +89,13 @@ class ThreadTest(TemplateThread):
             self.SignalCurrentFile.emit(file_first)
             print('当前处理的文件：', file_first)
             test_result = self.test_file(file_first, self.passwords)
+
+            # 如果结果是成功，则进行进一步操作
+            if isinstance(test_result, Result7zip.Success):
+                # 是否将密码写入文件名
+                if self.is_write_filename:
+                    right_password = test_result.password
+                    self._write_to_filename(file_info, right_password)
 
             # 将结果写入文件信息类，并发送信号
             file_info.set_7zip_result(test_result)
@@ -123,6 +137,34 @@ class ThreadTest(TemplateThread):
         # 返回最终结果
         return final_result
 
+    def _write_to_filename(self, file_info: FileInfo, password: str):
+        """将密码写入文件名"""
+        # 写入文件名时，写入组中所有的文件
+        # 密码部分
+        pw_part = f'{self.write_left_part}{password}{self.write_right_part}'
+        # 需要重命名的文件列表
+        if file_info.related_files:
+            files_need_to_change = list(file_info.related_files)
+        else:
+            files_need_to_change = [file_info.filepath]
+        # 写入位置
+        position = self.write_position
+
+        # 执行重命名
+        for file in files_need_to_change:
+            filetitle = lzytools.archive.get_filetitle(file)
+            extension = os.path.basename(file).replace(filetitle, '', 1)
+            # 组合新的文件名
+            if isinstance(position, Position.Left):
+                new_filename = f'{pw_part}{filetitle}{extension}'
+            elif isinstance(position, Position.Right):
+                new_filename = f'{filetitle}{pw_part}{extension}'
+            else:
+                raise Exception('位置参数错误')
+            # 重命名
+            new_filepath = os.path.join(os.path.dirname(file), new_filename)
+            os.rename(file, new_filepath)
+
 
 class ThreadExtract(TemplateThread):
     """解压子线程"""
@@ -138,10 +180,9 @@ class ThreadExtract(TemplateThread):
         self.is_delete_file: bool = False
 
         # 解压后参数
-        self.extract_model: Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct] = None  # 解压模式
+        self.extract_model: TYPES_MODEL_EXTRACT = None  # 解压模式
         self.is_break_folder: bool = False  # 是否解散文件夹
-        self.break_folder_model: Union[
-            ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveFiles] = None
+        self.break_folder_model: TYPES_MODEL_BREAK_FOLDER = None
 
     def run(self):
         print('执行解压子线程')

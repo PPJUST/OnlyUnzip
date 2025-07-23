@@ -1,16 +1,14 @@
 import os
 import re
 import subprocess
-from typing import Tuple, Union
+from typing import Union
 
 from common import function_queue
-from common.class_7zip import Model7zip, Result7zip
+from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
 from common.function_extract import TEMP_EXTRACT_FOLDER
-from common.function_queue import QueueSender
 
 
-
-def _process_7zip_with_run(_7zip_command:Union[str, list]):
+def _process_7zip_with_run(_7zip_command: Union[str, list]):
     """使用run调用7zip执行传入语句（直接返回结果，不需要实时读取管道信息）
     :param _7zip_command: 7zip命令行"""
     # 清理一次命令行
@@ -26,14 +24,15 @@ def _process_7zip_with_run(_7zip_command:Union[str, list]):
                              universal_newlines=True)
     return process
 
-def process_7zip_l(_7zip_path:str, file:str, password: str):
+
+def process_7zip_l(_7zip_path: str, file: str, password: str):
     """测试指定文件的密码
     :param _7zip_path: 7zip路径
     :param file: 需要测试的文件路径
     :param password: 需要测试的密码
     :return: 7zip结果类"""
-    command = [_7zip_path,'l',file, '-p' + password]
-    process =  _process_7zip_with_run(command)
+    command = [_7zip_path, 'l', file, '-p' + password]
+    process = _process_7zip_with_run(command)
     _7zip_result = _analyse_process_return(process)
     print('测试结果', _7zip_result)
     # 结果为”成功“时将正确密码写入结果类中
@@ -43,16 +42,15 @@ def process_7zip_l(_7zip_path:str, file:str, password: str):
     return _7zip_result
 
 
-
-def process_7zip_t(_7zip_path:str, file:str, password: str, inside_path:str= ''):
+def process_7zip_t(_7zip_path: str, file: str, password: str, inside_path: str = ''):
     """测试指定文件的密码
     :param _7zip_path: 7zip路径
     :param file: 需要测试的文件路径
     :param password: 需要测试的密码
     :param inside_path: 如果测试的文件是压缩文件，则可以尝试仅测试压缩文件内部的其中1个文件
     :return: 7zip结果类"""
-    command = [_7zip_path,'t',file, '-p' + password,inside_path]
-    process =  _process_7zip_with_run(command)
+    command = [_7zip_path, 't', file, '-p' + password, inside_path]
+    process = _process_7zip_with_run(command)
     _7zip_result = _analyse_process_return(process)
     print('测试结果', _7zip_result)
     # 结果为”成功“时将正确密码写入结果类中
@@ -61,7 +59,9 @@ def process_7zip_t(_7zip_path:str, file:str, password: str, inside_path:str= '')
 
     return _7zip_result
 
-def process_7zip_x(_7zip_path:str, file: str, password: str, cover_model: str, output_folder: str, filter_rule: str= ''):
+
+def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
+                   filter_rule: str = ''):
     """解压指定文件
     :param _7zip_path: 7zip路径
     :param file: 需要解压的文件路径
@@ -74,7 +74,8 @@ def process_7zip_x(_7zip_path:str, file: str, password: str, cover_model: str, o
     queue_sender = function_queue.get_sender()
 
     # 同时读取stdout和stderr会导致管道堵塞，所以需要将两个输出流重定向至同一个管道中（使用switch：'bso1','bsp1',bse1'）
-    command = [_7zip_path, 'x', file, '-bsp1', '-bse1', '-bso1', cover_model, '-p' + password,'-o' + output_folder,filter_rule]
+    command = [_7zip_path, 'x', file, '-bsp1', '-bse1', '-bso1', cover_model, '-p' + password, '-o' + output_folder,
+               filter_rule]
     # 清理一次命令行
     if isinstance(command, list):
         command = [i for i in command if i.strip()]
@@ -90,7 +91,7 @@ def process_7zip_x(_7zip_path:str, file: str, password: str, cover_model: str, o
     # 实时读取输出流，提取信息
     # （使用Popen调用7zip时，返回码为2时的报错信息为"<_io.TextIOWrapper name=4 encoding='cp936'>"，
     # 无法根据该报错信息判断错误类型，所以需要在输出流中分析信息进行判断）
-    error_type: Result7zip = None
+    error_type: TYPES_RESULT_7ZIP = None
     is_read_stderr = True  # 是否读取stderr流，出现报错事件/读取到进度信息后不再需要读取
     is_read_progress = True  # 是否读取进度信息，出现报错事件后不再需要读取
     while True:
@@ -150,12 +151,14 @@ def process_7zip_x(_7zip_path:str, file: str, password: str, cover_model: str, o
     else:  # 兜底
         return Result7zip.UnknownError('未知错误')
 
-def get_temp_dirpath(dirpath:str):
+
+def get_temp_dirpath(dirpath: str):
     """获取根据传入路径计算的临时文件夹路径"""
     return os.path.normpath(os.path.join(dirpath, TEMP_EXTRACT_FOLDER))
 
 
-def progress_7zip_x_with_temp_folder(_7zip_path:str, file: str, password: str, cover_model: str, output_folder: str, filter_rule: str= ''):
+def progress_7zip_x_with_temp_folder(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
+                                     filter_rule: str = ''):
     """解压指定文件（解压至临时文件夹中）
     :param _7zip_path: 7zip路径
     :param file: 需要解压的文件路径
@@ -166,7 +169,6 @@ def progress_7zip_x_with_temp_folder(_7zip_path:str, file: str, password: str, c
     :return: 7zip结果类"""
     extract_dirpath_temp = get_temp_dirpath(output_folder)
     return process_7zip_x(_7zip_path, file, password, cover_model, extract_dirpath_temp, filter_rule)
-
 
 
 def _analyse_process_return(process: subprocess.CompletedProcess):
@@ -230,10 +232,3 @@ def _read_process_stdout_get_files(process: subprocess.CompletedProcess):
         files_dict['paths'] = paths
 
     return files_dict
-
-
-
-
-
-
-

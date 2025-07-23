@@ -93,7 +93,6 @@ class SettingViewer(QWidget):
         self.ui.widget_extract.setVisible(False)
         self.ui.widget_test.setVisible(True)
 
-
     def set_setting_try_unknown_filetype(self, is_enable: bool):
         """通用选项
         设置是否尝试处理未知格式的文件"""

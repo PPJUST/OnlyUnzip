@@ -14,7 +14,6 @@ class PasswordViewer(QWidget):
     OpenPassword = Signal(name="打开密码文件")
     UpdatePassword = Signal(str, name="更新密码本")
 
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_Form()
