@@ -8,9 +8,7 @@ from common import function_7zip, function_move, function_file
 from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
-
-_FAKE_PASSWORD = 'FAKEPASSWORD'
-_7ZIP_PATH = r'./7-Zip/7z.exe'
+from common.function_7zip import _7ZIP_PATH, _FAKE_PASSWORD
 
 
 class TemplateThread(QThread):
@@ -113,12 +111,13 @@ class ThreadTest(TemplateThread):
         # 先测试一次虚拟密码，根据测试结果选择使用l或t指令（l指令比t指令要快，优先使用l指令）
         print('执行一次虚拟密码测试')
         fake_result = self._run_command_l_with_fake_password(filepath)
-        # 备忘录 提取内部路径，l或t可以仅测试其中一个文件
+        # 提取内部最小的文件路径，l或t可以仅测试其中一个文件，以加快速度
+        smallest_file_path_inside = function_7zip.get_smallest_file_in_archive(filepath)
         if fake_result is True:  # 可以使用l指令进行后续测试
             print('使用l指令进行密码测试')
             for index_pw, pw in enumerate(passwords, start=1):
                 self.SignalPwIndex.emit(index_pw)
-                final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw)
+                final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw,smallest_file_path_inside)
                 # 如果结果是成功，则寻找到正确密码，否则继续进行测试
                 if isinstance(final_result, Result7zip.Success):
                     break
@@ -126,7 +125,7 @@ class ThreadTest(TemplateThread):
             print('使用t指令进行密码测试')
             for index_pw, pw in enumerate(passwords, start=1):
                 self.SignalPwIndex.emit(index_pw)
-                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw)
+                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw,smallest_file_path_inside)
                 # 如果结果是成功，则寻找到正确密码，否则继续进行测试
                 if isinstance(final_result, Result7zip.Success):
                     break
@@ -215,7 +214,6 @@ class ThreadExtract(TemplateThread):
         # 先测试一次虚拟密码，根据测试结果选择使用的指令
         print('执行一次虚拟密码测试')
         fake_result = self._run_command_l_with_fake_password(filepath)
-        # 备忘录 提取内部路径，l或t可以仅测试其中一个文件
         if fake_result is True:  # 可以使用l指令进行后续测试
             print('使用l指令进行密码测试，并在找到密码后进行解压')
             final_result, extract_path = self.extract_after_test_l(filepath, passwords)
@@ -309,12 +307,14 @@ class ThreadExtract(TemplateThread):
 
     def extract_after_test_l(self, filepath: str, passwords: list):
         """使用l命令进行测试，并在搜索到正确密码后执行解压操作，返回最终结果类"""
+        # 提取内部最小的文件路径，l或t可以仅测试其中一个文件，以加快速度
+        smallest_file_path_inside = function_7zip.get_smallest_file_in_archive(filepath)
         # 先测试，找到密码后再解压
         final_result = None  # 最终结果
         extract_path = None  # 如果成功处理，则为解压后最终的路径
         for index_pw, pw in enumerate(passwords, start=1):
             self.SignalPwIndex.emit(index_pw)
-            final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw)
+            final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw,smallest_file_path_inside)
             if isinstance(final_result, Result7zip.Success):
                 print('搜索到正确密码，执行解压操作')
                 true_password = pw

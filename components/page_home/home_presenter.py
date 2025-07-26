@@ -53,7 +53,7 @@ class HomePresenter(QObject):
         # 如果是解压模式，则检查文件路径同目录中是否存在解压用临时文件夹，如果存在且不为空文件夹，则直接终止
         archive_model = function_setting.get_archive_model()
         if isinstance(archive_model, ModelArchive.Extract):
-            # 如果指定了目标解压目录，则只需要检查该目录
+            # 如果指定了解压输出目录，则只需要检查该目录
             target_path = function_setting.get_extract_output_folder()
             if target_path:
                 is_temp_exists = function_extract.is_exists_temp_folder(target_path)
