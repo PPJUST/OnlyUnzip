@@ -19,7 +19,7 @@ if __name__ == "__main__":
     presenter = window.get_presenter()
     viewer = presenter.viewer
     model = presenter.model
-    viewer.setWindowTitle('OnlyUnzip v3.0.0')
+    viewer.setWindowTitle('OnlyUnzip v2.0.0')
 
     viewer.show()
     app_.exec()

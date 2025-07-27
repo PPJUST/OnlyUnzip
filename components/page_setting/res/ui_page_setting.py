@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingDjlcql.ui'
+## Form generated from reading UI file 'page_settingqduUSR.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -258, 301, 620))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 611))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -81,13 +81,6 @@ class Ui_Form(object):
         self.checkBox_write_filename.setObjectName(u"checkBox_write_filename")
 
         self.verticalLayout_3.addWidget(self.checkBox_write_filename)
-
-        self.line_3 = QFrame(self.widget_test)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.Shape.HLine)
-        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_3.addWidget(self.line_3)
 
         self.label_4 = QLabel(self.widget_test)
         self.label_4.setObjectName(u"label_4")
