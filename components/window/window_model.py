@@ -2,7 +2,7 @@
 
 from PySide6.QtCore import Signal, QObject
 
-from common.class_7zip import Position, ModelExtract, ModelBreakFolder, ModelCoverFile, ModelArchive, \
+from common.class_7zip import ModelExtract, ModelBreakFolder, ModelCoverFile, ModelArchive, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_COVER_FILE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_ARCHIVE
 from common.class_file_info import FileInfoList, FileInfo
 from components.window.thread_7zip import ThreadTest, ThreadExtract, TemplateThread
@@ -133,11 +133,6 @@ class ModelTestFile(TemplateModelSignal):
         super().__init__()
         self.thread_test = ThreadTest()
         self.passwords = list()
-        # 初始化参数项
-        self.is_write_filename = False  # 将密码写入文件名
-        self.write_filename_left_word = ''  # 将密码写入文件名时的左侧字符
-        self.write_filename_right_word = ''  # 将密码写入文件名时的右侧字符
-        self.write_filename_position = Position.Left()  # 将密码写入文件名时的位置
 
         # 中转子线程信号
         self._transfer_signal(self.thread_test)
@@ -154,16 +149,16 @@ class ModelTestFile(TemplateModelSignal):
         self.thread_test.start()
 
     def set_is_write_filename(self, value: bool):
-        self.is_write_filename = value
+        self.thread_test.is_write_filename = value
 
     def set_write_filename_left_word(self, value: str):
-        self.write_filename_left_word = value
+        self.thread_test.write_left_part = value
 
     def set_write_filename_right_word(self, value: str):
-        self.write_filename_right_word = value
+        self.thread_test.write_right_part = value
 
     def set_write_filename_position(self, value: TYPES_POSITION):
-        self.write_filename_position = value
+        self.thread_test.write_position = value
 
 
 class ModelExtractFile(TemplateModelSignal):

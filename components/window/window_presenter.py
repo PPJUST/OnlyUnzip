@@ -73,7 +73,7 @@ class WindowPresenter:
         is_write_filename = self.page_setting.model.get_write_filename_is_enable()
         write_filename_left_part = self.page_setting.model.get_write_filename_left_word()
         write_filename_right_part = self.page_setting.model.get_write_filename_right_word()
-        write_filename_position = self.page_setting.model.get_write_filename_position_str()
+        write_filename_position = self.page_setting.model.get_write_filename_position()
         self.model.set_is_write_filename(is_write_filename)
         self.model.set_write_filename_left_word(write_filename_left_part)
         self.model.set_write_filename_right_word(write_filename_right_part)

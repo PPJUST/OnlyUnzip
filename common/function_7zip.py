@@ -7,8 +7,10 @@ from common import function_queue
 from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
 from common.function_extract import TEMP_EXTRACT_FOLDER
 
-_FAKE_PASSWORD = 'FAKEPASSWORD'
+FAKE_PASSWORD = 'FAKEPASSWORD'
 _7ZIP_PATH = r'./7-Zip/7z.exe'
+
+
 def _process_7zip_with_run(_7zip_command: Union[str, list]):
     """使用run调用7zip执行传入语句（直接返回结果，不需要实时读取管道信息）
     :param _7zip_command: 7zip命令行"""
@@ -26,7 +28,7 @@ def _process_7zip_with_run(_7zip_command: Union[str, list]):
     return process
 
 
-def process_7zip_l(_7zip_path: str, file: str, password: str,inside_path:str=None):
+def process_7zip_l(_7zip_path: str, file: str, password: str, inside_path: str = None):
     """测试指定文件的密码
     :param _7zip_path: 7zip路径
     :param file: 需要测试的文件路径
@@ -238,16 +240,16 @@ def _read_process_stdout_get_files(process: subprocess.CompletedProcess):
     return files_dict
 
 
-
-
-def get_smallest_file_in_archive(archive_path:str):
+def get_smallest_file_in_archive(archive_path: str):
     """获取压缩文件中最小的文件内部路径"""
+    print('提取压缩文件内部文件路径')
     # 测试一次压缩文件，读取返回信息
-    result = subprocess.run(
-        [_7ZIP_PATH, "l", archive_path],
-        capture_output=True,
-        text=True,
-        check=True)
+    command = [_7ZIP_PATH, "l", archive_path, f"-p{FAKE_PASSWORD}"]  # 需要指定密码，否则7zip会卡在输入密码阶段
+    result = subprocess.run(command,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True,
+                            universal_newlines=True)
 
     # 解析返回信息，提取文件结构
     if "--------" not in result.stdout:
@@ -259,13 +261,19 @@ def get_smallest_file_in_archive(archive_path:str):
     # 先找表头索引
     for index, line in enumerate(lines):
         if line.startswith("--------"):
-            index_title = index-1
+            index_title = index - 1
             break
     # 再找表尾索引
     for index, line in enumerate(lines[::-1]):
         if line.startswith("--------"):
-            index_end = len(lines)-index
+            index_end = len(lines) - index
             break
+    # 测试一次索引号，如果不存在则直接返回空
+    try:
+        index_title
+        index_end
+    except NameError:
+        return None
     # 提取信息行
     lines_info = lines[index_title:index_end]
     # 解析信息行中每列的起始索引和结束索引
@@ -279,9 +287,9 @@ def get_smallest_file_in_archive(archive_path:str):
     start_compressed = end_size + 1
     end_compressed = line_split.find(' -', start_compressed)
     start_name = end_compressed + 1
-    end_name = start_name+200
+    end_name = start_name + 200
     # 转换为dict格式
-    infos:list[dict] = []
+    infos: list[dict] = []
     for line in lines_info:
         data = line[start_data_time: end_data_time].strip()
         attr = line[start_attr: end_attr].strip()
@@ -304,6 +312,5 @@ def get_smallest_file_in_archive(archive_path:str):
             continue
         else:
             smallest_file = info_dict['name']
-
 
     return smallest_file
