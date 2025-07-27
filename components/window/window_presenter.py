@@ -121,11 +121,11 @@ class WindowPresenter:
                 self.page_home.drop_paths(success_filepaths)
             # 如果不需要进行递归解压，则结束本批次任务，显示结束信息
             else:
-                finish_info_simple, file_info_detail = self.result_collector.get_result_info()
-                self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)
+                result_info_simple, file_info_detail = self.result_collector.get_result_info()
+                self.page_home.set_info_finished(result_info_simple, result_info_tip=file_info_detail)
         else:
-            finish_info_simple, file_info_detail = self.result_collector.get_result_info()
-            self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)
+            result_info_simple, file_info_detail = self.result_collector.get_result_info()
+            self.page_home.set_info_finished(result_info_simple, result_info_tip=file_info_detail)
 
     def finished_by_no_files(self):
         """提前终止：由于主页模块信号-没有需要处理的文件"""
@@ -134,7 +134,7 @@ class WindowPresenter:
             self.page_home.set_info_skip()
         else:
             finish_info_simple, file_info_detail = self.result_collector.get_result_info()
-            self.page_home.set_info_finished(finish_info_simple, tooltip=file_info_detail)
+            self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
 
     def finished_by_temp_folder(self):
         """提前终止：由于主页模块信号-存在临时文件夹"""

@@ -23,6 +23,7 @@ class HomeViewer(QWidget):
         # 初始化
         self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
+        self.turn_page_welcome()
 
         # 添加自定义Label
         self.label_icon = LabelIcon()
@@ -30,6 +31,28 @@ class HomeViewer(QWidget):
 
         # 绑定信号
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
+
+    """欢迎页"""
+
+    def turn_page_welcome(self):
+        """切换到欢迎页"""
+        self.ui.stackedWidget.setCurrentIndex(0)
+
+    """步骤提示页"""
+
+    def turn_page_step(self):
+        """切换到步骤提示页"""
+        self.ui.stackedWidget.setCurrentIndex(1)
+
+    def set_step_notice(self, notice: str):
+        """设置步骤提示"""
+        self.ui.label_step_notice.setText(notice)
+
+    """测试和解压页"""
+
+    def turn_page_test_and_extract(self):
+        """切换到测试和解压页"""
+        self.ui.stackedWidget.setCurrentIndex(2)
 
     def set_progress_total(self, progress: str):
         """设置总进度 -/-
@@ -79,11 +102,32 @@ class HomeViewer(QWidget):
 
     def set_page_test(self):
         """切换运行信息页为测试模式"""
-        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.stackedWidget_2.setCurrentIndex(0)
 
     def set_page_extract(self):
         """切换运行信息页为解压模式"""
-        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+
+    """结果页"""
+
+    def turn_page_result(self):
+        """切换到结果页"""
+        self.ui.stackedWidget.setCurrentIndex(3)
+
+    def show_time_final(self):
+        """设置全部任务结束后的总耗时"""
+        time = self.ui.label_runtime_total.text()  # 直接读取另一个label的文本即可
+        self.ui.label_time_final.setText(time)
+
+    def show_process_count(self, count: Union[int, str]):
+        """设置处理的文件数量"""
+        self.ui.label_process_file_count.setText(str(count))
+
+    def show_result_count(self, result_info: str, result_info_tip: str = ''):
+        """设置处理结果的统计"""
+        self.ui.label_process_file_count.setText(result_info)
+        if result_info_tip:
+            self.ui.label_process_file_count.setToolTip(result_info_tip)
 
     """icon方法"""
 

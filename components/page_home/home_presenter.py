@@ -1,5 +1,7 @@
 # 主页模块的桥梁组件
 import os
+import re
+from typing import Union
 
 import lzytools
 from PySide6.QtCore import Signal, QObject
@@ -95,12 +97,32 @@ class HomePresenter(QObject):
         """终止当前任务"""
         self.stop_timer()
 
+    """主页"""
+
+    def turn_page_welcome(self):
+        """切换到欢迎页"""
+        self.viewer.turn_page_welcome()
+
+    """步骤提示页"""
+
+    def set_step_notice(self, notice: str):
+        """设置步骤提示"""
+        self.viewer.turn_page_step()
+        self.viewer.set_step_notice(notice)
+
+    """测试与解压页"""
+
+    def turn_page_test_and_extract(self):
+        """切换到测试和解压页"""
+        self.viewer.turn_page_test_and_extract()
+
     def set_task_count(self, count: int):
         """设置总进度：任务总数"""
         self._task_count = count
 
     def set_task_index(self, index: int):
         """设置总进度：当前任务索引"""
+        self.turn_page_test_and_extract()
         self._task_index = index
         self.viewer.set_progress_total(f'{self._task_index}/{self._task_count}')
 
@@ -148,52 +170,58 @@ class HomePresenter(QObject):
         """切换运行信息页为解压模式"""
         self.viewer.set_page_extract()
 
-    """各类状态"""
+    """结果页"""
 
-    def set_default(self):
-        """设置默认状态"""
+    def turn_page_result(self):
+        """切换到结果页"""
+        self.viewer.turn_page_result()
+
+    def show_time_final(self):
+        """设置全部任务结束后的总耗时"""
+        self.viewer.show_time_final()
+
+    def show_process_count(self, count: Union[int, str]):
+        """设置处理的文件数量"""
+        self.viewer.show_process_count(count)
+
+    def show_result_count(self, result_info: str, result_info_tip: str = ''):
+        """设置处理结果的统计"""
+        self.viewer.show_result_count(result_info, result_info_tip)
+
+    """具体运行状态"""
 
     def set_info_skip(self):
         """设置运行状态 跳过（没有需要处理的文件时）"""
         # 修改图标
         self.set_icon_skip()
-        # 修改文本
-        self.viewer.set_page_test()
-        self.viewer.set_progress_total('-/-')
-        self.viewer.set_current_file('没有需要处理的文件')
-        self.viewer.set_runtime_current('0:00:00')
-        self.viewer.set_progress_test('-/-')
-        self.viewer.set_current_password('...')
         # 停止计时器
         self.model.stop_timing()
+        # 显示步骤信息
+        self.set_step_notice("没有需要处理的文件时")
 
     def set_info_exists_temp_folder(self):
         """设置运行状态 终止（存在非空的临时解压文件夹）"""
         # 修改图标
         self.set_icon_warning()
-        # 修改文本
-        self.viewer.set_page_test()
-        self.viewer.set_progress_total('-/-')
-        self.viewer.set_current_file('存在临时解压文件夹，请检查解压目录')
-        self.viewer.set_runtime_current('0:00:00')
-        self.viewer.set_progress_test('-/-')
-        self.viewer.set_current_password('...')
         # 停止计时器
         self.model.stop_timing()
+        # 显示步骤信息
+        self.set_step_notice("存在临时解压文件夹，请检查相关文件目录")
 
-    def set_info_finished(self, finish_info: str, tooltip: str = ''):
+    def set_info_finished(self, result_info: str, result_info_tip: str = ''):
         """设置运行状态 完成所有任务，结束"""
         # 修改图标
         self.set_icon_complete()
-        # 修改文本
-        self.viewer.set_page_test()
-        self.viewer.set_progress_total('-/-')
-        self.viewer.set_current_file(finish_info, tooltip)
-        self.viewer.set_runtime_current('-:-:-')
-        self.viewer.set_progress_test('-/-')
-        self.viewer.set_current_password('...')
         # 停止计时器
         self.model.stop_timing()
+        # 显示结果信息
+        self.turn_page_result()
+        self.show_time_final()
+        self.show_result_count(result_info, result_info_tip)
+        # 根据结果文本提取总数
+        numbers = re.findall(r'\d+', result_info_tip)
+        total_sum = sum(int(num) for num in numbers)
+        self.show_process_count(total_sum)
 
     """icon方法"""
 
