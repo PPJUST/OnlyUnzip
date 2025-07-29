@@ -18,7 +18,7 @@ class HomePresenter(QObject):
     """主页模块的桥梁组件"""
     FileInfo = Signal(FileInfoList, name='提取的文件信息类')
     SignalNoFiles = Signal(name='没有需要处理的文件')
-    SignalExistsTempFolder = Signal(name='存在临时文件夹')
+    SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
 
     def __init__(self, viewer: HomeViewer, model: HomeModel):
         super().__init__()
@@ -46,6 +46,7 @@ class HomePresenter(QObject):
         # 启动模型组件的定时器
         self.model.start_timing()
         # 提取路径中包含的所有文件
+        self.set_step_notice("""搜索文件中...""")
         files = self.model.get_files(paths)
         # 如果没有提取到文件，则不需要进行后续处理，直接终止
         if not files:
@@ -55,17 +56,19 @@ class HomePresenter(QObject):
         # 如果是解压模式，则检查文件路径同目录中是否存在解压用临时文件夹，如果存在且不为空文件夹，则直接终止
         archive_model = function_setting.get_archive_model()
         if isinstance(archive_model, ModelArchive.Extract):
+            self.set_step_notice("""检查临时文件夹中...""")
             # 如果指定了解压输出目录，则只需要检查该目录
             target_path = function_setting.get_extract_output_folder()
             if target_path:
-                is_temp_exists = function_extract.is_exists_temp_folder(target_path)
+                is_temp_exists, temp_path = function_extract.is_exists_temp_folder(target_path)
             else:  # 否则检查所有文件所在路径
-                is_temp_exists = function_extract.is_exists_temp_folder(files)
+                is_temp_exists, temp_path = function_extract.is_exists_temp_folder(files)
             if is_temp_exists:
-                self.SignalExistsTempFolder.emit()
+                self.SignalExistsTempFolder.emit(temp_path)
                 return
 
         # 如果勾选了仅处理压缩文件，则进行一次筛选，剔除非压缩文件
+        self.set_step_notice("""检查文件类型中...""")
         is_try_unknown_filetype = function_setting.get_is_try_unknown_filetype()
         # filetype库无法正确识别分卷压缩包的文件类型，并且通过读取文件头检查文件类型的方法速度较慢
         # 所以最后决定先检查文件名再进行文件头检查
@@ -107,14 +110,9 @@ class HomePresenter(QObject):
 
     def set_step_notice(self, notice: str):
         """设置步骤提示"""
-        self.viewer.turn_page_step()
         self.viewer.set_step_notice(notice)
 
     """测试与解压页"""
-
-    def turn_page_test_and_extract(self):
-        """切换到测试和解压页"""
-        self.viewer.turn_page_test_and_extract()
 
     def set_task_count(self, count: int):
         """设置总进度：任务总数"""
@@ -122,7 +120,6 @@ class HomePresenter(QObject):
 
     def set_task_index(self, index: int):
         """设置总进度：当前任务索引"""
-        self.turn_page_test_and_extract()
         self._task_index = index
         self.viewer.set_progress_total(f'{self._task_index}/{self._task_count}')
 
@@ -162,19 +159,7 @@ class HomePresenter(QObject):
         """停止模型组件的计时器"""
         self.model.stop_timing()
 
-    def set_page_test(self):
-        """切换运行信息页为测试模式"""
-        self.viewer.set_page_test()
-
-    def set_page_extract(self):
-        """切换运行信息页为解压模式"""
-        self.viewer.set_page_extract()
-
     """结果页"""
-
-    def turn_page_result(self):
-        """切换到结果页"""
-        self.viewer.turn_page_result()
 
     def show_time_final(self):
         """设置全部任务结束后的总耗时"""
@@ -199,14 +184,18 @@ class HomePresenter(QObject):
         # 显示步骤信息
         self.set_step_notice("没有需要处理的文件时")
 
-    def set_info_exists_temp_folder(self):
+    def set_info_exists_temp_folder(self, path: str = ''):
         """设置运行状态 终止（存在非空的临时解压文件夹）"""
         # 修改图标
         self.set_icon_warning()
         # 停止计时器
         self.model.stop_timing()
         # 显示步骤信息
-        self.set_step_notice("存在临时解压文件夹，请检查相关文件目录")
+        info = "存在临时解压文件夹，请检查相关文件目录"
+        if path:
+            link_text = f'<a href="file:///{path}">点击打开对应临时文件夹</a>'
+            info = info + '<br>' + link_text
+        self.set_step_notice(info)
 
     def set_info_finished(self, result_info: str, result_info_tip: str = ''):
         """设置运行状态 完成所有任务，结束"""
@@ -215,7 +204,6 @@ class HomePresenter(QObject):
         # 停止计时器
         self.model.stop_timing()
         # 显示结果信息
-        self.turn_page_result()
         self.show_time_final()
         self.show_result_count(result_info, result_info_tip)
         # 根据结果文本提取总数

@@ -136,13 +136,12 @@ class WindowPresenter:
             finish_info_simple, file_info_detail = self.result_collector.get_result_info()
             self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
 
-    def finished_by_temp_folder(self):
+    def finished_by_temp_folder(self, path: str = ''):
         """提前终止：由于主页模块信号-存在临时文件夹"""
-        self.page_home.set_info_exists_temp_folder()
+        self.page_home.set_info_exists_temp_folder(path)
 
     def update_extract_progress(self, progress: int):
         """更新解压进度"""
-        self.page_home.set_page_extract()
         self.page_home.set_progress_extract(progress)
 
     def collect_result(self, results: FileInfoList):

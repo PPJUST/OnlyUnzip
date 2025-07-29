@@ -24,6 +24,7 @@ class HomeViewer(QWidget):
         self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
         self.turn_page_welcome()
+        self.ui.label_step_notice.setOpenExternalLinks(True)
 
         # 添加自定义Label
         self.label_icon = LabelIcon()
@@ -46,6 +47,7 @@ class HomeViewer(QWidget):
 
     def set_step_notice(self, notice: str):
         """设置步骤提示"""
+        self.turn_page_step()
         self.ui.label_step_notice.setText(notice)
 
     """测试和解压页"""
@@ -57,10 +59,12 @@ class HomeViewer(QWidget):
     def set_progress_total(self, progress: str):
         """设置总进度 -/-
         :param progress: "-/-"格式的字符串"""
+        self.turn_page_test_and_extract()
         self.ui.label_progress_total.setText(progress)
 
     def set_current_file(self, filename: str, tooltip: str = ''):
         """设置当前处理的文件名"""
+        self.turn_page_test_and_extract()
         self.ui.label_current_file.setText(filename)
         if tooltip:
             self.ui.label_current_file.setToolTip(tooltip)
@@ -78,6 +82,7 @@ class HomeViewer(QWidget):
     def set_progress_test(self, progress: str):
         """设置测试密码的进度 -/-
         :param progress: "-/-"格式的进度字符串"""
+        self.set_page_test()
         self.ui.label_progress_test.setText(progress)
 
     def set_current_password(self, password: str):
@@ -88,6 +93,7 @@ class HomeViewer(QWidget):
     def set_progress_extract(self, progress: int):
         """设置解压的进度 1%
         :param progress: 0~100的整数"""
+        self.set_page_extract()
         self.ui.progressBar_progress_extract.setValue(progress)
 
     def _click_stop_button(self):
@@ -125,6 +131,7 @@ class HomeViewer(QWidget):
 
     def show_result_count(self, result_info: str, result_info_tip: str = ''):
         """设置处理结果的统计"""
+        self.turn_page_result()
         self.ui.label_process_file_count.setText(result_info)
         if result_info_tip:
             self.ui.label_process_file_count.setToolTip(result_info_tip)
