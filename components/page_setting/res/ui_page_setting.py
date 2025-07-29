@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingqduUSR.ui'
+## Form generated from reading UI file 'page_settingHBauar.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 611))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 610))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -64,6 +64,11 @@ class Ui_Form(object):
         self.checkBox_try_unknown_filetype.setObjectName(u"checkBox_try_unknown_filetype")
 
         self.verticalLayout.addWidget(self.checkBox_try_unknown_filetype)
+
+        self.checkBox_read_password_from_filename = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBox_read_password_from_filename.setObjectName(u"checkBox_read_password_from_filename")
+
+        self.verticalLayout.addWidget(self.checkBox_read_password_from_filename)
 
         self.line_4 = QFrame(self.scrollAreaWidgetContents)
         self.line_4.setObjectName(u"line_4")
@@ -301,6 +306,7 @@ class Ui_Form(object):
         self.radioButton_mode1_test.setText(QCoreApplication.translate("Form", u"\u6d4b\u8bd5\u5bc6\u7801", None))
         self.radioButton_mode1_extract.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u6587\u4ef6", None))
         self.checkBox_try_unknown_filetype.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u5904\u7406\u672a\u77e5\u683c\u5f0f\u6587\u4ef6", None))
+        self.checkBox_read_password_from_filename.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u5bc6\u7801", None))
         self.checkBox_write_filename.setText(QCoreApplication.translate("Form", u"\u5c06\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d", None))
         self.label_4.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u6587\u672c\u683c\u5f0f:", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u5de6\u4fa7\u5b57\u7b26:", None))

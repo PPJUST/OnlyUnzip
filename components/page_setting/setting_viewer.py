@@ -14,7 +14,8 @@ class SettingViewer(QWidget):
     """设置模块的界面组件"""
     ChangeArchiveModelText = Signal(bool, name="修改为测试模式")
     ChangeArchiveModelExtract = Signal(bool, name="修改为解压模式")
-    ChangeTryUnknownFiletype = Signal(bool, name="尝试处理未知格式的文件")
+    ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
+    ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
     ChangeWriteFilename = Signal(bool, name="修改写入文件名")
     ChangeWriteFilenameLeftPart = Signal(str, name="修改密码格式左边部分")
     ChangeWriteFilenameRightPart = Signal(str, name="修改密码格式右边部分")
@@ -93,10 +94,17 @@ class SettingViewer(QWidget):
         self.ui.widget_extract.setVisible(False)
         self.ui.widget_test.setVisible(True)
 
-    def set_setting_try_unknown_filetype(self, is_enable: bool):
+    def set_setting_is_try_unknown_filetype(self, is_enable: bool):
         """通用选项
         设置是否尝试处理未知格式的文件"""
         self.ui.checkBox_try_unknown_filetype.setChecked(is_enable)
+
+
+    def set_setting_is_read_password_from_filename(self, is_enable: bool):
+        """通用选项
+        设置是否尝试从文件名中读取密码"""
+        self.ui.checkBox_read_password_from_filename.setChecked(is_enable)
+
 
     def set_setting_write_filename(self, is_enable: bool):
         """测试模式选项
@@ -214,6 +222,8 @@ class SettingViewer(QWidget):
 
         # 处理未知文件
         self.ui.checkBox_try_unknown_filetype.stateChanged.connect(self.ChangeTryUnknownFiletype.emit)
+        # 从文件名中读取密码
+        self.ui.checkBox_read_password_from_filename.stateChanged.connect(self.ChangeReadPasswordFromFilename.emit)
         # 密码写入文件名
         self.ui.checkBox_write_filename.stateChanged.connect(self.ChangeWriteFilename.emit)
         self.ui.lineEdit_left_word.textChanged.connect(self.ChangeWriteFilenameLeftPart.emit)

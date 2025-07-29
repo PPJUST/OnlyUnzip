@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>301</width>
-        <height>611</height>
+        <height>610</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -90,6 +90,13 @@
         <widget class="QCheckBox" name="checkBox_try_unknown_filetype">
          <property name="text">
           <string>尝试处理未知格式文件</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_read_password_from_filename">
+         <property name="text">
+          <string>尝试从文件名中读取密码</string>
          </property>
         </widget>
        </item>

@@ -23,6 +23,7 @@ class SettingModel:
         # 实例设置项子类
         self._model_archive = _ChildSettingModelArchive(self.config)
         self._try_unknown_filetype = _ChildSettingTryUnknownFiletype(self.config)
+        self._read_password_from_filename = _ChildSettingReadPasswordFromFilename(self.config)
         self._write_filename = _ChildSettingWriteFilename(self.config)
         self._model_extract = _ChildSettingModelExtract(self.config)
         self._delete_file = _ChildSettingDeleteFile(self.config)
@@ -58,6 +59,12 @@ class SettingModel:
 
     def set_try_unknown_filetype_is_enable(self, is_enable: bool):
         self._try_unknown_filetype.set(is_enable)
+
+    def get_read_password_from_filename_is_enable(self):
+        return self._read_password_from_filename.read()
+
+    def set_read_password_from_filename_is_enable(self, is_enable: bool):
+        self._read_password_from_filename.set(is_enable)
 
     def get_write_filename_is_enable(self):
         return self._write_filename.read_is_enable()
@@ -285,6 +292,14 @@ class _ChildSettingTryUnknownFiletype(_ModuleChildSettingSingleEnable):
 
     def __init__(self, config):
         super().__init__(config, section='TryUnknownFiletype', key='is_enable', default_value=False)
+
+class _ChildSettingReadPasswordFromFilename(_ModuleChildSettingSingleEnable):
+    """设置项 是否从文件名中读取密码"""
+
+    def __init__(self, config):
+        super().__init__(config, section='ReadPasswordFromFilename', key='is_enable', default_value=False)
+
+
 
 
 class _ChildSettingWriteFilename(_ModuleChildSetting):
