@@ -3,6 +3,7 @@
 import os
 import pickle
 import time
+from typing import Union
 
 from PySide6.QtWidgets import QApplication
 
@@ -14,7 +15,7 @@ class PasswordModel:
     """密码模块的模型组件"""
 
     def __init__(self):
-        self.password_db = self._read_db()
+        self.password_db: DBPassword = self._read_db()
 
     def get_passwords(self):
         """获取密码列表"""
@@ -42,6 +43,13 @@ class PasswordModel:
         pws += pws_strip
         # 写入密码本
         self.password_db.add_passwords(pws)
+
+    def add_use_count_once(self, passwords: Union[str, list]):
+        """增加一次密码的使用次数"""
+        if isinstance(passwords, str):
+            passwords = [passwords]
+        for pw in passwords:
+            self.password_db.add_use_count_once(pw)
 
     def count_password(self) -> str:
         """统计密码本信息"""
@@ -109,12 +117,12 @@ class DBPassword(dict):
         """打开导出的密码本"""
         os.startfile(_OUTPUT_FILE)
 
-    def update_use_count(self, password: str):
-        """更新单个密码使用次数"""
+    def add_use_count_once(self, password: str):
+        """增加一次密码的使用次数"""
         if password not in self:
             self.add_password(password)
         pw_class: Password = self[password]
-        pw_class.update_use_count()
+        pw_class.add_use_count_once()
         self.save()
 
     def save(self):
@@ -149,8 +157,8 @@ class Password(dict):
         """获取使用次数"""
         return self['use_count']
 
-    def update_use_count(self):
-        """更新使用次数"""
+    def add_use_count_once(self):
+        """增加一次密码的使用次数"""
         self['use_count'] += 1
         self['last_use_time'] = time.time()
 

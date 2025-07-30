@@ -32,7 +32,7 @@ class PasswordViewer(QWidget):
         """设置打开导出密码文件按钮是否启用"""
         self.ui.pushButton_open.setEnabled(is_enable)
 
-    def show_pw_count(self, text: str):
+    def show_pw_count_info(self, text: str):
         """显示密码本统计信息"""
         self.ui.plainTextEdit_password.setPlaceholderText(text)
 

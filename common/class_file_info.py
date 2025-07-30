@@ -83,6 +83,15 @@ class FileInfoList:
 
         return success
 
+    def get_success_passwords(self):
+        """获取处理成功的密码"""
+        passwords = []
+        for file_info in self.get_file_infos():
+            result = file_info.get_7zip_result()
+            if result and isinstance(result, Result7zip.Success):
+                passwords.append(file_info.password)
+        return passwords
+
     def count_success(self):
         """统计处理成功的个数"""
         count = 0

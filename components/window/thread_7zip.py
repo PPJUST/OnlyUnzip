@@ -4,7 +4,7 @@ import time
 import lzytools.file
 from PySide6.QtCore import QThread, Signal
 
-from common import function_7zip, function_move, function_file
+from common import function_7zip, function_move, function_file, function_filename
 from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
@@ -26,6 +26,7 @@ class TemplateThread(QThread):
         super().__init__()
         self.fileinfo_task: FileInfoList = None  # 待处理的文件信息类清单
         self.passwords = list()  # 密码清单
+        self.is_read_pw_from_filename = False  # 是否从文件名中读取密码
 
     def set_task(self, task: FileInfoList):
         """设置任务清单"""
@@ -39,6 +40,10 @@ class TemplateThread(QThread):
 
         if FAKE_PASSWORD not in self.passwords:
             self.passwords.insert(0, FAKE_PASSWORD)
+
+    def set_is_read_pw_from_filename(self, is_enable: bool):
+        """设置是否从文件名中读取密码"""
+        self.is_read_pw_from_filename = is_enable
 
     def _run_command_l_with_fake_password(self, file: str):
         """使用虚拟密码进行l指令测试，根据返回结果决定后续指令的使用
@@ -97,6 +102,8 @@ class ThreadTest(TemplateThread):
 
             # 将结果写入文件信息类，并发送信号
             file_info.set_7zip_result(test_result)
+            if isinstance(test_result, Result7zip.Success):
+                file_info.set_password(test_result.password)
             self.SignalResult.emit(file_info)
 
         # 结束后发送结束信号
@@ -107,6 +114,14 @@ class ThreadTest(TemplateThread):
         # 仅处理存在的文件
         if not os.path.exists(filepath):
             return Result7zip.Skip()
+
+        # 根据选项是否提取文件名中可能存在的密码
+        if self.is_read_pw_from_filename:
+            _filetitle = lzytools.archive.get_filetitle(os.path.basename(filepath))
+            pws_filename = function_filename.read_password_from_filename(_filetitle)
+            for _pw in pws_filename:
+                if _pw and _pw not in passwords:
+                    passwords.append(_pw)
 
         # 先测试一次虚拟密码，根据测试结果选择使用l或t指令（l指令比t指令要快，优先使用l指令）
         print('测试模式 执行一次虚拟密码测试')
@@ -202,6 +217,7 @@ class ThreadExtract(TemplateThread):
             # 将结果写入文件信息类，并发送信号
             file_info.set_7zip_result(extract_result)
             if isinstance(extract_result, Result7zip.Success):
+                file_info.set_password(extract_result.password)
                 file_info.set_extract_path(extract_path)
             self.SignalResult.emit(file_info)
 
@@ -212,6 +228,14 @@ class ThreadExtract(TemplateThread):
         # 仅处理存在的文件
         if not os.path.exists(filepath):
             return Result7zip.Skip()
+
+        # 根据选项是否提取文件名中可能存在的密码
+        if self.is_read_pw_from_filename:
+            _filetitle = lzytools.archive.get_filetitle(os.path.basename(filepath))
+            pws_filename = function_filename.read_password_from_filename(_filetitle)
+            for _pw in pws_filename:
+                if _pw not in passwords:
+                    passwords.append(_pw)
 
         # 先测试一次虚拟密码，根据测试结果选择使用的指令
         print('解压模式 执行一次虚拟密码测试')

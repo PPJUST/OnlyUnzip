@@ -67,8 +67,10 @@ class WindowPresenter:
     def set_model_setting(self):
         """传递设置组件的设置项给模型组件"""
         archive_model = self.page_setting.model.get_model_archive()
-        print(archive_model)
         self.model.set_archive_model(archive_model)
+
+        read_pw_from_filename = self.page_setting.model.get_read_password_from_filename_is_enable()
+        self.model.set_is_read_password_from_filename(read_pw_from_filename)
 
         is_write_filename = self.page_setting.model.get_write_filename_is_enable()
         write_filename_left_part = self.page_setting.model.get_write_filename_left_word()
@@ -110,6 +112,13 @@ class WindowPresenter:
         """处理结束信号"""
         # 接收到结束信号后，先传递给收集器，收集处理结果
         self.collect_result(results)
+
+        # 如果有解压成功的文件，则增加对应密码的使用次数
+        passwords_success = results.get_success_passwords()
+        print('处理成功的密码', passwords_success)
+        if passwords_success:
+            self.page_password.update_use_count(passwords_success)
+            self.page_password.show_pw_count_info()
 
         # 如果有成功处理的文件，则判断是否进行递归解压
         print('接收结束信号参数', results)

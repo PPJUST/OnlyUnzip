@@ -72,6 +72,10 @@ class WindowModel(QObject):
     def set_archive_model(self, archive_model: TYPES_MODEL_ARCHIVE):
         self.archive_model = archive_model
 
+    def set_is_read_password_from_filename(self, value: bool):
+        self.model_test_file.set_is_read_password_from_filename(value)
+        self.model_extract_file.set_is_read_password_from_filename(value)
+
     def set_extract_model(self, extract_model: TYPES_MODEL_EXTRACT):
         self.model_extract_file.set_extract_model(extract_model)
 
@@ -133,6 +137,7 @@ class ModelTestFile(TemplateModelSignal):
         super().__init__()
         self.thread_test = ThreadTest()
         self.passwords = list()
+        self.is_read_password_from_filename = False  # 是否从文件名中读取密码
 
         # 中转子线程信号
         self._transfer_signal(self.thread_test)
@@ -141,11 +146,16 @@ class ModelTestFile(TemplateModelSignal):
         """设置密码"""
         self.passwords = passwords
 
+    def set_is_read_password_from_filename(self, value: bool):
+        """设置是否从文件名中读取密码"""
+        self.is_read_password_from_filename = value
+
     def process_file(self, file_info: FileInfoList):
         """测试文件"""
         print('传递参数给测试子线程，并执行')
         self.thread_test.set_task(file_info)
         self.thread_test.set_passwords(self.passwords)
+        self.thread_test.set_is_read_pw_from_filename(self.is_read_password_from_filename)
         self.thread_test.start()
 
     def set_is_write_filename(self, value: bool):
@@ -169,6 +179,7 @@ class ModelExtractFile(TemplateModelSignal):
         self.thread_extract = ThreadExtract()
         self.passwords = list()
         # 初始化参数项
+        self.is_read_password_from_filename = False  # 是否从文件名中读取密码
         self.extract_model = ModelExtract.Smart()  # 解压模式
         self.is_delete_file = False  # 完成后是否删除原文件
         self.is_recursive_extract = False  # 是否递归解压
@@ -186,11 +197,16 @@ class ModelExtractFile(TemplateModelSignal):
     def set_passwords(self, passwords: list):
         self.passwords = passwords
 
+    def set_is_read_password_from_filename(self, value: bool):
+        """设置是否从文件名中读取密码"""
+        self.is_read_password_from_filename = value
+
     def process_file(self, file_info: FileInfoList):
         """解压文件"""
         print('传递参数给解压子线程，并执行')
         self.thread_extract.set_task(file_info)
         self.thread_extract.set_passwords(self.passwords)
+        self.thread_extract.set_is_read_pw_from_filename(self.is_read_password_from_filename)
         self.thread_extract.start()
 
     def set_extract_model(self, extract_model: TYPES_MODEL_EXTRACT):
