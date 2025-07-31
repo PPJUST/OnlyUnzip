@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingugmSME.ui'
+## Form generated from reading UI file 'page_settingLNEmTZ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -312,7 +312,7 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.radioButton_mode1_extract.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u6587\u4ef6", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_try_unknown_filetype.setToolTip(QCoreApplication.translate("Form", u"\u5ffd\u7565\u6587\u4ef6\u7c7b\u578b\uff0c\u5bf9\u6240\u6709\u7c7b\u578b\u7684\u6587\u4ef6\u8fdb\u884c\u6d4b\u8bd5\u6216\u89e3\u538b", None))
+        self.checkBox_try_unknown_filetype.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5ffd\u7565\u6587\u4ef6\u7c7b\u578b\uff0c\u5bf9\u6240\u6709\u7c7b\u578b\u7684\u6587\u4ef6\u8fdb\u884c\u6d4b\u8bd5\u6216\u89e3\u538b</p><p>\u6ce8\u610f\uff1a</p><p>1. \u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u89e3\u538b\u65f6\uff0c\u4f1a\u5bfc\u81f4 exe/doc/xls \u7b49\u7c7b\u578b\u7684\u6587\u4ef6\u88ab\u89e3\u538b\u3002</p><p>2. \u5224\u65ad\u6587\u4ef6\u7c7b\u578b\u7684\u65b9\u6cd5\u4e3a\u8bfb\u53d6\u6587\u4ef6\u5934\uff0c\u53ef\u80fd\u5b58\u5728\u90e8\u5206\u6587\u4ef6\u7c7b\u578b\u88ab\u8bef\u5224/\u65e0\u6cd5\u5224\u65ad\u7684\u60c5\u51b5\u3002</p><p>3. \u5bf9\u4e8e\u4f2a\u88c5\u4e3a\u5a92\u4f53\u683c\u5f0f\u7684\u538b\u7f29\u6587\u4ef6\uff0c\u53ef\u4ee5\u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u5c1d\u8bd5\uff08\u90e8\u5206\u6587\u4ef6\u53ef\u4ee5\u6b63\u5e38\u8fdb\u884c\u6d4b\u8bd5/\u89e3\u538b\uff09\u3002</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_try_unknown_filetype.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u5904\u7406\u672a\u77e5\u683c\u5f0f\u6587\u4ef6", None))
 #if QT_CONFIG(tooltip)

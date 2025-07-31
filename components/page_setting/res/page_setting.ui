@@ -95,7 +95,7 @@
        <item>
         <widget class="QCheckBox" name="checkBox_try_unknown_filetype">
          <property name="toolTip">
-          <string>忽略文件类型，对所有类型的文件进行测试或解压</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;忽略文件类型，对所有类型的文件进行测试或解压&lt;/p&gt;&lt;p&gt;注意：&lt;/p&gt;&lt;p&gt;1. 启用该选项进行解压时，会导致 exe/doc/xls 等类型的文件被解压。&lt;/p&gt;&lt;p&gt;2. 判断文件类型的方法为读取文件头，可能存在部分文件类型被误判/无法判断的情况。&lt;/p&gt;&lt;p&gt;3. 对于伪装为媒体格式的压缩文件，可以启用该选项进行尝试（部分文件可以正常进行测试/解压）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>尝试处理未知格式文件</string>
