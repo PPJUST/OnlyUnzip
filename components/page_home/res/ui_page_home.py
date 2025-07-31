@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_homeFNBYKZ.ui'
+## Form generated from reading UI file 'page_homeBGgBIq.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -254,7 +254,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(2)
         self.stackedWidget_2.setCurrentIndex(0)
 
 
@@ -271,6 +271,9 @@ class Ui_Form(object):
         self.label_runtime_total.setText(QCoreApplication.translate("Form", u"0:00:00", None))
         self.label_10.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u8017\u65f6:", None))
         self.label_runtime_current.setText(QCoreApplication.translate("Form", u"0:00:00", None))
+#if QT_CONFIG(tooltip)
+        self.toolButton_stop.setToolTip(QCoreApplication.translate("Form", u"\u70b9\u51fb\u7ec8\u6b62\u4efb\u52a1", None))
+#endif // QT_CONFIG(tooltip)
         self.toolButton_stop.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_12.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u6587\u4ef6:", None))
         self.label_current_file.setText(QCoreApplication.translate("Form", u"...", None))

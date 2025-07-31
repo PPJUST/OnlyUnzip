@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>301</width>
-        <height>610</height>
+        <height>633</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -61,6 +61,9 @@
        </property>
        <item>
         <widget class="QRadioButton" name="radioButton_mode1_test">
+         <property name="toolTip">
+          <string>逐个测试密码本中的密码，直到检索到正确的密码</string>
+         </property>
          <property name="text">
           <string>测试密码</string>
          </property>
@@ -71,6 +74,9 @@
        </item>
        <item>
         <widget class="QRadioButton" name="radioButton_mode1_extract">
+         <property name="toolTip">
+          <string>测试密码并解压到本地</string>
+         </property>
          <property name="text">
           <string>解压文件</string>
          </property>
@@ -88,6 +94,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_try_unknown_filetype">
+         <property name="toolTip">
+          <string>忽略文件类型，对所有类型的文件进行测试或解压</string>
+         </property>
          <property name="text">
           <string>尝试处理未知格式文件</string>
          </property>
@@ -95,6 +104,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_read_password_from_filename">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从文件名中读取可能存在的密码。&lt;/p&gt;&lt;p&gt;支持的格式（以xxx指代密码）：&lt;/p&gt;&lt;p&gt;1. 以空格为间隔的两端字符：xxx 文件名/文件名 xxx&lt;/p&gt;&lt;p&gt;2. 以#开头，空格结尾的字符：#xxx 文件名&lt;/p&gt;&lt;p&gt;3. 以@开头，空格结尾的字符：@xxx 文件名&lt;/p&gt;&lt;p&gt;4. 在【】、[]、()中的字符：【xxx】文件名&lt;/p&gt;&lt;p&gt;5. 以&amp;quot;密码&amp;quot;、&amp;quot;解压码&amp;quot;、&amp;quot;解压密码&amp;quot;、&amp;quot;pw&amp;quot;、&amp;quot;PW&amp;quot;以及上述字符后带&amp;quot;:&amp;quot;、&amp;quot;：&amp;quot;开头，空格结尾的字符：密码xxx 文件名/解压密码:xxx 文件名&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>尝试从文件名中读取密码</string>
          </property>
@@ -124,6 +136,9 @@
           </property>
           <item>
            <widget class="QCheckBox" name="checkBox_write_filename">
+            <property name="toolTip">
+             <string>如果检索到正确的密码，则将改密码写入文件名中</string>
+            </property>
             <property name="text">
              <string>将密码写入文件名</string>
             </property>
@@ -146,7 +161,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit_left_word"/>
+             <widget class="QLineEdit" name="lineEdit_left_word">
+              <property name="toolTip">
+               <string>写入文件名时添加在左侧的字符</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -160,7 +179,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit_right_word"/>
+             <widget class="QLineEdit" name="lineEdit_right_word">
+              <property name="toolTip">
+               <string>写入文件名时添加在右侧的字符</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -175,6 +198,9 @@
             </item>
             <item>
              <widget class="QComboBox" name="comboBox_pw_position">
+              <property name="toolTip">
+               <string>写入的位置，写入在最左端或者最右端</string>
+              </property>
               <item>
                <property name="text">
                 <string>最左端</string>
@@ -230,6 +256,9 @@
           </property>
           <item>
            <widget class="QRadioButton" name="radioButton_mode2_smart_extract">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;自动判断文件层级结构进行解压，类似于Bandizip。&lt;/p&gt;&lt;p&gt;如果仅存在单个文件/文件夹，则直接解压，如果存在多个文件且无上级文件夹，则自动创建文件夹并解压到该文件夹下。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>智能解压</string>
             </property>
@@ -237,6 +266,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="radioButton_mode2_direct_extract">
+            <property name="toolTip">
+             <string>不对文件层级结构进行检查，不进行处理直接解压</string>
+            </property>
             <property name="text">
              <string>直接解压</string>
             </property>
@@ -244,6 +276,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="radioButton_mode2_extract_same_folder">
+            <property name="toolTip">
+             <string>解压到以压缩文件名命名的文件夹中</string>
+            </property>
             <property name="text">
              <string>解压到同名目录</string>
             </property>
@@ -258,6 +293,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_delete_origin">
+            <property name="toolTip">
+             <string>成功解压后删除源文件</string>
+            </property>
             <property name="text">
              <string>解压后删除原文件</string>
             </property>
@@ -265,6 +303,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_recursive_extract">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压嵌套的压缩文件，直到解压结果中不存在压缩文件。&lt;/p&gt;&lt;p&gt;实现方法：对解压的结果进行再一次的解压。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>递归解压嵌套压缩包</string>
             </property>
@@ -286,6 +327,9 @@
               </property>
               <property name="contextMenuPolicy">
                <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+              </property>
+              <property name="toolTip">
+               <string>解压文件存在冲突时的处理方法</string>
               </property>
               <property name="duplicatesEnabled">
                <bool>false</bool>
@@ -328,6 +372,9 @@
               <property name="focusPolicy">
                <enum>Qt::FocusPolicy::WheelFocus</enum>
               </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;处理多层级的文件夹结构，用于清理空文件夹。&lt;/p&gt;&lt;p&gt;移动到顶层目录：移动最底层的首个非空文件夹下的文件到顶层目录之下（保持文件层级结构，并删除空的该底层文件夹）。&lt;/p&gt;&lt;p&gt;移动底层文件夹：移动最底层的首个非空文件夹到顶层目录之外（并删除空的顶层目录）。&lt;/p&gt;&lt;p&gt;仅移动文件：移动所有文件到顶层目录之下（并删除空的子文件夹）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <item>
                <property name="text">
                 <string>移动到顶层目录</string>
@@ -349,6 +396,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_extract_output_folder">
+            <property name="toolTip">
+             <string>解压到该指定的文件夹，而不是源文件的同级文件夹中</string>
+            </property>
             <property name="text">
              <string>解压至指定目录</string>
             </property>
@@ -377,6 +427,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_extract_filter">
+            <property name="toolTip">
+             <string>解压时过滤符合条件的文件（不解压该部分文件）</string>
+            </property>
             <property name="text">
              <string>文件过滤规则</string>
             </property>
@@ -397,6 +450,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_top_window">
+         <property name="toolTip">
+          <string>保持窗口在前台</string>
+         </property>
          <property name="text">
           <string>置顶程序窗口</string>
          </property>
@@ -404,6 +460,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_lock_size">
+         <property name="toolTip">
+          <string>锁定窗口尺寸，禁止修改</string>
+         </property>
          <property name="text">
           <string>锁定窗口大小</string>
          </property>
