@@ -72,12 +72,12 @@ class HomePresenter(QObject):
         self.set_step_notice("""检查文件类型中...""")
         is_try_unknown_filetype = function_setting.get_is_try_unknown_filetype()
         # filetype库无法正确识别分卷压缩包的文件类型，并且通过读取文件头检查文件类型的方法速度较慢
-        # 所以最后决定先检查文件名再进行文件头检查
-        # 待优化：文件较多时，读取文件头速度较慢，会堵塞UI线程
+        # 所以先检查文件名再进行文件头检查
+        # 待优化：文件较多时，读取文件头速度较慢，会堵塞UI线程（先仅用文件名判断的方法）
         if not is_try_unknown_filetype:
             files = [file for file in files
-                     if lzytools.archive.is_archive_by_filename(os.path.basename(file))
-                     or lzytools.archive.is_archive(file)]
+                     if lzytools.archive.is_archive_by_filename(os.path.basename(file))]
+                    # 为了更快的判断压缩文件，不使用filetype库（or lzytools.archive.is_archive(file)）
 
         # 区分普通压缩文件和分卷压缩文件，便于后续处理
         archive_spliter = self.model.split_volume_archive(files)
