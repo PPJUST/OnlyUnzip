@@ -3,7 +3,7 @@ import os
 
 import lzytools.file
 
-from common import function_7zip
+from common import function_7zip, function_subprocess
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
 from components import page_home, page_password, page_setting, page_history
@@ -49,6 +49,7 @@ class WindowPresenter:
         self.page_home.FileInfo.connect(self.accept_files)  # 接收文件信息类
         self.page_home.SignalNoFiles.connect(self.finished_by_no_files)
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
+        self.page_home.UserStop.connect(self.finished_by_user_stop)
         self._bind_model_signal()
 
     def accept_files(self, file_info: FileInfoList):
@@ -148,6 +149,16 @@ class WindowPresenter:
     def finished_by_temp_folder(self, path: str = ''):
         """提前终止：由于主页模块信号-存在临时文件夹"""
         self.page_home.set_info_exists_temp_folder(path)
+
+    def finished_by_user_stop(self):
+        """提前终止：用户主动终止"""
+        # 更新主页信息
+        finish_info_simple, file_info_detail = self.result_collector.get_result_info()
+        self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
+        # 终止调用线程
+        self.model.stop_task()
+        process = function_7zip.get_running_process()
+        function_subprocess.stop_process(process)
 
     def update_extract_progress(self, progress: int):
         """更新解压进度"""

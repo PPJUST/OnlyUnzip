@@ -10,6 +10,17 @@ from common.function_extract import TEMP_EXTRACT_FOLDER
 FAKE_PASSWORD = 'FAKEPASSWORD'
 _7ZIP_PATH = r'./7-Zip/7z.exe'
 
+_process_running: subprocess.Popen = None  # 正在运行的线程，用于中断
+
+
+def get_running_process():
+    """获取正在运行的调用线程"""
+    print('当前运行线程', _process_running)
+    if _process_running and _process_running.poll() is None:
+        return _process_running
+    else:
+        return None
+
 
 def _process_7zip_with_run(_7zip_command: Union[str, list]):
     """使用run调用7zip执行传入语句（直接返回结果，不需要实时读取管道信息）
@@ -93,6 +104,9 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
                                creationflags=subprocess.CREATE_NO_WINDOW,
                                text=True,
                                universal_newlines=True)
+    # 赋值给全局变量
+    global _process_running
+    _process_running = process
 
     # 实时读取输出流，提取信息
     # （使用Popen调用7zip时，返回码为2时的报错信息为"<_io.TextIOWrapper name=4 encoding='cp936'>"，

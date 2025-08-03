@@ -16,6 +16,7 @@ from components.page_home.res.icon_base64 import *
 
 class HomePresenter(QObject):
     """主页模块的桥梁组件"""
+    UserStop = Signal(name="用户主动停止")
     FileInfo = Signal(FileInfoList, name='提取的文件信息类')
     SignalNoFiles = Signal(name='没有需要处理的文件')
     SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
@@ -35,7 +36,7 @@ class HomePresenter(QObject):
         self.set_icon_home()
 
         # 绑定信号
-        self.viewer.Stop.connect(self.stop)
+        self.viewer.UserStop.connect(self.UserStop.emit)
         self.viewer.DropFiles.connect(self.drop_paths)
         self.model.RuntimeTotal.connect(self.viewer.set_runtime_total)
         self.model.RuntimeCurrent.connect(self.viewer.set_runtime_current)
@@ -98,6 +99,7 @@ class HomePresenter(QObject):
 
     def stop(self):
         """终止当前任务"""
+        #
         self.stop_timer()
 
     """主页"""
@@ -211,7 +213,19 @@ class HomePresenter(QObject):
         total_sum = sum(int(num) for num in numbers)
         self.show_process_count(total_sum)
 
-    """icon方法"""
+    def show_info_stop(self, result_info: str, result_info_tip: str = ''):
+        """设置运行状态 用户中断"""
+        # 修改图标
+        self.set_icon_stop()
+        # 停止计时器
+        self.model.stop_timing()
+        # 显示结果信息
+        self.show_time_final()
+        self.show_result_count(result_info, result_info_tip)
+        # 根据结果文本提取总数
+        numbers = re.findall(r'\d+', result_info_tip)
+        total_sum = sum(int(num) for num in numbers)
+        self.show_process_count(total_sum)
 
     def set_icon_home(self):
         """设置主页图标"""

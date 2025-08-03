@@ -11,7 +11,7 @@ from components.page_home.res.ui_page_home import Ui_Form
 
 class HomeViewer(QWidget):
     """主页模块的界面组件"""
-    Stop = Signal(name="停止")
+    UserStop = Signal(name="用户主动停止")
     DropFiles = Signal(list, name="拖入文件")
 
     def __init__(self, parent=None):
@@ -104,7 +104,7 @@ class HomeViewer(QWidget):
 
     def _stop_progress(self):
         """终止当前任务"""
-        self.Stop.emit()
+        self.UserStop.emit()
 
     def set_page_test(self):
         """切换运行信息页为测试模式"""

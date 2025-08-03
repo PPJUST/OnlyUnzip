@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_homeBGgBIq.ui'
+## Form generated from reading UI file 'page_homeZIGlCt.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -203,7 +203,7 @@ class Ui_Form(object):
 
         self.progressBar_progress_extract = QProgressBar(self.page_4)
         self.progressBar_progress_extract.setObjectName(u"progressBar_progress_extract")
-        self.progressBar_progress_extract.setValue(24)
+        self.progressBar_progress_extract.setValue(0)
 
         self.verticalLayout_6.addWidget(self.progressBar_progress_extract)
 
@@ -286,8 +286,8 @@ class Ui_Form(object):
         self.label_17.setText(QCoreApplication.translate("Form", u"\u8017\u65f6:", None))
         self.label_time_final.setText(QCoreApplication.translate("Form", u"0:00:00", None))
         self.label_18.setText(QCoreApplication.translate("Form", u"\u5904\u7406\u6587\u4ef6\u6570\u91cf:", None))
-        self.label_process_file_count.setText(QCoreApplication.translate("Form", u"5", None))
+        self.label_process_file_count.setText(QCoreApplication.translate("Form", u"0", None))
         self.label_19.setText(QCoreApplication.translate("Form", u"\u5904\u7406\u7ed3\u679c\u7edf\u8ba1:", None))
-        self.label_result_count.setText(QCoreApplication.translate("Form", u"\u6210\u529f:5, \u5931\u8d25:0", None))
+        self.label_result_count.setText(QCoreApplication.translate("Form", u"\u6210\u529f:0, \u5931\u8d25:0", None))
     # retranslateUi
 

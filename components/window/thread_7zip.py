@@ -27,6 +27,7 @@ class TemplateThread(QThread):
         self.fileinfo_task: FileInfoList = None  # 待处理的文件信息类清单
         self.passwords = list()  # 密码清单
         self.is_read_pw_from_filename = False  # 是否从文件名中读取密码
+        self.is_stop_task = False  # 是否终止任务
 
     def set_task(self, task: FileInfoList):
         """设置任务清单"""
@@ -44,6 +45,10 @@ class TemplateThread(QThread):
     def set_is_read_pw_from_filename(self, is_enable: bool):
         """设置是否从文件名中读取密码"""
         self.is_read_pw_from_filename = is_enable
+
+    def stop_task(self):
+        """终止任务"""
+        self.is_stop_task = True
 
     def _run_command_l_with_fake_password(self, file: str):
         """使用虚拟密码进行l指令测试，根据返回结果决定后续指令的使用
@@ -81,11 +86,17 @@ class ThreadTest(TemplateThread):
 
     def run(self):
         print('执行测试子线程')
+        self.is_stop_task = False
         self.SignalStart.emit()
         self.SignalPwCount.emit(len(self.passwords))
         self.SignalTaskCount.emit(self.fileinfo_task.count())
 
         for index, file_info in enumerate(self.fileinfo_task.get_file_infos(), start=1):
+            if self.is_stop_task:
+                break
+            else:
+                pass
+
             self.SignalTaskIndex.emit(index)
             file_info: FileInfo
             file_first = file_info.filepath
@@ -132,6 +143,10 @@ class ThreadTest(TemplateThread):
         if fake_result is True:  # 可以使用l指令进行后续测试
             print('使用l指令进行密码测试')
             for index_pw, pw in enumerate(passwords, start=1):
+                if self.is_stop_task:
+                    break
+                else:
+                    pass
                 self.SignalPwIndex.emit(index_pw)
                 final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
                 # 如果结果是成功，则寻找到正确密码，否则继续进行测试
@@ -140,6 +155,10 @@ class ThreadTest(TemplateThread):
         elif fake_result is False:  # 不可以使用l指令，可以使用t指令
             print('使用t指令进行密码测试')
             for index_pw, pw in enumerate(passwords, start=1):
+                if self.is_stop_task:
+                    break
+                else:
+                    pass
                 self.SignalPwIndex.emit(index_pw)
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
                 # 如果结果是成功，则寻找到正确密码，否则继续进行测试
@@ -202,11 +221,17 @@ class ThreadExtract(TemplateThread):
 
     def run(self):
         print('执行解压子线程')
+        self.is_stop_task = False
         self.SignalStart.emit()
         self.SignalPwCount.emit(len(self.passwords))
         self.SignalTaskCount.emit(self.fileinfo_task.count())
 
         for index, file_info in enumerate(self.fileinfo_task.get_file_infos(), start=1):
+            if self.is_stop_task:
+                break
+            else:
+                pass
+
             self.SignalTaskIndex.emit(index)
             file_info: FileInfo
             file_first = file_info.filepath
@@ -339,6 +364,11 @@ class ThreadExtract(TemplateThread):
         final_result = None  # 最终结果
         extract_path = None  # 如果成功处理，则为解压后最终的路径
         for index_pw, pw in enumerate(passwords, start=1):
+            if self.is_stop_task:
+                break
+            else:
+                pass
+
             self.SignalPwIndex.emit(index_pw)
             final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
             if isinstance(final_result, Result7zip.Success):
@@ -361,6 +391,11 @@ class ThreadExtract(TemplateThread):
         extract_path = None  # 如果成功处理，则为解压后最终的路径
         # 使用x命令解压
         for index_pw, pw in enumerate(passwords, start=1):
+            if self.is_stop_task:
+                break
+            else:
+                pass
+
             self.SignalPwIndex.emit(index_pw)
             final_result, extract_path = self.extract(filepath, pw)
             if isinstance(final_result, Result7zip.Success):

@@ -267,7 +267,7 @@
            <item>
             <widget class="QProgressBar" name="progressBar_progress_extract">
              <property name="value">
-              <number>24</number>
+              <number>0</number>
              </property>
             </widget>
            </item>
@@ -303,7 +303,7 @@
        <item row="1" column="1">
         <widget class="QLabel" name="label_process_file_count">
          <property name="text">
-          <string>5</string>
+          <string>0</string>
          </property>
         </widget>
        </item>
@@ -317,7 +317,7 @@
        <item row="2" column="1">
         <widget class="QLabel" name="label_result_count">
          <property name="text">
-          <string>成功:5, 失败:0</string>
+          <string>成功:0, 失败:0</string>
          </property>
         </widget>
        </item>

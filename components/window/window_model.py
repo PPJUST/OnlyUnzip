@@ -65,6 +65,11 @@ class WindowModel(QObject):
             print('执行解压操作')
             self.model_extract_file.process_file(file_info)
 
+    def stop_task(self):
+        """终止任务"""
+        self.model_test_file.stop_task()
+        self.model_extract_file.stop_task()
+
     def set_passwords(self, passwords: list):
         self.model_extract_file.set_passwords(passwords)
         self.model_test_file.set_passwords(passwords)
@@ -150,6 +155,10 @@ class ModelTestFile(TemplateModelSignal):
         """设置是否从文件名中读取密码"""
         self.is_read_password_from_filename = value
 
+    def stop_task(self):
+        """终止任务"""
+        self.thread_test.stop_task()
+
     def process_file(self, file_info: FileInfoList):
         """测试文件"""
         print('传递参数给测试子线程，并执行')
@@ -200,6 +209,10 @@ class ModelExtractFile(TemplateModelSignal):
     def set_is_read_password_from_filename(self, value: bool):
         """设置是否从文件名中读取密码"""
         self.is_read_password_from_filename = value
+
+    def stop_task(self):
+        """终止任务"""
+        self.thread_extract.stop_task()
 
     def process_file(self, file_info: FileInfoList):
         """解压文件"""
