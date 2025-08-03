@@ -351,8 +351,12 @@ class ThreadExtract(TemplateThread):
         else:
             # 删除空的临时解压文件夹
             guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
-            if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
-                lzytools.file.delete(guess_temp_folder)
+            if self.is_stop_task:  # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
+                if os.path.exists(guess_temp_folder):
+                    lzytools.file.delete(guess_temp_folder)
+            else:  # 否则，仅在临时文件夹为空时删除该文件夹
+                if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
+                    lzytools.file.delete(guess_temp_folder)
 
             return result_7zip, None
 

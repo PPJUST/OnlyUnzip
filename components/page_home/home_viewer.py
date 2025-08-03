@@ -132,9 +132,9 @@ class HomeViewer(QWidget):
     def show_result_count(self, result_info: str, result_info_tip: str = ''):
         """设置处理结果的统计"""
         self.turn_page_result()
-        self.ui.label_process_file_count.setText(result_info)
+        self.ui.label_result_count.setText(result_info)
         if result_info_tip:
-            self.ui.label_process_file_count.setToolTip(result_info_tip)
+            self.ui.label_result_count.setToolTip(result_info_tip)
 
     """icon方法"""
 
