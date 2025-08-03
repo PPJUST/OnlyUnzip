@@ -77,7 +77,7 @@ class HomePresenter(QObject):
         if not is_try_unknown_filetype:
             files = [file for file in files
                      if lzytools.archive.is_archive_by_filename(os.path.basename(file))]
-                    # 为了更快的判断压缩文件，不使用filetype库（or lzytools.archive.is_archive(file)）
+            # 为了更快的判断压缩文件，不使用filetype库（or lzytools.archive.is_archive(file)）
 
         # 区分普通压缩文件和分卷压缩文件，便于后续处理
         archive_spliter = self.model.split_volume_archive(files)
@@ -176,6 +176,22 @@ class HomePresenter(QObject):
         self.viewer.show_result_count(result_info, result_info_tip)
 
     """具体运行状态"""
+
+    def set_info_testing(self):
+        """设置运行状态 测试中"""
+        # 修改图标
+        self.set_icon_testing()
+        # 显示为测试页
+        self.viewer.turn_page_test_and_extract()
+        self.viewer.set_page_test()
+
+    def set_info_extracting(self):
+        """设置运行状态 解压中"""
+        # 修改图标
+        self.set_icon_extracting()
+        # 显示为测试页
+        self.viewer.turn_page_test_and_extract()
+        self.viewer.set_page_test()  # 不设置为解压页，在读取到解压进度时自动设置
 
     def set_info_skip(self):
         """设置运行状态 跳过（没有需要处理的文件时）"""

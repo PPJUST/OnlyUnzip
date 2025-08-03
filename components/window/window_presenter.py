@@ -4,6 +4,7 @@ import os
 import lzytools.file
 
 from common import function_7zip, function_subprocess
+from common.class_7zip import ModelArchive
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
 from components import page_home, page_password, page_setting, page_history
@@ -59,6 +60,7 @@ class WindowPresenter:
         self.set_model_setting()
 
         self.model.accept_files(file_info)
+        self.show_page_test_or_extract()
 
     def set_model_passwords(self):
         """传递密码组件的密码列表给模型组件"""
@@ -108,6 +110,14 @@ class WindowPresenter:
         filter_rule = self.page_setting.model.get_extract_filter_rules()
         self.model.set_is_filter(is_filter)
         self.model.set_filter_rules(filter_rule)
+
+    def show_page_test_or_extract(self):
+        """显示主页为测试页或解压页"""
+        archive_model = self.page_setting.model.get_model_archive()
+        if isinstance(archive_model, ModelArchive.Test):
+            self.page_home.set_info_testing()
+        elif isinstance(archive_model, ModelArchive.Extract):
+            self.page_home.set_info_extracting()
 
     def finished(self, results: FileInfoList):
         """处理结束信号"""
