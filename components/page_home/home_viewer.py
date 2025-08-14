@@ -23,11 +23,11 @@ class HomeViewer(QWidget):
         # 初始化
         self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
-        self.turn_page_welcome()
+        # self.turn_page_welcome()
         self.ui.label_step_notice.setOpenExternalLinks(True)
 
         # 添加自定义Label
-        self.label_icon = LabelIcon()
+        self.label_icon = LabelIcon(self)
         self.ui.verticalLayout_label_drop.addWidget(self.label_icon)
 
         # 绑定信号
@@ -184,6 +184,18 @@ class HomeViewer(QWidget):
 
     def dragLeaveEvent(self, event):
         self._show_last_icon()
+
+    """缩放事件，用于修改icon控件的尺寸"""
+
+    def resizeEvent(self, event):
+        # icon控件以短边为基准，按比例缩放
+        frame = self.size()
+        icon_width = frame.width()
+        icon_height = frame.width()
+        resize_width = min(icon_width, icon_height)
+        resize_height = min(icon_width, icon_height)
+        self.label_icon.resize(resize_width, resize_height)
+        super().resizeEvent(event)
 
 
 if __name__ == "__main__":

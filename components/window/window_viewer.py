@@ -26,6 +26,8 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_setting.setProperty(_ID, 2)
         self.ui.pushButton_history.setProperty(_ID, 3)
         self.change_page(0)
+        # 设置按钮尺寸
+        self._set_button_size()
         # 设置图标
         self.setWindowIcon(base64_to_pixmap(ICON_APP))
         self.ui.pushButton_home.setIcon(base64_to_pixmap(ICON_HOMEPAGE))
@@ -84,6 +86,13 @@ class WindowViewer(QMainWindow):
         # setFixedSize()实际上是同时设置了最小和最大尺寸为相同值，取消锁定直接重新设置最大最小值即可
         self.setMinimumSize(0, 0)
         self.setMaximumSize(16777215, 16777215)
+
+    def _set_button_size(self):
+        """设置按钮尺寸"""
+        self.ui.pushButton_home.setFixedHeight(round(self.ui.pushButton_home.width() * 0.618, 0))
+        self.ui.pushButton_password.setFixedHeight(round(self.ui.pushButton_password.width() * 0.618, 0))
+        self.ui.pushButton_setting.setFixedHeight(round(self.ui.pushButton_setting.width() * 0.618, 0))
+        self.ui.pushButton_history.setFixedHeight(round(self.ui.pushButton_history.width() * 0.618, 0))
 
 
 if __name__ == "__main__":

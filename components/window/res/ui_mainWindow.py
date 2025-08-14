@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainWindowRuVikt.ui'
+## Form generated from reading UI file 'mainWindowtwDWFf.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QHBoxLayout, QMainWindow,
-    QPushButton, QSizePolicy, QStackedWidget, QVBoxLayout,
-    QWidget)
+    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -69,6 +69,10 @@ class Ui_MainWindow(object):
         self.pushButton_history.setSizePolicy(sizePolicy)
 
         self.verticalLayout.addWidget(self.pushButton_history)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
 
 
         self.horizontalLayout.addLayout(self.verticalLayout)
