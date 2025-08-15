@@ -20,6 +20,8 @@ class WindowViewer(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
+        # 屏蔽最大化功能
+        self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         # 设置按钮索引
         self.ui.pushButton_home.setProperty(_ID, 0)
         self.ui.pushButton_password.setProperty(_ID, 1)
@@ -93,6 +95,12 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_password.setFixedHeight(round(self.ui.pushButton_password.width() * 0.618, 0))
         self.ui.pushButton_setting.setFixedHeight(round(self.ui.pushButton_setting.width() * 0.618, 0))
         self.ui.pushButton_history.setFixedHeight(round(self.ui.pushButton_history.width() * 0.618, 0))
+
+    def resizeEvent(self, event):
+        width = event.size().width()
+        height = event.size().height()
+        max_ = max(width, height)
+        self.resize(max_, max_)
 
 
 if __name__ == "__main__":

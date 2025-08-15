@@ -390,8 +390,8 @@ class ThreadExtract(TemplateThread):
         start_time = time.time()
         final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, FAKE_PASSWORD)
         runtime_t = time.time() - start_time  # t命令的耗时
-        # 备忘录 对比耗时 选择更快的指令
 
+        is_continue_with_t = False  # 如果t命令耗时更短则使用t指令进行后续操作
         extract_path = None  # 如果成功处理，则为解压后最终的路径
         # 使用x命令解压
         for index_pw, pw in enumerate(passwords, start=1):
@@ -400,9 +400,32 @@ class ThreadExtract(TemplateThread):
             else:
                 pass
 
+            if is_continue_with_t:
+                break
+
             self.SignalPwIndex.emit(index_pw)
+            start_time = time.time()
             final_result, extract_path = self.extract(filepath, pw)
+            runtime_x = time.time() - start_time  # x命令的耗时
             if isinstance(final_result, Result7zip.Success):
                 break
+
+            # 对比耗时，使用耗时更短的指令
+            if runtime_t < runtime_x:
+                is_continue_with_t = True
+
+        # 切换为t指令
+        if is_continue_with_t:
+            for index_pw, pw in enumerate(passwords, start=1):
+                if self.is_stop_task:
+                    break
+                else:
+                    pass
+
+                self.SignalPwIndex.emit(index_pw)
+                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw)
+                if isinstance(final_result, Result7zip.Success):
+                    final_result, extract_path = self.extract(filepath, pw)
+                    break
 
         return final_result, extract_path
