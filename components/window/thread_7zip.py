@@ -174,15 +174,21 @@ class ThreadTest(TemplateThread):
     def _write_to_filename(self, file_info: FileInfo, password: str):
         """将密码写入文件名"""
         # 写入文件名时，写入组中所有的文件
-        # 密码部分
-        pw_part = f'{self.write_left_part}{password}{self.write_right_part}'
+        # 组合密码部分
+        position = self.write_position
+        left_part = self.write_left_part
+        right_part = self.write_right_part
+        if isinstance(position, Position.Left) and not right_part:  # 防止密码与文件名之间没有间隔符号
+            right_part = ' '
+        elif isinstance(position, Position.Right) and not left_part:
+            left_part = ' '
+        pw_part = f'{left_part}{password}{right_part}'
+
         # 需要重命名的文件列表
         if file_info.related_files:
             files_need_to_change = list(file_info.related_files)
         else:
             files_need_to_change = [file_info.filepath]
-        # 写入位置
-        position = self.write_position
 
         # 执行重命名
         for file in files_need_to_change:

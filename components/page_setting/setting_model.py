@@ -293,13 +293,12 @@ class _ChildSettingTryUnknownFiletype(_ModuleChildSettingSingleEnable):
     def __init__(self, config):
         super().__init__(config, section='TryUnknownFiletype', key='is_enable', default_value=False)
 
+
 class _ChildSettingReadPasswordFromFilename(_ModuleChildSettingSingleEnable):
     """设置项 是否从文件名中读取密码"""
 
     def __init__(self, config):
         super().__init__(config, section='ReadPasswordFromFilename', key='is_enable', default_value=False)
-
-
 
 
 class _ChildSettingWriteFilename(_ModuleChildSetting):
@@ -323,15 +322,23 @@ class _ChildSettingWriteFilename(_ModuleChildSetting):
 
     def get_preview(self) -> str:
         """获取密码写入文件名的示例"""
-        left_word = self.read_left_word()
-        right_word = self.read_right_word()
+        left_part = self.read_left_word()
+        right_part = self.read_right_word()
         position = self.read_position()
-        pw_part = f"{left_word}密码{right_word}"
-        filename_part = "原文件名"
-        if position == Position.Left():
-            return f"{pw_part}{filename_part}"
+        if isinstance(position, Position.Left) and not right_part:  # 防止密码与文件名之间没有间隔符号
+            right_part = ' '
+        elif isinstance(position, Position.Right) and not left_part:
+            left_part = ' '
+        pw_part = f'{left_part}密码{right_part}'
+        filename_part = '原文件名'
+        if isinstance(position, Position.Left):
+            preview = f'{pw_part}{filename_part}'
+        elif isinstance(position, Position.Right):
+            preview = f'{filename_part}{pw_part}'
         else:
-            return f"{filename_part}{pw_part}"
+            preview = '错误的设置参数'
+
+        return preview
 
     def read_is_enable(self) -> bool:
         """读取设置项 是否启用"""

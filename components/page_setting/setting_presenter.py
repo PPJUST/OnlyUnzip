@@ -46,8 +46,11 @@ class SettingPresenter(QObject):
         self.viewer.ChangeReadPasswordFromFilename.connect(self.model.set_read_password_from_filename_is_enable)
         self.viewer.ChangeWriteFilename.connect(self.model.set_write_filename_is_enable)
         self.viewer.ChangeWriteFilenameLeftPart.connect(self.model.set_write_filename_left_word)
+        self.viewer.ChangeWriteFilenameLeftPart.connect(self.update_filename_with_pw_preview)
         self.viewer.ChangeWriteFilenameRightPart.connect(self.model.set_write_filename_right_word)
+        self.viewer.ChangeWriteFilenameRightPart.connect(self.update_filename_with_pw_preview)
         self.viewer.ChangeWriteFilenamePosition.connect(self.model.set_write_filename_position)
+        self.viewer.ChangeWriteFilenamePosition.connect(self.update_filename_with_pw_preview)
         self.viewer.ChangeExtractModelSmart.connect(self.model.set_model_extract_smart)
         self.viewer.ChangeExtractModelDirect.connect(self.model.set_model_extract_direct)
         self.viewer.ChangeExtractModelSameFolder.connect(self.model.set_model_extract_same_folder)
@@ -64,6 +67,10 @@ class SettingPresenter(QObject):
         self.viewer.ChangeTopWindow.connect(self.SignalTopWindow.emit)
         self.viewer.ChangeLockSize.connect(self.model.set_lock_size_is_enable)
         self.viewer.ChangeLockSize.connect(self.SignalLockSize.emit)
+
+    def update_filename_with_pw_preview(self):
+        """更新密码写入文件名的预览"""
+        self.viewer.set_setting_write_filename_preview(self.model.get_write_filename_preview())
 
     def _load_setting(self):
         """加载初始设置，更新Viewer"""
