@@ -14,7 +14,7 @@
    <string>OnlyUnzip</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -113,6 +113,13 @@
        </spacer>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QStackedWidget" name="stackedWidget">

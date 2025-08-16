@@ -1,5 +1,5 @@
 # 主窗口的界面组件
-from PySide6.QtGui import Qt
+from PySide6.QtGui import Qt, QFont
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
 from lzytools._qt_pyside6 import base64_to_pixmap
 
@@ -95,6 +95,13 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_password.setFixedHeight(round(self.ui.pushButton_password.width() * 0.618, 0))
         self.ui.pushButton_setting.setFixedHeight(round(self.ui.pushButton_setting.width() * 0.618, 0))
         self.ui.pushButton_history.setFixedHeight(round(self.ui.pushButton_history.width() * 0.618, 0))
+
+        font = QFont()
+        font.setPointSize(12)
+        self.ui.pushButton_home.setFont(font)
+        self.ui.pushButton_password.setFont(font)
+        self.ui.pushButton_setting.setFont(font)
+        self.ui.pushButton_history.setFont(font)
 
     def resizeEvent(self, event):
         width = event.size().width()

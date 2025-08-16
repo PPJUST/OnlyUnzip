@@ -3,7 +3,7 @@ from typing import Union
 
 from PySide6.QtCore import QBuffer, QIODevice, QByteArray
 from PySide6.QtGui import QMovie, QPixmap, Qt
-from PySide6.QtWidgets import QLabel, QApplication
+from PySide6.QtWidgets import QLabel, QApplication, QSizePolicy
 
 
 class LabelIcon(QLabel):
@@ -13,8 +13,7 @@ class LabelIcon(QLabel):
         super().__init__(parent)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)  # 设置居中对齐
         self.setScaledContents(True)
-        # self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         # self.setStyleSheet("background-color: lightgreen;")  # 测试用
 
         self.current_icon: Union[QPixmap, QMovie] = None  # 当前显示的图片对象

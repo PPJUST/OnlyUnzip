@@ -23,7 +23,7 @@ class HomeViewer(QWidget):
         # 初始化
         self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
-        # self.turn_page_welcome()
+        self.turn_page_welcome()
         self.ui.label_step_notice.setOpenExternalLinks(True)
 
         # 添加自定义Label
