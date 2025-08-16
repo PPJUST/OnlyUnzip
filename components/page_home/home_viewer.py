@@ -1,7 +1,7 @@
 # 主页模块的界面组件
 from typing import Union
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
 
 from components.page_home.res.icon_base64 import *
@@ -65,7 +65,10 @@ class HomeViewer(QWidget):
     def set_current_file(self, filename: str, tooltip: str = ''):
         """设置当前处理的文件名"""
         self.turn_page_test_and_extract()
-        self.ui.label_current_file.setText(filename)
+        # 设置超长文本省略显示
+        label = self.ui.label_current_file
+        label.setText(label.fontMetrics().elidedText(filename, Qt.TextElideMode.ElideRight, self.width() - 10))
+
         if tooltip:
             self.ui.label_current_file.setToolTip(tooltip)
 
@@ -87,7 +90,10 @@ class HomeViewer(QWidget):
 
     def set_current_password(self, password: str):
         """设置当前测试的密码"""
-        self.ui.label_current_password.setText(password)
+        # 设置超长文本省略显示
+        label = self.ui.label_current_password
+        label.setText(label.fontMetrics().elidedText(password, Qt.TextElideMode.ElideRight, self.width() - 10))
+
         self.ui.label_right_password.setText(password)  # 将正确密码label也设置为当前密码，切换到解压页时即说明密码正确
 
     def set_progress_extract(self, progress: int):
