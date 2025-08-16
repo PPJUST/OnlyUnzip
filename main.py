@@ -15,11 +15,10 @@ if __name__ == "__main__":
     font = QFont("Microsoft YaHei", 10)  # 字体名称和大小
     app_.setFont(font)
 
-
     presenter = window.get_presenter()
     viewer = presenter.viewer
     model = presenter.model
     viewer.setWindowTitle('OnlyUnzip v2.0.0')
-
+    viewer.resize(300, 300)
     viewer.show()
     app_.exec()
