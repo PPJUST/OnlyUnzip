@@ -47,13 +47,17 @@ class WindowPresenter:
         # 绑定信号
         self.page_setting.SignalTopWindow.connect(self.top_window)
         self.page_setting.SignalLockSize.connect(self.lock_size)
-        self.page_home.FileInfo.connect(self.accept_files)  # 接收文件信息类
+        self.page_home.FileInfo.connect(self.accept_file_info_list)  # 接收文件信息类
         self.page_home.SignalNoFiles.connect(self.finished_by_no_files)
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self.page_home.UserStop.connect(self.finished_by_user_stop)
         self._bind_model_signal()
 
-    def accept_files(self, file_info: FileInfoList):
+    def accept_paths_from_cmd(self, paths: list):
+        """接收命令行参数"""
+        self.page_home.drop_paths(paths)
+
+    def accept_file_info_list(self, file_info: FileInfoList):
         """接收文件信息类，传递给模型组件"""
         # 传递文件信息类前传递必要参数
         self.set_model_passwords()
