@@ -618,13 +618,13 @@ class _ChildSettingLockSize(_ModuleChildSetting):
         self.section = 'LockSize'
         # 是否启用
         self.key_is_enable = 'is_enable'
-        self._default_value_is_enable = False
+        self._default_value_is_enable = True
         # 窗口高度
         self.key_height = 'height'
-        self._default_value_height = 600
+        self._default_value_height = 300
         # 窗口宽度
         self.key_width = 'width'
-        self._default_value_width = 400
+        self._default_value_width = 300
 
     def read_is_enable(self) -> bool:
         """读取设置项 是否启用"""

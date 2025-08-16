@@ -19,6 +19,5 @@ if __name__ == "__main__":
     viewer = presenter.viewer
     model = presenter.model
     viewer.setWindowTitle('OnlyUnzip v2.0.0')
-    viewer.resize(300, 300)
     viewer.show()
     app_.exec()

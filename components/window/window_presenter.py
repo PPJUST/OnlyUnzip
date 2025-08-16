@@ -202,6 +202,8 @@ class WindowPresenter:
         """锁定窗口大小"""
         if is_enable:
             self.viewer.lock_size()
+            self.page_setting.model.set_lock_size_width(self.viewer.width())
+            self.page_setting.model.set_lock_size_height(self.viewer.height())
         else:
             self.viewer.disable_lock_size()
 
@@ -211,6 +213,10 @@ class WindowPresenter:
         self.top_window(is_top_window)
 
         is_lock_size = self.page_setting.model.get_lock_size_is_enable()
+        if is_lock_size:
+            width = self.page_setting.model.get_lock_size_width()
+            height = self.page_setting.model.get_lock_size_height()
+            self.viewer.resize(width, height)
         self.lock_size(is_lock_size)
 
     def _bind_model_signal(self):

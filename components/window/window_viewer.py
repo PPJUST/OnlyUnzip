@@ -20,6 +20,7 @@ class WindowViewer(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
+        self.resize(300, 300)
         # 屏蔽最大化功能
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         # 设置按钮索引
