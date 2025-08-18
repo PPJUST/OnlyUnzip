@@ -3,7 +3,9 @@
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QApplication, QWidget
+from lzytools._qt_pyside6._function import base64_to_pixmap
 
+from components.page_password.res.icon_base64 import ICON_ERASER
 from components.page_password.res.ui_page_password import Ui_Form
 
 
@@ -23,6 +25,7 @@ class PasswordViewer(QWidget):
         self.ui.pushButton_open.setEnabled(False)
         # self.ui.pushButton_update.setEnabled(False)
         self._bind_signal()
+        self._load_icon()
 
     def set_pw_text(self, text: str):
         """设置密码框的文本"""
@@ -48,6 +51,11 @@ class PasswordViewer(QWidget):
         self.ui.pushButton_update.clicked.connect(
             lambda: self.UpdatePassword.emit(self.ui.plainTextEdit_password.toPlainText()))
         # self.ui.plainTextEdit_password.textChanged.connect(self._pw_text_changed)
+        self.ui.toolButton_clear.clicked.connect(self.clear_pw)
+
+    def _load_icon(self):
+        """加载图标"""
+        self.ui.toolButton_clear.setIcon(base64_to_pixmap(ICON_ERASER))
 
 
 if __name__ == "__main__":
