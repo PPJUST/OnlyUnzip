@@ -3,7 +3,7 @@ import os
 import re
 from typing import Union
 
-import lzytools
+import lzytools.archive
 from PySide6.QtCore import Signal, QObject
 
 from common import function_setting, function_extract

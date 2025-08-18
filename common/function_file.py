@@ -2,7 +2,7 @@ import os
 import shutil
 from typing import Union
 
-import lzytools
+import lzytools.file
 
 
 def move_file_to_folder(file_move: Union[str, list], target_dirpath: str) -> dict:

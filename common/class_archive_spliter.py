@@ -2,7 +2,7 @@
 import os
 from typing import Tuple, Dict
 
-import lzytools
+import lzytools.archive
 
 from common.class_7zip import ArchiveRole, TYPES_ARCHIVE_ROLE
 

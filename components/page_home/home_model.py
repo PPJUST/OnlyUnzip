@@ -1,7 +1,8 @@
 # 主页模块的模型组件
 import time
 
-import lzytools
+import lzytools.common
+import lzytools.file
 from PySide6.QtCore import QTimer, Signal, QObject
 
 from common.class_archive_spliter import ArchiveSpliter

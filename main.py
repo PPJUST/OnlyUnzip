@@ -1,7 +1,7 @@
 import os
 import sys
 
-import lzytools
+import lzytools.common
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QMessageBox
 
