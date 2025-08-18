@@ -20,8 +20,8 @@ except IndexError:
     pass
 
 
-def load_app(paths_cmd: list = None):
-    """:param paths_cmd: 通过命令行或者程序直接打开的文件路径"""
+def load_app(paths: list = None):
+    """:param paths: 通过命令行或者程序直接打开的文件路径"""
     app_ = QApplication()
     app_.setStyle('Fusion')
     # 设置白色背景色
@@ -38,15 +38,15 @@ def load_app(paths_cmd: list = None):
     model = presenter.model
     viewer.setWindowTitle('OnlyUnzip v2.0.0')
     viewer.show()
-    if paths_cmd:
-        presenter.accept_paths_from_cmd(paths_cmd)
+    if paths:
+        presenter.accept_paths_from_cmd(paths)
     app_.exec()
 
 
-def send_args(paths_cmd: list):
-    """:param paths_cmd: 通过命令行或者程序直接打开的文件路径"""
+def send_args(path: list):
+    """:param path: 通过命令行或者程序直接打开的文件路径"""
     presenter = window.get_presenter()
-    presenter.accept_paths_from_cmd(paths_cmd)
+    presenter.accept_paths_from_cmd(path)
 
 
 def show_dup_info():
