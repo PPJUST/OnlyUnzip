@@ -27,6 +27,8 @@ class PasswordViewer(QWidget):
         self._bind_signal()
         self._load_icon()
 
+        self.ui.pushButton_password_details.setVisible(False)
+
     def set_pw_text(self, text: str):
         """设置密码框的文本"""
         self.ui.plainTextEdit_password.appendPlainText(text)
