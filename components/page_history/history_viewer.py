@@ -21,10 +21,12 @@ class HistoryViewer(QWidget):
         self.ui.listWidget_records.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.listWidget_records.setWordWrap(True)
         self.ui.listWidget_records.customContextMenuRequested.connect(self._context_menu)  # 右键菜单
+        self.ui.listWidget_records.setSpacing(3)
 
     def add_record(self, record_text: str, color: Tuple[int, int, int], password: str = None):
         """添加记录"""
         item = QListWidgetItem()
+        record_text = record_text + '\n' + '-' * 25
         item.setText(record_text)
         if color:
             item.setForeground(QColor(color[0], color[1], color[2]))
