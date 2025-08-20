@@ -3,7 +3,8 @@ from PySide6.QtGui import Qt, QFont
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
 from lzytools._qt_pyside6 import base64_to_pixmap
 
-from components.window.res.icon_base64 import ICON_APP, ICON_HOMEPAGE, ICON_PASSWORD, ICON_SETTING, ICON_HISTORY
+from components.window.res.icon_base64 import ICON_APP, ICON_HOMEPAGE, ICON_PASSWORD, ICON_SETTING, ICON_HISTORY, \
+    ICON_ABOUT
 from components.window.res.ui_mainWindow import Ui_MainWindow
 
 _ID = 'id'  # 绑定按钮的id名称，仅用于索引
@@ -20,7 +21,7 @@ class WindowViewer(QMainWindow):
         self.ui.setupUi(self)
 
         # 初始化
-        self.resize(300, 300)
+        self.resize(330, 330)
         # 屏蔽最大化功能
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         # 设置按钮索引
@@ -28,6 +29,7 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_password.setProperty(_ID, 1)
         self.ui.pushButton_setting.setProperty(_ID, 2)
         self.ui.pushButton_history.setProperty(_ID, 3)
+        self.ui.pushButton_about.setProperty(_ID, 4)
         self.change_page(0)
         # 设置按钮尺寸
         self._set_button_size()
@@ -37,6 +39,7 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_password.setIcon(base64_to_pixmap(ICON_PASSWORD))
         self.ui.pushButton_setting.setIcon(base64_to_pixmap(ICON_SETTING))
         self.ui.pushButton_history.setIcon(base64_to_pixmap(ICON_HISTORY))
+        self.ui.pushButton_about.setIcon(base64_to_pixmap(ICON_ABOUT))
         # 绑定信号
         self.ui.buttonGroup.buttonClicked.connect(self.change_page)
 
@@ -55,6 +58,10 @@ class WindowViewer(QMainWindow):
     def add_page_history(self, widget: QWidget):
         """添加历史控件"""
         self.ui.page_history.layout().addWidget(widget)
+
+    def add_page_about(self, widget: QWidget):
+        """添加关于控件"""
+        self.ui.page_about.layout().addWidget(widget)
 
     def change_page(self, id_button):
         """切页"""
@@ -96,6 +103,7 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_password.setFixedHeight(round(self.ui.pushButton_password.width() * 0.618, 0))
         self.ui.pushButton_setting.setFixedHeight(round(self.ui.pushButton_setting.width() * 0.618, 0))
         self.ui.pushButton_history.setFixedHeight(round(self.ui.pushButton_history.width() * 0.618, 0))
+        self.ui.pushButton_about.setFixedHeight(round(self.ui.pushButton_history.width() * 0.618, 0))
 
         font = QFont()
         font.setPointSize(12)
@@ -103,6 +111,7 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_password.setFont(font)
         self.ui.pushButton_setting.setFont(font)
         self.ui.pushButton_history.setFont(font)
+        self.ui.pushButton_about.setFont(font)
 
     def resizeEvent(self, event):
         width = event.size().width()

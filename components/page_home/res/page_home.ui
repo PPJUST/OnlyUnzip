@@ -258,7 +258,7 @@
              <item>
               <widget class="QLabel" name="label_right_password">
                <property name="text">
-                <string>正确密码</string>
+                <string>...</string>
                </property>
               </widget>
              </item>

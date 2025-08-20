@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_homeZIGlCt.ui'
+## Form generated from reading UI file 'page_homelgiykt.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -282,7 +282,7 @@ class Ui_Form(object):
         self.label_15.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u5bc6\u7801:", None))
         self.label_current_password.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_16.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u8fdb\u5ea6:", None))
-        self.label_right_password.setText(QCoreApplication.translate("Form", u"\u6b63\u786e\u5bc6\u7801", None))
+        self.label_right_password.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_17.setText(QCoreApplication.translate("Form", u"\u8017\u65f6:", None))
         self.label_time_final.setText(QCoreApplication.translate("Form", u"0:00:00", None))
         self.label_18.setText(QCoreApplication.translate("Form", u"\u5904\u7406\u6587\u4ef6\u6570\u91cf:", None))

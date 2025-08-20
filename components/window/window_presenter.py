@@ -7,7 +7,7 @@ from common import function_7zip, function_subprocess
 from common.class_7zip import ModelArchive
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
-from components import page_home, page_password, page_setting, page_history
+from components import page_home, page_password, page_setting, page_history, page_about
 from components.window.thread_queue_receiver import ThreadQueueReceiver
 from components.window.window_model import WindowModel
 from components.window.window_viewer import WindowViewer
@@ -32,6 +32,8 @@ class WindowPresenter:
         self.viewer.add_page_setting(self.page_setting.viewer)
         self.page_history = page_history.get_presenter()
         self.viewer.add_page_history(self.page_history.viewer)
+        self.page_about = page_about.get_viewer()
+        self.viewer.add_page_about(self.page_about)
 
         # 绑定接收线程
         self.queue_receiver = ThreadQueueReceiver()

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainWindowBudWkJ.ui'
+## Form generated from reading UI file 'mainWindowVXjZwE.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -70,6 +70,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.pushButton_history)
 
+        self.pushButton_about = QPushButton(self.centralwidget)
+        self.buttonGroup.addButton(self.pushButton_about)
+        self.pushButton_about.setObjectName(u"pushButton_about")
+        sizePolicy.setHeightForWidth(self.pushButton_about.sizePolicy().hasHeightForWidth())
+        self.pushButton_about.setSizePolicy(sizePolicy)
+
+        self.verticalLayout.addWidget(self.pushButton_about)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout.addItem(self.verticalSpacer)
@@ -114,6 +122,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.stackedWidget.addWidget(self.page_history)
+        self.page_about = QWidget()
+        self.page_about.setObjectName(u"page_about")
+        self.verticalLayout_6 = QVBoxLayout(self.page_about)
+        self.verticalLayout_6.setSpacing(0)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.stackedWidget.addWidget(self.page_about)
 
         self.horizontalLayout.addWidget(self.stackedWidget)
 
@@ -122,7 +137,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -134,5 +149,6 @@ class Ui_MainWindow(object):
         self.pushButton_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801", None))
         self.pushButton_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.pushButton_history.setText(QCoreApplication.translate("MainWindow", u"\u5386\u53f2", None))
+        self.pushButton_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
     # retranslateUi
 

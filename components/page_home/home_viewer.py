@@ -3,6 +3,7 @@ from typing import Union
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
+from lzytools._qt_pyside6 import base64_to_pixmap
 
 from components.page_home.res.icon_base64 import *
 from components.page_home.res.label_icon import LabelIcon
@@ -25,6 +26,7 @@ class HomeViewer(QWidget):
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
         self.turn_page_welcome()
         self.ui.label_step_notice.setOpenExternalLinks(True)
+        self._set_stop_icon()
 
         # 添加自定义Label
         self.label_icon = LabelIcon(self)
@@ -49,6 +51,10 @@ class HomeViewer(QWidget):
         """设置步骤提示"""
         self.turn_page_step()
         self.ui.label_step_notice.setText(notice)
+
+    def _set_stop_icon(self):
+        """设置停止按钮的图标"""
+        self.ui.toolButton_stop.setIcon(base64_to_pixmap(ICON_STOP))
 
     """测试和解压页"""
 
