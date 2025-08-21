@@ -7,6 +7,8 @@ from typing import Union
 
 from PySide6.QtWidgets import QApplication
 
+from common import function_password
+
 DB_FILEPATH = 'password.pkl'
 _OUTPUT_FILE = 'password_output.txt'
 
@@ -37,6 +39,8 @@ class PasswordModel:
 
     def update_password(self, text: str):
         """更新密码本"""
+        # 更新前备份一次密码
+        function_password.backup_file(DB_FILEPATH)
         # 考虑两端可能存在空格的密码，添加密码时同时添加原始和去除空格的两种格式
         pws = [i for i in text.split('\n') if i.strip()]
         pws_strip = [i.strip() for i in pws if i.strip() not in pws]  # 为了保持密码的顺序，不使用set进行去重
