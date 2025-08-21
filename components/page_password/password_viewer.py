@@ -15,6 +15,7 @@ class PasswordViewer(QWidget):
     OutputPassword = Signal(name="导出密码")
     OpenPassword = Signal(name="打开密码文件")
     UpdatePassword = Signal(str, name="更新密码本")
+    DropFiles = Signal(list, name="拖入文件")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -26,11 +27,12 @@ class PasswordViewer(QWidget):
         # self.ui.pushButton_update.setEnabled(False)
         self._bind_signal()
         self._load_icon()
+        self.ui.plainTextEdit_password.dropEvent = self.drop_event
 
         self.ui.pushButton_password_details.setVisible(False)
 
-    def set_pw_text(self, text: str):
-        """设置密码框的文本"""
+    def append_pw(self, text: str):
+        """向密码框中添加密码"""
         self.ui.plainTextEdit_password.appendPlainText(text)
 
     def set_open_button_enable(self, is_enable: bool):
@@ -58,6 +60,18 @@ class PasswordViewer(QWidget):
     def _load_icon(self):
         """加载图标"""
         self.ui.toolButton_clear.setIcon(base64_to_pixmap(ICON_ERASER))
+
+    def drop_event(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+
+            # 获取所有拖入文件的路径
+            urls = event.mimeData().urls()
+            file_paths = [url.toLocalFile() for url in urls]
+            self.DropFiles.emit(file_paths)
+
+        else:
+            event.ignore()
 
 
 if __name__ == "__main__":

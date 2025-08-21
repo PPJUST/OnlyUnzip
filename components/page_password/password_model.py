@@ -65,14 +65,49 @@ class PasswordModel:
         info_join = info_1 + info_2 + info_3
         return info_join
 
+    def drop_files(self, files):
+        """处理拖入的文件"""
+        # 提取文件
+        files = [i for i in files if os.path.isfile(i)]
+        # 尝试读取密码
+        pws = []
+        for file in files:
+            try:  # 尝试按txt文件读取
+                pws += self._read_passwords_from_txt(file)
+            except:
+                try:  # 尝试按pickle文件读取
+                    pws += self._read_passwords_from_pickle(file)
+                except:
+                    pass
+
+        pws = set(pws)
+        return pws
+
     @staticmethod
-    def _read_db():
+    def _read_db(db_file: str = DB_FILEPATH):
         """读取密码本"""
-        if os.path.exists(DB_FILEPATH):
-            with open(DB_FILEPATH, 'rb') as f:
+        if os.path.exists(db_file):
+            with open(db_file, 'rb') as f:
                 return pickle.load(f)
         else:
             return DBPassword()
+
+    def _read_passwords_from_txt(self, txt_file: str) -> list:
+        """从txt文件中读取密码"""
+        with open(txt_file, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+
+        return lines
+
+    def _read_passwords_from_pickle(self, pickle_file: str):
+        """从pickle文件中读取密码"""
+        # v2.0.0版本的密码本格式
+        try:
+            db_password = self._read_db(pickle_file)
+            pws = db_password.get_passwords()
+            return pws
+        except:
+            pass
 
 
 class DBPassword(dict):

@@ -33,9 +33,10 @@ class PasswordPresenter:
         self.viewer.OutputPassword.connect(self._output_password)
         self.viewer.OpenPassword.connect(self.model.open_password)
         self.viewer.UpdatePassword.connect(self._update_password)
+        self.viewer.DropFiles.connect(self._drop_files)
 
     def _read_clipboard(self):
-        self.viewer.set_pw_text(self.model.read_clipboard())
+        self.viewer.append_pw(self.model.read_clipboard())
 
     def _output_password(self):
         self.model.output_password()
@@ -45,3 +46,9 @@ class PasswordPresenter:
         self.model.update_password(text)
         self.viewer.clear_pw()
         self.show_pw_count_info()  # 更新密码统计
+
+    def _drop_files(self, files):
+        pws_drop = self.model.drop_files(files)
+        print('拖入文件中包含的密码', pws_drop)
+        if pws_drop:
+            self.viewer.append_pw('\n'.join(pws_drop))
