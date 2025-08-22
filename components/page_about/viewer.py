@@ -16,6 +16,7 @@ class AboutViewer(QWidget):
         self.ui.label_project.setOpenExternalLinks(True)
         self.ui.label_download_link_1.setOpenExternalLinks(True)
         self.ui.label_download_link_2.setOpenExternalLinks(True)
+        self.ui.label_feedback.setOpenExternalLinks(True)
 
         self.set_info()
 
@@ -29,6 +30,8 @@ class AboutViewer(QWidget):
         # 下载地址
         self.ui.label_download_link_1.setText('<a href="https://github.com/PPJUST/OnlyUnzip/releases">Github</a>')
         self.ui.label_download_link_2.setText('<a href="https://wwvb.lanzout.com/b01fna1qh">蓝奏云\n密码1234</a>')
+        # 反馈地址
+        self.ui.label_feedback.setText('<a href="https://wj.qq.com/s2/23570318/20f3/">点击直达</a>')
 
 
 if __name__ == "__main__":

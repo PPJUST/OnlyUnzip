@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'aboutmRSUad.ui'
+## Form generated from reading UI file 'aboutPppPUA.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -75,6 +75,16 @@ class Ui_Form(object):
 
         self.formLayout.setWidget(4, QFormLayout.FieldRole, self.label_download_link_2)
 
+        self.label_10 = QLabel(Form)
+        self.label_10.setObjectName(u"label_10")
+
+        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_10)
+
+        self.label_feedback = QLabel(Form)
+        self.label_feedback.setObjectName(u"label_feedback")
+
+        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.label_feedback)
+
 
         self.retranslateUi(Form)
 
@@ -93,5 +103,7 @@ class Ui_Form(object):
         self.label_download_link_1.setText(QCoreApplication.translate("Form", u"download link", None))
         self.label_9.setText(QCoreApplication.translate("Form", u"\u4e0b\u8f7d\u5730\u57402\uff1a", None))
         self.label_download_link_2.setText(QCoreApplication.translate("Form", u"download link", None))
+        self.label_10.setText(QCoreApplication.translate("Form", u"\u95ee\u9898\u53cd\u9988\uff1a", None))
+        self.label_feedback.setText(QCoreApplication.translate("Form", u"feedback", None))
     # retranslateUi
 
