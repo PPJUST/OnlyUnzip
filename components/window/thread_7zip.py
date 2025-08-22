@@ -16,6 +16,7 @@ class TemplateThread(QThread):
     SignalCurrentFile = Signal(str, name='当前处理的文件名')
     SignalTaskCount = Signal(int, name='需要处理的文件总数')
     SignalTaskIndex = Signal(int, name='当前处理的文件索引')
+    SignalCurrentPw = Signal(str, name='当前使用的密码')
     SignalPwCount = Signal(int, name='待测试密码总数')
     SignalPwIndex = Signal(int, name='当前使用的密码索引')
     SignalResult = Signal(FileInfo, name='自定义文件信息类')
@@ -148,6 +149,7 @@ class ThreadTest(TemplateThread):
                 else:
                     pass
                 self.SignalPwIndex.emit(index_pw)
+                self.SignalCurrentPw.emit(pw)
                 final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
                 # 如果结果是成功，则寻找到正确密码，否则继续进行测试
                 if isinstance(final_result, Result7zip.Success):
@@ -160,6 +162,7 @@ class ThreadTest(TemplateThread):
                 else:
                     pass
                 self.SignalPwIndex.emit(index_pw)
+                self.SignalCurrentPw.emit(pw)
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
                 # 如果结果是成功，则寻找到正确密码，否则继续进行测试
                 if isinstance(final_result, Result7zip.Success):
@@ -380,6 +383,7 @@ class ThreadExtract(TemplateThread):
                 pass
 
             self.SignalPwIndex.emit(index_pw)
+            self.SignalCurrentPw.emit(pw)
             final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
             if isinstance(final_result, Result7zip.Success):
                 print('搜索到正确密码，执行解压操作')
@@ -410,6 +414,7 @@ class ThreadExtract(TemplateThread):
                 break
 
             self.SignalPwIndex.emit(index_pw)
+            self.SignalCurrentPw.emit(pw)
             start_time = time.time()
             final_result, extract_path = self.extract(filepath, pw)
             runtime_x = time.time() - start_time  # x命令的耗时
@@ -429,6 +434,7 @@ class ThreadExtract(TemplateThread):
                     pass
 
                 self.SignalPwIndex.emit(index_pw)
+                self.SignalCurrentPw.emit(pw)
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw)
                 if isinstance(final_result, Result7zip.Success):
                     final_result, extract_path = self.extract(filepath, pw)

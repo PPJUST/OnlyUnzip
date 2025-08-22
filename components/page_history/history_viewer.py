@@ -26,7 +26,7 @@ class HistoryViewer(QWidget):
     def add_record(self, record_text: str, color: Tuple[int, int, int], password: str = None):
         """添加记录"""
         item = QListWidgetItem()
-        record_text = record_text + '\n' + '-' * 25
+        record_text = record_text + '\n' + '-' * 20
         item.setText(record_text)
         if color:
             item.setForeground(QColor(color[0], color[1], color[2]))

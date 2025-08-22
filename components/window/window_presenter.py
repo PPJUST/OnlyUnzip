@@ -230,6 +230,7 @@ class WindowPresenter:
         self.model.SignalCurrentFile.connect(self.page_home.set_current_file)
         self.model.SignalTaskCount.connect(self.page_home.set_task_count)
         self.model.SignalTaskIndex.connect(self.page_home.set_task_index)
+        self.model.SignalCurrentPw.connect(self.page_home.set_current_password)
         self.model.SignalPwCount.connect(self.page_home.set_password_count)
         self.model.SignalPwIndex.connect(self.page_home.set_password_index)
         self.model.SignalResult.connect(self.page_history.collection_history)
