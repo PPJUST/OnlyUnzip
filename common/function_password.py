@@ -25,7 +25,8 @@ def get_backup_files():
     return lzytools.file.get_files_in_paths([BACKUP_PATH])
 
 
-def delete_backup_over_limit(limit: int = 10):
+def delete_backup_over_limit(limit: int = 20):
+    """删除超出数量限制的备份文件（先删除创建时间更早的）"""
     backup_files = sorted(get_backup_files(), reverse=True)
     count = len(backup_files)
     if count > limit:
@@ -35,5 +36,6 @@ def delete_backup_over_limit(limit: int = 10):
 
 
 def check_backup_file_exists():
+    """检查备份文件夹是否存在"""
     if not os.path.exists(BACKUP_PATH):
         os.mkdir(BACKUP_PATH)

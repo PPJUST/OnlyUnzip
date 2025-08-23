@@ -40,6 +40,10 @@ class HomeModel(QObject):
         self._start_time_current = time.time()
         self._timer.start()
 
+    def reset_current_time(self):
+        """重置当前文件运行时间"""
+        self._start_time_current = time.time()
+
     def stop_timing(self):
         """停止计时"""
         self._timer.stop()
@@ -55,10 +59,3 @@ class HomeModel(QObject):
         runtime_current = time_now - self._start_time_current
         runtime_current_text = lzytools.common.convert_time(runtime_current)
         self.RuntimeCurrent.emit(runtime_current_text)
-
-    def get_current_runtime(self):
-        """获取当前运行时间"""
-        time_now = time.time()
-        runtime_current = time_now - self._start_time_current
-        runtime_current_text = lzytools.common.convert_time(runtime_current)
-        return runtime_current_text

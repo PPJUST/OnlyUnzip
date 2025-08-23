@@ -1,5 +1,6 @@
 # 密码模块的模型组件
 # 用于配置文件的具体方法，包括读取、修改、保存、获取等
+import configparser
 import os
 import pickle
 import time
@@ -72,13 +73,16 @@ class PasswordModel:
         # 尝试读取密码
         pws = []
         for file in files:
-            try:  # 尝试按txt文件读取
-                pws += self._read_passwords_from_txt(file)
+            try:  # 尝试按pickle文件读取
+                pws += self._read_passwords_from_pickle(file)
             except:
-                try:  # 尝试按pickle文件读取
-                    pws += self._read_passwords_from_pickle(file)
+                try:  # 尝试按ini文件读取
+                    pws += self._read_passwords_from_ini(file)
                 except:
-                    pass
+                    try:  # 尝试按txt文件读取
+                        pws += self._read_passwords_from_txt(file)
+                    except:
+                        pass
 
         pws = set(pws)
         return pws
@@ -101,11 +105,29 @@ class PasswordModel:
 
     def _read_passwords_from_pickle(self, pickle_file: str):
         """从pickle文件中读取密码"""
-        # v2.0.0版本的密码本格式
         try:
-            db_password = self._read_db(pickle_file)
-            pws = db_password.get_passwords()
-            return pws
+            with open(pickle_file, 'rb') as f:
+                data = pickle.load(f)
+                # v2.0.0版本的密码本格式（DBPassword类）
+                if isinstance(data, DBPassword):
+                    pws = data.get_passwords()
+                    return pws
+                # v1.3.0~1.6.1版本的密码本格式（Dict类）
+                if isinstance(data, dict):
+                    pws = list(data.keys())
+                    return pws
+        except:
+            pass
+
+    def _read_passwords_from_ini(self, ini_file: str):
+        """从ini文件中读取密码"""
+        # v1.0.0~1.2.2版本的密码本格式（ini格式）
+        try:
+            config = configparser.ConfigParser()
+            config.read(ini_file, encoding='utf-8')  # 配置文件的路径
+            sections = config.sections()
+            if sections:
+                return sections
         except:
             pass
 

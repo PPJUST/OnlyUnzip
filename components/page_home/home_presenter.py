@@ -38,8 +38,8 @@ class HomePresenter(QObject):
         # 绑定信号
         self.viewer.UserStop.connect(self.UserStop.emit)
         self.viewer.DropFiles.connect(self.drop_paths)
-        self.model.RuntimeTotal.connect(self.viewer.set_runtime_total)
-        self.model.RuntimeCurrent.connect(self.viewer.set_runtime_current)
+        self.model.RuntimeTotal.connect(self.set_runtime_total)
+        self.model.RuntimeCurrent.connect(self.set_runtime_current)
 
     def drop_paths(self, paths: list):
         """拖入文件"""
@@ -124,6 +124,8 @@ class HomePresenter(QObject):
         """设置总进度：当前任务索引"""
         self._task_index = index
         self.viewer.set_progress_total(f'{self._task_index}/{self._task_count}')
+        # 更新当前文件的用时
+        self.model.reset_current_time()
 
     def set_current_file(self, filename: str):
         """设置当前处理的文件名"""
