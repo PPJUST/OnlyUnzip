@@ -5,6 +5,7 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
 from lzytools._qt_pyside6 import base64_to_pixmap
 
+from common.function_7zip import FAKE_PASSWORD
 from components.page_home.res.icon_base64 import *
 from components.page_home.res.label_icon import LabelIcon
 from components.page_home.res.ui_page_home import Ui_Form
@@ -96,11 +97,16 @@ class HomeViewer(QWidget):
 
     def set_current_password(self, password: str):
         """设置当前测试的密码"""
+        if password == FAKE_PASSWORD:  # 如果是临时密码，则显示省略号
+            password = '...'
         # 设置超长文本省略显示
-        label = self.ui.label_current_password
-        label.setText(label.fontMetrics().elidedText(password, Qt.TextElideMode.ElideRight, self.width() - 10))
-
-        self.ui.label_right_password.setText(password)  # 将正确密码label也设置为当前密码，切换到解压页时即说明密码正确
+        label_current = self.ui.label_current_password
+        label_current.setText(
+            label_current.fontMetrics().elidedText(password, Qt.TextElideMode.ElideRight, self.width() - 10))
+        # 将正确密码label也设置为当前密码，切换到解压页时即说明密码正确
+        label_right = self.ui.label_right_password
+        label_right.setText(
+            label_right.fontMetrics().elidedText(password, Qt.TextElideMode.ElideRight, self.width() - 10))
 
     def set_progress_extract(self, progress: int):
         """设置解压的进度 1%

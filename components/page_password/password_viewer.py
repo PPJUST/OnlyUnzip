@@ -29,7 +29,7 @@ class PasswordViewer(QWidget):
         self._load_icon()
         self.ui.plainTextEdit_password.dropEvent = self.drop_event
 
-        self.ui.pushButton_password_details.setVisible(False)
+        self.ui.pushButton_password_details.setEnabled(False)
 
     def append_pw(self, text: str):
         """向密码框中添加密码"""

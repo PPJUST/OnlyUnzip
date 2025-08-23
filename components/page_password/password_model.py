@@ -59,11 +59,12 @@ class PasswordModel:
     def count_password(self) -> str:
         """统计密码本信息"""
         pws = self.password_db.get_passwords()
-        info_1 = '更新：一个密码占一行，点击“更新密码”。\n'
-        info_2 = f'当前密码本存储密码数：{len(pws)}\n'
+        info_1 = '添加方法：一个密码占一行，点击“更新密码本”。\n'
+        info_4 = '直接拖入旧版本的密码本文件，可以读取其中的密码\n'
+        info_2 = f'当前存储的密码数量：{len(pws)}\n'
         info_pw10 = '\n'.join(pws[:10])
         info_3 = f'常用密码预览：\n{info_pw10}'
-        info_join = info_1 + info_2 + info_3
+        info_join = info_1 + info_4 + '\n' + info_2 + '\n' + info_3
         return info_join
 
     def drop_files(self, files):
