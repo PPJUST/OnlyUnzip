@@ -97,7 +97,7 @@ class HomeViewer(QWidget):
 
     def set_current_password(self, password: str):
         """设置当前测试的密码"""
-        if password == FAKE_PASSWORD:  # 如果是临时密码，则显示省略号
+        if password == FAKE_PASSWORD:  # 如果是虚拟密码，则显示省略号
             password = '...'
         # 设置超长文本省略显示
         label_current = self.ui.label_current_password

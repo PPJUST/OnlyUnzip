@@ -2,6 +2,7 @@ import os
 import time
 
 import lzytools.file
+import lzytools.archive
 from PySide6.QtCore import QThread, Signal
 
 from common import function_7zip, function_move, function_file, function_filename
@@ -176,7 +177,9 @@ class ThreadTest(TemplateThread):
 
     def _write_to_filename(self, file_info: FileInfo, password: str):
         """将密码写入文件名"""
-        # 写入文件名时，写入组中所有的文件
+        # 如果密码为虚拟密码，则不进行写入
+        if password == FAKE_PASSWORD:
+            return
         # 组合密码部分
         position = self.write_position
         left_part = self.write_left_part
@@ -187,7 +190,7 @@ class ThreadTest(TemplateThread):
             left_part = ' '
         pw_part = f'{left_part}{password}{right_part}'
 
-        # 需要重命名的文件列表
+        # 需要重命名的文件列表（写入文件名时，如果是分卷压缩文件组，则写入组中所有的文件）
         if file_info.related_files:
             files_need_to_change = list(file_info.related_files)
         else:
