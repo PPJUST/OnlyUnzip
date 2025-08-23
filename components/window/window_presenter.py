@@ -105,7 +105,7 @@ class WindowPresenter:
         self.model.set_cover_model(cover_model)
 
         is_break_folder = self.page_setting.model.get_break_folder_is_enable()
-        break_folder_model = self.page_setting.model.get_break_folder_model_str()
+        break_folder_model = self.page_setting.model.get_break_folder_model()
         self.model.set_is_break_folder(is_break_folder)
         self.model.set_break_folder_model(break_folder_model)
 

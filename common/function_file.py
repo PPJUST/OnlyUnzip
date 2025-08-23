@@ -5,19 +5,22 @@ from typing import Union
 import lzytools.file
 
 
-def move_file_to_folder(file_move: Union[str, list], target_dirpath: str) -> dict:
+def move_file_to_folder(files_need_move: Union[str, list], target_dirpath: str) -> dict:
     """移动文件/文件夹
-    :param file_move: 需要移动的文件/文件夹路径
+    :param files_need_move: 需要移动的文件/文件夹路径
     :param target_dirpath: 移动至目标文件夹
     :return: 新旧文件路径对应的字典"""
     # 统一格式
-    if isinstance(file_move, str):
-        file_move = [file_move]
+    if isinstance(files_need_move, str):
+        files_need_move = [files_need_move]
 
-    # 检查需要移动的文件/文件夹在目标目录中是否存在重复的文件名
     file_dict = dict()  # 新旧文件路径对应的字典
-    for file in file_move:
+    for file in files_need_move:
+        # 如果file是target_dirpath的子路径，则跳过
+        if lzytools.file.is_subpath(file, target_dirpath):
+            continue
         filename = os.path.basename(file)
+        # 检查需要移动的文件/文件夹在目标目录中是否存在重复的文件名
         is_dup = lzytools.file.is_dup_filename(filename, target_dirpath)
         if is_dup:
             # 区分文件与文件夹，两种类型的命名方式不同（主要是为了防止文件夹名称中带.时误判为后缀名的情况）
@@ -47,12 +50,16 @@ def break_folder_bottom(dirpath: str):
     # 找出最深一级的存在多文件的文件夹/或文件
     deepest_file = lzytools.file.get_first_multi_file_dirpath(dirpath)
 
+    # 如果最深一级文件夹是其自身，则不执行后续操作
+    if os.path.normpath(deepest_file) == os.path.normpath(dirpath):
+        return
+
     # 移动到目录之外
     parent_dirpath = os.path.dirname(dirpath)
     new_file_dict = move_file_to_folder(deepest_file, parent_dirpath)
 
     # 如果顶层目录为空，则删除
-    if not lzytools.file.get_size(dirpath):
+    if os.path.exists(dirpath) and not lzytools.file.get_size(dirpath):
         os.remove(dirpath)
 
     move_path: str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
@@ -69,8 +76,7 @@ def break_folder_top(dirpath: str):
     _ = move_file_to_folder(deepest_file, dirpath)
 
     # 如果底层目录为空，则删除
-    if not lzytools.file.get_size(deepest_file):
-        os.remove(deepest_file)
+    lzytools.file.delete_empty_folder(deepest_file, send_to_trash=False)
 
     move_path: str = dirpath  # 文件夹未变动，不需要重新赋值
     return move_path
@@ -85,6 +91,9 @@ def break_folder_files(dirpath: str):
     # 逐个移动
     for file in files:
         move_file_to_folder(file, dirpath)
+
+    # 删除空的子文件夹
+    lzytools.file.delete_empty_folder(dirpath)
 
     move_path: str = dirpath  # 文件夹未变动，不需要重新赋值
     return move_path
