@@ -61,10 +61,12 @@ class WindowPresenter:
 
     def accept_file_info_list(self, file_info: FileInfoList):
         """接收文件信息类，传递给模型组件"""
+        # 锁定设置项，防止被修改
+        self.page_setting.lock_setting()
         # 传递文件信息类前传递必要参数
         self.set_model_passwords()
         self.set_model_setting()
-
+        # 传递给模型组件
         self.model.accept_files(file_info)
         self.show_page_test_or_extract()
 
@@ -127,6 +129,9 @@ class WindowPresenter:
 
     def finished(self, results: FileInfoList):
         """处理结束信号"""
+        # 解锁设置项
+        self.page_setting.unlock_setting()
+
         # 接收到结束信号后，先传递给收集器，收集处理结果
         self.collect_result(results)
 
@@ -155,6 +160,8 @@ class WindowPresenter:
 
     def finished_by_no_files(self):
         """提前终止：由于主页模块信号-没有需要处理的文件"""
+        # 解锁设置项
+        self.page_setting.unlock_setting()
         # 如果没有处理任何文件就结束，则直接显示Skip提示，否则显示正常计数信息（递归解压到没有需要解压的文件）
         if not self.result_collector.get_count_all_result():
             self.page_home.set_info_skip()
@@ -164,10 +171,15 @@ class WindowPresenter:
 
     def finished_by_temp_folder(self, path: str = ''):
         """提前终止：由于主页模块信号-存在临时文件夹"""
+        # 解锁设置项
+        self.page_setting.unlock_setting()
+
         self.page_home.set_info_exists_temp_folder(path)
 
     def finished_by_user_stop(self):
         """提前终止：用户主动终止"""
+        # 解锁设置项
+        self.page_setting.unlock_setting()
         # 更新主页信息
         finish_info_simple, file_info_detail = self.result_collector.get_result_info()
         self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)

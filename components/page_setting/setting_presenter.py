@@ -38,6 +38,18 @@ class SettingPresenter(QObject):
         """获取是否尝试处理未知格式的文件"""
         return self.model.get_try_unknown_filetype_is_enable()
 
+    def update_filename_with_pw_preview(self):
+        """更新密码写入文件名的预览"""
+        self.viewer.set_setting_write_filename_preview(self.model.get_write_filename_preview())
+
+    def lock_setting(self):
+        """锁定设置项，禁止被修改"""
+        self.viewer.lock()
+
+    def unlock_setting(self):
+        """解锁设置项，可以被修改"""
+        self.viewer.unlock()
+
     def _bind_signal(self):
         """绑定Viewer信号"""
         self.viewer.ChangeArchiveModelText.connect(self.model.set_model_archive_test)
@@ -67,10 +79,6 @@ class SettingPresenter(QObject):
         self.viewer.ChangeTopWindow.connect(self.SignalTopWindow.emit)
         self.viewer.ChangeLockSize.connect(self.model.set_lock_size_is_enable)
         self.viewer.ChangeLockSize.connect(self.SignalLockSize.emit)
-
-    def update_filename_with_pw_preview(self):
-        """更新密码写入文件名的预览"""
-        self.viewer.set_setting_write_filename_preview(self.model.get_write_filename_preview())
 
     def _load_setting(self):
         """加载初始设置，更新Viewer"""

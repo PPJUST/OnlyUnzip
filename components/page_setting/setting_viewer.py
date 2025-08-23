@@ -46,11 +46,11 @@ class SettingViewer(QWidget):
 
     def lock(self):
         """锁定全部设置项，禁止修改"""
-        self.setEnabled(False)
+        self._set_enable(False)
 
     def unlock(self):
         """解锁全部设置项，允许修改"""
-        self.setEnabled(True)
+        self._set_enable(True)
 
     def _choose_dirpath(self):
         """打开对话框，选择指定解压目录"""
@@ -67,6 +67,14 @@ class SettingViewer(QWidget):
     def _set_icon(self):
         self.ui.toolButton_choose.setIcon(base64_to_pixmap(ICON_CHOOSE))
         self.ui.toolButton_open.setIcon(base64_to_pixmap(ICON_OPEN))
+
+    def _set_enable(self, is_enable: bool):
+        self.ui.radioButton_mode1_test.setEnabled(is_enable)
+        self.ui.radioButton_mode1_extract.setEnabled(is_enable)
+        self.ui.checkBox_read_password_from_filename.setEnabled(is_enable)
+        self.ui.checkBox_try_unknown_filetype.setEnabled(is_enable)
+        self.ui.widget_test.setEnabled(is_enable)
+        self.ui.widget_extract.setEnabled(is_enable)
 
     """以下为设置选项的方法"""
 
@@ -99,12 +107,10 @@ class SettingViewer(QWidget):
         设置是否尝试处理未知格式的文件"""
         self.ui.checkBox_try_unknown_filetype.setChecked(is_enable)
 
-
     def set_setting_is_read_password_from_filename(self, is_enable: bool):
         """通用选项
         设置是否尝试从文件名中读取密码"""
         self.ui.checkBox_read_password_from_filename.setChecked(is_enable)
-
 
     def set_setting_write_filename(self, is_enable: bool):
         """测试模式选项
