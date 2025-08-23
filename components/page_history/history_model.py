@@ -6,6 +6,7 @@ from typing import Tuple, Union
 
 from common.class_7zip import Result7zip
 from common.class_file_info import FileInfo
+from common.function_7zip import FAKE_PASSWORD
 
 
 class HistoryModel:
@@ -31,7 +32,10 @@ class HistoryModel:
         # 只在解压结果为成功时才添加密码文本行和返回密码
         if isinstance(_7zip_result, Result7zip.Success):
             password = _7zip_result.password
-            text_join += (split_word + '解压密码：' + password)
-            return text_join, color, password
+            if password == FAKE_PASSWORD:
+                return text_join, color, None
+            else:
+                text_join += (split_word + '解压密码：' + password)
+                return text_join, color, password
         else:
             return text_join, color, None
