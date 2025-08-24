@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_homelgiykt.ui'
+## Form generated from reading UI file 'page_homeXMfvfS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -116,6 +116,7 @@ class Ui_Form(object):
         self.gridLayout.addLayout(self.horizontalLayout_12, 1, 1, 1, 1)
 
         self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setSpacing(12)
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
         self.toolButton_stop = QToolButton(self.page_test_and_extract)
         self.toolButton_stop.setObjectName(u"toolButton_stop")
@@ -133,10 +134,11 @@ class Ui_Form(object):
 
         self.verticalLayout_5.addLayout(self.gridLayout)
 
-        self.label_current_file = QLabel(self.page_test_and_extract)
-        self.label_current_file.setObjectName(u"label_current_file")
+        self.layout_current_file = QHBoxLayout()
+        self.layout_current_file.setSpacing(0)
+        self.layout_current_file.setObjectName(u"layout_current_file")
 
-        self.verticalLayout_5.addWidget(self.label_current_file)
+        self.verticalLayout_5.addLayout(self.layout_current_file)
 
         self.stackedWidget_2 = QStackedWidget(self.page_test_and_extract)
         self.stackedWidget_2.setObjectName(u"stackedWidget_2")
@@ -169,10 +171,11 @@ class Ui_Form(object):
 
         self.horizontalLayout_15.addWidget(self.label_15)
 
-        self.label_current_password = QLabel(self.page_3)
-        self.label_current_password.setObjectName(u"label_current_password")
+        self.layout_current_password = QHBoxLayout()
+        self.layout_current_password.setSpacing(0)
+        self.layout_current_password.setObjectName(u"layout_current_password")
 
-        self.horizontalLayout_15.addWidget(self.label_current_password)
+        self.horizontalLayout_15.addLayout(self.layout_current_password)
 
         self.horizontalLayout_15.setStretch(1, 1)
 
@@ -192,10 +195,11 @@ class Ui_Form(object):
 
         self.horizontalLayout_16.addWidget(self.label_16)
 
-        self.label_right_password = QLabel(self.page_4)
-        self.label_right_password.setObjectName(u"label_right_password")
+        self.layout_right_password = QHBoxLayout()
+        self.layout_right_password.setSpacing(0)
+        self.layout_right_password.setObjectName(u"layout_right_password")
 
-        self.horizontalLayout_16.addWidget(self.label_right_password)
+        self.horizontalLayout_16.addLayout(self.layout_right_password)
 
         self.horizontalLayout_16.setStretch(1, 1)
 
@@ -276,13 +280,10 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.toolButton_stop.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_12.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u6587\u4ef6:", None))
-        self.label_current_file.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_14.setText(QCoreApplication.translate("Form", u"\u6d4b\u8bd5\u5bc6\u7801:", None))
         self.label_progress_test.setText(QCoreApplication.translate("Form", u"-/-", None))
         self.label_15.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u5bc6\u7801:", None))
-        self.label_current_password.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_16.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u8fdb\u5ea6:", None))
-        self.label_right_password.setText(QCoreApplication.translate("Form", u"...", None))
         self.label_17.setText(QCoreApplication.translate("Form", u"\u8017\u65f6:", None))
         self.label_time_final.setText(QCoreApplication.translate("Form", u"0:00:00", None))
         self.label_18.setText(QCoreApplication.translate("Form", u"\u5904\u7406\u6587\u4ef6\u6570\u91cf:", None))

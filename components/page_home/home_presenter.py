@@ -127,9 +127,10 @@ class HomePresenter(QObject):
         # 更新当前文件的用时
         self.model.reset_current_time()
 
-    def set_current_file(self, filename: str):
+    def set_current_file(self, filepath: str):
         """设置当前处理的文件名"""
-        self.viewer.set_current_file(filename)
+        filename = os.path.basename(filepath)
+        self.viewer.set_current_file(filename, tooltip=filepath)
 
     def set_runtime_total(self, runtime: str):
         """设置总运行时间 0:00:00

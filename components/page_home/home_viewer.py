@@ -1,7 +1,8 @@
 # 主页模块的界面组件
 from typing import Union
 
-from PySide6.QtCore import Signal, Qt
+import lzytools._qt_pyside6
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
 from lzytools._qt_pyside6 import base64_to_pixmap
 
@@ -32,6 +33,12 @@ class HomeViewer(QWidget):
         # 添加自定义Label
         self.label_icon = LabelIcon(self)
         self.ui.verticalLayout_label_drop.addWidget(self.label_icon)
+        self.label_current_file = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
+        self.ui.layout_current_file.addWidget(self.label_current_file)
+        self.label_current_password = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
+        self.ui.layout_current_password.addWidget(self.label_current_password)
+        self.label_right_password = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
+        self.ui.layout_right_password.addWidget(self.label_right_password)
 
         # 绑定信号
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
@@ -72,12 +79,9 @@ class HomeViewer(QWidget):
     def set_current_file(self, filename: str, tooltip: str = ''):
         """设置当前处理的文件名"""
         self.turn_page_test_and_extract()
-        # 设置超长文本省略显示
-        label = self.ui.label_current_file
-        label.setText(label.fontMetrics().elidedText(filename, Qt.TextElideMode.ElideRight, self.width() - 10))
-
+        self.label_current_file.set_text(filename)
         if tooltip:
-            self.ui.label_current_file.setToolTip(tooltip)
+            self.label_current_file.setToolTip(tooltip)
 
     def set_runtime_total(self, runtime: str):
         """设置总运行时间 0:00:00
@@ -99,14 +103,9 @@ class HomeViewer(QWidget):
         """设置当前测试的密码"""
         if password == FAKE_PASSWORD:  # 如果是虚拟密码，则显示省略号
             password = '...'
-        # 设置超长文本省略显示
-        label_current = self.ui.label_current_password
-        label_current.setText(
-            label_current.fontMetrics().elidedText(password, Qt.TextElideMode.ElideRight, self.width() - 10))
-        # 将正确密码label也设置为当前密码，切换到解压页时即说明密码正确
-        label_right = self.ui.label_right_password
-        label_right.setText(
-            label_right.fontMetrics().elidedText(password, Qt.TextElideMode.ElideRight, self.width() - 10))
+
+        self.label_current_password.set_text(password)
+        self.label_right_password.set_text(password)
 
     def set_progress_extract(self, progress: int):
         """设置解压的进度 1%

@@ -141,6 +141,9 @@
          </item>
          <item row="1" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <property name="spacing">
+            <number>12</number>
+           </property>
            <item>
             <widget class="QToolButton" name="toolButton_stop">
              <property name="toolTip">
@@ -163,11 +166,11 @@
         </layout>
        </item>
        <item>
-        <widget class="QLabel" name="label_current_file">
-         <property name="text">
-          <string>...</string>
+        <layout class="QHBoxLayout" name="layout_current_file">
+         <property name="spacing">
+          <number>0</number>
          </property>
-        </widget>
+        </layout>
        </item>
        <item>
         <widget class="QStackedWidget" name="stackedWidget_2">
@@ -219,11 +222,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_current_password">
-               <property name="text">
-                <string>...</string>
+              <layout class="QHBoxLayout" name="layout_current_password">
+               <property name="spacing">
+                <number>0</number>
                </property>
-              </widget>
+              </layout>
              </item>
             </layout>
            </item>
@@ -256,11 +259,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_right_password">
-               <property name="text">
-                <string>...</string>
+              <layout class="QHBoxLayout" name="layout_right_password">
+               <property name="spacing">
+                <number>0</number>
                </property>
-              </widget>
+              </layout>
              </item>
             </layout>
            </item>
