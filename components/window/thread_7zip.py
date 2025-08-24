@@ -66,11 +66,12 @@ class TemplateThread(QThread):
         elif isinstance(test_result, Result7zip.WrongPassword):
             return True
         # 如果是Result7zip.WrongFiletype，则继续测试（暂定，有些后缀不对的压缩文件7zip会自动尝试正确的解压格式，不需要直接返回报错）
-        elif isinstance(test_result, Result7zip.WrongFiletype):
-            return True
+        # elif isinstance(test_result, Result7zip.WrongFiletype):
+        #     return True
         # 如果是其他致命错误，则终止后续操作，直接返回该错误
-        elif test_result in (Result7zip.Skip, Result7zip.Warning, Result7zip.MissingVolume, Result7zip.UnknownError,
-                             Result7zip.ErrorCommand, Result7zip.NotEnoughMemory, Result7zip.UserStopped):
+        elif test_result in (Result7zip.WrongFiletype, Result7zip.Skip, Result7zip.Warning, Result7zip.MissingVolume,
+                             Result7zip.UnknownError, Result7zip.ErrorCommand, Result7zip.NotEnoughMemory,
+                             Result7zip.UserStopped):
             return test_result
         else:
             return False
