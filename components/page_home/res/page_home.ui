@@ -42,14 +42,14 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_welcome">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_about">
          <property name="text">
-          <string>拖入文件到右侧区域即可处理文件</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;拖入文件到右侧区域即可处理文件&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;open_about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#004275;&quot;&gt;关于&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

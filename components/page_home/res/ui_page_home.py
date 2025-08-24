@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_homeXMfvfS.ui'
+## Form generated from reading UI file 'page_homeNyGOmw.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -46,10 +46,10 @@ class Ui_Form(object):
         self.page_welcome.setObjectName(u"page_welcome")
         self.horizontalLayout = QHBoxLayout(self.page_welcome)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label = QLabel(self.page_welcome)
-        self.label.setObjectName(u"label")
+        self.label_about = QLabel(self.page_welcome)
+        self.label_about.setObjectName(u"label_about")
 
-        self.horizontalLayout.addWidget(self.label)
+        self.horizontalLayout.addWidget(self.label_about)
 
         self.stackedWidget.addWidget(self.page_welcome)
         self.page_step_notice = QWidget()
@@ -258,7 +258,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
         self.stackedWidget_2.setCurrentIndex(0)
 
 
@@ -267,7 +267,7 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.label.setText(QCoreApplication.translate("Form", u"\u62d6\u5165\u6587\u4ef6\u5230\u53f3\u4fa7\u533a\u57df\u5373\u53ef\u5904\u7406\u6587\u4ef6", None))
+        self.label_about.setText(QCoreApplication.translate("Form", u"<html><head/><body><p align=\"center\">\u62d6\u5165\u6587\u4ef6\u5230\u53f3\u4fa7\u533a\u57df\u5373\u53ef\u5904\u7406\u6587\u4ef6</p><p align=\"center\"><a href=\"open_about\"><span style=\" text-decoration: underline; color:#004275;\">\u5173\u4e8e</span></a></p></body></html>", None))
         self.label_step_notice.setText(QCoreApplication.translate("Form", u"\u6b65\u9aa4\u63d0\u793a", None))
         self.label_6.setText(QCoreApplication.translate("Form", u"\u603b\u8fdb\u5ea6", None))
         self.label_progress_total.setText(QCoreApplication.translate("Form", u"-/-", None))

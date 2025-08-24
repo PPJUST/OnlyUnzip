@@ -53,6 +53,7 @@ class WindowPresenter:
         self.page_home.SignalNoFiles.connect(self.finished_by_no_files)
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self.page_home.UserStop.connect(self.finished_by_user_stop)
+        self.page_home.OpenAbout.connect(self.open_about)
         self._bind_model_signal()
 
     def accept_paths_from_cmd(self, paths: list):
@@ -126,6 +127,8 @@ class WindowPresenter:
             self.page_home.set_info_testing()
         elif isinstance(archive_model, ModelArchive.Extract):
             self.page_home.set_info_extracting()
+    def open_about(self):
+        self.viewer.open_page_about()
 
     def finished(self, results: FileInfoList):
         """处理结束信号"""

@@ -43,6 +43,8 @@ class WindowViewer(QMainWindow):
         # 绑定信号
         self.ui.buttonGroup.buttonClicked.connect(self.change_page)
 
+        self.ui.pushButton_about.setVisible(False)
+
     def add_page_home(self, widget: QWidget):
         """添加主页控件"""
         self.ui.page_home.layout().addWidget(widget)
@@ -62,6 +64,9 @@ class WindowViewer(QMainWindow):
     def add_page_about(self, widget: QWidget):
         """添加关于控件"""
         self.ui.page_about.layout().addWidget(widget)
+
+    def open_page_about(self):
+        self.change_page(4)
 
     def change_page(self, id_button):
         """切页"""

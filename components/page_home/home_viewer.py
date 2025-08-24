@@ -16,6 +16,7 @@ class HomeViewer(QWidget):
     """主页模块的界面组件"""
     UserStop = Signal(name="用户主动停止")
     DropFiles = Signal(list, name="拖入文件")
+    OpenAbout = Signal(name="打开关于页")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -27,8 +28,10 @@ class HomeViewer(QWidget):
         self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
         self.turn_page_welcome()
-        self.ui.label_step_notice.setOpenExternalLinks(True)
         self._set_stop_icon()
+        self.ui.label_step_notice.setOpenExternalLinks(True)
+        self.ui.label_about.setOpenExternalLinks(False)
+        self.ui.label_about.linkActivated.connect(self._open_about)
 
         # 添加自定义Label
         self.label_icon = LabelIcon(self)
@@ -48,6 +51,10 @@ class HomeViewer(QWidget):
     def turn_page_welcome(self):
         """切换到欢迎页"""
         self.ui.stackedWidget.setCurrentIndex(0)
+
+    def _open_about(self):
+        self.OpenAbout.emit()
+
 
     """步骤提示页"""
 

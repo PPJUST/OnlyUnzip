@@ -20,6 +20,7 @@ class HomePresenter(QObject):
     FileInfo = Signal(FileInfoList, name='提取的文件信息类')
     SignalNoFiles = Signal(name='没有需要处理的文件')
     SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
+    OpenAbout = Signal(name="打开关于页")
 
     def __init__(self, viewer: HomeViewer, model: HomeModel):
         super().__init__()
@@ -38,6 +39,7 @@ class HomePresenter(QObject):
         # 绑定信号
         self.viewer.UserStop.connect(self.UserStop.emit)
         self.viewer.DropFiles.connect(self.drop_paths)
+        self.viewer.OpenAbout.connect(self.OpenAbout.emit)
         self.model.RuntimeTotal.connect(self.set_runtime_total)
         self.model.RuntimeCurrent.connect(self.set_runtime_current)
 
