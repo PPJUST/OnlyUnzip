@@ -153,8 +153,10 @@ class ThreadTest(TemplateThread):
                 self.SignalPwIndex.emit(index_pw)
                 self.SignalCurrentPw.emit(pw)
                 final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
-                # 如果结果是成功，则寻找到正确密码，否则继续进行测试
-                if isinstance(final_result, Result7zip.Success):
+                # 如果测试结果是密码错误，则继续进行测试，否则直接中断
+                if isinstance(final_result, Result7zip.WrongPassword):
+                     continue
+                else:
                     break
         elif fake_result is False:  # 不可以使用l指令，可以使用t指令
             print('使用t指令进行密码测试')
@@ -166,8 +168,10 @@ class ThreadTest(TemplateThread):
                 self.SignalPwIndex.emit(index_pw)
                 self.SignalCurrentPw.emit(pw)
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
-                # 如果结果是成功，则寻找到正确密码，否则继续进行测试
-                if isinstance(final_result, Result7zip.Success):
+                # 如果测试结果是密码错误，则继续进行测试，否则直接中断
+                if isinstance(final_result, Result7zip.WrongPassword):
+                     continue
+                else:
                     break
         else:  # 是具体的结果类时，说明文件有问题，不进行后续测试
             print('虚拟密码测试检测出文件存在问题，不进行后续测试')
@@ -307,10 +311,16 @@ class ThreadExtract(TemplateThread):
             self.SignalPwIndex.emit(index_pw)
             self.SignalCurrentPw.emit(pw)
             final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
+            # 如果搜索到了正确密码，则进行解压操作
             if isinstance(final_result, Result7zip.Success):
-                print('搜索到正确密码，执行解压操作')
                 true_password = pw
                 final_result, extract_path = self.extract(filepath, true_password)
+                break
+            # 如果是测试结果是密码错误，则继续搜索
+            elif isinstance(final_result, Result7zip.WrongPassword):
+                pass
+            # 如果测试结果是其他报错，则直接中断
+            else:
                 break
 
         return final_result, extract_path
@@ -358,8 +368,15 @@ class ThreadExtract(TemplateThread):
                 self.SignalPwIndex.emit(index_pw)
                 self.SignalCurrentPw.emit(pw)
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw)
+                # 如果搜索到了正确密码，则进行解压操作
                 if isinstance(final_result, Result7zip.Success):
                     final_result, extract_path = self.extract(filepath, pw)
+                    break
+                # 如果是测试结果是密码错误，则继续搜索
+                elif isinstance(final_result, Result7zip.WrongPassword):
+                    pass
+                # 如果测试结果是其他报错，则直接中断
+                else:
                     break
 
         return final_result, extract_path
