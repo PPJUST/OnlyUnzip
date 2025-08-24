@@ -66,6 +66,10 @@ class FileInfoList:
         """统计个数"""
         return len(self.files_info)
 
+    def get_file_info(self, filepath: str) -> FileInfo:
+        """获取对应的文件信息类"""
+        return self.files_info[filepath]
+
     def get_file_infos(self) -> list[FileInfo]:
         """获取文件信息类列表"""
         return list(self.files_info.values())

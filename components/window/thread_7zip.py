@@ -1,8 +1,8 @@
 import os
 import time
 
-import lzytools.file
 import lzytools.archive
+import lzytools.file
 from PySide6.QtCore import QThread, Signal
 
 from common import function_7zip, function_move, function_file, function_filename
@@ -291,88 +291,6 @@ class ThreadExtract(TemplateThread):
 
         return final_result, extract_path
 
-    def extract(self, file, password):
-        """解压操作"""
-        # 提取命令行参数
-        # 覆盖选项
-        if isinstance(self.cover_model, str):
-            part_cover = self.cover_model
-        elif isinstance(self.cover_model, (ModelCoverFile.RenameOld,
-                                           ModelCoverFile.RenameNew,
-                                           ModelCoverFile.Skip,
-                                           ModelCoverFile.Overwrite)):
-            part_cover = self.cover_model.switch
-        else:
-            raise Exception('覆盖模式参数错误')
-
-        # 解压路径
-        if self.is_extract_to_folder and self.extract_output_path:
-            part_extract_to = self.extract_output_path
-        else:
-            part_extract_to = os.path.dirname(file)
-        print('part_extract_to', self.is_extract_to_folder, self.extract_output_path)
-
-        # 过滤器规则
-        if self.is_filter and self.filter_rules:
-            filter_rule = self.filter_rules
-        else:
-            filter_rule = ''
-
-        result_7zip = function_7zip.progress_7zip_x_with_temp_folder(_7ZIP_PATH, file, password,
-                                                                     cover_model=part_cover,
-                                                                     output_folder=part_extract_to,
-                                                                     filter_rule=filter_rule)
-
-        # 提取原文件的文件名（剔除压缩文件后缀格式）
-        filename_origin = lzytools.archive.get_filetitle(os.path.basename(file))
-
-        # 如果处理成功，则进行进一步处理
-        if isinstance(result_7zip, Result7zip.Success):
-            # 根据对应模式移动临时文件夹下的文件/文件夹
-            temp_folder = function_7zip.get_temp_dirpath(part_extract_to)  # 要移动的文件夹
-            parent_folder = os.path.dirname(temp_folder)  # 移动至该文件夹下
-            if isinstance(self.extract_model, ModelExtract.Smart):
-                extract_path = function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
-            elif isinstance(self.extract_model, ModelExtract.SameFolder):
-                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder, dirname_=filename_origin)
-            elif isinstance(self.extract_model, ModelExtract.Direct):
-                extract_path = function_move.move_to_no_deal(temp_folder, parent_folder)
-            else:
-                extract_path = None
-            # 是否解散文件夹（仅在解压结果为文件夹时才执行）
-            if self.is_break_folder:
-                if os.path.isdir(extract_path):
-                    if isinstance(self.break_folder_model, ModelBreakFolder.MoveToTop):
-                        extract_path = function_file.break_folder_top(extract_path)
-                    elif isinstance(self.break_folder_model, ModelBreakFolder.MoveBottom):
-                        extract_path = function_file.break_folder_bottom(extract_path)
-                    elif isinstance(self.break_folder_model, ModelBreakFolder.MoveFiles):
-                        extract_path = function_file.break_folder_files(extract_path)
-                    else:
-                        pass
-            # 是否删除原文件
-            if self.is_delete_file:
-                lzytools.file.delete(file, send_to_trash=True)
-
-            # 删除空的临时解压文件夹
-            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
-            if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
-                lzytools.file.delete(guess_temp_folder)
-
-            print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
-            return result_7zip, extract_path
-        else:
-            # 删除空的临时解压文件夹
-            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
-            if self.is_stop_task:  # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
-                if os.path.exists(guess_temp_folder):
-                    lzytools.file.delete(guess_temp_folder)
-            else:  # 否则，仅在临时文件夹为空时删除该文件夹
-                if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
-                    lzytools.file.delete(guess_temp_folder)
-
-            return result_7zip, None
-
     def extract_after_test_l(self, filepath: str, passwords: list):
         """使用l命令进行测试，并在搜索到正确密码后执行解压操作，返回最终结果类"""
         # 提取内部最小的文件路径，l或t可以仅测试其中一个文件，以加快速度
@@ -445,3 +363,88 @@ class ThreadExtract(TemplateThread):
                     break
 
         return final_result, extract_path
+
+    def extract(self, file, password):
+        """解压操作"""
+        # 提取命令行参数
+        # 覆盖选项
+        if isinstance(self.cover_model, str):
+            part_cover = self.cover_model
+        elif isinstance(self.cover_model, (ModelCoverFile.RenameOld,
+                                           ModelCoverFile.RenameNew,
+                                           ModelCoverFile.Skip,
+                                           ModelCoverFile.Overwrite)):
+            part_cover = self.cover_model.switch
+        else:
+            raise Exception('覆盖模式参数错误')
+
+        # 解压路径
+        if self.is_extract_to_folder and self.extract_output_path:
+            part_extract_to = self.extract_output_path
+        else:
+            part_extract_to = os.path.dirname(file)
+        print('part_extract_to', self.is_extract_to_folder, self.extract_output_path)
+
+        # 过滤器规则
+        if self.is_filter and self.filter_rules:
+            filter_rule = self.filter_rules
+        else:
+            filter_rule = ''
+
+        result_7zip = function_7zip.progress_7zip_x_with_temp_folder(_7ZIP_PATH, file, password,
+                                                                     cover_model=part_cover,
+                                                                     output_folder=part_extract_to,
+                                                                     filter_rule=filter_rule)
+
+        # 提取原文件的文件名（剔除压缩文件后缀格式）
+        filename_origin = lzytools.archive.get_filetitle(os.path.basename(file))
+
+        # 如果处理成功，则进行进一步处理
+        if isinstance(result_7zip, Result7zip.Success):
+            # 根据对应模式移动临时文件夹下的文件/文件夹
+            temp_folder = function_7zip.get_temp_dirpath(part_extract_to)  # 要移动的文件夹
+            parent_folder = os.path.dirname(temp_folder)  # 移动至该文件夹下
+            if isinstance(self.extract_model, ModelExtract.Smart):
+                extract_path = function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
+            elif isinstance(self.extract_model, ModelExtract.SameFolder):
+                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder, dirname_=filename_origin)
+            elif isinstance(self.extract_model, ModelExtract.Direct):
+                extract_path = function_move.move_to_no_deal(temp_folder, parent_folder)
+            else:
+                extract_path = None
+            # 是否解散文件夹（仅在解压结果为文件夹时才执行）
+            if self.is_break_folder:
+                if os.path.isdir(extract_path):
+                    if isinstance(self.break_folder_model, ModelBreakFolder.MoveToTop):
+                        extract_path = function_file.break_folder_top(extract_path)
+                    elif isinstance(self.break_folder_model, ModelBreakFolder.MoveBottom):
+                        extract_path = function_file.break_folder_bottom(extract_path)
+                    elif isinstance(self.break_folder_model, ModelBreakFolder.MoveFiles):
+                        extract_path = function_file.break_folder_files(extract_path)
+                    else:
+                        pass
+            # 是否删除原文件（删除同组中的全部文件）
+            file_info = self.fileinfo_task.get_file_info(file)
+            related_files = file_info.related_files
+            if self.is_delete_file:
+                for i in related_files:
+                    lzytools.file.delete(i, send_to_trash=True)
+
+            # 删除空的临时解压文件夹
+            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+            if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
+                lzytools.file.delete(guess_temp_folder)
+
+            print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
+            return result_7zip, extract_path
+        else:
+            # 删除空的临时解压文件夹
+            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+            if self.is_stop_task:  # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
+                if os.path.exists(guess_temp_folder):
+                    lzytools.file.delete(guess_temp_folder)
+            else:  # 否则，仅在临时文件夹为空时删除该文件夹
+                if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
+                    lzytools.file.delete(guess_temp_folder)
+
+            return result_7zip, None
