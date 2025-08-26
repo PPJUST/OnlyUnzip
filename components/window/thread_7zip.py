@@ -423,6 +423,7 @@ class ThreadExtract(TemplateThread):
         # 如果处理成功，则进行进一步处理
         if isinstance(result_7zip, Result7zip.Success):
             # 根据对应模式移动临时文件夹下的文件/文件夹
+            self.StepInfo.emit('解压完成，移出临时文件夹中...')
             temp_folder = function_7zip.get_temp_dirpath(part_extract_to)  # 要移动的文件夹
             parent_folder = os.path.dirname(temp_folder)  # 移动至该文件夹下
             if isinstance(self.extract_model, ModelExtract.Smart):
@@ -435,6 +436,7 @@ class ThreadExtract(TemplateThread):
                 extract_path = None
             # 是否解散文件夹（仅在解压结果为文件夹时才执行）
             if self.is_break_folder:
+                self.StepInfo.emit('解压完成，解散文件夹中...')
                 if os.path.isdir(extract_path):
                     if isinstance(self.break_folder_model, ModelBreakFolder.MoveToTop):
                         extract_path = function_file.break_folder_top(extract_path)
