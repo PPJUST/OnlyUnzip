@@ -14,6 +14,7 @@ from common.function_7zip import _7ZIP_PATH, FAKE_PASSWORD
 
 class TemplateThread(QThread):
     """子线程模板"""
+    StepInfo = Signal(str, name='步骤信息')
     SignalCurrentFile = Signal(str, name='当前处理的文件名')
     SignalTaskCount = Signal(int, name='需要处理的文件总数')
     SignalTaskIndex = Signal(int, name='当前处理的文件索引')
@@ -57,6 +58,7 @@ class TemplateThread(QThread):
         :return:True，可以使用l指令进行测试
                False，不能使用l指令进行测试
                Result7zip类，测试出错，返回错误结果"""
+        self.StepInfo.emit('压缩文件完整性测试...')
         print('虚拟密码测试')
         test_result = function_7zip.process_7zip_l(_7ZIP_PATH, file, FAKE_PASSWORD)
         # 如果是Success，则不信任测试结果，后续不再使用l命令测试
@@ -155,7 +157,7 @@ class ThreadTest(TemplateThread):
                 final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
                 # 如果测试结果是密码错误，则继续进行测试，否则直接中断
                 if isinstance(final_result, Result7zip.WrongPassword):
-                     continue
+                    continue
                 else:
                     break
         elif fake_result is False:  # 不可以使用l指令，可以使用t指令
@@ -170,7 +172,7 @@ class ThreadTest(TemplateThread):
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
                 # 如果测试结果是密码错误，则继续进行测试，否则直接中断
                 if isinstance(final_result, Result7zip.WrongPassword):
-                     continue
+                    continue
                 else:
                     break
         else:  # 是具体的结果类时，说明文件有问题，不进行后续测试
@@ -298,6 +300,7 @@ class ThreadExtract(TemplateThread):
     def extract_after_test_l(self, filepath: str, passwords: list):
         """使用l命令进行测试，并在搜索到正确密码后执行解压操作，返回最终结果类"""
         # 提取内部最小的文件路径，l或t可以仅测试其中一个文件，以加快速度
+        self.StepInfo.emit('压缩文件完整性测试...')
         smallest_file_path_inside = function_7zip.get_smallest_file_in_archive(filepath)
         # 先测试，找到密码后再解压
         final_result = None  # 最终结果
@@ -330,6 +333,7 @@ class ThreadExtract(TemplateThread):
         # 进行一次特殊处理，有些内部文件名未加密的压缩文件，在使用x命令测试时会遍历所有文件，而不是仅检查其中的一部分文件，在这种情况下使用t命令的速度更快
         # 所以先用虚拟密码和t指令测试一次，计算其耗时，再和后续的x指令耗时相比较，如果t指令耗时较短则使用t指令进行后续测试
         start_time = time.time()
+        self.StepInfo.emit('压缩文件完整性测试...')
         final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, FAKE_PASSWORD)
         runtime_t = time.time() - start_time  # t命令的耗时
 

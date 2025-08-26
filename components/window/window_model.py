@@ -10,6 +10,7 @@ from components.window.thread_7zip import ThreadTest, ThreadExtract, TemplateThr
 
 class TemplateModelSignal(QObject):
     """模式模版，用于添加通用信号"""
+    StepInfo = Signal(str, name='步骤信息')
     SignalCurrentFile = Signal(str, name='当前处理的文件名')
     SignalTaskCount = Signal(int, name='需要处理的文件总数')
     SignalTaskIndex = Signal(int, name='当前处理的文件索引')
@@ -34,10 +35,12 @@ class TemplateModelSignal(QObject):
         child_thread.SignalResult.connect(self.SignalResult)
         child_thread.SignalStart.connect(self.SignalStart)
         child_thread.SignalFinish.connect(self.SignalFinish)
+        child_thread.StepInfo.connect(self.StepInfo)
 
 
 class WindowModel(QObject):
     """主窗口的模型组件"""
+    StepInfo = Signal(str, name='步骤信息')
     SignalCurrentFile = Signal(str, name='当前处理的文件名')
     SignalTaskCount = Signal(int, name='需要处理的文件总数')
     SignalTaskIndex = Signal(int, name='当前处理的文件索引')
@@ -137,6 +140,7 @@ class WindowModel(QObject):
         child_thread.SignalResult.connect(self.SignalResult)
         child_thread.SignalStart.connect(self.SignalStart)
         child_thread.SignalFinish.connect(self.SignalFinish)
+        child_thread.StepInfo.connect(self.StepInfo)
 
 
 class ModelTestFile(TemplateModelSignal):

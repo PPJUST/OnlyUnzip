@@ -162,6 +162,10 @@ class HomePresenter(QObject):
         :param progress: 0~100的整数"""
         self.viewer.set_progress_extract(progress)
 
+    def set_current_file_step_tip(self, tip: str):
+        """设置当前处理的文件的步骤提示"""
+        self.viewer.set_current_file_step_tip(tip)
+
     def stop_timer(self):
         """停止模型组件的计时器"""
         self.model.stop_timing()
@@ -188,7 +192,7 @@ class HomePresenter(QObject):
         self.set_icon_testing()
         # 显示为测试页
         self.viewer.turn_page_test_and_extract()
-        self.viewer.set_page_test()
+        self.viewer.set_child_page_test()
 
     def set_info_extracting(self):
         """设置运行状态 解压中"""
@@ -196,7 +200,7 @@ class HomePresenter(QObject):
         self.set_icon_extracting()
         # 显示为测试页
         self.viewer.turn_page_test_and_extract()
-        self.viewer.set_page_test()  # 不设置为解压页，在读取到解压进度时自动设置
+        self.viewer.set_child_page_test()  # 不设置为解压页，在读取到解压进度时自动设置
 
     def set_info_skip(self):
         """设置运行状态 跳过（没有需要处理的文件时）"""

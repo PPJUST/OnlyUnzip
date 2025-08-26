@@ -55,7 +55,6 @@ class HomeViewer(QWidget):
     def _open_about(self):
         self.OpenAbout.emit()
 
-
     """步骤提示页"""
 
     def turn_page_step(self):
@@ -103,7 +102,7 @@ class HomeViewer(QWidget):
     def set_progress_test(self, progress: str):
         """设置测试密码的进度 -/-
         :param progress: "-/-"格式的进度字符串"""
-        self.set_page_test()
+        self.set_child_page_test()
         self.ui.label_progress_test.setText(progress)
 
     def set_current_password(self, password: str):
@@ -117,8 +116,13 @@ class HomeViewer(QWidget):
     def set_progress_extract(self, progress: int):
         """设置解压的进度 1%
         :param progress: 0~100的整数"""
-        self.set_page_extract()
+        self.set_child_page_extract()
         self.ui.progressBar_progress_extract.setValue(progress)
+
+    def set_current_file_step_tip(self, tip: str):
+        """设置当前处理的文件的步骤提示"""
+        self.set_child_page_step_tip()
+        self.ui.label_current_file_step_tip.setText(tip)
 
     def _click_stop_button(self):
         """点击停止按钮"""
@@ -130,13 +134,17 @@ class HomeViewer(QWidget):
         """终止当前任务"""
         self.UserStop.emit()
 
-    def set_page_test(self):
+    def set_child_page_test(self):
         """切换运行信息页为测试模式"""
         self.ui.stackedWidget_2.setCurrentIndex(0)
 
-    def set_page_extract(self):
+    def set_child_page_extract(self):
         """切换运行信息页为解压模式"""
         self.ui.stackedWidget_2.setCurrentIndex(1)
+
+    def set_child_page_step_tip(self):
+        """切换运行信息页为当前步骤提示"""
+        self.ui.stackedWidget_2.setCurrentIndex(2)
 
     """结果页"""
 

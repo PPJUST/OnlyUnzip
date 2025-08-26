@@ -2,6 +2,7 @@ import os
 import shutil
 
 import lzytools.file
+import lzytools.archive
 
 from common import function_file
 
@@ -78,6 +79,8 @@ def move_to_same_dirname(dirpath: str, target_dirpath, dirname_=None):
 
 def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str):
     """移动一个文件夹内部的文件到另一个文件夹"""
+    if os.path.normpath(origin_dirpath) == os.path.normpath(target_dirpath):
+        return target_dirpath
     if not os.path.exists(origin_dirpath):
         raise Exception(origin_dirpath, '目录不存在')
     if not os.path.exists(target_dirpath):

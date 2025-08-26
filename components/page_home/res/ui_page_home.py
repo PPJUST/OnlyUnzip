@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_homeNyGOmw.ui'
+## Form generated from reading UI file 'page_homeeMtuYE.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -212,6 +212,18 @@ class Ui_Form(object):
         self.verticalLayout_6.addWidget(self.progressBar_progress_extract)
 
         self.stackedWidget_2.addWidget(self.page_4)
+        self.page = QWidget()
+        self.page.setObjectName(u"page")
+        self.horizontalLayout_3 = QHBoxLayout(self.page)
+        self.horizontalLayout_3.setSpacing(0)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(3, 0, 0, 0)
+        self.label_current_file_step_tip = QLabel(self.page)
+        self.label_current_file_step_tip.setObjectName(u"label_current_file_step_tip")
+
+        self.horizontalLayout_3.addWidget(self.label_current_file_step_tip)
+
+        self.stackedWidget_2.addWidget(self.page)
 
         self.verticalLayout_5.addWidget(self.stackedWidget_2)
 
@@ -258,8 +270,8 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.stackedWidget.setCurrentIndex(0)
-        self.stackedWidget_2.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget_2.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(Form)
@@ -284,6 +296,7 @@ class Ui_Form(object):
         self.label_progress_test.setText(QCoreApplication.translate("Form", u"-/-", None))
         self.label_15.setText(QCoreApplication.translate("Form", u"\u5f53\u524d\u5bc6\u7801:", None))
         self.label_16.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u8fdb\u5ea6:", None))
+        self.label_current_file_step_tip.setText(QCoreApplication.translate("Form", u"\u6587\u4ef6\u6b65\u9aa4\u63d0\u793a", None))
         self.label_17.setText(QCoreApplication.translate("Form", u"\u8017\u65f6:", None))
         self.label_time_final.setText(QCoreApplication.translate("Form", u"0:00:00", None))
         self.label_18.setText(QCoreApplication.translate("Form", u"\u5904\u7406\u6587\u4ef6\u6570\u91cf:", None))

@@ -68,8 +68,8 @@ class WindowPresenter:
         self.set_model_passwords()
         self.set_model_setting()
         # 传递给模型组件
-        self.model.accept_files(file_info)
         self.show_page_test_or_extract()
+        self.model.accept_files(file_info)
 
     def set_model_passwords(self):
         """传递密码组件的密码列表给模型组件"""
@@ -127,6 +127,7 @@ class WindowPresenter:
             self.page_home.set_info_testing()
         elif isinstance(archive_model, ModelArchive.Extract):
             self.page_home.set_info_extracting()
+
     def open_about(self):
         self.viewer.open_page_about()
 
@@ -251,3 +252,4 @@ class WindowPresenter:
         self.model.SignalResult.connect(self.page_history.collection_history)
         self.model.SignalStart.connect(None)
         self.model.SignalFinish.connect(self.finished)
+        self.model.StepInfo.connect(self.page_home.set_current_file_step_tip)
