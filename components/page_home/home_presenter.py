@@ -3,12 +3,12 @@ import os
 import re
 from typing import Union
 
-import lzytools.archive
 from PySide6.QtCore import Signal, QObject
 
 from common import function_setting, function_extract
 from common.class_7zip import ModelArchive
 from common.class_file_info import FileInfoList
+from common.thread_filetype_archive import ThreadFiletypeArchive
 from components.page_home.home_model import HomeModel
 from components.page_home.home_viewer import HomeViewer
 from components.page_home.res.icon_base64 import *
@@ -36,6 +36,10 @@ class HomePresenter(QObject):
         # 初始化
         self.set_icon_home()
 
+        # 检查文件类型的子线程（防止堵塞ui线程）
+        self.thread_check_filetype = ThreadFiletypeArchive()
+        self.thread_check_filetype.Archives.connect(self.deal_archive_files)
+
         # 绑定信号
         self.viewer.UserStop.connect(self.UserStop.emit)
         self.viewer.DropFiles.connect(self.drop_paths)
@@ -43,11 +47,13 @@ class HomePresenter(QObject):
         self.model.RuntimeTotal.connect(self.set_runtime_total)
         self.model.RuntimeCurrent.connect(self.set_runtime_current)
 
-    def drop_paths(self, paths: list):
-        """拖入文件"""
+    def drop_paths(self, paths: list, is_recursive: bool = False):
+        """拖入文件
+        :param is_recursive: 是否是递归解压模式进行的文件操作"""
         print('接收文件列表，进行后续处理')
         # 启动模型组件的定时器
-        self.model.start_timing()
+        if not is_recursive:
+            self.model.start_timing()
         # 提取路径中包含的所有文件
         self.set_step_notice("""搜索文件中...""")
         files = self.model.get_files(paths)
@@ -77,12 +83,15 @@ class HomePresenter(QObject):
         # 所以先检查文件名再进行文件头检查
         # 待优化：文件较多时，读取文件头速度较慢，会堵塞UI线程（先仅用文件名判断的方法）
         if not is_try_unknown_filetype:
-            files = [file for file in files
-                     if lzytools.archive.is_archive_by_filename(os.path.basename(file))
-                     or lzytools.archive.is_archive(file)]
+            self.thread_check_filetype.set_files(files)
+            self.thread_check_filetype.start()
+        else:
+            self.deal_archive_files(files)
 
+    def deal_archive_files(self, archives: list):
+        """处理压缩文件"""
         # 区分普通压缩文件和分卷压缩文件，便于后续处理
-        archive_spliter = self.model.split_volume_archive(files)
+        archive_spliter = self.model.split_volume_archive(archives)
 
         # 如果没有需要处理的文件，则直接终止
         if not archive_spliter.is_has_archives():

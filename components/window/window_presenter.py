@@ -153,7 +153,7 @@ class WindowPresenter:
             # 进行递归解压，并累计处理结果
             if is_recursive_extract:
                 success_filepaths = results.get_success_files()
-                self.page_home.drop_paths(success_filepaths)
+                self.page_home.drop_paths(success_filepaths, is_recursive=True)
             # 如果不需要进行递归解压，则结束本批次任务，显示结束信息
             else:
                 result_info_simple, file_info_detail = self.result_collector.get_result_info()

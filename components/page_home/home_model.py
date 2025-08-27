@@ -40,6 +40,9 @@ class HomeModel(QObject):
         self._start_time_current = time.time()
         self._timer.start()
 
+        self.RuntimeTotal.emit('0:00:00')
+        self.RuntimeCurrent.emit('0:00:00')
+
     def reset_current_time(self):
         """重置当前文件运行时间"""
         self._start_time_current = time.time()
