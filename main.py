@@ -1,4 +1,3 @@
-import ctypes
 import os
 import sys
 import traceback
@@ -59,47 +58,34 @@ def show_dup_info():
     sys.exit(1)
 
 
-def show_error_info(error):
-    # 确保有应用实例来显示消息框
+def exception_hook(exc_type, exc_value, exc_traceback):
+    """重写异常钩子，将错误信息显示在消息框中"""
+    # 忽略KeyboardInterrupt，让用户可以正常退出
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    # 格式化错误信息
+    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+
+    # 显示错误消息框
     if not QApplication.instance():
         app_ = QApplication([])
     messagebox = QMessageBox()
-    messagebox.setText(f'程序发生错误：\n{error}')
+    messagebox.setIcon(QMessageBox.Critical)
+    messagebox.setText("程序发生错误，请尝试重启程序：")
+    messagebox.setInformativeText(str(exc_value))
+    messagebox.setDetailedText(error_msg)
+    messagebox.setWindowTitle("错误")
     messagebox.exec()
-    sys.exit(1)
-
-
-def create_console():
-    """创建临时控制台窗口用于显示错误信息"""
-    # 分配控制台
-    kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
-    result = kernel32.AllocConsole()
-
-    if result == 0:
-        return False
-
-    # 将标准输出重定向到新控制台
-    sys.stdout = open('CONOUT$', 'w', encoding='utf-8')
-    sys.stderr = open('CONOUT$', 'w', encoding='utf-8')
-    return True
 
 
 if __name__ == "__main__":
+    # 重定向异常处理
+    sys.excepthook = exception_hook
+
     if not lzytools.common.check_mutex('OnlyUnzip'):  # 互斥体检查（单个实例）
-        try:
-            load_app(paths_cmd)
-        except Exception as e:
-            # 尝试创建控制台显示错误
-            console_created = create_console()
-            print(f"程序发生错误: {str(e)}")
-            print("详细错误信息:")
-            traceback.print_exc()
-
-            # 如果无法创建控制台，使用QMessageBox显示
-            if not console_created:
-                show_error_info(e)
-
-
+        load_app(paths_cmd)
     else:
         if not paths_cmd:  # 重复打开，并且没有传参，则进行提示
             show_dup_info()
