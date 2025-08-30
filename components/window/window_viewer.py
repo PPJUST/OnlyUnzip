@@ -3,8 +3,8 @@ from PySide6.QtGui import Qt, QFont
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
 from lzytools._qt_pyside6 import base64_to_pixmap
 
-from components.window.res.icon_base64 import ICON_APP, ICON_HOMEPAGE, ICON_PASSWORD, ICON_SETTING, ICON_HISTORY, \
-    ICON_ABOUT
+from components.window.res.icon_base64 import ICON_HOMEPAGE, ICON_PASSWORD, ICON_SETTING, ICON_HISTORY, \
+    ICON_PIXEL_128X128, ICON_ABOUT
 from components.window.res.ui_mainWindow import Ui_MainWindow
 
 _ID = 'id'  # 绑定按钮的id名称，仅用于索引
@@ -34,7 +34,7 @@ class WindowViewer(QMainWindow):
         # 设置按钮尺寸
         self._set_button_size()
         # 设置图标
-        self.setWindowIcon(base64_to_pixmap(ICON_APP))
+        self.setWindowIcon(base64_to_pixmap(ICON_PIXEL_128X128))
         self.ui.pushButton_home.setIcon(base64_to_pixmap(ICON_HOMEPAGE))
         self.ui.pushButton_password.setIcon(base64_to_pixmap(ICON_PASSWORD))
         self.ui.pushButton_setting.setIcon(base64_to_pixmap(ICON_SETTING))

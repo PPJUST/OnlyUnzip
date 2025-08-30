@@ -263,7 +263,7 @@ class HomePresenter(QObject):
 
     def set_icon_home(self):
         """设置主页图标"""
-        self.viewer.set_gif_icon(ICON_MIKU)
+        self.viewer.set_icon(ICON_LOGO_PIXEL)
 
     def set_icon_complete(self):
         """设置完成图标"""
