@@ -9,7 +9,6 @@ from common.function_extract import TEMP_EXTRACT_FOLDER
 
 FAKE_PASSWORD = 'FAKEPASSWORD'
 _7ZIP_PATH = r'./7-Zip/7z.exe'
-
 _process_running: subprocess.Popen = None  # 正在运行的线程，用于中断
 
 
@@ -262,6 +261,7 @@ def get_smallest_file_in_archive(archive_path: str):
     result = subprocess.run(command,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
+                            creationflags=subprocess.CREATE_NO_WINDOW,
                             text=True,
                             universal_newlines=True)
 
