@@ -1,1 +1,1 @@
-python -m nuitka --standalone --onefile --remove-output --mingw64 --windows-console-mode=disable --windows-icon-from-ico=components\window\res\icon\logo_pixel_128x128.ico --enable-plugin=pyside6 main.py
+python -m nuitka --standalone --onefile --remove-output --mingw64 --windows-console-mode=disable --windows-icon-from-ico=components\window\res\icon\logo_pixel_128x128.ico --enable-plugin=pyside6 --output-filename=OnlyUnzip main.py

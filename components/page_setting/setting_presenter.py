@@ -11,6 +11,7 @@ class SettingPresenter(QObject):
     """设置模块的桥梁组件"""
     SignalTopWindow = Signal(bool, name='是否置顶窗口')
     SignalLockSize = Signal(bool, name='是否锁定窗口大小')
+    SignalChangeArchiveModel = Signal(object, name='修改压缩文件处理模式')
 
     def __init__(self, viewer: SettingViewer, model: SettingModel):
         super().__init__()
@@ -52,8 +53,10 @@ class SettingPresenter(QObject):
 
     def _bind_signal(self):
         """绑定Viewer信号"""
-        self.viewer.ChangeArchiveModelText.connect(self.model.set_model_archive_test)
+        self.viewer.ChangeArchiveModelTest.connect(self.model.set_model_archive_test)
+        self.viewer.ChangeArchiveModelTest.connect(self.SignalChangeArchiveModel.emit)
         self.viewer.ChangeArchiveModelExtract.connect(self.model.set_model_archive_extract)
+        self.viewer.ChangeArchiveModelExtract.connect(self.SignalChangeArchiveModel.emit)
         self.viewer.ChangeTryUnknownFiletype.connect(self.model.set_try_unknown_filetype_is_enable)
         self.viewer.ChangeReadPasswordFromFilename.connect(self.model.set_read_password_from_filename_is_enable)
         self.viewer.ChangeWriteFilename.connect(self.model.set_write_filename_is_enable)

@@ -12,7 +12,7 @@ from components.page_setting.res.ui_page_setting import Ui_Form
 
 class SettingViewer(QWidget):
     """设置模块的界面组件"""
-    ChangeArchiveModelText = Signal(bool, name="修改为测试模式")
+    ChangeArchiveModelTest = Signal(bool, name="修改为测试模式")
     ChangeArchiveModelExtract = Signal(bool, name="修改为解压模式")
     ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
     ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
@@ -269,7 +269,7 @@ class SettingViewer(QWidget):
             self.ChangeArchiveModelExtract.emit(True)
             self._show_settings_extract()
         elif self.ui.radioButton_mode1_test.isChecked():
-            self.ChangeArchiveModelText.emit(True)
+            self.ChangeArchiveModelTest.emit(True)
             self._show_settings_test()
 
     def _change_extract_model(self):

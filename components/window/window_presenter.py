@@ -20,6 +20,9 @@ class WindowPresenter:
         self.viewer = viewer
         self.model = model
 
+        # 程序标题
+        self.app_title_default = 'OnlyUnzip'  # 程序默认标题
+
         # 结果收集类
         self.result_collector = ResultCollector()
 
@@ -49,6 +52,7 @@ class WindowPresenter:
         # 绑定信号
         self.page_setting.SignalTopWindow.connect(self.top_window)
         self.page_setting.SignalLockSize.connect(self.lock_size)
+        self.page_setting.SignalChangeArchiveModel.connect(self.set_app_title_suffix)
         self.page_home.FileInfo.connect(self.accept_file_info_list)  # 接收文件信息类
         self.page_home.SignalNoFiles.connect(self.finished_by_no_files)
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
@@ -228,6 +232,25 @@ class WindowPresenter:
             self.page_setting.model.set_lock_size_height(self.viewer.height())
         else:
             self.viewer.disable_lock_size()
+
+    def set_default_app_title(self, title: str):
+        """设置默认程序标题"""
+        self.app_title_default = title
+        self.viewer.setWindowTitle(title)
+        self.set_app_title_suffix()
+
+    def set_app_title_suffix(self):
+        """在程序标题后添加后缀：[测试]/[解压]"""
+        print(1)
+        archive_model = self.page_setting.get_archive_model()
+        suffix = ''
+        if isinstance(archive_model, ModelArchive.Test):
+            suffix = '[测试]'
+        elif isinstance(archive_model, ModelArchive.Extract):
+            suffix = '[解压]'
+
+        new_title = f'{self.app_title_default} {suffix}'
+        self.viewer.setWindowTitle(new_title)
 
     def _get_window_setting(self):
         """提取window相关设置"""
