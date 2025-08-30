@@ -1,0 +1,3 @@
+lzytools==0.0.38
+natsort==8.4.0
+PySide6==6.8.1
