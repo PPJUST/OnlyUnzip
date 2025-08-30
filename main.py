@@ -73,7 +73,7 @@ def exception_hook(exc_type, exc_value, exc_traceback):
         app_ = QApplication([])
     messagebox = QMessageBox()
     messagebox.setIcon(QMessageBox.Critical)
-    messagebox.setText("程序发生错误，请尝试重启程序：")
+    messagebox.setText("程序发生错误，请尝试重启程序或反馈问题：")
     messagebox.setInformativeText(str(exc_value))
     messagebox.setDetailedText(error_msg)
     messagebox.setWindowTitle("错误")
