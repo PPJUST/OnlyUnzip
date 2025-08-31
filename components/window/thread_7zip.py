@@ -354,7 +354,14 @@ class ThreadExtract(TemplateThread):
             start_time = time.time()
             final_result, extract_path = self.extract(filepath, pw)
             runtime_x = time.time() - start_time  # x命令的耗时
+            # 如果解压返回结果为成功，则退出循环
             if isinstance(final_result, Result7zip.Success):
+                break
+            # 如果是解压返回结果是密码错误，则继续搜索
+            elif isinstance(final_result, Result7zip.WrongPassword):
+                pass
+            # 如果是其他报错，则直接退出循环
+            else:
                 break
 
             # 对比耗时，使用耗时更短的指令
