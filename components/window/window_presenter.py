@@ -241,7 +241,6 @@ class WindowPresenter:
 
     def set_app_title_suffix(self):
         """在程序标题后添加后缀：[测试]/[解压]"""
-        print(1)
         archive_model = self.page_setting.get_archive_model()
         suffix = ''
         if isinstance(archive_model, ModelArchive.Test):

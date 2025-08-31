@@ -227,7 +227,7 @@ class HomePresenter(QObject):
         # 停止计时器
         self.model.stop_timing()
         # 显示步骤信息
-        info = "存在临时解压文件夹，请检查相关文件目录"
+        info = "存在临时解压文件夹，请检查相关目录"
         if path:
             link_text = f'<a href="file:///{path}">点击打开对应临时文件夹</a>'
             info = info + '<br>' + link_text
