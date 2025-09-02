@@ -28,6 +28,15 @@ class DBPassword(dict):
         pws_sorted = sorted(pws, key=lambda x: (self[x].get_use_count(), self[x].get_last_use_time()), reverse=True)
         return pws_sorted
 
+    def delete_passwords(self, delete_passwords: list):
+        """删除指定密码"""
+        backup_file(DB_FILEPATH)  # 删除前备份密码
+
+        for pw in delete_passwords:
+            if pw in self:
+                del self[pw]
+        self.save()
+
     def get_passwords_count(self):
         """获取密码本的密码数量"""
         return len(self)

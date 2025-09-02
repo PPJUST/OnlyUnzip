@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'managerFOoYWC.ui'
+## Form generated from reading UI file 'managerwsrKLu.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,13 +17,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
     QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
+    QSpacerItem, QSpinBox, QTextBrowser, QVBoxLayout,
+    QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(344, 290)
+        Form.resize(382, 466)
         self.verticalLayout_3 = QVBoxLayout(Form)
         self.verticalLayout_3.setSpacing(3)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -225,9 +226,27 @@ class Ui_Form(object):
 
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.line_2 = QFrame(Form)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout_3.addItem(self.verticalSpacer)
+        self.verticalLayout_3.addWidget(self.line_2)
+
+        self.textBrowser_preview = QTextBrowser(Form)
+        self.textBrowser_preview.setObjectName(u"textBrowser_preview")
+
+        self.verticalLayout_3.addWidget(self.textBrowser_preview)
+
+        self.label_spacer = QLabel(Form)
+        self.label_spacer.setObjectName(u"label_spacer")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label_spacer.sizePolicy().hasHeightForWidth())
+        self.label_spacer.setSizePolicy(sizePolicy1)
+
+        self.verticalLayout_3.addWidget(self.label_spacer)
 
 
         self.retranslateUi(Form)
@@ -257,5 +276,6 @@ class Ui_Form(object):
         self.label_count_delete.setText(QCoreApplication.translate("Form", u"0", None))
         self.pushButton_preview.setText(QCoreApplication.translate("Form", u"\u663e\u793a\u9884\u89c8", None))
         self.pushButton_delete.setText(QCoreApplication.translate("Form", u"\u5220\u9664", None))
+        self.label_spacer.setText("")
     # retranslateUi
 

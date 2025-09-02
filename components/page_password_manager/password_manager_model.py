@@ -13,6 +13,10 @@ class PasswordManagerModel:
         """获取密码本中所有密码"""
         return self.password_db.get_passwords()
 
+    def delete_passwords(self, delete_passwords: list):
+        """删除密码本中的指定密码"""
+        self.password_db.delete_passwords(delete_passwords)
+
     def filter_use_count(self, min_use_count: int, max_use_count: int):
         """过滤密码本，只保留使用次数在指定范围内的密码"""
         return self.password_db.filter_use_count(min_use_count, max_use_count)

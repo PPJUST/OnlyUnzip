@@ -1,17 +1,21 @@
 # 密码管理器模块的桥梁组件
+from PySide6.QtCore import QObject, Signal
 
 from components.page_password_manager.password_manager_model import PasswordManagerModel
 from components.page_password_manager.password_manager_viewer import PasswordManagerViewer
 
 
-class PasswordManagerPresenter:
+class PasswordManagerPresenter(QObject):
     """密码管理器模块的桥梁组件"""
+    SignalDeleted = Signal(name="删除密码")
 
     def __init__(self, viewer: PasswordManagerViewer, model: PasswordManagerModel):
+        super().__init__()
         self.viewer = viewer
         self.model = model
 
         self.viewer.SignalFilterUpdated.connect(self.set_passwords_need_delete)
+        self.viewer.SignalDeleted.connect(self.delete_passwords)
 
     def update_count(self):
         """更新计数"""
@@ -76,3 +80,16 @@ class PasswordManagerPresenter:
             return passwords
         else:
             return []
+
+    def delete_passwords(self, delete_passwords: list):
+        """删除密码本中的指定密码"""
+        self.model.delete_passwords(delete_passwords)
+        self.SignalDeleted.emit()
+
+    def show_preview(self):
+        """显示预览密码清单"""
+        self.viewer.show_preview()
+
+    def hidden_preview(self):
+        """隐藏预览密码清单"""
+        self.viewer.hidden_preview()

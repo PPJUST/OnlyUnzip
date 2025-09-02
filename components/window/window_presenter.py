@@ -61,6 +61,7 @@ class WindowPresenter:
         self.page_home.UserStop.connect(self.finished_by_user_stop)
         self.page_home.OpenAbout.connect(self.open_about)
         self.page_password.OpenPasswordManager.connect(self.open_password_manager)
+        self.page_password_manager.SignalDeleted.connect(self.deleted_passwords)
         self._bind_model_signal()
 
     def accept_paths_from_cmd(self, paths: list):
@@ -221,7 +222,8 @@ class WindowPresenter:
             result = file_info.get_7zip_result()
             self.result_collector.add_result(result)
 
-    def delete_temp_folder_if_exists(self, results: FileInfoList):
+    @staticmethod
+    def delete_temp_folder_if_exists(results: FileInfoList):
         """删除可能存在的临时文件夹"""
         for file_info in results.get_file_infos():
             extract_path = file_info.extract_path
@@ -282,6 +284,13 @@ class WindowPresenter:
         """打开密码管理器"""
         self.viewer.open_page_password_manager()
         self.page_password_manager.update_count()
+        self.page_password_manager.hidden_preview()
+
+    def deleted_passwords(self):
+        """删除密码后更新相关信息"""
+        self.page_password.reload()
+        self.page_password.show_pw_count_info()
+        self.open_password_manager()
 
     def _bind_model_signal(self):
         """绑定模型信号，链接到其他组件"""

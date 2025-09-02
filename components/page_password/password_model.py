@@ -19,6 +19,10 @@ class PasswordModel:
     def __init__(self):
         self.password_db: DBPassword = function_password.read_db()
 
+    def reload(self):
+        """重新加载密码本"""
+        self.password_db = function_password.read_db()
+
     def get_passwords(self):
         """获取密码列表"""
         return self.password_db.get_passwords()

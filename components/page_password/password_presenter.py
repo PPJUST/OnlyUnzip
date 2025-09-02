@@ -20,6 +20,10 @@ class PasswordPresenter(QObject):
         self.show_pw_count_info()
         self._bind_signal()
 
+    def reload(self):
+        """重载密码本"""
+        self.model.reload()
+
     def update_use_count(self, passwords: Union[str, list]):
         """增加一次密码的使用次数"""
         self.model.add_use_count_once(passwords)
