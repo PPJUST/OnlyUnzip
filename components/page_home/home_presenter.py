@@ -108,10 +108,13 @@ class HomePresenter(QObject):
         # 发送信号，传递文件信息类
         self.FileInfo.emit(file_info_list)
 
-    def stop(self):
-        """终止当前任务"""
-        #
-        self.stop_timer()
+    def banned_drop(self):
+        """禁止拖入文件"""
+        self.viewer.banned_drop()
+
+    def allowed_drop(self):
+        """允许拖入文件"""
+        self.viewer.allowed_drop()
 
     """主页"""
 
@@ -174,10 +177,6 @@ class HomePresenter(QObject):
     def set_current_file_step_tip(self, tip: str):
         """设置当前处理的文件的步骤提示"""
         self.viewer.set_current_file_step_tip(tip)
-
-    def stop_timer(self):
-        """停止模型组件的计时器"""
-        self.model.stop_timing()
 
     """结果页"""
 

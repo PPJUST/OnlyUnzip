@@ -65,7 +65,14 @@ class WindowViewer(QMainWindow):
         """添加关于控件"""
         self.ui.page_about.layout().addWidget(widget)
 
+    def add_page_password_manager(self, widget: QWidget):
+        """添加密码管理器控件"""
+        self.ui.page_password_manager.layout().addWidget(widget)
+
     def open_page_about(self):
+        self.change_page(5)
+
+    def open_page_password_manager(self):
         self.change_page(4)
 
     def change_page(self, id_button):

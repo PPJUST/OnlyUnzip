@@ -97,7 +97,8 @@ def set_working_directory_to_exe_path():
 if __name__ == "__main__":
     set_working_directory_to_exe_path()
     # 重定向异常处理
-    sys.excepthook = exception_hook
+    if not os.path.dirname(sys.argv[0]) == '.':  # 编译时不重定向
+        sys.excepthook = exception_hook
 
     if not lzytools.common.check_mutex('OnlyUnzip'):  # 互斥体检查（单个实例）
         load_app(paths_cmd)

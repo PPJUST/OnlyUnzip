@@ -126,20 +126,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_use_count">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QSpinBox" name="spinBox_use_count"/>
        </item>
        <item>
         <widget class="QLabel" name="label_11">
@@ -166,21 +153,14 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QCheckBox" name="checkBox_delete_add_data">
+        <widget class="QCheckBox" name="checkBox_delete_add_date">
          <property name="text">
           <string>删除添加时间在</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_add_data">
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QSpinBox" name="spinBox_add_date"/>
        </item>
        <item>
         <widget class="QLabel" name="label_12">
@@ -207,21 +187,14 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QCheckBox" name="checkBox_delete_use_data">
+        <widget class="QCheckBox" name="checkBox_delete_use_date">
          <property name="text">
           <string>删除最后一次使用时间在</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_use_data">
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QSpinBox" name="spinBox_use_date"/>
        </item>
        <item>
         <widget class="QLabel" name="label_13">

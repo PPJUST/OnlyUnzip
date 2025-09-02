@@ -7,7 +7,7 @@ from common import function_7zip, function_subprocess
 from common.class_7zip import ModelArchive
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
-from components import page_home, page_password, page_setting, page_history, page_about
+from components import page_home, page_password, page_setting, page_history, page_about, page_password_manager
 from components.window.thread_queue_receiver import ThreadQueueReceiver
 from components.window.window_model import WindowModel
 from components.window.window_viewer import WindowViewer
@@ -37,6 +37,8 @@ class WindowPresenter:
         self.viewer.add_page_history(self.page_history.viewer)
         self.page_about = page_about.get_viewer()
         self.viewer.add_page_about(self.page_about)
+        self.page_password_manager = page_password_manager.get_presenter()
+        self.viewer.add_page_password_manager(self.page_password_manager.viewer)
 
         # 绑定接收线程
         self.queue_receiver = ThreadQueueReceiver()
@@ -58,6 +60,7 @@ class WindowPresenter:
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self.page_home.UserStop.connect(self.finished_by_user_stop)
         self.page_home.OpenAbout.connect(self.open_about)
+        self.page_password.OpenPasswordManager.connect(self.open_password_manager)
         self._bind_model_signal()
 
     def accept_paths_from_cmd(self, paths: list):
@@ -68,6 +71,8 @@ class WindowPresenter:
         """接收文件信息类，传递给模型组件"""
         # 锁定设置项，防止被修改
         self.page_setting.lock_setting()
+        # 禁用主页的拖入功能
+        self.page_home.banned_drop()
         # 传递文件信息类前传递必要参数
         self.set_model_passwords()
         self.set_model_setting()
@@ -140,6 +145,9 @@ class WindowPresenter:
         # 解锁设置项
         self.page_setting.unlock_setting()
 
+        # 启用主页的拖入功能
+        self.page_home.allowed_drop()
+
         # 接收到结束信号后，先传递给收集器，收集处理结果
         self.collect_result(results)
 
@@ -170,6 +178,8 @@ class WindowPresenter:
         """提前终止：由于主页模块信号-没有需要处理的文件"""
         # 解锁设置项
         self.page_setting.unlock_setting()
+        # 启用主页的拖入功能
+        self.page_home.allowed_drop()
         # 如果没有处理任何文件就结束，则直接显示Skip提示，否则显示正常计数信息（递归解压到没有需要解压的文件）
         if not self.result_collector.get_count_all_result():
             self.page_home.set_info_skip()
@@ -182,12 +192,17 @@ class WindowPresenter:
         # 解锁设置项
         self.page_setting.unlock_setting()
 
+        # 启用主页的拖入功能
+        self.page_home.allowed_drop()
+
         self.page_home.set_info_exists_temp_folder(path)
 
     def finished_by_user_stop(self):
         """提前终止：用户主动终止"""
         # 解锁设置项
         self.page_setting.unlock_setting()
+        # 启用主页的拖入功能
+        self.page_home.allowed_drop()
         # 更新主页信息
         finish_info_simple, file_info_detail = self.result_collector.get_result_info()
         self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
@@ -262,6 +277,11 @@ class WindowPresenter:
             height = self.page_setting.model.get_lock_size_height()
             self.viewer.resize(width, height)
         self.lock_size(is_lock_size)
+
+    def open_password_manager(self):
+        """打开密码管理器"""
+        self.viewer.open_page_password_manager()
+        self.page_password_manager.update_count()
 
     def _bind_model_signal(self):
         """绑定模型信号，链接到其他组件"""

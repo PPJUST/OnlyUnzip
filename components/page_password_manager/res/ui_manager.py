@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'managerjSYeNs.ui'
+## Form generated from reading UI file 'managerFOoYWC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+    QHBoxLayout, QLabel, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -104,16 +104,10 @@ class Ui_Form(object):
 
         self.horizontalLayout.addWidget(self.checkBox_delete_use_count)
 
-        self.lineEdit_use_count = QLineEdit(Form)
-        self.lineEdit_use_count.setObjectName(u"lineEdit_use_count")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_use_count.sizePolicy().hasHeightForWidth())
-        self.lineEdit_use_count.setSizePolicy(sizePolicy)
-        self.lineEdit_use_count.setMaximumSize(QSize(50, 16777215))
+        self.spinBox_use_count = QSpinBox(Form)
+        self.spinBox_use_count.setObjectName(u"spinBox_use_count")
 
-        self.horizontalLayout.addWidget(self.lineEdit_use_count)
+        self.horizontalLayout.addWidget(self.spinBox_use_count)
 
         self.label_11 = QLabel(Form)
         self.label_11.setObjectName(u"label_11")
@@ -129,16 +123,15 @@ class Ui_Form(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.checkBox_delete_add_data = QCheckBox(Form)
-        self.checkBox_delete_add_data.setObjectName(u"checkBox_delete_add_data")
+        self.checkBox_delete_add_date = QCheckBox(Form)
+        self.checkBox_delete_add_date.setObjectName(u"checkBox_delete_add_date")
 
-        self.horizontalLayout_2.addWidget(self.checkBox_delete_add_data)
+        self.horizontalLayout_2.addWidget(self.checkBox_delete_add_date)
 
-        self.lineEdit_add_data = QLineEdit(Form)
-        self.lineEdit_add_data.setObjectName(u"lineEdit_add_data")
-        self.lineEdit_add_data.setMaximumSize(QSize(50, 16777215))
+        self.spinBox_add_date = QSpinBox(Form)
+        self.spinBox_add_date.setObjectName(u"spinBox_add_date")
 
-        self.horizontalLayout_2.addWidget(self.lineEdit_add_data)
+        self.horizontalLayout_2.addWidget(self.spinBox_add_date)
 
         self.label_12 = QLabel(Form)
         self.label_12.setObjectName(u"label_12")
@@ -154,16 +147,15 @@ class Ui_Form(object):
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.checkBox_delete_use_data = QCheckBox(Form)
-        self.checkBox_delete_use_data.setObjectName(u"checkBox_delete_use_data")
+        self.checkBox_delete_use_date = QCheckBox(Form)
+        self.checkBox_delete_use_date.setObjectName(u"checkBox_delete_use_date")
 
-        self.horizontalLayout_3.addWidget(self.checkBox_delete_use_data)
+        self.horizontalLayout_3.addWidget(self.checkBox_delete_use_date)
 
-        self.lineEdit_use_data = QLineEdit(Form)
-        self.lineEdit_use_data.setObjectName(u"lineEdit_use_data")
-        self.lineEdit_use_data.setMaximumSize(QSize(50, 16777215))
+        self.spinBox_use_date = QSpinBox(Form)
+        self.spinBox_use_date.setObjectName(u"spinBox_use_date")
 
-        self.horizontalLayout_3.addWidget(self.lineEdit_use_data)
+        self.horizontalLayout_3.addWidget(self.spinBox_use_date)
 
         self.label_13 = QLabel(Form)
         self.label_13.setObjectName(u"label_13")
@@ -204,11 +196,11 @@ class Ui_Form(object):
 
         self.pushButton_preview = QPushButton(Form)
         self.pushButton_preview.setObjectName(u"pushButton_preview")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.pushButton_preview.sizePolicy().hasHeightForWidth())
-        self.pushButton_preview.setSizePolicy(sizePolicy1)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_preview.sizePolicy().hasHeightForWidth())
+        self.pushButton_preview.setSizePolicy(sizePolicy)
 
         self.horizontalLayout_5.addWidget(self.pushButton_preview)
 
@@ -218,8 +210,8 @@ class Ui_Form(object):
 
         self.pushButton_delete = QPushButton(Form)
         self.pushButton_delete.setObjectName(u"pushButton_delete")
-        sizePolicy1.setHeightForWidth(self.pushButton_delete.sizePolicy().hasHeightForWidth())
-        self.pushButton_delete.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.pushButton_delete.sizePolicy().hasHeightForWidth())
+        self.pushButton_delete.setSizePolicy(sizePolicy)
 
         self.horizontalLayout_5.addWidget(self.pushButton_delete)
 
@@ -257,9 +249,9 @@ class Ui_Form(object):
         self.label_10.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u5bc6\u7801", None))
         self.checkBox_delete_use_count.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u4f7f\u7528\u6b21\u6570\u4e3a", None))
         self.label_11.setText(QCoreApplication.translate("Form", u"\u6b21\u53ca\u4ee5\u4e0b\u7684\u5bc6\u7801", None))
-        self.checkBox_delete_add_data.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u6dfb\u52a0\u65f6\u95f4\u5728", None))
+        self.checkBox_delete_add_date.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u6dfb\u52a0\u65f6\u95f4\u5728", None))
         self.label_12.setText(QCoreApplication.translate("Form", u"\u65e5\u4e4b\u524d\u7684\u5bc6\u7801", None))
-        self.checkBox_delete_use_data.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u6700\u540e\u4e00\u6b21\u4f7f\u7528\u65f6\u95f4\u5728", None))
+        self.checkBox_delete_use_date.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u6700\u540e\u4e00\u6b21\u4f7f\u7528\u65f6\u95f4\u5728", None))
         self.label_13.setText(QCoreApplication.translate("Form", u"\u65e5\u4e4b\u524d\u7684\u5bc6\u7801", None))
         self.label_14.setText(QCoreApplication.translate("Form", u"\u7b26\u5408\u6761\u4ef6\u7684\u5bc6\u7801\u6570\uff1a", None))
         self.label_count_delete.setText(QCoreApplication.translate("Form", u"0", None))

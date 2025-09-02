@@ -16,6 +16,7 @@ class PasswordViewer(QWidget):
     OpenPassword = Signal(name="打开密码文件")
     UpdatePassword = Signal(str, name="更新密码本")
     DropFiles = Signal(list, name="拖入文件")
+    OpenPasswordManager = Signal(name="打开密码管理器")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -28,8 +29,6 @@ class PasswordViewer(QWidget):
         self._bind_signal()
         self._load_icon()
         self.ui.plainTextEdit_password.dropEvent = self.drop_event
-
-        self.ui.pushButton_password_details.setEnabled(False)
 
     def append_pw(self, text: str):
         """向密码框中添加密码"""
@@ -49,6 +48,7 @@ class PasswordViewer(QWidget):
 
     def _bind_signal(self):
         """绑定信号"""
+        self.ui.pushButton_password_details.clicked.connect(self.OpenPasswordManager.emit)
         self.ui.pushButton_clipboard.clicked.connect(self.ReadClipboard.emit)
         self.ui.pushButton_output.clicked.connect(self.OutputPassword.emit)
         self.ui.pushButton_open.clicked.connect(self.OpenPassword.emit)

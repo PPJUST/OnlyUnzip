@@ -25,6 +25,7 @@ class HomeViewer(QWidget):
         self.setAcceptDrops(True)
 
         # 初始化
+        self.is_banned_drop = False  # 是否禁用拖入（在执行测试解压操作后禁用拖入功能）
         self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
         self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
         self.turn_page_welcome()
@@ -32,7 +33,7 @@ class HomeViewer(QWidget):
         self.ui.label_step_notice.setOpenExternalLinks(True)
         self.ui.label_about.setOpenExternalLinks(False)
         self.ui.label_about.linkActivated.connect(self._open_about)
-
+        self.ui.progressBar_progress_extract.setFixedHeight(self.ui.label_progress_total.height())
         # 添加自定义Label
         self.label_icon = LabelIcon(self)
         self.ui.verticalLayout_label_drop.addWidget(self.label_icon)
@@ -45,6 +46,14 @@ class HomeViewer(QWidget):
 
         # 绑定信号
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
+
+    def banned_drop(self):
+        """禁用拖入"""
+        self.is_banned_drop = True
+
+    def allowed_drop(self):
+        """允许拖入"""
+        self.is_banned_drop = False
 
     """欢迎页"""
 
@@ -202,7 +211,8 @@ class HomeViewer(QWidget):
         self.DropFiles.emit(paths)
 
     def dropEvent(self, event):
-        if event.mimeData().hasUrls():
+        self._show_last_icon()  # 防止图标无法还原
+        if event.mimeData().hasUrls() and not self.is_banned_drop:
             urls = event.mimeData().urls()
             paths = [url.toLocalFile() for url in urls]
             self._drop_files(paths)
@@ -210,7 +220,10 @@ class HomeViewer(QWidget):
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
-            self.label_icon.set_icon(ICON_DROP)  # 显示拖入图标
+            if self.is_banned_drop:
+                self.label_icon.set_icon(ICON_BANNED_DROP)  # 显示禁止拖入图标
+            else:
+                self.label_icon.set_icon(ICON_DROP)  # 显示拖入图标
         else:
             event.ignore()
 

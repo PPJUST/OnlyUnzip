@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainWindowVXjZwE.ui'
+## Form generated from reading UI file 'mainWindowVTjuak.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -122,6 +122,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.stackedWidget.addWidget(self.page_history)
+        self.page_password_manager = QWidget()
+        self.page_password_manager.setObjectName(u"page_password_manager")
+        self.verticalLayout_7 = QVBoxLayout(self.page_password_manager)
+        self.verticalLayout_7.setSpacing(0)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.stackedWidget.addWidget(self.page_password_manager)
         self.page_about = QWidget()
         self.page_about.setObjectName(u"page_about")
         self.verticalLayout_6 = QVBoxLayout(self.page_about)
@@ -137,7 +144,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

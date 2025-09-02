@@ -1,14 +1,18 @@
 # 密码模块的桥梁组件
 from typing import Union
 
+from PySide6.QtCore import QObject, Signal
+
 from components.page_password.password_model import PasswordModel
 from components.page_password.password_viewer import PasswordViewer
 
 
-class PasswordPresenter:
+class PasswordPresenter(QObject):
     """密码模块的桥梁组件"""
+    OpenPasswordManager = Signal(name="打开密码管理器")
 
     def __init__(self, viewer: PasswordViewer, model: PasswordModel):
+        super().__init__()
         self.viewer = viewer
         self.model = model
 
@@ -29,6 +33,7 @@ class PasswordPresenter:
 
     def _bind_signal(self):
         """绑定Viewer信号"""
+        self.viewer.OpenPasswordManager.connect(self.OpenPasswordManager.emit)
         self.viewer.ReadClipboard.connect(self._read_clipboard)
         self.viewer.OutputPassword.connect(self._output_password)
         self.viewer.OpenPassword.connect(self.model.open_password)

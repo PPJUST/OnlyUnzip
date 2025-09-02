@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'aboutPppPUA.ui'
+## Form generated from reading UI file 'aboutQhxmXS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -40,10 +40,10 @@ class Ui_Form(object):
 
         self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label)
 
-        self.label_data = QLabel(Form)
-        self.label_data.setObjectName(u"label_data")
+        self.label_date = QLabel(Form)
+        self.label_date.setObjectName(u"label_date")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.label_data)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.label_date)
 
         self.label_5 = QLabel(Form)
         self.label_5.setObjectName(u"label_5")
@@ -96,7 +96,7 @@ class Ui_Form(object):
         self.label_2.setText(QCoreApplication.translate("Form", u"\u7248\u672c\u53f7\uff1a", None))
         self.label_version.setText(QCoreApplication.translate("Form", u"version", None))
         self.label.setText(QCoreApplication.translate("Form", u"\u7f16\u8bd1\u65e5\u671f\uff1a", None))
-        self.label_data.setText(QCoreApplication.translate("Form", u"data", None))
+        self.label_date.setText(QCoreApplication.translate("Form", u"date", None))
         self.label_5.setText(QCoreApplication.translate("Form", u"\u9879\u76ee\u4e3b\u9875\uff1a", None))
         self.label_project.setText(QCoreApplication.translate("Form", u"project", None))
         self.label_7.setText(QCoreApplication.translate("Form", u"\u4e0b\u8f7d\u5730\u57401\uff1a", None))
