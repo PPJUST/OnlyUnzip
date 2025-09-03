@@ -87,7 +87,7 @@ class DBPassword(dict):
         self.save()
 
     def filter_use_count(self, min_use_count: int, max_use_count: int):
-        """过滤密码本，只保留使用次数在指定范围内的密码"""
+        """过滤密码本，只保留使用次数在指定范围内（包含本数）的密码"""
         pws_filter = []
         for pw in self.keys():
             use_count = self[pw].get_use_count()
@@ -97,7 +97,7 @@ class DBPassword(dict):
         return pws_filter
 
     def filter_add_time(self, day_interval: int, is_inside: bool = True):
-        """过滤密码本，只保留首次添加时间在指定天数范围内的密码（以当日为基数）
+        """过滤密码本，只保留首次添加时间在指定天数范围内（包含本数）的密码（以当日为基数）
         :param day_interval: 天数间隔
         :param is_inside: 筛选天数间隔内，否则删除天数间隔外"""
         now = time.time()
@@ -116,7 +116,7 @@ class DBPassword(dict):
         return pws_filter
 
     def filter_last_use_time(self, day_interval: int, is_inside: bool = True):
-        """过滤密码本，只保留最后使用时间在指定天数范围内的密码（以当日为基数）
+        """过滤密码本，只保留最后使用时间在指定天数范围内（包含本数）的密码（以当日为基数）
         :param day_interval: 天数间隔
         :param is_inside: 筛选天数间隔内，否则删除天数间隔外"""
         now = time.time()

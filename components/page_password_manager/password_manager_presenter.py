@@ -25,18 +25,18 @@ class PasswordManagerPresenter(QObject):
         self.set_count_0()
 
     def set_count_100(self):
-        """显示使用次数>100的密码数量"""
+        """显示使用次数=>100的密码数量"""
         count = len(self.model.filter_use_count(100, 10000))
         self.viewer.set_count_100(count)
 
     def set_count_10(self):
-        """显示10<使用次数<100的密码数量"""
-        count = len(self.model.filter_use_count(10, 100))
+        """显示10<=使用次数<100的密码数量"""
+        count = len(self.model.filter_use_count(10, 99))
         self.viewer.set_count_10(count)
 
     def set_count_1(self):
-        """显示1<使用次数<10的密码数量"""
-        count = len(self.model.filter_use_count(1, 10))
+        """显示1<=使用次数<10的密码数量"""
+        count = len(self.model.filter_use_count(1, 9))
         self.viewer.set_count_1(count)
 
     def set_count_0(self):
