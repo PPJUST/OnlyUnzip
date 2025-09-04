@@ -148,7 +148,8 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
             if match_progress:
                 # is_read_stderr = False  # 读取到进度后直接不读取错误信息，可能会由于zip格式压缩包解压空文件但是有解压进度而无法正常读取错误信息
                 current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
-                queue_sender.send_data(current_progress)
+                if current_progress:  # 0%进度不发送数据
+                    queue_sender.send_data(current_progress)
 
     # 结束后读取返回码
     print('识别的错误类型', error_type)
