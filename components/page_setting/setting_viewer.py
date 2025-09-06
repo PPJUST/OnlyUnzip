@@ -2,7 +2,7 @@
 # 仅用于显示，不执行具体方法
 import os
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog
 from lzytools._qt_pyside6._function import base64_to_pixmap
 
@@ -43,6 +43,11 @@ class SettingViewer(QWidget):
         # 初始化
         self._bind_signal()
         self._set_icon()
+
+        # 为ComboBox安装事件过滤器，屏蔽其滚轮事件
+        self.ui.comboBox_break_folder.installEventFilter(self)
+        self.ui.comboBox_pw_position.installEventFilter(self)
+        self.ui.comboBox_cover_file.installEventFilter(self)
 
     def lock(self):
         """锁定全部设置项，禁止修改"""
@@ -277,6 +282,15 @@ class SettingViewer(QWidget):
         elif self.ui.radioButton_mode2_extract_same_folder.isChecked():
             self.ChangeExtractModelSameFolder.emit(True)
 
+    def eventFilter(self, obj, event):
+        # 忽略ComboBox的滚轮事件
+        if obj == self.ui.comboBox_break_folder and event.type() == QEvent.Wheel:
+            return True
+        elif obj == self.ui.comboBox_cover_file and event.type() == QEvent.Wheel:
+            return True
+        elif obj == self.ui.comboBox_pw_position and event.type() == QEvent.Wheel:
+            return True
+        return super().eventFilter(obj, event)
 
 if __name__ == "__main__":
     app_ = QApplication()
