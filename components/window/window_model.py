@@ -114,7 +114,7 @@ class WindowModel(QObject):
     def set_is_filter(self, value: bool):
         self.model_extract_file.set_is_filter(value)
 
-    def set_filter_rules(self, value: str):
+    def set_filter_rules(self, value: list):
         self.model_extract_file.set_filter_rules(value)
 
     def set_is_write_filename(self, value: bool):
@@ -206,7 +206,7 @@ class ModelExtractFile(TemplateModelSignal):
         self.is_extract_to_folder = False  # 是否解压至指定文件夹
         self.extract_output_folder = ''  # 解压输出文件夹
         self.is_filter = False  # 是否过滤文件
-        self.filter_rules = ''  # 过滤规则
+        self.filter_rules = []  # 过滤规则
 
         # 中转子线程信号
         self._transfer_signal(self.thread_extract)
@@ -261,14 +261,12 @@ class ModelExtractFile(TemplateModelSignal):
         self.is_filter = value
         self._set_thread_args()
 
-    def set_filter_rules(self, value: str):
+    def set_filter_rules(self, value: list):
         self.filter_rules = value
         self._set_thread_args()
 
     def _set_thread_args(self):
         """设置子线程的参数"""
-        # 测试子线程
-
         # 解压子线程
         self.thread_extract.cover_model = self.cover_model.switch
         self.thread_extract.is_extract_to_folder = self.is_extract_to_folder

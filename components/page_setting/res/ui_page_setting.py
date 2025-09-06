@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingLNEmTZ.ui'
+## Form generated from reading UI file 'page_settinggAfybw.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 633))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -372, 301, 610))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -389,6 +389,9 @@ class Ui_Form(object):
         self.checkBox_extract_filter.setToolTip(QCoreApplication.translate("Form", u"\u89e3\u538b\u65f6\u8fc7\u6ee4\u7b26\u5408\u6761\u4ef6\u7684\u6587\u4ef6\uff08\u4e0d\u89e3\u538b\u8be5\u90e8\u5206\u6587\u4ef6\uff09", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_extract_filter.setText(QCoreApplication.translate("Form", u"\u6587\u4ef6\u8fc7\u6ee4\u89c4\u5219", None))
+#if QT_CONFIG(tooltip)
+        self.plainTextEdit_extract_filter_rule.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u89e3\u538b\u65f6\u8fc7\u6ee4\u6389\u7b26\u5408\u89c4\u5219\u7684\u6587\u4ef6\uff0c\u901a\u914d\u7b26\u4e3a*\uff0c\u5982\u65e0\u7279\u6b8a\u9700\u6c42\u5efa\u8bae\u4e0d\u4f7f\u7528\u8be5\u529f\u80fd\u3002</p><p>\u793a\u4f8b\uff1a</p><p>1. \u8fc7\u6ee4\u6307\u5b9a\u6587\u4ef6\u540d\uff1a\u5e7f\u544a.*</p><p>2. \u8fc7\u6ee4\u90e8\u5206\u6587\u4ef6\u540d\uff1a*\u6c49\u5316\u7ec4*.*</p><p>3. \u8fc7\u6ee4\u6307\u5b9a\u6587\u4ef6\u6269\u5c55\u540d\uff1a*.html</p><p>3. \u8fc7\u6ee4\u4e0d\u7a33\u6587\u4ef6\u6269\u5c55\uff1a*.*xls*</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.checkBox_top_window.setToolTip(QCoreApplication.translate("Form", u"\u4fdd\u6301\u7a97\u53e3\u5728\u524d\u53f0", None))
 #endif // QT_CONFIG(tooltip)

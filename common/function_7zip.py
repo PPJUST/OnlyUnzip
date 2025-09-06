@@ -77,7 +77,7 @@ def process_7zip_t(_7zip_path: str, file: str, password: str, inside_path: str =
 
 
 def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
-                   filter_rule: str = ''):
+                   filter_rule: list = None):
     """解压指定文件
     :param _7zip_path: 7zip路径
     :param file: 需要解压的文件路径
@@ -90,8 +90,15 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
     queue_sender = function_queue.get_sender()
 
     # 同时读取stdout和stderr会导致管道堵塞，所以需要将两个输出流重定向至同一个管道中（使用switch：'bso1','bsp1',bse1'）
-    command = [_7zip_path, 'x', file, '-bsp1', '-bse1', '-bso1', cover_model, '-p' + password, '-o' + output_folder,
-               filter_rule]
+    command = [_7zip_path,
+               'x',
+               file,
+               '-bsp1', '-bse1', '-bso1',
+               cover_model,
+               '-p' + password,
+               '-o' + output_folder]
+    if filter_rule:
+        command = command + filter_rule
     # 清理一次命令行
     if isinstance(command, list):
         command = [i for i in command if i.strip()]
@@ -178,7 +185,7 @@ def get_temp_dirpath(dirpath: str):
 
 
 def progress_7zip_x_with_temp_folder(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
-                                     filter_rule: str = ''):
+                                     filter_rule: list = None):
     """解压指定文件（解压至临时文件夹中）
     :param _7zip_path: 7zip路径
     :param file: 需要解压的文件路径

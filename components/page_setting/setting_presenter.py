@@ -126,7 +126,7 @@ class SettingPresenter(QObject):
 
         self.viewer.set_setting_filter(self.model.get_extract_filter_is_enable())
 
-        self.viewer.set_setting_filter_rule(self.model.get_extract_filter_rules())
+        self.viewer.set_setting_filter_rule(self.model.get_extract_filter_rules_str())
 
         self.viewer.set_top_window(self.model.get_top_window_is_enable())
 

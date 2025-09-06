@@ -44,9 +44,6 @@ class SettingViewer(QWidget):
         self._bind_signal()
         self._set_icon()
 
-        self.ui.checkBox_extract_filter.setEnabled(False)
-        self.ui.plainTextEdit_extract_filter_rule.setEnabled(False)
-
     def lock(self):
         """锁定全部设置项，禁止修改"""
         self._set_enable(False)

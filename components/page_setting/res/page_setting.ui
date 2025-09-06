@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-372</y>
         <width>301</width>
-        <height>633</height>
+        <height>610</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -436,7 +436,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit_extract_filter_rule"/>
+           <widget class="QPlainTextEdit" name="plainTextEdit_extract_filter_rule">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;解压时过滤掉符合规则的文件，通配符为*，如无特殊需求建议不使用该功能。&lt;/p&gt;&lt;p&gt;示例：&lt;/p&gt;&lt;p&gt;1. 过滤指定文件名：广告.*&lt;/p&gt;&lt;p&gt;2. 过滤部分文件名：*汉化组*.*&lt;/p&gt;&lt;p&gt;3. 过滤指定文件扩展名：*.html&lt;/p&gt;&lt;p&gt;3. 过滤不稳文件扩展：*.*xls*&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -109,7 +109,7 @@ class ThreadTest(TemplateThread):
             print('当前处理的文件：', file_first)
             test_result = self.test_file(file_first, self.passwords)
 
-            # 如果结果是成功，则进行进一步操作
+            # 如果结果为成功，则进行进一步操作
             if isinstance(test_result, Result7zip.Success):
                 # 是否将密码写入文件名
                 if self.is_write_filename:
@@ -230,7 +230,7 @@ class ThreadExtract(TemplateThread):
         self.is_extract_to_folder: bool = False
         self.extract_output_path: str = ''
         self.is_filter: bool = False
-        self.filter_rules: str = ''
+        self.filter_rules: list = []
         self.is_delete_file: bool = False
 
         # 解压后参数
@@ -417,7 +417,7 @@ class ThreadExtract(TemplateThread):
         if self.is_filter and self.filter_rules:
             filter_rule = self.filter_rules
         else:
-            filter_rule = ''
+            filter_rule = []
 
         result_7zip = function_7zip.progress_7zip_x_with_temp_folder(_7ZIP_PATH, file, password,
                                                                      cover_model=part_cover,

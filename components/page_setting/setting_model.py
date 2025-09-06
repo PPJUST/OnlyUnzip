@@ -2,11 +2,13 @@
 # 用于配置文件的具体方法，包括读取、修改、保存、获取等
 import configparser
 import os
+from typing import Union
 
 from common.class_7zip import ModelArchive, Position, ModelExtract, ModelCoverFile, ModelBreakFolder, \
     TYPES_MODEL_ARCHIVE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_COVER_FILE, TYPES_MODEL_EXTRACT
 
 _CONFIG_FILE = 'setting.ini'  # 配置文件的相对路径（默认在主程序的同目录下）
+_SPLIT_WORD = '丨'
 
 
 class SettingModel:
@@ -167,6 +169,9 @@ class SettingModel:
 
     def get_extract_filter_rules(self):
         return self._extract_filter.read_rules()
+
+    def get_extract_filter_rules_str(self):
+        return self._extract_filter.read_rules_str()
 
     def set_extract_filter_rules(self, rules: str):
         self._extract_filter.set_rules(rules)
@@ -576,7 +581,7 @@ class _ChildSettingExtractFilter(_ModuleChildSetting):
         self._default_value_is_enable = False
         # 解散模式
         self.key_rules = 'rules'
-        self._default_value_rules = ''
+        self._default_value_rules = ''  # 直接存储switch（即包含-xr!的）
 
     def read_is_enable(self) -> bool:
         """读取设置项 是否启用"""
@@ -594,13 +599,30 @@ class _ChildSettingExtractFilter(_ModuleChildSetting):
         """设置设置项 是否启用"""
         self._set_value(self.section, self.key_is_enable, str(value))
 
-    def read_rules(self) -> str:
+    def read_rules(self) -> list:
         """读取设置项 过滤规则"""
-        return self._read_key(self.section, self.key_rules, self._default_value_rules)
+        # 读取文本选项，转为list
+        setting = self._read_key(self.section, self.key_rules, self._default_value_rules)
+        split = setting.split(_SPLIT_WORD)
+        split = ['-xr!' + i for i in split if i]
+        return split
 
-    def set_rules(self, value: str):
+    def read_rules_str(self) -> str:
+        """读取设置项 过滤规则"""
+        setting = self._read_key(self.section, self.key_rules, self._default_value_rules)
+        split = setting.split(_SPLIT_WORD)
+        split = [i for i in split if i]
+        text = '\n'.join(split)
+        return text
+
+    def set_rules(self, value: Union[str, list]):
         """设置设置项 过滤规则"""
-        self._set_value(self.section, self.key_rules, value)
+        # 转换字符转为7zip switch格式
+        if isinstance(value, str):
+            value = value.split('\n')
+        value = [i for i in value if i]
+        value_join = _SPLIT_WORD.join(value)
+        self._set_value(self.section, self.key_rules, value_join)
 
 
 class _ChildSettingTopWindow(_ModuleChildSettingSingleEnable):
