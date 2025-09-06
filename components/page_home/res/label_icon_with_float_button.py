@@ -28,17 +28,16 @@ class LabelIconWithFloatButton(LabelIcon):
     def adjust_button_position(self):
         """调整按钮位置，固定在widget的左下角"""
         # 获取窗口大小
-        window_width = self.width()
-        window_height = self.height()
+        widget_height = self.height()
 
         # 获取按钮大小
-        btn_width = self.float_button.width()
-        btn_height = self.float_button.height()
+        button_height = self.float_button.height()
 
         # 设置按钮位置
-        margin = 10  # 边距
-        x = margin
-        y = window_height - btn_height - margin
+        margin_left = 10
+        margin_bottom = 20
+        x = margin_left
+        y = widget_height - button_height - margin_bottom
 
         self.float_button.move(x, y)
 
@@ -49,6 +48,6 @@ class LabelIconWithFloatButton(LabelIcon):
 
 if __name__ == "__main__":
     app_ = QApplication()
-    program_ui = LabelIcon()
+    program_ui = LabelIconWithFloatButton()
     program_ui.show()
     app_.exec()
