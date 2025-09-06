@@ -21,6 +21,7 @@ class HomePresenter(QObject):
     SignalNoFiles = Signal(name='没有需要处理的文件')
     SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
     OpenAbout = Signal(name="打开关于页")
+    OpenTempPassword = Signal(name="打开临时密码页")
 
     def __init__(self, viewer: HomeViewer, model: HomeModel):
         super().__init__()
@@ -44,11 +45,13 @@ class HomePresenter(QObject):
         self.viewer.UserStop.connect(self.UserStop.emit)
         self.viewer.DropFiles.connect(self.drop_paths)
         self.viewer.OpenAbout.connect(self.OpenAbout.emit)
+        self.viewer.OpenTempPassword.connect(self.OpenTempPassword.emit)
         self.model.RuntimeTotal.connect(self.set_runtime_total)
         self.model.RuntimeCurrent.connect(self.set_runtime_current)
 
     def drop_paths(self, paths: list, is_recursive: bool = False):
         """拖入文件
+        :param paths: 文件路径
         :param is_recursive: 是否是递归解压模式进行的文件操作"""
         print('接收文件列表，进行后续处理')
         # 启动模型组件的定时器

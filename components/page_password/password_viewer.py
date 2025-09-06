@@ -1,4 +1,4 @@
-# 设置模块的界面组件
+# 密码模块的界面组件
 # 仅用于显示，不执行具体方法
 
 from PySide6.QtCore import Signal

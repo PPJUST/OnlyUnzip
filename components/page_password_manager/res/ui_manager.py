@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'managerwsrKLu.ui'
+## Form generated from reading UI file 'managerXGqIKY.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(382, 466)
+        Form.resize(201, 363)
         self.verticalLayout_3 = QVBoxLayout(Form)
         self.verticalLayout_3.setSpacing(3)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -256,22 +256,22 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.label.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u4f7f\u7528\u60c5\u51b5", None))
-        self.label_2.setText(QCoreApplication.translate("Form", u"\u4f7f\u7528100\u6b21\u4ee5\u4e0a\u7684\u5bc6\u7801\u6570\uff1a", None))
+        self.label.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u4f7f\u7528\u6b21\u6570\u7edf\u8ba1", None))
+        self.label_2.setText(QCoreApplication.translate("Form", u"\u4f7f\u7528100\u6b21\u4ee5\u4e0a\uff1a", None))
         self.label_pw_count_100.setText(QCoreApplication.translate("Form", u"count100", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"\u4f7f\u752810~100\u6b21\u4ee5\u4e0a\u7684\u5bc6\u7801\u6570\uff1a", None))
+        self.label_3.setText(QCoreApplication.translate("Form", u"\u4f7f\u752810~100\u6b21\uff1a", None))
         self.label_pw_count_10.setText(QCoreApplication.translate("Form", u"count10", None))
-        self.label_4.setText(QCoreApplication.translate("Form", u"\u4f7f\u75281~10\u6b21\u4ee5\u4e0a\u7684\u5bc6\u7801\u6570\uff1a", None))
+        self.label_4.setText(QCoreApplication.translate("Form", u"\u4f7f\u75281~10\u6b21\uff1a", None))
         self.label_pw_count_1.setText(QCoreApplication.translate("Form", u"count1", None))
-        self.label_5.setText(QCoreApplication.translate("Form", u"\u672a\u4f7f\u7528\u8fc7\u7684\u5bc6\u7801\u6570\uff1a", None))
+        self.label_5.setText(QCoreApplication.translate("Form", u"\u672a\u4f7f\u7528\uff1a", None))
         self.label_pw_count_0.setText(QCoreApplication.translate("Form", u"count0", None))
         self.label_10.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u5bc6\u7801", None))
-        self.checkBox_delete_use_count.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u4f7f\u7528\u6b21\u6570\u4e3a", None))
-        self.label_11.setText(QCoreApplication.translate("Form", u"\u6b21\u53ca\u4ee5\u4e0b\u7684\u5bc6\u7801", None))
-        self.checkBox_delete_add_date.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u6dfb\u52a0\u65f6\u95f4\u5728", None))
-        self.label_12.setText(QCoreApplication.translate("Form", u"\u65e5\u4e4b\u524d\u7684\u5bc6\u7801", None))
-        self.checkBox_delete_use_date.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u6700\u540e\u4e00\u6b21\u4f7f\u7528\u65f6\u95f4\u5728", None))
-        self.label_13.setText(QCoreApplication.translate("Form", u"\u65e5\u4e4b\u524d\u7684\u5bc6\u7801", None))
+        self.checkBox_delete_use_count.setText(QCoreApplication.translate("Form", u"\u4f7f\u7528\u6b21\u6570\u5728", None))
+        self.label_11.setText(QCoreApplication.translate("Form", u"\u6b21\u53ca\u4ee5\u4e0b", None))
+        self.checkBox_delete_add_date.setText(QCoreApplication.translate("Form", u"\u6dfb\u52a0\u65f6\u95f4\u5728", None))
+        self.label_12.setText(QCoreApplication.translate("Form", u"\u65e5\u4e4b\u524d", None))
+        self.checkBox_delete_use_date.setText(QCoreApplication.translate("Form", u"\u6700\u540e\u4f7f\u7528\u65f6\u95f4\u5728", None))
+        self.label_13.setText(QCoreApplication.translate("Form", u"\u65e5\u4e4b\u524d", None))
         self.label_14.setText(QCoreApplication.translate("Form", u"\u7b26\u5408\u6761\u4ef6\u7684\u5bc6\u7801\u6570\uff1a", None))
         self.label_count_delete.setText(QCoreApplication.translate("Form", u"0", None))
         self.pushButton_preview.setText(QCoreApplication.translate("Form", u"\u663e\u793a\u9884\u89c8", None))

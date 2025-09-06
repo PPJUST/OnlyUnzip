@@ -1,8 +1,5 @@
 # 密码模块的模型组件
 # 用于配置文件的具体方法，包括读取、修改、保存、获取等
-import configparser
-import os
-import pickle
 from typing import Union
 
 from PySide6.QtWidgets import QApplication
@@ -41,16 +38,22 @@ class PasswordModel:
         """打开导出的密码文件"""
         self.password_db.open_output_file()
 
-    def update_password(self, text: str):
+    def update_password(self, password: Union[str, list]):
         """更新密码本"""
-        # 更新前备份一次密码
-        function_password.backup_file(DB_FILEPATH)
-        # 考虑两端可能存在空格的密码，添加密码时同时添加原始和去除空格的两种格式
-        pws = [i for i in text.split('\n') if i.strip()]
-        pws_strip = [i.strip() for i in pws if i.strip() not in pws]  # 为了保持密码的顺序，不使用set进行去重
-        pws += pws_strip
-        # 写入密码本
-        self.password_db.add_passwords(pws)
+        if password:
+            # 更新前备份一次密码
+            function_password.backup_file(DB_FILEPATH)
+            if isinstance(password, (list, set)):
+                pws = password
+            elif isinstance(password, str):
+                # 考虑两端可能存在空格的密码，添加密码时同时添加原始和去除空格的两种格式
+                pws = [i for i in password.split('\n') if i.strip()]
+                pws_strip = [i.strip() for i in pws if i.strip() not in pws]  # 为了保持密码的顺序，不使用set进行去重
+                pws += pws_strip
+            else:
+                return
+                # 写入密码本
+            self.password_db.add_passwords(pws)
 
     def add_use_count_once(self, passwords: Union[str, list]):
         """增加一次密码的使用次数"""
@@ -72,56 +75,5 @@ class PasswordModel:
 
     def drop_files(self, files):
         """处理拖入的文件"""
-        # 提取文件
-        files = [i for i in files if os.path.isfile(i)]
-        # 尝试读取密码
-        pws = []
-        for file in files:
-            try:  # 尝试按pickle文件读取
-                pws += self._read_passwords_from_pickle(file)
-            except:
-                try:  # 尝试按ini文件读取
-                    pws += self._read_passwords_from_ini(file)
-                except:
-                    try:  # 尝试按txt文件读取
-                        pws += self._read_passwords_from_txt(file)
-                    except:
-                        pass
-
-        pws = set(pws)
-        return pws
-
-    def _read_passwords_from_txt(self, txt_file: str) -> list:
-        """从txt文件中读取密码"""
-        with open(txt_file, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-
-        return lines
-
-    def _read_passwords_from_pickle(self, pickle_file: str):
-        """从pickle文件中读取密码"""
-        try:
-            with open(pickle_file, 'rb') as f:
-                data = pickle.load(f)
-                # v2.0.0版本的密码本格式（DBPassword类）
-                if isinstance(data, DBPassword):
-                    pws = data.get_passwords()
-                    return pws
-                # v1.3.0~1.6.1版本的密码本格式（Dict类）
-                if isinstance(data, dict):
-                    pws = list(data.keys())
-                    return pws
-        except:
-            pass
-
-    def _read_passwords_from_ini(self, ini_file: str):
-        """从ini文件中读取密码"""
-        # v1.0.0~1.2.2版本的密码本格式（ini格式）
-        try:
-            config = configparser.ConfigParser()
-            config.read(ini_file, encoding='utf-8')  # 配置文件的路径
-            sections = config.sections()
-            if sections:
-                return sections
-        except:
-            pass
+        passwords_in_files = function_password.read_passwords_from_files(files)
+        return passwords_in_files

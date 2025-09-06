@@ -1,13 +1,15 @@
 # 主窗口的桥梁组件
 import os
 
+import lzytools.common
 import lzytools.file
 
 from common import function_7zip, function_subprocess
 from common.class_7zip import ModelArchive
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
-from components import page_home, page_password, page_setting, page_history, page_about, page_password_manager
+from components import page_home, page_password, page_setting, page_history, page_about, page_password_manager, \
+    dialog_temp_password
 from components.window.thread_queue_receiver import ThreadQueueReceiver
 from components.window.window_model import WindowModel
 from components.window.window_viewer import WindowViewer
@@ -39,6 +41,7 @@ class WindowPresenter:
         self.viewer.add_page_about(self.page_about)
         self.page_password_manager = page_password_manager.get_presenter()
         self.viewer.add_page_password_manager(self.page_password_manager.viewer)
+        self.dialog_temp_password = dialog_temp_password.get_presenter()
 
         # 绑定接收线程
         self.queue_receiver = ThreadQueueReceiver()
@@ -60,8 +63,10 @@ class WindowPresenter:
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self.page_home.UserStop.connect(self.finished_by_user_stop)
         self.page_home.OpenAbout.connect(self.open_about)
+        self.page_home.OpenTempPassword.connect(self.open_temp_password)
         self.page_password.OpenPasswordManager.connect(self.open_password_manager)
         self.page_password_manager.SignalDeleted.connect(self.deleted_passwords)
+        self.dialog_temp_password.WriteTODB.connect(self.write_temp_pws_to_db)
         self._bind_model_signal()
 
     def accept_paths_from_cmd(self, paths: list):
@@ -84,7 +89,10 @@ class WindowPresenter:
     def set_model_passwords(self):
         """传递密码组件的密码列表给模型组件"""
         passwords = self.page_password.get_passwords()
-        self.model.set_passwords(passwords)
+        temp_passwords = self.dialog_temp_password.get_passwords()
+        joined = temp_passwords + passwords
+        joined = lzytools.common.dedup_list(joined)
+        self.model.set_passwords(joined)
 
     def set_model_setting(self):
         """传递设置组件的设置项给模型组件"""
@@ -141,6 +149,14 @@ class WindowPresenter:
     def open_about(self):
         self.viewer.open_page_about()
 
+    def open_temp_password(self):
+        self.dialog_temp_password.exec()
+
+    def write_temp_pws_to_db(self):
+        """将临时密码写入密码本"""
+        temp_pws = self.dialog_temp_password.get_passwords()
+        self.page_password.update_password(temp_pws)
+
     def finished(self, results: FileInfoList):
         """处理结束信号"""
         # 解锁设置项
@@ -155,8 +171,18 @@ class WindowPresenter:
         # 如果有解压成功的文件，则增加对应密码的使用次数
         passwords_success = results.get_success_passwords()
         print('处理成功的密码', passwords_success)
-        if passwords_success:
-            self.page_password.update_use_count(passwords_success)
+
+        # 剔除其中包含的临时密码（临时密码不写入密码本，但保留密码本中已存在的密码）
+        db_passwords = self.page_password.get_passwords()
+        temp_passwords = self.dialog_temp_password.get_passwords()
+        filter_passwords = passwords_success
+        for pw in passwords_success:
+            if pw in temp_passwords and pw not in db_passwords:
+                filter_passwords.remove(pw)
+
+        # 更新密码次数
+        if filter_passwords:
+            self.page_password.update_use_count(filter_passwords)
             self.page_password.show_pw_count_info()
 
         # 如果有成功处理的文件，则判断是否进行递归解压

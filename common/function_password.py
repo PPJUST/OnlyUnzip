@@ -1,3 +1,4 @@
+import configparser
 import os
 import pickle
 import shutil
@@ -217,3 +218,65 @@ def check_backup_file_exists():
     """检查备份文件夹是否存在"""
     if not os.path.exists(BACKUP_PATH):
         os.mkdir(BACKUP_PATH)
+
+
+def read_passwords_from_files(files):
+    """从文件中提取密码"""
+    # 提取文件
+    files = [i for i in files if os.path.isfile(i)]
+    # 尝试读取密码
+    pws = []
+    for file in files:
+        try:  # 尝试按pickle文件读取
+            pws += _read_passwords_from_pickle(file)
+        except:
+            try:  # 尝试按ini文件读取
+                pws += _read_passwords_from_ini(file)
+            except:
+                try:  # 尝试按txt文件读取
+                    pws += _read_passwords_from_txt(file)
+                except:
+                    pass
+
+    lzytools.common.dedup_list(pws)
+    return pws
+
+
+def _read_passwords_from_txt(txt_file: str) -> list:
+    """从txt文件中读取密码"""
+    with open(txt_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+
+    return lines
+
+
+def _read_passwords_from_pickle(pickle_file: str):
+    """从pickle文件中读取密码"""
+    try:
+        with open(pickle_file, 'rb') as f:
+            data = pickle.load(f)
+            # v2.0.0版本的密码本格式（DBPassword类）
+            if isinstance(data, DBPassword):
+                pws = data.get_passwords()
+                return pws
+            # v1.3.0~1.6.1版本的密码本格式（Dict类）
+            if isinstance(data, dict):
+                pws = list(data.keys())
+                return pws
+        return []
+    except:
+        return []
+
+
+def _read_passwords_from_ini(ini_file: str):
+    """从ini文件中读取密码"""
+    # v1.0.0~1.2.2版本的密码本格式（ini格式）
+    try:
+        config = configparser.ConfigParser()
+        config.read(ini_file, encoding='utf-8')  # 配置文件的路径
+        sections = config.sections()
+        if sections:
+            return sections
+        return []
+    except:
+        return []

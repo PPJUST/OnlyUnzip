@@ -32,6 +32,12 @@ class PasswordPresenter(QObject):
         """获取密码清单"""
         return self.model.get_passwords()
 
+    def update_password(self, password: Union[str, list]):
+        """添加密码并刷新统计信息"""
+        self.model.update_password(password)
+        self.viewer.clear_pw()
+        self.show_pw_count_info()
+
     def show_pw_count_info(self):
         self.viewer.show_pw_count_info(self.model.count_password())
 
@@ -41,7 +47,7 @@ class PasswordPresenter(QObject):
         self.viewer.ReadClipboard.connect(self._read_clipboard)
         self.viewer.OutputPassword.connect(self._output_password)
         self.viewer.OpenPassword.connect(self.model.open_password)
-        self.viewer.UpdatePassword.connect(self._update_password)
+        self.viewer.UpdatePassword.connect(self.update_password)
         self.viewer.DropFiles.connect(self._drop_files)
 
     def _read_clipboard(self):
@@ -50,11 +56,6 @@ class PasswordPresenter(QObject):
     def _output_password(self):
         self.model.output_password()
         self.viewer.set_open_button_enable(True)
-
-    def _update_password(self, text: str):
-        self.model.update_password(text)
-        self.viewer.clear_pw()
-        self.show_pw_count_info()  # 更新密码统计
 
     def _drop_files(self, files):
         pws_drop = self.model.drop_files(files)

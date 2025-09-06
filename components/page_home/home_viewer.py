@@ -9,6 +9,7 @@ from lzytools._qt_pyside6 import base64_to_pixmap
 from common.function_7zip import FAKE_PASSWORD
 from components.page_home.res.icon_base64 import *
 from components.page_home.res.label_icon import LabelIcon
+from components.page_home.res.label_icon_with_float_button import LabelIconWithFloatButton
 from components.page_home.res.ui_page_home import Ui_Form
 
 
@@ -17,6 +18,7 @@ class HomeViewer(QWidget):
     UserStop = Signal(name="用户主动停止")
     DropFiles = Signal(list, name="拖入文件")
     OpenAbout = Signal(name="打开关于页")
+    OpenTempPassword = Signal(name="打开临时密码页")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -35,7 +37,7 @@ class HomeViewer(QWidget):
         self.ui.label_about.linkActivated.connect(self._open_about)
         self.ui.progressBar_progress_extract.setFixedHeight(self.ui.label_progress_total.height())
         # 添加自定义Label
-        self.label_icon = LabelIcon(self)
+        self.label_icon = LabelIconWithFloatButton(self)
         self.ui.verticalLayout_label_drop.addWidget(self.label_icon)
         self.label_current_file = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
         self.ui.layout_current_file.addWidget(self.label_current_file)
@@ -46,7 +48,7 @@ class HomeViewer(QWidget):
 
         # 绑定信号
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
-
+        self.label_icon.ButtonClicked.connect(self.OpenTempPassword.emit)
     def banned_drop(self):
         """禁用拖入"""
         self.is_banned_drop = True

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
-    <height>466</height>
+    <width>201</width>
+    <height>363</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>密码使用情况</string>
+        <string>密码使用次数统计</string>
        </property>
       </widget>
      </item>
@@ -43,7 +43,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>使用100次以上的密码数：</string>
+          <string>使用100次以上：</string>
          </property>
         </widget>
        </item>
@@ -57,7 +57,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>使用10~100次以上的密码数：</string>
+          <string>使用10~100次：</string>
          </property>
         </widget>
        </item>
@@ -71,7 +71,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>使用1~10次以上的密码数：</string>
+          <string>使用1~10次：</string>
          </property>
         </widget>
        </item>
@@ -85,7 +85,7 @@
        <item row="3" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>未使用过的密码数：</string>
+          <string>未使用：</string>
          </property>
         </widget>
        </item>
@@ -121,7 +121,7 @@
        <item>
         <widget class="QCheckBox" name="checkBox_delete_use_count">
          <property name="text">
-          <string>删除使用次数为</string>
+          <string>使用次数在</string>
          </property>
         </widget>
        </item>
@@ -131,7 +131,7 @@
        <item>
         <widget class="QLabel" name="label_11">
          <property name="text">
-          <string>次及以下的密码</string>
+          <string>次及以下</string>
          </property>
         </widget>
        </item>
@@ -155,7 +155,7 @@
        <item>
         <widget class="QCheckBox" name="checkBox_delete_add_date">
          <property name="text">
-          <string>删除添加时间在</string>
+          <string>添加时间在</string>
          </property>
         </widget>
        </item>
@@ -165,7 +165,7 @@
        <item>
         <widget class="QLabel" name="label_12">
          <property name="text">
-          <string>日之前的密码</string>
+          <string>日之前</string>
          </property>
         </widget>
        </item>
@@ -189,7 +189,7 @@
        <item>
         <widget class="QCheckBox" name="checkBox_delete_use_date">
          <property name="text">
-          <string>删除最后一次使用时间在</string>
+          <string>最后使用时间在</string>
          </property>
         </widget>
        </item>
@@ -199,7 +199,7 @@
        <item>
         <widget class="QLabel" name="label_13">
          <property name="text">
-          <string>日之前的密码</string>
+          <string>日之前</string>
          </property>
         </widget>
        </item>
