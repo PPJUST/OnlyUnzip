@@ -19,11 +19,23 @@ class ThreadFiletypeArchive(QThread):
     def run(self):
         archive_files = []
         for file in self.files:
-            if lzytools.archive.is_archive_by_filename(os.path.basename(file)):
-                archive_files.append(file)
-            elif lzytools.archive.is_archive(file):
-                archive_files.append(file)
+            if not is_exclude_file_extension(file):
+                if lzytools.archive.is_archive_by_filename(os.path.basename(file)):
+                    archive_files.append(file)
+                elif lzytools.archive.is_archive(file):
+                    archive_files.append(file)
 
         self.files.clear()
 
         self.Archives.emit(archive_files)
+
+
+def is_exclude_file_extension(filename: str):
+    """在识别压缩文件时，排除指定文件扩展名"""
+    _exclude_file_extension = ['exe', 'apk', 'csv', 'xls', 'xlsx', 'doc', 'docx', 'ppt']
+
+    file_extension = os.path.splitext(filename)[1].strip().strip('.').strip()
+    if file_extension.lower() in _exclude_file_extension:
+        return True
+
+    return False
