@@ -10,6 +10,7 @@ from common.function_extract import TEMP_EXTRACT_FOLDER
 FAKE_PASSWORD = 'FAKEPASSWORD'
 _7ZIP_PATH = r'./7-Zip/7z.exe'
 _process_running: subprocess.Popen = None  # 正在运行的线程，用于中断
+_CMD_PW_TEXT_FILE = 'cmd_pw.txt'  # 临时使用的密码文件（专用于处理带"的密码，双引号不能作为参数传入进程，但可以通过读取文件传入）
 
 
 def get_running_process():
@@ -21,6 +22,18 @@ def get_running_process():
         return None
 
 
+def create_cmd_pw_file(password: str):
+    """创建一个临时的密码文件，用于处理带"的密码（读取后自动删除）"""
+    with open(_CMD_PW_TEXT_FILE, 'w', encoding='utf-8') as f:
+        f.write(password)
+
+
+def delete_cmd_pw_file():
+    """删除临时密码文件"""
+    if os.path.exists(_CMD_PW_TEXT_FILE):
+        os.remove(_CMD_PW_TEXT_FILE)
+
+
 def _process_7zip_with_run(_7zip_command: Union[str, list]):
     """使用run调用7zip执行传入语句（直接返回结果，不需要实时读取管道信息）
     :param _7zip_command: 7zip命令行"""
@@ -28,29 +41,48 @@ def _process_7zip_with_run(_7zip_command: Union[str, list]):
     if isinstance(_7zip_command, list):
         _7zip_command = [i for i in _7zip_command if i.strip()]
 
-    print(f'调用7zip：{_7zip_command}')
+    print(f'调用7zip（run）：{_7zip_command}')
     process = subprocess.run(_7zip_command,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              creationflags=subprocess.CREATE_NO_WINDOW,
                              text=True,
-                             universal_newlines=True)
+                             shell=True)
+    delete_cmd_pw_file()  # 删除临时密码文件
+    print('返回码', process.returncode)
+    print('错误信息', process.stderr)
     return process
 
 
-def process_7zip_l(_7zip_path: str, file: str, password: str, inside_path: str = None):
+def process_7zip_l(_7zip_path: str, file: str, password: str, inside_path: str = ''):
     """测试指定文件的密码
     :param _7zip_path: 7zip路径
     :param file: 需要测试的文件路径
     :param password: 需要测试的密码
     :param inside_path: 单独测试的内部文件路径
     :return: 7zip结果类"""
-    command = [_7zip_path, 'l', file, '-p' + password]
+    # 编写列表命令行
+    if '"' in password:  # 对带"的密码进行特殊处理
+        create_cmd_pw_file(password)  # 创建临时密码文件
+        part_password = f'-y<{_CMD_PW_TEXT_FILE}'
+    else:
+        part_password = f'-p{password}'
     if inside_path:
-        command.append(inside_path)
+        part_inside = f'"{inside_path}"'
+    else:
+        part_inside = ''
+    command = [f'"{_7zip_path}"',
+               'l',
+               f'"{file}"',
+               part_password,
+               part_inside]
+    command = [i for i in command if i and i.strip()]  # 清理一次列表命令行
+    # 将列表命令行组合为字符串（shell=True）
+    command = ' '.join(command)
+    # 调用
     process = _process_7zip_with_run(command)
+    # 处理调用结果
     _7zip_result = _analyse_process_return(process)
-    print('测试结果', _7zip_result)
     # 结果为”成功“时将正确密码写入结果类中
     if isinstance(_7zip_result, Result7zip.Success):
         _7zip_result.password = password
@@ -65,10 +97,28 @@ def process_7zip_t(_7zip_path: str, file: str, password: str, inside_path: str =
     :param password: 需要测试的密码
     :param inside_path: 如果测试的文件是压缩文件，则可以尝试仅测试压缩文件内部的其中1个文件
     :return: 7zip结果类"""
-    command = [_7zip_path, 't', file, '-p' + password, inside_path]
+    # 编写列表命令行
+    if '"' in password:  # 对带"的密码进行特殊处理
+        create_cmd_pw_file(password)  # 创建临时密码文件
+        part_password = f'-y<{_CMD_PW_TEXT_FILE}'
+    else:
+        part_password = f'-p{password}'
+    if inside_path:
+        part_inside = f'"{inside_path}"'
+    else:
+        part_inside = ''
+    command = [f'"{_7zip_path}"',
+               't',
+               f'"{file}"',
+               part_password,
+               part_inside]
+    command = [i for i in command if i and i.strip()]  # 清理一次列表命令行
+    # 将列表命令行组合为字符串（shell=True）
+    command = ' '.join(command)
+    # 调用
     process = _process_7zip_with_run(command)
+    # 处理调用结果
     _7zip_result = _analyse_process_return(process)
-    print('测试结果', _7zip_result)
     # 结果为”成功“时将正确密码写入结果类中
     if isinstance(_7zip_result, Result7zip.Success):
         _7zip_result.password = password
@@ -89,27 +139,34 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
     # 实例化发送数据的队列
     queue_sender = function_queue.get_sender()
 
+    # 编写列表命令行
     # 同时读取stdout和stderr会导致管道堵塞，所以需要将两个输出流重定向至同一个管道中（使用switch：'bso1','bsp1',bse1'）
-    command = [_7zip_path,
+    if '"' in password:  # 对带"的密码进行特殊处理
+        create_cmd_pw_file(password)  # 创建临时密码文件
+        part_password = f'-y<{_CMD_PW_TEXT_FILE}'
+    else:
+        part_password = f'-p{password}'
+    command = [f'"{_7zip_path}"',
                'x',
-               file,
+               f'"{file}"',
                '-bsp1', '-bse1', '-bso1',
                cover_model,
-               '-p' + password,
-               '-o' + output_folder]
+               part_password,
+               f'"-o{output_folder}"']
     if filter_rule:
         command = command + filter_rule
-    # 清理一次命令行
-    if isinstance(command, list):
-        command = [i for i in command if i.strip()]
-
-    print(f'调用7zip：{" ".join(command)}')
+    command = [i for i in command if i and i.strip()]  # 清理一次列表命令行
+    # 将列表命令行组合为字符串（shell=True）
+    command = ' '.join(command)
+    print(f'调用7zip（Popen）：{command}')
+    # 调用
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
                                creationflags=subprocess.CREATE_NO_WINDOW,
                                text=True,
-                               universal_newlines=True)
+                               shell=True)
+
     # 赋值给全局变量
     global _process_running
     _process_running = process
@@ -159,6 +216,7 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
                     queue_sender.send_data(current_progress)
 
     # 结束后读取返回码
+    delete_cmd_pw_file()  # 删除临时密码文件
     print('识别的错误类型', error_type)
     return_code = process.poll()
     if return_code == 0:
