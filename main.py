@@ -37,7 +37,7 @@ def load_app(paths: list = None):
     presenter = window.get_presenter()
     viewer = presenter.viewer
     model = presenter.model
-    presenter.set_default_app_title('OnlyUnzip v2.0.0')
+    presenter.set_default_app_title('OnlyUnzip v2.0.1')
     viewer.show()
     if paths:
         presenter.accept_paths_from_cmd(paths)
