@@ -1,5 +1,5 @@
 ### 存储密码、自动解压的小工具。
-类似于Uzip，通过调用7zip来实现压缩文件的密码测试和解压操作，本质上就是一个省去输入7zip命令行的7zip调用器。
+类似于[Uzip](https://www.yuque.com/farkaway/uzip "Uzip文档")，通过调用7zip来实现压缩文件的密码测试和解压操作，本质上就是一个省去输入7zip命令行的7zip调用器。
 
 ### 下载地址
 <https://wwvb.lanzout.com/b01fna1qh>

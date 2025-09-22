@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_passwordHxaXXB.ui'
+## Form generated from reading UI file 'page_passwordksqgOj.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.0
 ##
@@ -34,26 +34,6 @@ class Ui_Form(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.pushButton_password_details = QPushButton(Form)
-        self.pushButton_password_details.setObjectName(u"pushButton_password_details")
-
-        self.verticalLayout.addWidget(self.pushButton_password_details)
-
-        self.pushButton_output = QPushButton(Form)
-        self.pushButton_output.setObjectName(u"pushButton_output")
-
-        self.verticalLayout.addWidget(self.pushButton_output)
-
-        self.pushButton_open = QPushButton(Form)
-        self.pushButton_open.setObjectName(u"pushButton_open")
-
-        self.verticalLayout.addWidget(self.pushButton_open)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout)
-
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_2 = QHBoxLayout()
@@ -92,7 +72,26 @@ class Ui_Form(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_3)
 
-        self.horizontalLayout.setStretch(0, 1)
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.pushButton_password_details = QPushButton(Form)
+        self.pushButton_password_details.setObjectName(u"pushButton_password_details")
+
+        self.verticalLayout.addWidget(self.pushButton_password_details)
+
+        self.pushButton_output = QPushButton(Form)
+        self.pushButton_output.setObjectName(u"pushButton_output")
+
+        self.verticalLayout.addWidget(self.pushButton_output)
+
+        self.pushButton_open = QPushButton(Form)
+        self.pushButton_open.setObjectName(u"pushButton_open")
+
+        self.verticalLayout.addWidget(self.pushButton_open)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout)
+
         self.horizontalLayout.setStretch(1, 1)
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
@@ -106,11 +105,11 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.pushButton_password_details.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u7ba1\u7406", None))
-        self.pushButton_output.setText(QCoreApplication.translate("Form", u"\u5bfc\u51fa\u5bc6\u7801", None))
-        self.pushButton_open.setText(QCoreApplication.translate("Form", u"\u6253\u5f00\u5bfc\u51fa\u6587\u4ef6", None))
         self.pushButton_clipboard.setText(QCoreApplication.translate("Form", u"\u8bfb\u53d6\u526a\u5207\u677f", None))
         self.toolButton_clear.setText(QCoreApplication.translate("Form", u"clear", None))
         self.pushButton_update.setText(QCoreApplication.translate("Form", u"\u66f4\u65b0\u5bc6\u7801\u672c", None))
+        self.pushButton_password_details.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u7ba1\u7406", None))
+        self.pushButton_output.setText(QCoreApplication.translate("Form", u"\u5bfc\u51fa\u5bc6\u7801", None))
+        self.pushButton_open.setText(QCoreApplication.translate("Form", u"\u6253\u5f00\u5bfc\u51fa\u6587\u4ef6", None))
     # retranslateUi
 
