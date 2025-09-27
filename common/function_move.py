@@ -1,8 +1,8 @@
 import os
 import shutil
 
-import lzytools.file
 import lzytools.archive
+import lzytools.file
 
 from common import function_file
 
@@ -91,7 +91,21 @@ def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str):
     files = [os.path.normpath(os.path.join(origin_dirpath, i)) for i in filenames]
 
     # 移动
-    for file in files:
-        shutil.move(file, target_dirpath)
+    try:
+        for file in files:
+            shutil.move(file, target_dirpath)
+    except FileNotFoundError:
+        # 2025.09.27 修复两端文件名存在空格时的bug
+        # bug原因：os.mkdir()创建的文件夹名由于Windows的修剪机制，不会包含两端空格
+
+        # 检查目标文件夹两端是否存在空格，并剔除后检查文件夹是否存在并且是否为空
+        filename = os.path.basename(target_dirpath).strip()
+        parent_dirpath = os.path.dirname(target_dirpath)
+        target_dirpath_strip = os.path.normpath(os.path.join(parent_dirpath, filename))
+        if os.path.exists(target_dirpath_strip) and not os.listdir(target_dirpath_strip):
+            for file in files:
+                shutil.move(file, target_dirpath_strip)
+        else:
+            raise Exception('未知错误')
 
     return target_dirpath

@@ -192,6 +192,7 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
             is_wrong_password = re.search('Wrong password', output)
             is_missing_volume = re.search('Missing volume', output)
             is_cannot_open_the_file = re.search('Cannot open the file as', output)
+            is_fake_success = re.search('No files to process', output)  # 虚假的处理成功
             if is_wrong_password:
                 error_type = Result7zip.WrongPassword()
                 is_read_stderr = False
@@ -203,6 +204,11 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
             elif is_cannot_open_the_file:
                 # 如果是后缀名错误的问题，7zip会自动尝试以正确的后缀名进行解压，不需要停止读取
                 error_type = Result7zip.WrongFiletype()
+            elif is_fake_success:
+                # 2025.09.28 临时修复bug 少部分的压缩包在解压时文本提示"No files to process"，但是返回吗仍为0
+                error_type = Result7zip.UnknownError('No files to process')
+                is_read_stderr = False
+                is_read_progress = False
 
         # 读取进度事件
         if is_read_progress and output:
@@ -219,7 +225,7 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
     delete_cmd_pw_file()  # 删除临时密码文件
     print('识别的错误类型', error_type)
     return_code = process.poll()
-    if return_code == 0:
+    if return_code == 0 and not is_fake_success:
         return Result7zip.Success(password)
     elif return_code == 1:
         return Result7zip.Warning()
