@@ -10,7 +10,7 @@ from common.function_extract import TEMP_EXTRACT_FOLDER
 FAKE_PASSWORD = 'FAKEPASSWORD'
 _7ZIP_PATH = r'./7-Zip/7z.exe'
 _process_running: subprocess.Popen = None  # 正在运行的线程，用于中断
-_CMD_PW_TEXT_FILE = 'cmd_pw.txt'  # 临时使用的密码文件（专用于处理带"的密码，双引号不能作为参数传入进程，但可以通过读取文件传入）
+_CMD_PW_TEXT_FILE = 'cmd_pw.txt'  # 临时使用的密码文件（专用于处理带特殊字符（例如"、^）的密码，双引号不能作为参数传入进程，但可以通过读取文件传入）
 
 
 def get_running_process():
@@ -24,6 +24,7 @@ def get_running_process():
 
 def create_cmd_pw_file(password: str):
     """创建一个临时的密码文件，用于处理带"的密码（读取后自动删除）"""
+    # fixme 对于上级调用逻辑，在出现特殊字符" * : < > ? \ / | & ; ( ) ^ %时就进行调用，而不是单单"
     with open(_CMD_PW_TEXT_FILE, 'w', encoding='utf-8') as f:
         f.write(password)
 

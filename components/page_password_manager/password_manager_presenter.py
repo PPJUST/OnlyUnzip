@@ -5,6 +5,8 @@ from components.page_password_manager.password_manager_model import PasswordMana
 from components.page_password_manager.password_manager_viewer import PasswordManagerViewer
 
 
+# todo 优化密码管理器，按表格布局显示密码，列名：密码、使用次数、最后使用时间（参考密码类的变量），然后需要的功能按钮：单个删除、条件删除（条件删除时高亮会被删除的项）
+
 class PasswordManagerPresenter(QObject):
     """密码管理器模块的桥梁组件"""
     SignalDeleted = Signal(name="删除密码")

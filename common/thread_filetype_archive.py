@@ -5,6 +5,8 @@ import lzytools.archive
 from PySide6.QtCore import QThread, Signal
 
 
+# todo BZ2格式未被识别为压缩文件
+
 class ThreadFiletypeArchive(QThread):
     """检查文件类型是否是压缩文件的子线程"""
     Archives = Signal(list, name='压缩文件列表')
