@@ -56,9 +56,9 @@ class HomeModel(QObject):
         time_now = time.time()
 
         runtime_total = time_now - self._start_time_total
-        runtime_total_text = lzytools.common.convert_time(runtime_total)
+        runtime_total_text = lzytools.common.convert_time_hms(runtime_total)
         self.RuntimeTotal.emit(runtime_total_text)
 
         runtime_current = time_now - self._start_time_current
-        runtime_current_text = lzytools.common.convert_time(runtime_current)
+        runtime_current_text = lzytools.common.convert_time_hms(runtime_current)
         self.RuntimeCurrent.emit(runtime_current_text)

@@ -22,9 +22,23 @@ def get_running_process():
         return None
 
 
+def is_need_local_pw_file(password: str):
+    """判断密码是否需要使用临时密码文件"""
+    return has_special_chars_translate(password)
+
+
+def has_special_chars_translate(text: str):
+    """文本中是否存在特殊字符"""
+    # 定义特殊字符集合
+    special_chars = {'*', ':', '<', '>', '?', '\\', '/', '|', '&', ';', '(', ')', '^', '%'}
+    # 创建翻译表：保留特殊字符，删除所有其他字符（None 表示删除）
+    translator = str.maketrans('', '', ''.join(set(text) - special_chars))
+    # 移除非特殊字符后，若剩余字符串非空 → 存在特殊字符
+    return len(text.translate(translator)) > 0
+
+
 def create_cmd_pw_file(password: str):
-    """创建一个临时的密码文件，用于处理带"的密码（读取后自动删除）"""
-    # fixme 对于上级调用逻辑，在出现特殊字符" * : < > ? \ / | & ; ( ) ^ %时就进行调用，而不是单单"
+    """创建一个临时的密码文件，用于处理带特殊字符的密码"""
     with open(_CMD_PW_TEXT_FILE, 'w', encoding='utf-8') as f:
         f.write(password)
 
@@ -63,7 +77,7 @@ def process_7zip_l(_7zip_path: str, file: str, password: str, inside_path: str =
     :param inside_path: 单独测试的内部文件路径
     :return: 7zip结果类"""
     # 编写列表命令行
-    if '"' in password:  # 对带"的密码进行特殊处理
+    if is_need_local_pw_file(password):  # 对带特殊字符的密码进行特殊处理
         create_cmd_pw_file(password)  # 创建临时密码文件
         part_password = f'-y<{_CMD_PW_TEXT_FILE}'
     else:
@@ -99,7 +113,7 @@ def process_7zip_t(_7zip_path: str, file: str, password: str, inside_path: str =
     :param inside_path: 如果测试的文件是压缩文件，则可以尝试仅测试压缩文件内部的其中1个文件
     :return: 7zip结果类"""
     # 编写列表命令行
-    if '"' in password:  # 对带"的密码进行特殊处理
+    if is_need_local_pw_file(password):  # 对带特殊字符的密码进行特殊处理
         create_cmd_pw_file(password)  # 创建临时密码文件
         part_password = f'-y<{_CMD_PW_TEXT_FILE}'
     else:
@@ -142,7 +156,7 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
 
     # 编写列表命令行
     # 同时读取stdout和stderr会导致管道堵塞，所以需要将两个输出流重定向至同一个管道中（使用switch：'bso1','bsp1',bse1'）
-    if '"' in password:  # 对带"的密码进行特殊处理
+    if is_need_local_pw_file(password):  # 对带特殊字符的密码进行特殊处理
         create_cmd_pw_file(password)  # 创建临时密码文件
         part_password = f'-y<{_CMD_PW_TEXT_FILE}'
     else:
@@ -178,6 +192,7 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
     error_type: TYPES_RESULT_7ZIP = None
     is_read_stderr = True  # 是否读取stderr流，出现报错事件/读取到进度信息后不再需要读取
     is_read_progress = True  # 是否读取进度信息，出现报错事件后不再需要读取
+    is_fake_success = True
     while True:
         try:
             output = process.stdout.readline()

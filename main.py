@@ -12,7 +12,6 @@ from components import window
 # todo 程序出错时，将错误信息写入结果类中，并在历史页中显示错误信息（tooltip)
 # todo 不同编码压缩包解压时乱码问题
 # todo 报错提示方案优化，现在会卡ui并崩溃
-# todo BUG 密码带&或^可能会导致命令行错误
 
 paths_cmd = []  # 通过命令行或者程序直接打开的文件路径
 try:  # 提取路径
@@ -43,7 +42,7 @@ def load_app(paths: list = None):
     presenter = window.get_presenter()
     viewer = presenter.viewer
     model = presenter.model
-    presenter.set_default_app_title('OnlyUnzip v2.0.2')
+    presenter.set_default_app_title('OnlyUnzip v2.0.3')
     viewer.show()
     if paths:
         presenter.accept_paths_from_cmd(paths)
