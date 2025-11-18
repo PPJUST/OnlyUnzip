@@ -271,7 +271,7 @@ class ThreadExtract(TemplateThread):
     def extract_file(self, filepath: str, passwords: list):
         # 仅处理存在的文件
         if not os.path.exists(filepath):
-            return Result7zip.Skip()
+            return Result7zip.Skip(), None
 
         # 根据选项是否提取文件名中可能存在的密码
         if self.is_read_pw_from_filename:
