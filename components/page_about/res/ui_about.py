@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'aboutQhxmXS.ui'
+## Form generated from reading UI file 'aboutXVcmAu.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,62 +28,72 @@ class Ui_Form(object):
         self.label_2 = QLabel(Form)
         self.label_2.setObjectName(u"label_2")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_2)
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_2)
 
         self.label_version = QLabel(Form)
         self.label_version.setObjectName(u"label_version")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.label_version)
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_version)
 
         self.label = QLabel(Form)
         self.label.setObjectName(u"label")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label)
 
         self.label_date = QLabel(Form)
         self.label_date.setObjectName(u"label_date")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.label_date)
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label_date)
 
         self.label_5 = QLabel(Form)
         self.label_5.setObjectName(u"label_5")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_5)
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_5)
 
         self.label_project = QLabel(Form)
         self.label_project.setObjectName(u"label_project")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.label_project)
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label_project)
 
         self.label_7 = QLabel(Form)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_7)
+        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_7)
 
         self.label_download_link_1 = QLabel(Form)
         self.label_download_link_1.setObjectName(u"label_download_link_1")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.label_download_link_1)
+        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label_download_link_1)
 
         self.label_9 = QLabel(Form)
         self.label_9.setObjectName(u"label_9")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_9)
+        self.formLayout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_9)
 
         self.label_download_link_2 = QLabel(Form)
         self.label_download_link_2.setObjectName(u"label_download_link_2")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.label_download_link_2)
+        self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label_download_link_2)
 
         self.label_10 = QLabel(Form)
         self.label_10.setObjectName(u"label_10")
 
-        self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_10)
+        self.formLayout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_10)
 
         self.label_feedback = QLabel(Form)
         self.label_feedback.setObjectName(u"label_feedback")
 
-        self.formLayout.setWidget(5, QFormLayout.FieldRole, self.label_feedback)
+        self.formLayout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label_feedback)
+
+        self.label_3 = QLabel(Form)
+        self.label_3.setObjectName(u"label_3")
+
+        self.formLayout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_3)
+
+        self.label_other = QLabel(Form)
+        self.label_other.setObjectName(u"label_other")
+
+        self.formLayout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label_other)
 
 
         self.retranslateUi(Form)
@@ -105,5 +115,7 @@ class Ui_Form(object):
         self.label_download_link_2.setText(QCoreApplication.translate("Form", u"download link", None))
         self.label_10.setText(QCoreApplication.translate("Form", u"\u95ee\u9898\u53cd\u9988\uff1a", None))
         self.label_feedback.setText(QCoreApplication.translate("Form", u"feedback", None))
+        self.label_3.setText(QCoreApplication.translate("Form", u"\u5176\u4ed6\u8bf4\u660e\uff1a", None))
+        self.label_other.setText("")
     # retranslateUi
 

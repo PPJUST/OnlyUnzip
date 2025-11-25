@@ -2,16 +2,18 @@
 import os.path
 from typing import Tuple
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QAction
 from PySide6.QtWidgets import QApplication, QWidget, QListWidget, QListWidgetItem, QMenu
 
+from common.class_7zip import RESULT_STATES
 from common.class_file_info import FileInfo
 from components.page_history.res.ui_page_history import Ui_Form
 
 
 class HistoryViewer(QWidget):
     """历史模块的界面组件"""
+    HistoryFilter = Signal(str, str, name='历史记录筛选器')
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -24,6 +26,11 @@ class HistoryViewer(QWidget):
         self.ui.listWidget_records.setWordWrap(True)
         self.ui.listWidget_records.customContextMenuRequested.connect(self._context_menu)  # 右键菜单
         self.ui.listWidget_records.setSpacing(3)
+        self.ui.comboBox_result_state.addItems(RESULT_STATES)
+        self.ui.lineEdit_search.setPlaceholderText('搜索文本')
+
+        # 绑定信号
+        self.ui.toolButton_filter.clicked.connect(self.emit_signal)
 
     def add_record(self, record_text: str, color: Tuple[int, int, int], password: str = None,
                    file_info: FileInfo = None):
@@ -42,6 +49,45 @@ class HistoryViewer(QWidget):
 
         self.ui.listWidget_records.addItem(item)
         self.ui.listWidget_records.scrollToBottom()  # 滚动到底部
+
+    def filter_history(self, result_class: list, search_text: str):
+        """筛选历史记录
+        :param result_class: 需要筛选的结果类
+        :param search_text: 需要搜索的文本"""
+        # 遍历添加的记录项，显示或者删除符合的行项目
+        for i in range(self.ui.listWidget_records.count()):
+            item = self.ui.listWidget_records.item(i)
+            file_info: FileInfo = item.data(Qt.UserRole + 1)
+            result_7zip = file_info.get_7zip_result()
+
+            if result_7zip:
+                for class_ in result_class:
+                    if isinstance(result_7zip, class_):
+                        item.setHidden(False)
+                        break
+                    else:
+                        item.setHidden(True)
+
+            if search_text:
+                if item.isHidden():
+                    pass
+                else:
+                    if search_text in item.text():
+                        item.setHidden(False)
+                    else:
+                        item.setHidden(True)
+
+    def show_all_history(self):
+        """显示所有历史记录"""
+        for i in range(self.ui.listWidget_records.count()):
+            item = self.ui.listWidget_records.item(i)
+            item.setHidden(False)
+
+    def emit_signal(self):
+        """发生筛选信号"""
+        filter_result_state = self.ui.comboBox_result_state.currentText()
+        filter_search_text = self.ui.lineEdit_search.text()
+        self.HistoryFilter.emit(filter_result_state, filter_search_text)
 
     def _context_menu(self, pos):
         """右键菜单"""

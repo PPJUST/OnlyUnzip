@@ -116,6 +116,7 @@ class Result7zip:
         return_text = '成功'  # success
         _7zip_return = 'No error'
         color = [0, 0, 0]
+        result_state = '成功'
 
         def __init__(self, password: str = None):
             if not password or password == _FAKE_PASSWORD:
@@ -128,6 +129,7 @@ class Result7zip:
         return_text = '跳过'  # skip
         _7zip_return = 'Skip'
         color = [255, 215, 0]
+        result_state = '跳过'
 
     class Warning:
         """非致命错误"""
@@ -135,6 +137,7 @@ class Result7zip:
         return_text = '文件被占用'  # file occupied一般情况下是文件被占用
         _7zip_return = 'Warning (Non fatal error(s)).'
         color = [128, 0, 0]
+        result_state = '失败'
 
     class WrongPassword:
         """密码错误"""
@@ -142,6 +145,7 @@ class Result7zip:
         return_text = '未找到密码'  # wrong password
         _7zip_return = 'Fatal error'
         color = [178, 34, 34]
+        result_state = '失败'
 
     class MissingVolume:
         """缺失分卷包"""
@@ -149,6 +153,7 @@ class Result7zip:
         return_text = '缺失分卷'  # missing volume
         _7zip_return = 'Fatal error'
         color = [205, 92, 92]
+        result_state = '失败'
 
     class WrongFiletype:
         """错误的文件类型（不是压缩文件）"""
@@ -156,6 +161,7 @@ class Result7zip:
         return_text = '错误的文件类型'  # wrong filetype
         _7zip_return = 'Fatal error'
         color = [255, 99, 71]
+        result_state = '失败'
 
     class UnknownError:
         """未知错误"""
@@ -163,6 +169,7 @@ class Result7zip:
         return_text = '未知错误'  # unknown error
         _7zip_return = 'Fatal error'
         color = [220, 20, 60]
+        result_state = '失败'
 
         def __init__(self, error_text: str):
             self.error_text = error_text
@@ -173,6 +180,7 @@ class Result7zip:
         return_text = '错误的命令行'  # command line error
         _7zip_return = 'Command line error'
         color = [240, 128, 128]
+        result_state = '失败'
 
     class NotEnoughMemory:
         """没有足够的硬盘空间"""
@@ -180,6 +188,7 @@ class Result7zip:
         return_text = '磁盘空间不足'  # Not enough memory
         _7zip_return = 'Not enough memory for operation'
         color = [250, 128, 114]
+        result_state = '失败'
 
     class UserStopped:
         """用户主动停止"""
@@ -187,6 +196,7 @@ class Result7zip:
         return_text = '用户终止操作'  # user stopped
         _7zip_return = 'User stopped the process_7zip'
         color = [255, 160, 122]
+        result_state = '失败'
 
 
 class Position:
@@ -202,12 +212,32 @@ class Position:
 
 
 TYPES_MODEL_ARCHIVE = Union[ModelArchive.Extract, ModelArchive.Test]
+
 TYPES_MODEL_EXTRACT = Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct]
-TYPES_MODEL_COVER_FILE = Union[
-    ModelCoverFile.Skip, ModelCoverFile.Overwrite, ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]
+
+TYPES_MODEL_COVER_FILE = Union[ModelCoverFile.Skip, ModelCoverFile.Overwrite,
+ModelCoverFile.RenameNew, ModelCoverFile.RenameOld]
+
 TYPES_MODEL_BREAK_FOLDER = Union[ModelBreakFolder.MoveBottom, ModelBreakFolder.MoveToTop, ModelBreakFolder.MoveFiles]
+
 TYPES_ARCHIVE_ROLE = Union[ArchiveRole.Normal, ArchiveRole.VolumeFirst, ArchiveRole.VolumeMember]
+
 TYPES_MODEL_7ZIP = Union[Model7zip.L, Model7zip.T, Model7zip.X]
-TYPES_RESULT_7ZIP = Union[
-    Result7zip.Success, Result7zip.Skip, Result7zip.Warning, Result7zip.WrongPassword, Result7zip.MissingVolume, Result7zip.WrongFiletype, Result7zip.UnknownError, Result7zip.ErrorCommand, Result7zip.NotEnoughMemory, Result7zip.UserStopped]
+
+TYPES_RESULT_7ZIP = Union[Result7zip.Success, Result7zip.Skip,
+Result7zip.Warning, Result7zip.WrongPassword,
+Result7zip.MissingVolume, Result7zip.WrongFiletype,
+Result7zip.UnknownError, Result7zip.ErrorCommand,
+Result7zip.NotEnoughMemory, Result7zip.UserStopped]
+
 TYPES_POSITION = Union[Position.Left, Position.Right]
+
+CLASS_RESULT_7ZIP = [Result7zip.Success, Result7zip.Skip,
+                     Result7zip.Warning, Result7zip.WrongPassword,
+                     Result7zip.MissingVolume, Result7zip.WrongFiletype,
+                     Result7zip.UnknownError, Result7zip.ErrorCommand,
+                     Result7zip.NotEnoughMemory, Result7zip.UserStopped]
+
+RESULT_STATE_ALL = '全部'
+RESULT_STATES = [RESULT_STATE_ALL, Result7zip.Success.result_state, Result7zip.Warning.result_state,
+                 Result7zip.Skip.result_state]
