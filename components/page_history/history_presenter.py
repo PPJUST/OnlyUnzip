@@ -5,7 +5,7 @@ from components.page_history.history_model import HistoryModel
 from components.page_history.history_viewer import HistoryViewer
 
 
-# todo 历史记录优化，写入log+添加筛选功能+删除功能+搜索功能（搜索功能需要支持文件名、父目录）
+# todo 历史记录优化，写入log
 
 class HistoryPresenter:
     """历史模块的桥梁组件"""
