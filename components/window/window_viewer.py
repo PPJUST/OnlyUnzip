@@ -12,7 +12,7 @@ _DEFAULT_BUTTON_STYLE = ''  # 默认的按钮样式
 _HIGHLIGHT_BUTTON_STYLE = r'background-color: rgb(255, 228, 181);'  # 高亮的按钮样式
 
 
-# todo 标题栏左边放一个置顶按钮（如果qt不能原生实现，那就取消标题栏，在qt里面手动做一个自定义标题栏）
+# 　todo 首页左上角添加一个按钮，点击后拉伸出常用按钮选项，用于快速修改设置（暂定为解压/测试模式，处理未知格式文件，窗口置顶）
 
 class WindowViewer(QMainWindow):
     """主窗口的界面组件"""

@@ -29,11 +29,11 @@ class AboutViewer(QWidget):
         self.ui.label_project.setText('<a href="https://github.com/PPJUST/OnlyUnzip">Github</a>')
         # 下载地址
         self.ui.label_download_link_1.setText('<a href="https://github.com/PPJUST/OnlyUnzip/releases">Github</a>')
-        self.ui.label_download_link_2.setText('<a href="https://wwvb.lanzout.com/b01fna1qh">蓝奏云\n密码1234</a>')
+        self.ui.label_download_link_2.setText('<a href="https://wwvb.lanzout.com/b01fna1qh">蓝奏云 密码1234</a>')
         # 反馈地址
         self.ui.label_feedback.setText('<a href="https://wj.qq.com/s2/23570318/20f3/">点击直达</a>')
         # 其他说明
-        self.ui.label_other.setText('有问题建议在Github上反馈')
+        self.ui.label_other.setText('<a>有问题推荐在<br>Github反馈</a>')
 
 
 if __name__ == "__main__":
