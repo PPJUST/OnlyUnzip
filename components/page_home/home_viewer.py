@@ -48,7 +48,8 @@ class HomeViewer(QWidget):
 
         # 绑定信号
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
-        self.label_icon.ButtonClicked.connect(self.OpenTempPassword.emit)
+        self.label_icon.OpenTempPasswords.connect(self.OpenTempPassword.emit)
+
     def banned_drop(self):
         """禁用拖入"""
         self.is_banned_drop = True
