@@ -105,7 +105,7 @@ class LabelIconWithFloatButton(LabelIcon):
         """设置悬浮按钮是否可用"""
         self.float_button_expand.setEnabled(is_enable)
         if not is_enable:
-            self.float_button_expand.hide()
+            self.hide_buttons()
 
     def _expand_buttons(self):
         """展开或收缩按钮"""
