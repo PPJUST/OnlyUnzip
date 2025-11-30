@@ -89,6 +89,8 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode1_test.setChecked(False)
         # 隐藏/显示相应的设置项
         self._show_settings_extract()
+        # 手动发送一次信号
+        self.ChangeArchiveModelExtract.emit(True)
 
     def set_setting_model_test(self):
         """设置压缩包处理模式：测试模式"""
@@ -96,6 +98,8 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode1_test.setChecked(True)
         # 隐藏/显示相应的设置项
         self._show_settings_test()
+        # 手动发送一次信号
+        self.ChangeArchiveModelTest.emit(True)
 
     def _show_settings_extract(self):
         """显示解压模式的设置项，隐藏测试模式的设置项"""
@@ -291,6 +295,7 @@ class SettingViewer(QWidget):
         elif obj == self.ui.comboBox_pw_position and event.type() == QEvent.Wheel:
             return True
         return super().eventFilter(obj, event)
+
 
 if __name__ == "__main__":
     app_ = QApplication()

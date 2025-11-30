@@ -64,10 +64,17 @@ class WindowPresenter:
         self.page_home.UserStop.connect(self.finished_by_user_stop)
         self.page_home.OpenAbout.connect(self.open_about)
         self.page_home.OpenTempPassword.connect(self.open_temp_password)
+        self.page_home.AskUpdateSetting.connect(self.set_home_setting)
+        self.page_home.ChangeSettingArchiveModel.connect(self.page_setting.change_archive_model)
+        self.page_home.ChangeSettingTryUnknownFiletype.connect(self.page_setting.change_unknown_filetype)
+        self.page_home.ChangeSettingRecursiveExtract.connect(self.page_setting.change_recursive_extract)
+        self.page_home.ChangeSettingDeleteOrigin.connect(self.page_setting.change_delete_file)
+        self.page_home.ChangeSettingTopWindow.connect(self.page_setting.change_top_window)
         self.page_password.OpenPasswordManager.connect(self.open_password_manager)
         self.page_password_manager.SignalDeleted.connect(self.deleted_passwords)
         self.dialog_temp_password.WriteTODB.connect(self.write_temp_pws_to_db)
         self._bind_model_signal()
+        self.viewer.PageChanged.connect(self._page_changed)
 
     def accept_paths_from_cmd(self, paths: list):
         """接收命令行参数"""
@@ -151,6 +158,20 @@ class WindowPresenter:
 
     def open_temp_password(self):
         self.dialog_temp_password.exec()
+
+    def set_home_setting(self):
+        """设置主页悬浮按钮所需的选项参数"""
+        archive_model = self.page_setting.model.get_model_archive()
+        try_unknown_filetype = self.page_setting.model.get_try_unknown_filetype_is_enable()
+        delete_file = self.page_setting.model.get_delete_file_is_enable()
+        recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
+        top_window = self.page_setting.model.get_top_window_is_enable()
+
+        self.page_home.update_setting(archive_model=archive_model,
+                                      try_unknown_filetype=try_unknown_filetype,
+                                      recursive_extract=recursive_extract,
+                                      delete_origin=delete_file,
+                                      top_window=top_window)
 
     def write_temp_pws_to_db(self):
         """将临时密码写入密码本"""
@@ -317,6 +338,10 @@ class WindowPresenter:
         self.page_password.reload()
         self.page_password.show_pw_count_info()
         self.open_password_manager()
+
+    def _page_changed(self):
+        """切换页面后的操作"""
+        self.page_home.hide_float_button()
 
     def _bind_model_signal(self):
         """绑定模型信号，链接到其他组件"""

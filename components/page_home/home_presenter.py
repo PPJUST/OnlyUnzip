@@ -6,7 +6,7 @@ from typing import Union
 from PySide6.QtCore import Signal, QObject
 
 from common import function_setting, function_extract
-from common.class_7zip import ModelArchive
+from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE
 from common.class_file_info import FileInfoList
 from common.thread_filetype_archive import ThreadFiletypeArchive
 from components.page_home.home_model import HomeModel
@@ -22,6 +22,12 @@ class HomePresenter(QObject):
     SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
     OpenAbout = Signal(name="打开关于页")
     OpenTempPassword = Signal(name="打开临时密码页")
+    AskUpdateSetting = Signal(name="请求更新选项参数")
+    ChangeSettingArchiveModel = Signal(object, name="设置模式选项")
+    ChangeSettingTryUnknownFiletype = Signal(bool, name="设置处理未知格式文件选项")
+    ChangeSettingRecursiveExtract = Signal(bool, name="设置递归解压选项")
+    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除原文件选项")
+    ChangeSettingTopWindow = Signal(bool, name="设置置顶选项")
 
     def __init__(self, viewer: HomeViewer, model: HomeModel):
         super().__init__()
@@ -46,6 +52,12 @@ class HomePresenter(QObject):
         self.viewer.DropFiles.connect(self.drop_paths)
         self.viewer.OpenAbout.connect(self.OpenAbout.emit)
         self.viewer.OpenTempPassword.connect(self.OpenTempPassword.emit)
+        self.viewer.AskUpdateSetting.connect(self.AskUpdateSetting.emit)
+        self.viewer.ChangeSettingArchiveModel.connect(self.ChangeSettingArchiveModel.emit)
+        self.viewer.ChangeSettingTryUnknownFiletype.connect(self.ChangeSettingTryUnknownFiletype.emit)
+        self.viewer.ChangeSettingRecursiveExtract.connect(self.ChangeSettingRecursiveExtract.emit)
+        self.viewer.ChangeSettingDeleteOrigin.connect(self.ChangeSettingDeleteOrigin.emit)
+        self.viewer.ChangeSettingTopWindow.connect(self.ChangeSettingTopWindow.emit)
         self.model.RuntimeTotal.connect(self.set_runtime_total)
         self.model.RuntimeCurrent.connect(self.set_runtime_current)
 
@@ -114,10 +126,32 @@ class HomePresenter(QObject):
     def banned_drop(self):
         """禁止拖入文件"""
         self.viewer.banned_drop()
+        self.set_float_button_enable(False)  # 主页悬浮按钮的控制跟随是否允许拖入
 
     def allowed_drop(self):
         """允许拖入文件"""
         self.viewer.allowed_drop()
+        self.set_float_button_enable(True)  # 主页悬浮按钮的控制跟随是否允许拖入
+
+    def update_setting(self, archive_model: TYPES_MODEL_ARCHIVE,
+                       try_unknown_filetype: bool,
+                       recursive_extract: bool,
+                       delete_origin: bool,
+                       top_window: bool):
+        """更新选项参数"""
+        self.viewer.update_setting(archive_model=archive_model,
+                                   try_unknown_filetype=try_unknown_filetype,
+                                   recursive_extract=recursive_extract,
+                                   delete_origin=delete_origin,
+                                   top_window=top_window)
+
+    def hide_float_button(self):
+        """隐藏主页左上角的悬浮按钮"""
+        self.viewer.hide_float_button()
+
+    def set_float_button_enable(self, is_enable: bool):
+        """设置悬浮按钮是否可用"""
+        self.viewer.set_float_button_enable(is_enable)
 
     """主页"""
 

@@ -1,4 +1,5 @@
 # 主窗口的界面组件
+from PySide6.QtCore import Signal
 from PySide6.QtGui import Qt, QFont
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
 from lzytools._qt_pyside6 import base64_to_pixmap
@@ -16,6 +17,7 @@ _HIGHLIGHT_BUTTON_STYLE = r'background-color: rgb(255, 228, 181);'  # 高亮的�
 
 class WindowViewer(QMainWindow):
     """主窗口的界面组件"""
+    PageChanged = Signal(object, name='已切换页面')
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -24,6 +26,7 @@ class WindowViewer(QMainWindow):
 
         # 初始化
         self.resize(330, 330)
+        self.ui.pushButton_about.setVisible(False)
         # 屏蔽最大化功能
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, False)
         # 设置按钮索引
@@ -44,8 +47,7 @@ class WindowViewer(QMainWindow):
         self.ui.pushButton_about.setIcon(base64_to_pixmap(ICON_ABOUT))
         # 绑定信号
         self.ui.buttonGroup.buttonClicked.connect(self.change_page)
-
-        self.ui.pushButton_about.setVisible(False)
+        self.ui.stackedWidget.currentChanged.connect(self.PageChanged.emit)
 
     def add_page_home(self, widget: QWidget):
         """添加主页控件"""

@@ -22,9 +22,9 @@ class AboutViewer(QWidget):
 
     def set_info(self):
         # 版本号
-        self.ui.label_version.setText('v2.0.4')
+        self.ui.label_version.setText('v2.1.0')
         # 编译日期
-        self.ui.label_date.setText('2025.11.25')
+        self.ui.label_date.setText('2025.11.30')
         # 项目主页
         self.ui.label_project.setText('<a href="https://github.com/PPJUST/OnlyUnzip">Github</a>')
         # 下载地址

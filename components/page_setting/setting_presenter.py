@@ -2,7 +2,7 @@
 # 用于接收Viewer的信号，并在选项修改时通过Model修改本地配置文件，并通知Viewer更新
 from PySide6.QtCore import QObject, Signal
 
-from common.class_7zip import ModelArchive, ModelExtract
+from common.class_7zip import ModelArchive, ModelExtract, TYPES_MODEL_ARCHIVE
 from components.page_setting.setting_model import SettingModel
 from components.page_setting.setting_viewer import SettingViewer
 
@@ -50,6 +50,32 @@ class SettingPresenter(QObject):
     def unlock_setting(self):
         """解锁设置项，可以被修改"""
         self.viewer.unlock()
+
+    def change_archive_model(self, archive_model: TYPES_MODEL_ARCHIVE):
+        """手工修改压缩文件处理模式"""
+        print(archive_model)
+        if isinstance(archive_model, ModelArchive.Test):
+            self.viewer.set_setting_model_test()
+        elif isinstance(archive_model, ModelArchive.Extract):
+            self.viewer.set_setting_model_extract()
+        else:
+            raise Exception(archive_model, "错误的设置项")
+
+    def change_unknown_filetype(self, is_enable: bool):
+        """手工修改是否尝试处理未知格式的文件"""
+        self.viewer.set_setting_is_try_unknown_filetype(is_enable)
+
+    def change_recursive_extract(self, is_enable: bool):
+        """手工修改是否递归解压"""
+        self.viewer.set_setting_recursive_extract(is_enable)
+
+    def change_delete_file(self, is_enable: bool):
+        """手工修改是否删除文件"""
+        self.viewer.set_setting_delete_file(is_enable)
+
+    def change_top_window(self, is_enable: bool):
+        """手工修改是否置顶窗口"""
+        self.viewer.set_top_window(is_enable)
 
     def _bind_signal(self):
         """绑定Viewer信号"""

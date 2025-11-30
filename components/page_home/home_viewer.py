@@ -6,9 +6,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
 from lzytools._qt_pyside6 import base64_to_pixmap
 
+from common.class_7zip import TYPES_MODEL_ARCHIVE
 from common.function_7zip import FAKE_PASSWORD
 from components.page_home.res.icon_base64 import *
-from components.page_home.res.label_icon import LabelIcon
 from components.page_home.res.label_icon_with_float_button import LabelIconWithFloatButton
 from components.page_home.res.ui_page_home import Ui_Form
 
@@ -19,6 +19,12 @@ class HomeViewer(QWidget):
     DropFiles = Signal(list, name="拖入文件")
     OpenAbout = Signal(name="打开关于页")
     OpenTempPassword = Signal(name="打开临时密码页")
+    AskUpdateSetting = Signal(name="请求更新选项参数")
+    ChangeSettingArchiveModel = Signal(object, name="设置模式选项")
+    ChangeSettingTryUnknownFiletype = Signal(bool, name="设置处理未知格式文件选项")
+    ChangeSettingRecursiveExtract = Signal(bool, name="设置递归解压选项")
+    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除原文件选项")
+    ChangeSettingTopWindow = Signal(bool, name="设置置顶选项")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -49,6 +55,12 @@ class HomeViewer(QWidget):
         # 绑定信号
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
         self.label_icon.OpenTempPasswords.connect(self.OpenTempPassword.emit)
+        self.label_icon.AskUpdateSetting.connect(self.AskUpdateSetting.emit)
+        self.label_icon.ChangeSettingArchiveModel.connect(self.ChangeSettingArchiveModel.emit)
+        self.label_icon.ChangeSettingTryUnknownFiletype.connect(self.ChangeSettingTryUnknownFiletype.emit)
+        self.label_icon.ChangeSettingRecursiveExtract.connect(self.ChangeSettingRecursiveExtract.emit)
+        self.label_icon.ChangeSettingDeleteOrigin.connect(self.ChangeSettingDeleteOrigin.emit)
+        self.label_icon.ChangeSettingTopWindow.connect(self.ChangeSettingTopWindow.emit)
 
     def banned_drop(self):
         """禁用拖入"""
@@ -57,6 +69,26 @@ class HomeViewer(QWidget):
     def allowed_drop(self):
         """允许拖入"""
         self.is_banned_drop = False
+
+    def update_setting(self, archive_model: TYPES_MODEL_ARCHIVE,
+                       try_unknown_filetype: bool,
+                       recursive_extract: bool,
+                       delete_origin: bool,
+                       top_window: bool):
+        """更新选项参数"""
+        self.label_icon.update_setting(archive_model=archive_model,
+                                       try_unknown_filetype=try_unknown_filetype,
+                                       recursive_extract=recursive_extract,
+                                       delete_origin=delete_origin,
+                                       top_window=top_window)
+
+    def hide_float_button(self):
+        """隐藏主页左上角的悬浮按钮"""
+        self.label_icon.hide_buttons()
+
+    def set_float_button_enable(self, is_enable: bool):
+        """设置悬浮按钮是否可用"""
+        self.label_icon.set_float_button_enable(is_enable)
 
     """欢迎页"""
 
