@@ -8,8 +8,8 @@ from components.page_home.res.label_icon import LabelIcon
 
 _BUTTON_HEIGHT = 20
 _BUTTON_WIDTH = 20
-_HIGHLIGHT_COLOR = "blue"
-_NORMAL_COLOR = "black"
+_HIGHLIGHT_STYLESHEET = "color: blue; font-weight: bold"
+_NORMAL_STYLESHEET = "color: black; font-weight: normal"
 
 
 class LabelIconWithFloatButton(LabelIcon):
@@ -24,13 +24,13 @@ class LabelIconWithFloatButton(LabelIcon):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 创建左下悬浮按钮，用于打开临时密码管理器
+        # 创建左上悬浮按钮，用于打开临时密码管理器
         self.float_button_temp_pws = QToolButton()
         self.float_button_temp_pws.setFixedSize(_BUTTON_WIDTH, _BUTTON_HEIGHT)
         self.float_button_temp_pws.setIcon(lzytools._qt_pyside6.base64_to_pixmap(ICON_TEMP_PASSWORD))
         self.float_button_temp_pws.setParent(self)
         self.float_button_temp_pws.clicked.connect(self.OpenTempPasswords.emit)
-        self.float_button_temp_pws.show()
+        self.float_button_temp_pws.hide()
 
         # 创建左上悬浮按钮，用于快速勾选选项
         # 用于展开和收缩的按钮
@@ -119,6 +119,7 @@ class LabelIconWithFloatButton(LabelIcon):
     def hide_buttons(self):
         """隐藏左上的悬浮按钮"""
         self.float_button_expand.setText('<')
+        self.float_button_temp_pws.hide()
         self.float_button_et.hide()
         self.float_button_du.hide()
         self.float_button_rc.hide()
@@ -127,6 +128,7 @@ class LabelIconWithFloatButton(LabelIcon):
 
     def _show_buttons(self):
         """显示更多悬浮按钮"""
+        self.float_button_temp_pws.show()
         self.float_button_et.show()
         self.float_button_du.show()
         self.float_button_rc.show()
@@ -161,8 +163,8 @@ class LabelIconWithFloatButton(LabelIcon):
 
     def _change_du_button_style(self):
         """修改处理未知格式文件按钮的样式"""
-        color = _HIGHLIGHT_COLOR if self.setting_is_enable_try_unknown_filetype else _NORMAL_COLOR
-        self.float_button_du.setStyleSheet(f'color: {color};')
+        stylesheet = _HIGHLIGHT_STYLESHEET if self.setting_is_enable_try_unknown_filetype else _NORMAL_STYLESHEET
+        self.float_button_du.setStyleSheet(stylesheet)
 
     def _click_rc_button(self):
         """点击递归解压按钮"""
@@ -175,8 +177,8 @@ class LabelIconWithFloatButton(LabelIcon):
 
     def _change_rc_button_style(self):
         """修改递归解压按钮的样式"""
-        color = _HIGHLIGHT_COLOR if self.setting_is_enable_recursive_extract else _NORMAL_COLOR
-        self.float_button_rc.setStyleSheet(f'color: {color};')
+        stylesheet = _HIGHLIGHT_STYLESHEET if self.setting_is_enable_recursive_extract else _NORMAL_STYLESHEET
+        self.float_button_rc.setStyleSheet(stylesheet)
 
     def _click_do_button(self):
         """点击删除原文件按钮"""
@@ -189,8 +191,8 @@ class LabelIconWithFloatButton(LabelIcon):
 
     def _change_do_button_style(self):
         """修改删除原文件按钮的样式"""
-        color = _HIGHLIGHT_COLOR if self.setting_is_enable_delete_origin else _NORMAL_COLOR
-        self.float_button_do.setStyleSheet(f'color: {color};')
+        stylesheet = _HIGHLIGHT_STYLESHEET if self.setting_is_enable_delete_origin else _NORMAL_STYLESHEET
+        self.float_button_do.setStyleSheet(stylesheet)
 
     def _click_tp_button(self):
         """点击置顶窗口按钮"""
@@ -203,21 +205,11 @@ class LabelIconWithFloatButton(LabelIcon):
 
     def _change_tp_button_style(self):
         """修改置顶窗口按钮的样式"""
-        color = _HIGHLIGHT_COLOR if self.setting_is_enable_top_window else _NORMAL_COLOR
-        self.float_button_tp.setStyleSheet(f'color: {color};')
+        stylesheet = _HIGHLIGHT_STYLESHEET if self.setting_is_enable_top_window else _NORMAL_STYLESHEET
+        self.float_button_tp.setStyleSheet(stylesheet)
 
     def _adjust_button_position(self):
         """调整悬浮按钮的位置"""
-        # 获取窗口大小
-        widget_height = self.height()
-
-        # 设置左下按钮位置
-        margin_left = 5
-        margin_bottom = 10
-        x = margin_left
-        y = widget_height - _BUTTON_HEIGHT - margin_bottom
-        self.float_button_temp_pws.move(x, y)
-
         # 设置左上按钮位置
         spacing = 5
         margin_left = 5
@@ -225,14 +217,22 @@ class LabelIconWithFloatButton(LabelIcon):
         y = margin_top
         x_expand = margin_left
         self.float_button_expand.move(x_expand, y)
-        x_et = x_expand + _BUTTON_WIDTH + spacing
+
+        x_temp = x_expand + _BUTTON_WIDTH + spacing
+        self.float_button_temp_pws.move(x_temp, y)
+
+        x_et = x_temp + _BUTTON_WIDTH + spacing
         self.float_button_et.move(x_et, y)
+
         x_du = x_et + _BUTTON_WIDTH + spacing
         self.float_button_du.move(x_du, y)
+
         x_rc = x_du + _BUTTON_WIDTH + spacing
         self.float_button_rc.move(x_rc, y)
+
         x_do = x_rc + _BUTTON_WIDTH + spacing
         self.float_button_do.move(x_do, y)
+
         x_tp = x_do + _BUTTON_WIDTH + spacing
         self.float_button_tp.move(x_tp, y)
 
