@@ -1,10 +1,9 @@
 # 主页模块的界面组件
 from typing import Union
 
-import lzytools._qt_pyside6
+import lzytools_Qt
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
-from lzytools._qt_pyside6 import base64_to_pixmap
 
 from common.class_7zip import TYPES_MODEL_ARCHIVE
 from common.function_7zip import FAKE_PASSWORD
@@ -45,11 +44,11 @@ class HomeViewer(QWidget):
         # 添加自定义Label
         self.label_icon = LabelIconWithFloatButton(self)
         self.ui.verticalLayout_label_drop.addWidget(self.label_icon)
-        self.label_current_file = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
+        self.label_current_file = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
         self.ui.layout_current_file.addWidget(self.label_current_file)
-        self.label_current_password = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
+        self.label_current_password = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
         self.ui.layout_current_password.addWidget(self.label_current_password)
-        self.label_right_password = lzytools._qt_pyside6.TabelWidgetHiddenOverLengthText(self)
+        self.label_right_password = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
         self.ui.layout_right_password.addWidget(self.label_right_password)
 
         # 绑定信号
@@ -112,7 +111,7 @@ class HomeViewer(QWidget):
 
     def _set_stop_icon(self):
         """设置停止按钮的图标"""
-        self.ui.toolButton_stop.setIcon(base64_to_pixmap(ICON_STOP))
+        self.ui.toolButton_stop.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_STOP))
 
     """测试和解压页"""
 

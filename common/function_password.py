@@ -4,8 +4,7 @@ import pickle
 import shutil
 import time
 
-import lzytools.common
-import lzytools.file
+import lzytools
 
 BACKUP_PATH = 'backup'
 
@@ -191,7 +190,7 @@ def backup_file(file_path: str):
     check_backup_file_exists()
     filename = os.path.basename(file_path)
     filetitle, extension = os.path.splitext(filename)
-    part_time = lzytools.common.get_current_time('%Y-%m-%d_%H.%M.%S')
+    part_time = lzytools.time.get_current_time('%Y-%m-%d_%H.%M.%S')
     new_filename = filetitle + '_' + part_time + extension
     new_path = os.path.join(BACKUP_PATH, new_filename)
     shutil.copy2(file_path, new_path)

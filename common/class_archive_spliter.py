@@ -2,7 +2,7 @@
 import os
 from typing import Tuple, Dict
 
-import lzytools.archive
+import lzytools_archive
 
 from common.class_7zip import ArchiveRole, TYPES_ARCHIVE_ROLE
 
@@ -66,7 +66,7 @@ class ArchiveSpliter:
         volume_archives = []
         normal_archives = []
         for file in files:
-            if lzytools.archive.is_volume_archive_by_filename(os.path.basename(file)):
+            if lzytools_archive.is_volume_archive_by_filename(os.path.basename(file)):
                 volume_archives.append(file)
             else:
                 normal_archives.append(file)
@@ -82,7 +82,7 @@ class ArchiveSpliter:
         # 合并同一组分卷
         for file in volume_archives:
             # 生成对应的虚拟的首个压缩卷路径，并作为匹配的key
-            virtual_first_volume_filename = lzytools.archive.guess_first_volume_archive_filename(file)
+            virtual_first_volume_filename = lzytools_archive.guess_first_volume_archive_filename(file)
             virtual_first_volume_path = os.path.normpath(
                 os.path.join(os.path.dirname(file), virtual_first_volume_filename))
             if virtual_first_volume_path not in first_volumes:
@@ -95,7 +95,7 @@ class ArchiveSpliter:
         for dirpath in parent_dirpaths:
             listdir = [os.path.normpath(os.path.join(dirpath, i)) for i in os.listdir(dirpath)]
             for path in listdir:
-                virtual_first_volume_filename = lzytools.archive.guess_first_volume_archive_filename(path)
+                virtual_first_volume_filename = lzytools_archive.guess_first_volume_archive_filename(path)
                 if virtual_first_volume_filename:
                     virtual_first_volume_path = os.path.normpath(os.path.join(dirpath, virtual_first_volume_filename))
                     if virtual_first_volume_path in first_volumes and path not in members[virtual_first_volume_path]:

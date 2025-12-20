@@ -1,7 +1,7 @@
 import os
 from typing import Union, Tuple
 
-import lzytools.file
+import lzytools
 import natsort
 
 TEMP_EXTRACT_FOLDER = 'UnzipTempFolder'  # 临时解压文件夹名称

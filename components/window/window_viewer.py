@@ -1,8 +1,8 @@
 # 主窗口的界面组件
+import lzytools_Qt
 from PySide6.QtCore import Signal
 from PySide6.QtGui import Qt, QFont
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
-from lzytools._qt_pyside6 import base64_to_pixmap
 
 from components.window.res.icon_base64 import ICON_HOMEPAGE, ICON_PASSWORD, ICON_SETTING, ICON_HISTORY, \
     ICON_PIXEL_128X128, ICON_ABOUT
@@ -37,12 +37,12 @@ class WindowViewer(QMainWindow):
         # 设置按钮尺寸
         self._set_button_size()
         # 设置图标
-        self.setWindowIcon(base64_to_pixmap(ICON_PIXEL_128X128))
-        self.ui.pushButton_home.setIcon(base64_to_pixmap(ICON_HOMEPAGE))
-        self.ui.pushButton_password.setIcon(base64_to_pixmap(ICON_PASSWORD))
-        self.ui.pushButton_setting.setIcon(base64_to_pixmap(ICON_SETTING))
-        self.ui.pushButton_history.setIcon(base64_to_pixmap(ICON_HISTORY))
-        self.ui.pushButton_about.setIcon(base64_to_pixmap(ICON_ABOUT))
+        self.setWindowIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_PIXEL_128X128))
+        self.ui.pushButton_home.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_HOMEPAGE))
+        self.ui.pushButton_password.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_PASSWORD))
+        self.ui.pushButton_setting.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_SETTING))
+        self.ui.pushButton_history.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_HISTORY))
+        self.ui.pushButton_about.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_ABOUT))
         # 绑定信号
         self.ui.buttonGroup.buttonClicked.connect(self.change_page)
         self.ui.stackedWidget.currentChanged.connect(self.PageChanged.emit)

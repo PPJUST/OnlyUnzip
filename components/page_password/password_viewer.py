@@ -1,9 +1,8 @@
 # 密码模块的界面组件
 # 仅用于显示，不执行具体方法
-
+import lzytools_Qt
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QApplication, QWidget
-from lzytools._qt_pyside6._function import base64_to_pixmap
 
 from components.page_password.res.icon_base64 import ICON_ERASER
 from components.page_password.res.ui_page_password import Ui_Form
@@ -59,7 +58,7 @@ class PasswordViewer(QWidget):
 
     def _load_icon(self):
         """加载图标"""
-        self.ui.toolButton_clear.setIcon(base64_to_pixmap(ICON_ERASER))
+        self.ui.toolButton_clear.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_ERASER))
 
     def drop_event(self, event):
         if event.mimeData().hasUrls():

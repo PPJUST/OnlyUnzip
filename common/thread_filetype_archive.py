@@ -1,7 +1,7 @@
 # 检查文件类型是否是压缩文件的子线程
 import os
 
-import lzytools.archive
+import lzytools_archive
 from PySide6.QtCore import QThread, Signal
 
 
@@ -20,9 +20,9 @@ class ThreadFiletypeArchive(QThread):
         archive_files = []
         for file in self.files:
             if not is_exclude_file_extension(file):
-                if lzytools.archive.is_archive_by_filename(os.path.basename(file)):
+                if lzytools_archive.is_archive_by_filename(os.path.basename(file)):
                     archive_files.append(file)
-                elif lzytools.archive.is_archive(file):
+                elif lzytools_archive.is_archive(file):
                     archive_files.append(file)
 
         self.files.clear()

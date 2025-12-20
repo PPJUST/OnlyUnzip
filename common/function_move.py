@@ -1,8 +1,8 @@
 import os
 import shutil
 
-import lzytools.archive
-import lzytools.file
+import lzytools
+import lzytools_archive
 
 from common import function_file
 
@@ -53,7 +53,7 @@ def move_to_same_dirname(dirpath: str, target_dirpath, dirname_=None):
 
     if not dirname_:  # 不指定文件夹名称时，读取文件夹的名称
         ft_ = os.path.basename(dirpath)
-        dirname_ = lzytools.archive.get_filetitle(ft_)
+        dirname_ = lzytools_archive.get_filetitle(ft_)
     else:
         dirname_ = dirname_[:]  # 复制，防止修改源对象
 

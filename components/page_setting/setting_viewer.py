@@ -2,9 +2,9 @@
 # 仅用于显示，不执行具体方法
 import os
 
+import lzytools_Qt
 from PySide6.QtCore import Signal, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog
-from lzytools._qt_pyside6._function import base64_to_pixmap
 
 from components.page_setting.res.icon_base64 import ICON_CHOOSE, ICON_OPEN
 from components.page_setting.res.ui_page_setting import Ui_Form
@@ -70,8 +70,8 @@ class SettingViewer(QWidget):
             os.startfile(dirpath)
 
     def _set_icon(self):
-        self.ui.toolButton_choose.setIcon(base64_to_pixmap(ICON_CHOOSE))
-        self.ui.toolButton_open.setIcon(base64_to_pixmap(ICON_OPEN))
+        self.ui.toolButton_choose.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_CHOOSE))
+        self.ui.toolButton_open.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_OPEN))
 
     def _set_enable(self, is_enable: bool):
         self.ui.radioButton_mode1_test.setEnabled(is_enable)

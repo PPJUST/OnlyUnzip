@@ -1,8 +1,8 @@
 import os
 import time
 
-import lzytools.archive
-import lzytools.file
+import lzytools
+import lzytools_archive
 from PySide6.QtCore import QThread, Signal
 
 from common import function_7zip, function_move, function_file, function_filename
@@ -133,7 +133,7 @@ class ThreadTest(TemplateThread):
 
         # 根据选项是否提取文件名中可能存在的密码
         if self.is_read_pw_from_filename:
-            _filetitle = lzytools.archive.get_filetitle(os.path.basename(filepath))
+            _filetitle = lzytools_archive.get_filetitle(os.path.basename(filepath))
             pws_filename = function_filename.read_password_from_filename(_filetitle)
             for _pw in pws_filename:
                 if _pw and _pw not in passwords:
@@ -180,7 +180,10 @@ class ThreadTest(TemplateThread):
             final_result = fake_result
 
         # 返回最终结果
-        return final_result
+        try:
+            return final_result
+        except:
+            return fake_result
 
     def _write_to_filename(self, file_info: FileInfo, password: str):
         """将密码写入文件名"""
@@ -206,7 +209,7 @@ class ThreadTest(TemplateThread):
         # 执行重命名
         for file in files_need_to_change:
             filename = os.path.basename(file)
-            filetitle = lzytools.archive.get_filetitle(filename)
+            filetitle = lzytools_archive.get_filetitle(filename)
             extension = filename.replace(filetitle, '', 1)
             # 组合新的文件名
             if isinstance(position, Position.Left):
@@ -275,7 +278,7 @@ class ThreadExtract(TemplateThread):
 
         # 根据选项是否提取文件名中可能存在的密码
         if self.is_read_pw_from_filename:
-            _filetitle = lzytools.archive.get_filetitle(os.path.basename(filepath))
+            _filetitle = lzytools_archive.get_filetitle(os.path.basename(filepath))
             pws_filename = function_filename.read_password_from_filename(_filetitle)
             for _pw in pws_filename:
                 if _pw not in passwords:
@@ -425,7 +428,7 @@ class ThreadExtract(TemplateThread):
                                                                      filter_rule=filter_rule)
 
         # 提取原文件的文件名（剔除压缩文件后缀格式）
-        filename_origin = lzytools.archive.get_filetitle(os.path.basename(file))
+        filename_origin = lzytools_archive.get_filetitle(os.path.basename(file))
 
         # 如果处理成功，则进行进一步处理
         if isinstance(result_7zip, Result7zip.Success):

@@ -1,4 +1,4 @@
-import lzytools._qt_pyside6
+import lzytools_Qt
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QApplication, QToolButton
 
@@ -27,7 +27,7 @@ class LabelIconWithFloatButton(LabelIcon):
         # 创建左上悬浮按钮，用于打开临时密码管理器
         self.float_button_temp_pws = QToolButton()
         self.float_button_temp_pws.setFixedSize(_BUTTON_WIDTH, _BUTTON_HEIGHT)
-        self.float_button_temp_pws.setIcon(lzytools._qt_pyside6.base64_to_pixmap(ICON_TEMP_PASSWORD))
+        self.float_button_temp_pws.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_TEMP_PASSWORD))
         self.float_button_temp_pws.setParent(self)
         self.float_button_temp_pws.clicked.connect(self.OpenTempPasswords.emit)
         self.float_button_temp_pws.hide()

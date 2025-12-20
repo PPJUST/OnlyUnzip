@@ -1,8 +1,7 @@
 # 主窗口的桥梁组件
 import os
 
-import lzytools.common
-import lzytools.file
+import lzytools
 
 from common import function_7zip, function_subprocess
 from common.class_7zip import ModelArchive

@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 
-import lzytools.common
+import lzytools
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QMessageBox
 

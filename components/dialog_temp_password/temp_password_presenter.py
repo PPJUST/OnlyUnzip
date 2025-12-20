@@ -1,5 +1,5 @@
 # 临时密码模块的桥梁组件
-import lzytools.common
+import lzytools
 from PySide6.QtCore import QObject, Signal
 
 from components.dialog_temp_password.temp_password_model import TempPasswordModel

@@ -1,8 +1,7 @@
 # 主页模块的模型组件
 import time
 
-import lzytools.common
-import lzytools.file
+import lzytools
 from PySide6.QtCore import QTimer, Signal, QObject
 
 from common.class_archive_spliter import ArchiveSpliter
@@ -56,9 +55,9 @@ class HomeModel(QObject):
         time_now = time.time()
 
         runtime_total = time_now - self._start_time_total
-        runtime_total_text = lzytools.common.convert_time_hms(runtime_total)
+        runtime_total_text = lzytools.time.convert_time_hms(runtime_total)
         self.RuntimeTotal.emit(runtime_total_text)
 
         runtime_current = time_now - self._start_time_current
-        runtime_current_text = lzytools.common.convert_time_hms(runtime_current)
+        runtime_current_text = lzytools.time.convert_time_hms(runtime_current)
         self.RuntimeCurrent.emit(runtime_current_text)
