@@ -20,6 +20,12 @@ class AboutViewer(QWidget):
 
         self.set_info()
 
+        # 屏蔽弃用文本
+        self.ui.label_3.setVisible(False)
+        self.ui.label_10.setVisible(False)
+        self.ui.label_feedback.setVisible(False)
+        self.ui.label_other.setVisible(False)
+
     def set_info(self):
         # 版本号
         self.ui.label_version.setText('v2.1.0')
