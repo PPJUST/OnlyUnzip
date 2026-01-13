@@ -97,11 +97,13 @@ def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str):
     except FileNotFoundError:
         # 2025.09.28 修复两端文件名存在空格时的bug
         # bug原因：os.mkdir()创建的文件夹名由于Windows的文件名修剪机制，不会包含两端空格
+        # 2026.01.13 修复文件名右端存在.的bug
+        # bug原因：os.mkdir()创建的文件夹名由于Windows的文件名修剪机制，不会包含右端的.
 
-        # 检查目标文件夹两端是否存在空格，并剔除后检查文件夹是否存在并且是否为空
-        filename_strip = os.path.basename(target_dirpath).strip()
-        filename_rstrip = os.path.basename(target_dirpath).rstrip()
-        filename_lstrip = os.path.basename(target_dirpath).lstrip()
+        # 检查目标文件夹两端是否存在空格以及右端是否存在点，并剔除后检查文件夹是否存在并且是否为空
+        filename_strip = os.path.basename(target_dirpath).strip().rstrip('.').strip()
+        filename_rstrip = os.path.basename(target_dirpath).rstrip().rstrip('.').rstrip()
+        filename_lstrip = os.path.basename(target_dirpath).lstrip().rstrip('.')
         parent_dirpath = os.path.dirname(target_dirpath)
         target_dirpath_strip = os.path.normpath(os.path.join(parent_dirpath, filename_strip))
         target_dirpath_rstrip = os.path.normpath(os.path.join(parent_dirpath, filename_rstrip))
