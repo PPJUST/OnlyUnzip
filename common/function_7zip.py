@@ -24,7 +24,15 @@ def get_running_process():
 
 def is_need_local_pw_file(password: str):
     """判断密码是否需要使用临时密码文件"""
-    return has_special_chars_translate(password)
+    # 如果存在特殊字符，则需要使用临时密码文件
+    is_special_char = has_special_chars_translate(password)
+    if is_special_char:
+        return True
+    # 如果字段内存在空格，则需要使用临时密码文件
+    if ' ' in password:
+        return True
+
+    return False
 
 
 def has_special_chars_translate(text: str):
