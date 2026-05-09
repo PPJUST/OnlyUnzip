@@ -5,7 +5,7 @@ from typing import Union
 
 from PySide6.QtCore import Signal, QObject
 
-from common import function_setting, function_extract
+from common import function_setting, function_extract, function_7zip
 from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE
 from common.class_file_info import FileInfoList
 from common.thread_filetype_archive import ThreadFiletypeArchive
@@ -20,6 +20,7 @@ class HomePresenter(QObject):
     FileInfo = Signal(FileInfoList, name='提取的文件信息类')
     SignalNoFiles = Signal(name='没有需要处理的文件')
     SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
+    SignalError7ZipPath = Signal(name='7zip路径错误')
     OpenAbout = Signal(name="打开关于页")
     OpenTempPassword = Signal(name="打开临时密码页")
     AskUpdateSetting = Signal(name="请求更新选项参数")
@@ -66,6 +67,12 @@ class HomePresenter(QObject):
         :param paths: 文件路径
         :param is_recursive: 是否是递归解压模式进行的文件操作"""
         print('接收文件列表，进行后续处理')
+        # 检查7zip路径
+        _7zip_path = function_7zip.get_7zip_path()
+        if not _7zip_path or not os.path.exists(_7zip_path):
+            self.SignalError7ZipPath.emit()
+            return
+
         # 启动模型组件的定时器
         if not is_recursive:
             self.model.start_timing()
@@ -267,6 +274,16 @@ class HomePresenter(QObject):
         if path:
             link_text = f'<a href="file:///{path}">点击打开对应临时文件夹</a>'
             info = info + '<br>' + link_text
+        self.set_step_notice(info)
+
+    def set_info_error_7zip_path(self):
+        """设置运行状态 终止（7zip路径错误）"""
+        # 修改图标
+        self.set_icon_warning()
+        # 停止计时器
+        self.model.stop_timing()
+        # 显示步骤信息
+        info = "7Zip路径错误，请检查自定义路径"
         self.set_step_notice(info)
 
     def set_info_finished(self, result_info: str, result_info_tip: str = ''):
