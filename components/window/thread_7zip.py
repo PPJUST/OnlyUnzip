@@ -5,11 +5,10 @@ import lzytools
 import lzytools_archive
 from PySide6.QtCore import QThread, Signal
 
-from common import function_7zip, function_move, function_file, function_filename
+from common import function_move, function_file, function_filename, function_7zip
 from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
-from common.function_7zip import _7ZIP_PATH, FAKE_PASSWORD
 
 
 class TemplateThread(QThread):
@@ -42,8 +41,8 @@ class TemplateThread(QThread):
         print('设置密码清单')
         self.passwords = passwords.copy()
 
-        if FAKE_PASSWORD not in self.passwords:
-            self.passwords.insert(0, FAKE_PASSWORD)
+        if function_7zip.FAKE_PASSWORD not in self.passwords:
+            self.passwords.insert(0, function_7zip.FAKE_PASSWORD)
 
     def set_is_read_pw_from_filename(self, is_enable: bool):
         """设置是否从文件名中读取密码"""
@@ -60,7 +59,8 @@ class TemplateThread(QThread):
                Result7zip类，测试出错，返回错误结果"""
         self.StepInfo.emit('压缩文件完整性测试...')
         print('虚拟密码测试')
-        test_result = function_7zip.process_7zip_l(_7ZIP_PATH, file, FAKE_PASSWORD)
+        _7ZIP_PATH = function_7zip.get_7zip_path()
+        test_result = function_7zip.process_7zip_l(_7ZIP_PATH, file, function_7zip.FAKE_PASSWORD)
         # 如果是Success，则不信任测试结果，后续不再使用l命令测试
         if isinstance(test_result, Result7zip.Success):
             return False
@@ -154,7 +154,9 @@ class ThreadTest(TemplateThread):
                     pass
                 self.SignalPwIndex.emit(index_pw)
                 self.SignalCurrentPw.emit(pw)
-                final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
+                _7ZIP_PATH = function_7zip.get_7zip_path()
+                final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw,
+                                                            smallest_file_path_inside)
                 # 如果测试结果是密码错误，则继续进行测试，否则直接中断
                 if isinstance(final_result, Result7zip.WrongPassword):
                     continue
@@ -169,7 +171,9 @@ class ThreadTest(TemplateThread):
                     pass
                 self.SignalPwIndex.emit(index_pw)
                 self.SignalCurrentPw.emit(pw)
-                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
+                _7ZIP_PATH = function_7zip.get_7zip_path()
+                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw,
+                                                            smallest_file_path_inside)
                 # 如果测试结果是密码错误，则继续进行测试，否则直接中断
                 if isinstance(final_result, Result7zip.WrongPassword):
                     continue
@@ -188,7 +192,7 @@ class ThreadTest(TemplateThread):
     def _write_to_filename(self, file_info: FileInfo, password: str):
         """将密码写入文件名"""
         # 如果密码为虚拟密码，则不进行写入
-        if password == FAKE_PASSWORD:
+        if password == function_7zip.FAKE_PASSWORD:
             return
         # 组合密码部分
         position = self.write_position
@@ -316,7 +320,9 @@ class ThreadExtract(TemplateThread):
 
             self.SignalPwIndex.emit(index_pw)
             self.SignalCurrentPw.emit(pw)
-            final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw, smallest_file_path_inside)
+            _7ZIP_PATH = function_7zip.get_7zip_path()
+            final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw,
+                                                        smallest_file_path_inside)
             # 如果搜索到了正确密码，则进行解压操作
             if isinstance(final_result, Result7zip.Success):
                 true_password = pw
@@ -337,7 +343,8 @@ class ThreadExtract(TemplateThread):
         # 所以先用虚拟密码和t指令测试一次，计算其耗时，再和后续的x指令耗时相比较，如果t指令耗时较短则使用t指令进行后续测试
         start_time = time.time()
         self.StepInfo.emit('压缩文件完整性测试...')
-        final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, FAKE_PASSWORD)
+        _7ZIP_PATH = function_7zip.get_7zip_path()
+        final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, function_7zip.FAKE_PASSWORD)
         runtime_t = time.time() - start_time  # t命令的耗时
 
         is_continue_with_t = False  # 如果t命令耗时更短则使用t指令进行后续操作
@@ -381,6 +388,7 @@ class ThreadExtract(TemplateThread):
 
                 self.SignalPwIndex.emit(index_pw)
                 self.SignalCurrentPw.emit(pw)
+                _7ZIP_PATH = function_7zip.get_7zip_path()
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw)
                 # 如果搜索到了正确密码，则进行解压操作
                 if isinstance(final_result, Result7zip.Success):
@@ -422,6 +430,7 @@ class ThreadExtract(TemplateThread):
         else:
             filter_rule = []
 
+        _7ZIP_PATH = function_7zip.get_7zip_path()
         result_7zip = function_7zip.progress_7zip_x_with_temp_folder(_7ZIP_PATH, file, password,
                                                                      cover_model=part_cover,
                                                                      output_folder=part_extract_to,

@@ -1,7 +1,9 @@
 # 设置模块的界面组件
 # 仅用于显示，不执行具体方法
 import os
+import sys
 
+import lzytools
 import lzytools_Qt
 from PySide6.QtCore import Signal, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog
@@ -32,6 +34,7 @@ class SettingViewer(QWidget):
     ChangeExtractOutputFolderPath = Signal(str, name="修改解压输出目录")
     ChangeExtractFilter = Signal(bool, name="修改解压文件过滤器")
     ChangeExtractFilterRule = Signal(str, name="修改解压文件过滤器规则")
+    Change7ZipPath = Signal(str, name="修改7zip路径")
     ChangeTopWindow = Signal(bool, name="修改窗口置顶")
     ChangeLockSize = Signal(bool, name="修改锁定窗口大小")
 
@@ -63,6 +66,26 @@ class SettingViewer(QWidget):
         if dirpath:
             self.ui.lineEdit_extract_output_folder.setText(dirpath)
 
+    def _choose_7zip_path(self):
+        """打开对话框，选择指定的7zip路径"""
+        path, _ = QFileDialog.getOpenFileName(self, "选择7Zip路径", filter="7z.exe (7z.exe)")
+        if path:
+            path = os.path.normpath(path)
+            if os.path.basename(path) == '7z.exe':
+                # 如果7zip文件在程序目录下，则转换为相对路径
+                # 程序目录
+                app_path = sys.argv[0]
+                app_parent = os.path.dirname(app_path)
+                app_parent = os.path.normpath(app_parent)
+                # 检查路径
+                if lzytools.file.is_subpath(app_parent, path):
+                    relative_path = os.path.relpath(path, app_parent)
+                    relative_path_full = os.path.join('.\\', relative_path)
+                    print(relative_path_full)
+                    self.ui.lineEdit_7zip_path.setText(relative_path_full)
+                else:
+                    self.ui.lineEdit_7zip_path.setText(path)
+
     def _open_dirpath(self):
         """打开指定的解压目录"""
         dirpath = self.ui.lineEdit_extract_output_folder.text()
@@ -72,6 +95,7 @@ class SettingViewer(QWidget):
     def _set_icon(self):
         self.ui.toolButton_choose.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_CHOOSE))
         self.ui.toolButton_open.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_OPEN))
+        self.ui.toolButton_choose_7zip_path.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_CHOOSE))
 
     def _set_enable(self, is_enable: bool):
         self.ui.radioButton_mode1_test.setEnabled(is_enable)
@@ -216,6 +240,10 @@ class SettingViewer(QWidget):
         设置过滤文件规则"""
         self.ui.plainTextEdit_extract_filter_rule.setPlainText(rule)
 
+    def set_setting_7zip_path(self, filepath: str):
+        """设置7zip路径"""
+        self.ui.lineEdit_7zip_path.setText(filepath)
+
     def set_top_window(self, is_enable: bool):
         """设置是否置顶窗口"""
         self.ui.checkBox_top_window.setChecked(is_enable)
@@ -230,6 +258,7 @@ class SettingViewer(QWidget):
         """绑定信号"""
         # 弹窗
         self.ui.toolButton_choose.clicked.connect(self._choose_dirpath)
+        self.ui.toolButton_choose_7zip_path.clicked.connect(self._choose_7zip_path)
         self.ui.toolButton_open.clicked.connect(self._open_dirpath)
         # 模式
         self.ui.radioButton_mode1_extract.clicked.connect(self._change_archive_model)
@@ -265,6 +294,8 @@ class SettingViewer(QWidget):
         self.ui.checkBox_extract_filter.stateChanged.connect(self.ChangeExtractFilter.emit)
         self.ui.plainTextEdit_extract_filter_rule.textChanged.connect(
             lambda: self.ChangeExtractFilterRule.emit(self.ui.plainTextEdit_extract_filter_rule.toPlainText()))
+        # 自定义7Zip路径
+        self.ui.lineEdit_7zip_path.textChanged.connect(self.Change7ZipPath.emit)
         # 置顶窗口
         self.ui.checkBox_top_window.stateChanged.connect(self.ChangeTopWindow.emit)
         # 锁定窗口大小

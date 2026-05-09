@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settinggAfybw.ui'
+## Form generated from reading UI file 'page_settingRvMayQ.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -372, 301, 610))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -445, 301, 683))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -281,6 +281,33 @@ class Ui_Form(object):
 
         self.verticalLayout.addWidget(self.line_2)
 
+        self.label_7 = QLabel(self.scrollAreaWidgetContents)
+        self.label_7.setObjectName(u"label_7")
+
+        self.verticalLayout.addWidget(self.label_7)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.lineEdit_7zip_path = QLineEdit(self.scrollAreaWidgetContents)
+        self.lineEdit_7zip_path.setObjectName(u"lineEdit_7zip_path")
+
+        self.horizontalLayout_7.addWidget(self.lineEdit_7zip_path)
+
+        self.toolButton_choose_7zip_path = QToolButton(self.scrollAreaWidgetContents)
+        self.toolButton_choose_7zip_path.setObjectName(u"toolButton_choose_7zip_path")
+
+        self.horizontalLayout_7.addWidget(self.toolButton_choose_7zip_path)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_7)
+
+        self.line_3 = QFrame(self.scrollAreaWidgetContents)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line_3)
+
         self.checkBox_top_window = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_top_window.setObjectName(u"checkBox_top_window")
 
@@ -392,6 +419,8 @@ class Ui_Form(object):
 #if QT_CONFIG(tooltip)
         self.plainTextEdit_extract_filter_rule.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u89e3\u538b\u65f6\u8fc7\u6ee4\u6389\u7b26\u5408\u89c4\u5219\u7684\u6587\u4ef6\uff0c\u901a\u914d\u7b26\u4e3a*\uff0c\u5982\u65e0\u7279\u6b8a\u9700\u6c42\u5efa\u8bae\u4e0d\u4f7f\u7528\u8be5\u529f\u80fd\u3002</p><p>\u793a\u4f8b\uff1a</p><p>1. \u8fc7\u6ee4\u6307\u5b9a\u6587\u4ef6\u540d\uff1a\u5e7f\u544a.*</p><p>2. \u8fc7\u6ee4\u90e8\u5206\u6587\u4ef6\u540d\uff1a*\u6c49\u5316\u7ec4*.*</p><p>3. \u8fc7\u6ee4\u6307\u5b9a\u6587\u4ef6\u6269\u5c55\u540d\uff1a*.html</p><p>3. \u8fc7\u6ee4\u4e0d\u7a33\u6587\u4ef6\u6269\u5c55\uff1a*.*xls*</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
+        self.label_7.setText(QCoreApplication.translate("Form", u"\u81ea\u5b9a\u4e497Zip\u8def\u5f84", None))
+        self.toolButton_choose_7zip_path.setText(QCoreApplication.translate("Form", u"c", None))
 #if QT_CONFIG(tooltip)
         self.checkBox_top_window.setToolTip(QCoreApplication.translate("Form", u"\u4fdd\u6301\u7a97\u53e3\u5728\u524d\u53f0", None))
 #endif // QT_CONFIG(tooltip)

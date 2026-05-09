@@ -104,6 +104,7 @@ class SettingPresenter(QObject):
         self.viewer.ChangeExtractOutputFolderPath.connect(self.model.set_extract_output_folder_path)
         self.viewer.ChangeExtractFilter.connect(self.model.set_extract_filter_is_enable)
         self.viewer.ChangeExtractFilterRule.connect(self.model.set_extract_filter_rules)
+        self.viewer.Change7ZipPath.connect(self.model.set_7zip_path)
         self.viewer.ChangeTopWindow.connect(self.model.set_top_window_is_enable)
         self.viewer.ChangeTopWindow.connect(self.SignalTopWindow.emit)
         self.viewer.ChangeLockSize.connect(self.model.set_lock_size_is_enable)
@@ -153,6 +154,8 @@ class SettingPresenter(QObject):
         self.viewer.set_setting_filter(self.model.get_extract_filter_is_enable())
 
         self.viewer.set_setting_filter_rule(self.model.get_extract_filter_rules_str())
+
+        self.viewer.set_setting_7zip_path(self.model.get_7zip_path())
 
         self.viewer.set_top_window(self.model.get_top_window_is_enable())
 

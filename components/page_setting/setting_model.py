@@ -34,6 +34,7 @@ class SettingModel:
         self._break_folder = _ChildSettingBreakFolder(self.config)
         self._extract_output_folder = _ChildSettingExtractOutputFolder(self.config)
         self._extract_filter = _ChildSettingExtractFilter(self.config)
+        self._7zip_path = _ChildSetting7ZipPath(self.config)
         self._top_window = _ChildSettingTopWindow(self.config)
         self._lock_size = _ChildSettingLockSize(self.config)
 
@@ -175,6 +176,12 @@ class SettingModel:
 
     def set_extract_filter_rules(self, rules: str):
         self._extract_filter.set_rules(rules)
+
+    def get_7zip_path(self):
+        return self._7zip_path.read()
+
+    def set_7zip_path(self, path: str):
+        self._7zip_path.set(path)
 
     def get_top_window_is_enable(self):
         return self._top_window.read()
@@ -623,6 +630,13 @@ class _ChildSettingExtractFilter(_ModuleChildSetting):
         value = [i for i in value if i]
         value_join = _SPLIT_WORD.join(value)
         self._set_value(self.section, self.key_rules, value_join)
+
+
+class _ChildSetting7ZipPath(_ModuleChildSettingSingleText):
+    """设置项 7zip路径"""
+
+    def __init__(self, config):
+        super().__init__(config, section='7ZipPath', key='filepath', default_value='')
 
 
 class _ChildSettingTopWindow(_ModuleChildSettingSingleEnable):

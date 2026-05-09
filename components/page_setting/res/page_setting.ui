@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-372</y>
+        <y>-445</y>
         <width>301</width>
-        <height>610</height>
+        <height>683</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -447,6 +447,34 @@
        </item>
        <item>
         <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>自定义7Zip路径</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLineEdit" name="lineEdit_7zip_path"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton_choose_7zip_path">
+           <property name="text">
+            <string>c</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>

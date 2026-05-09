@@ -3,14 +3,32 @@ import re
 import subprocess
 from typing import Union
 
-from common import function_queue
+from common import function_queue, function_setting
 from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
 from common.function_extract import TEMP_EXTRACT_FOLDER
 
 FAKE_PASSWORD = 'FAKEPASSWORD'
-_7ZIP_PATH = r'./7-Zip/7z.exe'
+# _7ZIP_PATH = r'./7-Zip/7z.exe'
 _process_running: subprocess.Popen = None  # 正在运行的线程，用于中断
 _CMD_PW_TEXT_FILE = 'cmd_pw.txt'  # 临时使用的密码文件（专用于处理带特殊字符（例如"、^）的密码，双引号不能作为参数传入进程，但可以通过读取文件传入）
+
+
+# def update_7zip_path():
+#     """更新7zip路径"""
+#     global _7ZIP_PATH
+#     setting_path = function_setting.get_7zip_path()
+#     if setting_path:
+#         _7ZIP_PATH = function_setting.get_7zip_path()
+
+def get_7zip_path() -> str:
+    """获取7zip路径"""
+    path_setting = function_setting.get_7zip_path()
+    if path_setting:
+        _7zip_path = function_setting.get_7zip_path()
+    else:
+        _7zip_path = r'./7-Zip/7z.exe'
+
+    return _7zip_path
 
 
 def get_running_process():
@@ -353,6 +371,7 @@ def get_smallest_file_in_archive(archive_path: str):
     """获取压缩文件中最小的文件内部路径"""
     print('提取压缩文件内部文件路径')
     # 测试一次压缩文件，读取返回信息
+    _7ZIP_PATH = get_7zip_path()
     command = [_7ZIP_PATH, "l", archive_path, f"-p{FAKE_PASSWORD}"]  # 需要指定密码，否则7zip会卡在输入密码阶段
     result = subprocess.run(command,
                             stdout=subprocess.PIPE,
