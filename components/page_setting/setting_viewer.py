@@ -102,6 +102,7 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode1_extract.setEnabled(is_enable)
         self.ui.checkBox_read_password_from_filename.setEnabled(is_enable)
         self.ui.checkBox_try_unknown_filetype.setEnabled(is_enable)
+        self.ui.lineEdit_7zip_path.setEnabled(is_enable)
         self.ui.widget_test.setEnabled(is_enable)
         self.ui.widget_extract.setEnabled(is_enable)
 
