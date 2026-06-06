@@ -22,7 +22,7 @@ class ThreadFiletypeArchive(QThread):
             if not is_exclude_file_extension(file):
                 if lzytools_archive.is_archive_by_filename(os.path.basename(file)):
                     archive_files.append(file)
-                elif lzytools_archive.is_archive(file):
+                elif os.path.exists(file) and lzytools_archive.is_archive(file):
                     archive_files.append(file)
 
         self.files.clear()
