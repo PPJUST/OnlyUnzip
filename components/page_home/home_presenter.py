@@ -314,6 +314,16 @@ class HomePresenter(QObject):
         total_sum = sum(int(num) for num in numbers)
         self.show_process_count(total_sum)
 
+    def set_info_error(self):
+        """设置运行状态 报错"""
+        # 修改图标
+        self.set_icon_error()
+        # 停止计时器
+        self.model.stop_timing()
+        # 显示步骤信息
+        info = "遇到致命性报错，请检查报错页并反馈\n重启程序后可再次使用"
+        self.set_step_notice(info)
+
     def set_icon_home(self):
         """设置主页图标"""
         self.viewer.set_icon(ICON_LOGO_PIXEL)
@@ -349,3 +359,7 @@ class HomePresenter(QObject):
     def set_icon_testing(self):
         """设置测试中图标"""
         self.viewer.set_gif_icon(ICON_TESTING)
+
+    def set_icon_error(self):
+        """设置错误图标"""
+        self.viewer.set_icon(ICON_WARNING_YELLOW)

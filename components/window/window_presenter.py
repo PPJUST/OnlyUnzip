@@ -169,7 +169,9 @@ class WindowPresenter:
 
     def show_stderr_info(self, info: str):
         """显示报错信息"""
-        # 显示报错信息
+        # 设置主页状态
+        self.page_home.set_info_error()
+        # 报错信息页中显示报错信息
         self.page_error_info.append_info(info)
         # 切换到报错信息页
         self.viewer.open_page_error_info()

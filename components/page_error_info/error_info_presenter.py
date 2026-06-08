@@ -13,6 +13,9 @@ class ErrorInfoPresenter:
 
     def append_info(self, info: str):
         """添加信息行"""
-        text_time = lzytools.time.get_current_time()
-        info = f'{text_time}: {info}\n'
-        self.viewer.append_info(info)
+        if info == '^':
+            pass
+        else:
+            text_time = lzytools.time.get_current_time()
+            info = f'{text_time}: {info}'
+            self.viewer.append_info(info)
