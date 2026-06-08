@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainWindowVTjuak.ui'
+## Form generated from reading UI file 'mainWindowwAhMgP.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.11.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -70,6 +70,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.pushButton_history)
 
+        self.pushButton_error = QPushButton(self.centralwidget)
+        self.buttonGroup.addButton(self.pushButton_error)
+        self.pushButton_error.setObjectName(u"pushButton_error")
+        sizePolicy.setHeightForWidth(self.pushButton_error.sizePolicy().hasHeightForWidth())
+        self.pushButton_error.setSizePolicy(sizePolicy)
+
+        self.verticalLayout.addWidget(self.pushButton_error)
+
         self.pushButton_about = QPushButton(self.centralwidget)
         self.buttonGroup.addButton(self.pushButton_about)
         self.pushButton_about.setObjectName(u"pushButton_about")
@@ -122,6 +130,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.stackedWidget.addWidget(self.page_history)
+        self.page_error_info = QWidget()
+        self.page_error_info.setObjectName(u"page_error_info")
+        self.verticalLayout_8 = QVBoxLayout(self.page_error_info)
+        self.verticalLayout_8.setSpacing(0)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.stackedWidget.addWidget(self.page_error_info)
         self.page_password_manager = QWidget()
         self.page_password_manager.setObjectName(u"page_password_manager")
         self.verticalLayout_7 = QVBoxLayout(self.page_password_manager)
@@ -144,7 +159,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(4)
+        self.stackedWidget.setCurrentIndex(6)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -156,6 +171,7 @@ class Ui_MainWindow(object):
         self.pushButton_password.setText(QCoreApplication.translate("MainWindow", u"\u5bc6\u7801", None))
         self.pushButton_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.pushButton_history.setText(QCoreApplication.translate("MainWindow", u"\u5386\u53f2", None))
+        self.pushButton_error.setText(QCoreApplication.translate("MainWindow", u"\u62a5\u9519", None))
         self.pushButton_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
     # retranslateUi
 

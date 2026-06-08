@@ -1,14 +1,16 @@
 # 主窗口的桥梁组件
 import os
+import sys
 
 import lzytools
+from lzytools_Qt import ObjectEmittingStream
 
 from common import function_7zip, function_subprocess
 from common.class_7zip import ModelArchive
 from common.class_file_info import FileInfoList
 from common.class_result_collector import ResultCollector
 from components import page_home, page_password, page_setting, page_history, page_about, page_password_manager, \
-    dialog_temp_password
+    dialog_temp_password, page_error_info
 from components.window.thread_queue_receiver import ThreadQueueReceiver
 from components.window.window_model import WindowModel
 from components.window.window_viewer import WindowViewer
@@ -27,6 +29,14 @@ class WindowPresenter:
         # 结果收集类
         self.result_collector = ResultCollector()
 
+        # 报错处理
+        # 创建自定义输出流
+        self.stderr_stream = ObjectEmittingStream()
+        # 将信号连接到界面的更新方法
+        self.stderr_stream.TextWritten.connect(self.show_stderr_info)
+        # 替换系统输出
+        sys.stderr = self.stderr_stream
+
         # 添加各个组件的实例对象
         self.page_home = page_home.get_presenter()
         self.viewer.add_page_home(self.page_home.viewer)
@@ -36,6 +46,8 @@ class WindowPresenter:
         self.viewer.add_page_setting(self.page_setting.viewer)
         self.page_history = page_history.get_presenter()
         self.viewer.add_page_history(self.page_history.viewer)
+        self.page_error_info = page_error_info.get_presenter()
+        self.viewer.add_page_error_info(self.page_error_info.viewer)
         self.page_about = page_about.get_viewer()
         self.viewer.add_page_about(self.page_about)
         self.page_password_manager = page_password_manager.get_presenter()
@@ -152,6 +164,17 @@ class WindowPresenter:
             self.page_home.set_info_testing()
         elif isinstance(archive_model, ModelArchive.Extract):
             self.page_home.set_info_extracting()
+
+        self.viewer.hide_button_error_info()
+
+    def show_stderr_info(self, info: str):
+        """显示报错信息"""
+        # 显示报错信息
+        self.page_error_info.append_info(info)
+        # 切换到报错信息页
+        self.viewer.open_page_error_info()
+        # 启用报错信息页按钮
+        self.viewer.show_button_error_info()
 
     def open_about(self):
         self.viewer.open_page_about()
