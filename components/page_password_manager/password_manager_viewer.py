@@ -9,6 +9,7 @@ class PasswordManagerViewer(QWidget):
     """密码管理器模块的界面组件"""
     SignalFilterUpdated = Signal(object, name="预删除密码的过滤器选项更新")
     SignalDeleted = Signal(object, name="删除密码的清单")
+    SignalShowDetail = Signal(object, name="显示密码详情")
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -85,6 +86,7 @@ class PasswordManagerViewer(QWidget):
         self.ui.checkBox_delete_use_date.stateChanged.connect(self.SignalFilterUpdated.emit)
         self.ui.spinBox_use_date.valueChanged.connect(self.SignalFilterUpdated.emit)
 
+        self.ui.pushButton_show_detail.clicked.connect(self.SignalShowDetail.emit)
         self.ui.pushButton_preview.clicked.connect(self.change_preview)
         self.ui.pushButton_delete.clicked.connect(self.show_confirm_dialog)
 

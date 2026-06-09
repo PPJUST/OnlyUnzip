@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'managerXGqIKY.ui'
+## Form generated from reading UI file 'managerfNSqEw.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(201, 363)
+        Form.resize(201, 399)
         self.verticalLayout_3 = QVBoxLayout(Form)
         self.verticalLayout_3.setSpacing(3)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -83,6 +83,16 @@ class Ui_Form(object):
 
 
         self.verticalLayout_3.addLayout(self.verticalLayout)
+
+        self.pushButton_show_detail = QPushButton(Form)
+        self.pushButton_show_detail.setObjectName(u"pushButton_show_detail")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_show_detail.sizePolicy().hasHeightForWidth())
+        self.pushButton_show_detail.setSizePolicy(sizePolicy)
+
+        self.verticalLayout_3.addWidget(self.pushButton_show_detail)
 
         self.line = QFrame(Form)
         self.line.setObjectName(u"line")
@@ -197,9 +207,6 @@ class Ui_Form(object):
 
         self.pushButton_preview = QPushButton(Form)
         self.pushButton_preview.setObjectName(u"pushButton_preview")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_preview.sizePolicy().hasHeightForWidth())
         self.pushButton_preview.setSizePolicy(sizePolicy)
 
@@ -265,6 +272,7 @@ class Ui_Form(object):
         self.label_pw_count_1.setText(QCoreApplication.translate("Form", u"count1", None))
         self.label_5.setText(QCoreApplication.translate("Form", u"\u672a\u4f7f\u7528\uff1a", None))
         self.label_pw_count_0.setText(QCoreApplication.translate("Form", u"count0", None))
+        self.pushButton_show_detail.setText(QCoreApplication.translate("Form", u"\u663e\u793a\u8be6\u60c5", None))
         self.label_10.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u5bc6\u7801", None))
         self.checkBox_delete_use_count.setText(QCoreApplication.translate("Form", u"\u4f7f\u7528\u6b21\u6570\u5728", None))
         self.label_11.setText(QCoreApplication.translate("Form", u"\u6b21\u53ca\u4ee5\u4e0b", None))

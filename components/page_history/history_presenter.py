@@ -5,8 +5,6 @@ from components.page_history.history_model import HistoryModel
 from components.page_history.history_viewer import HistoryViewer
 
 
-# todo 历史记录优化，写入log
-
 class HistoryPresenter:
     """历史模块的桥梁组件"""
 
