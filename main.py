@@ -1,6 +1,5 @@
 import os
 import sys
-import traceback
 
 import lzytools
 from PySide6.QtGui import QFont
@@ -64,30 +63,6 @@ def show_dup_info():
     sys.exit(1)
 
 
-def exception_hook(exc_type, exc_value, exc_traceback):
-    """重写异常钩子，将错误信息显示在消息框中"""
-    # 忽略KeyboardInterrupt，让用户可以正常退出
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
-
-    # 格式化错误信息
-    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
-
-    # 保存到本地文本文件中
-    with open('error.txt', 'w', encoding='utf-8') as f:
-        f.write(error_msg)
-
-    # 显示错误消息框
-    if not QApplication.instance():
-        app_ = QApplication([])
-    messagebox = QMessageBox()
-    messagebox.setIcon(QMessageBox.Critical)
-    messagebox.setText('程序发生错误，错误信息已保存到程序目录中的"error.txt"文件中')
-    messagebox.setWindowTitle("发生错误")
-    messagebox.exec()
-
-
 def set_working_directory_to_exe_path():
     """设置工作目录为程序所在目录，防止拖入文件/命令行启动时程序工作目录错误"""
     print('工作路径测试')
@@ -104,9 +79,6 @@ def set_working_directory_to_exe_path():
 
 if __name__ == "__main__":
     set_working_directory_to_exe_path()
-    # 重定向异常处理
-    if not os.path.dirname(sys.argv[0]) == '.':  # 编译时不重定向
-        sys.excepthook = exception_hook
 
     if not lzytools.common.check_mutex('OnlyUnzip'):  # 互斥体检查（单个实例）
         load_app(paths_cmd)
