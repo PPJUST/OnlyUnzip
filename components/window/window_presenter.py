@@ -30,12 +30,17 @@ class WindowPresenter:
         self.result_collector = ResultCollector()
 
         # 报错处理
-        # 创建自定义输出流
-        self.stderr_stream = ObjectEmittingStream()
-        # 将信号连接到界面的更新方法
-        self.stderr_stream.TextWritten.connect(self.show_stderr_info)
-        # 替换系统输出
-        sys.stderr = self.stderr_stream
+        if getattr(sys, 'frozen', False):
+            # 打包方式运行程序
+            # 创建自定义输出流
+            self.stderr_stream = ObjectEmittingStream()
+            # 将信号连接到界面的更新方法
+            self.stderr_stream.TextWritten.connect(self.show_stderr_info)
+            # 替换系统输出
+            sys.stderr = self.stderr_stream
+        else:
+            # 源码方式运行程序
+            pass
 
         # 添加各个组件的实例对象
         self.page_home = page_home.get_presenter()
