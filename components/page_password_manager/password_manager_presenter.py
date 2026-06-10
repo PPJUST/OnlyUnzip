@@ -1,6 +1,7 @@
 # 密码管理器模块的桥梁组件
 from PySide6.QtCore import QObject, Signal
 
+from components import dialog_password_detail
 from components.page_password_manager.password_manager_model import PasswordManagerModel
 from components.page_password_manager.password_manager_viewer import PasswordManagerViewer
 
@@ -47,7 +48,17 @@ class PasswordManagerPresenter(QObject):
 
     def show_password_detail(self):
         """显示密码详情"""
-        pass  # todo
+        dialog = dialog_password_detail.get_presenter()
+
+        passwords_class = self.model.get_passwords_class()
+        for password_class in passwords_class:
+            _name = password_class.get_password()
+            use_count = password_class.get_use_count()
+            add_time = password_class.get_add_time()
+            last_use_time = password_class.get_last_use_time()
+            dialog.add_record((_name, use_count, add_time, last_use_time))
+
+        dialog.exec()
 
     def set_passwords_need_delete(self):
         """传递需要删除的密码给viewer控件"""

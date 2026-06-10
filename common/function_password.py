@@ -3,6 +3,7 @@ import os
 import pickle
 import shutil
 import time
+from typing import List
 
 import lzytools
 
@@ -13,7 +14,8 @@ _OUTPUT_FILE = 'password_output.txt'
 
 
 class DBPassword(dict):
-    """密码本类"""
+    """密码本类
+    键为password文本，值为对应的Password类对象"""
 
     def __init__(self):
         super().__init__(self)
@@ -27,6 +29,12 @@ class DBPassword(dict):
         # 按密码使用次数、最后使用时间降序排序
         pws_sorted = sorted(pws, key=lambda x: (self[x].get_use_count(), self[x].get_last_use_time()), reverse=True)
         return pws_sorted
+
+    def get_passwords_class(self):
+        """获取密码本中所有的密码类"""
+        values = self.values()
+        values: List[Password]
+        return values
 
     def delete_passwords(self, delete_passwords: list):
         """删除指定密码"""
