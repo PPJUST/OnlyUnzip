@@ -30,7 +30,8 @@ class WindowPresenter:
         self.result_collector = ResultCollector()
 
         # 报错处理
-        if getattr(sys, 'frozen', False):
+        if getattr(sys, 'frozen', False) or getattr(sys, '_nuitka',
+                                                    False) or '__compiled__' in globals():  # frozen处理PyInstaller打包，_nuitka处理Nuitka打包
             # 打包方式运行程序
             # 创建自定义输出流
             self.stderr_stream = ObjectEmittingStream()
