@@ -67,10 +67,12 @@ def create_cmd_pw_file(password: str):
     """创建一个临时的密码文件，用于处理带特殊字符的密码"""
     with open(_CMD_PW_TEXT_FILE, 'w', encoding='utf-8') as f:
         f.write(password)
+    f.close()
 
 
 def delete_cmd_pw_file():
     """删除临时密码文件"""
+    return
     if os.path.exists(_CMD_PW_TEXT_FILE):
         os.remove(_CMD_PW_TEXT_FILE)
 
