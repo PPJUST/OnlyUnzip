@@ -239,7 +239,7 @@ class WindowPresenter:
 
         # 如果有成功处理的文件，则判断是否进行递归解压
         print('接收结束信号参数', results)
-        if results.count_success():
+        if not results.is_user_stop() and results.count_success():
             is_recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
             # 进行递归解压，并累计处理结果
             if is_recursive_extract:

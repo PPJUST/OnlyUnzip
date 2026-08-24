@@ -104,3 +104,11 @@ class FileInfoList:
             if result and isinstance(result, Result7zip.Success):
                 count += 1
         return count
+
+    def is_user_stop(self):
+        """是否用户主动终止"""
+        for file_info in self.get_file_infos():
+            result = file_info.get_7zip_result()
+            if result and isinstance(result, Result7zip.UserStopped):
+                return True
+        return False
