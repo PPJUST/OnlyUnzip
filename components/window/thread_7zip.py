@@ -239,6 +239,7 @@ class ThreadExtract(TemplateThread):
         self.is_filter: bool = False
         self.filter_rules: list = []
         self.is_delete_file: bool = False
+        self.last_temp_folder = ''  # 上一个任务的临时文件夹，用于判断是否删除临时文件夹
 
         # 解压后参数
         self.extract_model: TYPES_MODEL_EXTRACT = None  # 解压模式
@@ -263,6 +264,23 @@ class ThreadExtract(TemplateThread):
             file_first = file_info.filepath
             self.SignalCurrentFile.emit(file_first)
             print('当前处理的文件：', file_first)
+
+            # 判断是否需要创建临时文件夹创建临时文件夹
+            if self.is_extract_to_folder and self.extract_output_path:
+                part_extract_to = self.extract_output_path
+            else:
+                part_extract_to = os.path.dirname(file_first)
+            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+            if self.last_temp_folder:
+                if self.last_temp_folder.lower() == guess_temp_folder.lower():
+                    pass
+                else:
+                    if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
+                        lzytools.file.delete(guess_temp_folder)
+            else:
+                pass
+            self.last_temp_folder = guess_temp_folder
+
             extract_result, extract_path = self.extract_file(file_first, self.passwords)
 
             # 将结果写入文件信息类，并发送信号
@@ -271,6 +289,11 @@ class ThreadExtract(TemplateThread):
                 file_info.set_password(extract_result.password)
                 file_info.set_extract_path(extract_path)
             self.SignalResult.emit(file_info)
+
+        # 结束后删除最后一个临时文件夹
+        if os.path.exists(self.last_temp_folder) and not lzytools.file.get_size(self.last_temp_folder):
+            lzytools.file.delete(self.last_temp_folder)
+        self.last_temp_folder = ''
 
         # 结束后发送结束信号
         self.SignalFinish.emit(self.fileinfo_task)
@@ -472,21 +495,13 @@ class ThreadExtract(TemplateThread):
                 for i in related_files:
                     lzytools.file.delete(i, send_to_trash=True)
 
-            # 删除空的临时解压文件夹
-            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
-            if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
-                lzytools.file.delete(guess_temp_folder)
-
             print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
             return result_7zip, extract_path
         else:
-            # 删除空的临时解压文件夹
-            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
-            if self.is_stop_task:  # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
+            # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
+            if self.is_stop_task:
+                guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
                 if os.path.exists(guess_temp_folder):
-                    lzytools.file.delete(guess_temp_folder)
-            else:  # 否则，仅在临时文件夹为空时删除该文件夹
-                if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
                     lzytools.file.delete(guess_temp_folder)
 
             return result_7zip, None
