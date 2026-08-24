@@ -14,7 +14,8 @@ from components.page_home.res.ui_page_home import Ui_Form
 
 class HomeViewer(QWidget):
     """主页模块的界面组件"""
-    UserStop = Signal(name="用户主动停止")
+    UserStop = Signal(name="用户主动停止（立即终止")
+    UserStopAfter = Signal(name="用户主动停止（等待当前文件完成后终止）")
     DropFiles = Signal(list, name="拖入文件")
     OpenAbout = Signal(name="打开关于页")
     OpenTempPassword = Signal(name="打开临时密码页")
@@ -169,13 +170,39 @@ class HomeViewer(QWidget):
 
     def _click_stop_button(self):
         """点击停止按钮"""
-        reply = QMessageBox.question(self, '是否终止', '是否终止当前任务', QMessageBox.Yes | QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self._stop_progress()
+        # 创建消息框
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle('是否终止')
+        msg_box.setText('是否终止当前任务')
+        msg_box.setIcon(QMessageBox.Icon.Question)
 
-    def _stop_progress(self):
-        """终止当前任务"""
+        # 添加自定义按钮
+        btn_terminate = msg_box.addButton('是(立即终止)', QMessageBox.ButtonRole.YesRole)
+        btn_continue = msg_box.addButton('是(终止之后任务)', QMessageBox.ButtonRole.NoRole)
+        btn_cancel = msg_box.addButton('取消', QMessageBox.ButtonRole.RejectRole)
+
+        msg_box.setDefaultButton(btn_terminate)
+
+        # 执行对话框
+        msg_box.exec()
+
+        # 获取点击的按钮
+        clicked_button = msg_box.clickedButton()
+
+        if clicked_button == btn_terminate:
+            self._stop_progress_now()
+        elif clicked_button == btn_continue:
+            self._stop_progress_after()
+        elif clicked_button == btn_cancel:
+            pass
+
+    def _stop_progress_now(self):
+        """立即终止当前任务"""
         self.UserStop.emit()
+
+    def _stop_progress_after(self):
+        """不立即当前任务，等待当前任务完成后再终止"""
+        self.UserStopAfter.emit()
 
     def set_child_page_test(self):
         """切换运行信息页为测试模式"""

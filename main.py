@@ -7,8 +7,6 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from components import window
 
-# todo 不同编码压缩包解压时乱码问题
-
 paths_cmd = []  # 通过命令行或者程序直接打开的文件路径
 try:  # 提取路径
     cmd_args = sys.argv[1:]

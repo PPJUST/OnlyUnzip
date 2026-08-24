@@ -29,6 +29,9 @@ class WindowPresenter:
         # 结果收集类
         self.result_collector = ResultCollector()
 
+        # 判断用户是否主动终止（特殊使用）
+        self.is_user_stop = False
+
         # 报错处理
         if getattr(sys, 'frozen', False) or getattr(sys, '_nuitka',
                                                     False) or '__compiled__' in globals():  # frozen处理PyInstaller打包，_nuitka处理Nuitka打包
@@ -80,6 +83,7 @@ class WindowPresenter:
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self.page_home.SignalError7ZipPath.connect(self.finished_by_error_7zip_path)
         self.page_home.UserStop.connect(self.finished_by_user_stop)
+        self.page_home.UserStopAfter.connect(self.finished_by_user_stop_after_current)
         self.page_home.OpenAbout.connect(self.open_about)
         self.page_home.OpenTempPassword.connect(self.open_temp_password)
         self.page_home.AskUpdateSetting.connect(self.set_home_setting)
@@ -96,10 +100,12 @@ class WindowPresenter:
 
     def accept_paths_from_cmd(self, paths: list):
         """接收命令行参数"""
+        self.is_user_stop = False
         self.page_home.drop_paths(paths)
 
     def accept_file_info_list(self, file_info: FileInfoList):
         """接收文件信息类，传递给模型组件"""
+        self.is_user_stop = False
         # 锁定设置项，防止被修改
         self.page_setting.lock_setting()
         # 禁用主页的拖入功能
@@ -239,7 +245,7 @@ class WindowPresenter:
 
         # 如果有成功处理的文件，则判断是否进行递归解压
         print('接收结束信号参数', results)
-        if not results.is_user_stop() and results.count_success():
+        if not self.is_user_stop and not results.is_user_stop() and results.count_success():
             is_recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
             # 进行递归解压，并累计处理结果
             if is_recursive_extract:
@@ -296,9 +302,15 @@ class WindowPresenter:
         finish_info_simple, file_info_detail = self.result_collector.get_result_info()
         self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
         # 终止调用线程
+        self.is_user_stop = True
         self.model.stop_task()
         process = function_7zip.get_running_process()
         function_subprocess.stop_process(process)
+
+    def finished_by_user_stop_after_current(self):
+        """提前终止：用户主动终止（延迟终止，完成当前任务后再终止）"""
+        self.is_user_stop = True
+        self.model.stop_task()
 
     def update_extract_progress(self, progress: int):
         """更新解压进度"""

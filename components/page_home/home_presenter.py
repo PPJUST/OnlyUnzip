@@ -16,7 +16,8 @@ from components.page_home.res.icon_base64 import *
 
 class HomePresenter(QObject):
     """主页模块的桥梁组件"""
-    UserStop = Signal(name="用户主动停止")
+    UserStop = Signal(name="用户主动停止（立即终止")
+    UserStopAfter = Signal(name="用户主动停止（等待当前文件完成后终止）")
     FileInfo = Signal(FileInfoList, name='提取的文件信息类')
     SignalNoFiles = Signal(name='没有需要处理的文件')
     SignalExistsTempFolder = Signal(str, name='存在临时文件夹，接收临时文件夹路径参数')
@@ -50,6 +51,7 @@ class HomePresenter(QObject):
 
         # 绑定信号
         self.viewer.UserStop.connect(self.UserStop.emit)
+        self.viewer.UserStopAfter.connect(self.UserStopAfter.emit)
         self.viewer.DropFiles.connect(self.drop_paths)
         self.viewer.OpenAbout.connect(self.OpenAbout.emit)
         self.viewer.OpenTempPassword.connect(self.OpenTempPassword.emit)
