@@ -173,12 +173,12 @@ class HomeViewer(QWidget):
         # 创建消息框
         msg_box = QMessageBox()
         msg_box.setWindowTitle('是否终止')
-        msg_box.setText('是否终止当前任务')
+        msg_box.setText('是否终止当前任务\n立即终止：立刻终止当前任务|n延迟终止：在当前文件处理完成后终止')
         msg_box.setIcon(QMessageBox.Icon.Question)
 
         # 添加自定义按钮
-        btn_terminate = msg_box.addButton('是(立即终止)', QMessageBox.ButtonRole.YesRole)
-        btn_continue = msg_box.addButton('是(终止之后任务)', QMessageBox.ButtonRole.NoRole)
+        btn_terminate = msg_box.addButton('立即终止', QMessageBox.ButtonRole.YesRole)
+        btn_continue = msg_box.addButton('延迟终止', QMessageBox.ButtonRole.NoRole)
         btn_cancel = msg_box.addButton('取消', QMessageBox.ButtonRole.RejectRole)
 
         msg_box.setDefaultButton(btn_terminate)
