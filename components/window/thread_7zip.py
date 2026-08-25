@@ -265,7 +265,7 @@ class ThreadExtract(TemplateThread):
             self.SignalCurrentFile.emit(file_first)
             print('当前处理的文件：', file_first)
 
-            # 判断是否需要创建临时文件夹创建临时文件夹
+            # 判断是否需要创建/删除临时文件夹
             if self.is_extract_to_folder and self.extract_output_path:
                 part_extract_to = self.extract_output_path
             else:
@@ -275,8 +275,8 @@ class ThreadExtract(TemplateThread):
                 if self.last_temp_folder.lower() == guess_temp_folder.lower():
                     pass
                 else:
-                    if os.path.exists(guess_temp_folder) and not lzytools.file.get_size(guess_temp_folder):
-                        lzytools.file.delete(guess_temp_folder)
+                    if os.path.exists(self.last_temp_folder) and not lzytools.file.get_size(self.last_temp_folder):
+                        lzytools.file.delete(self.last_temp_folder)
             else:
                 pass
             self.last_temp_folder = guess_temp_folder
