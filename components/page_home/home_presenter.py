@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal, QObject
 from common import function_setting, function_extract, function_7zip
 from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE
 from common.class_file_info import FileInfoList
-from common.thread_filetype_archive import ThreadFiletypeArchive
+from common.thread_filetype_archive import ThreadFiletypeArchive, is_exclude_file_extension
 from components.page_home.home_model import HomeModel
 from components.page_home.home_viewer import HomeViewer
 from components.page_home.res.icon_base64 import *
@@ -110,6 +110,9 @@ class HomePresenter(QObject):
             self.thread_check_filetype.set_files(files)
             self.thread_check_filetype.start()
         else:
+            # 处理未知文件时同样先应用排除列表，避免把 zip 容器格式
+            # （Office 文档/游戏存档等）误判为压缩包
+            files = [file for file in files if not is_exclude_file_extension(file)]
             self.deal_archive_files(files)
 
     def deal_archive_files(self, archives: list):

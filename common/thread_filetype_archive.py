@@ -32,7 +32,19 @@ class ThreadFiletypeArchive(QThread):
 
 def is_exclude_file_extension(filename: str):
     """在识别压缩文件时，排除指定文件扩展名"""
-    _exclude_file_extension = ['exe', 'apk', 'csv', 'xls', 'xlsx', 'doc', 'docx', 'ppt']
+    _exclude_file_extension = [
+        'exe', 'apk', 'csv', 'xls', 'xlsx', 'doc', 'docx', 'ppt',
+        # Office OOXML 及宏/模板文档（zip 容器）
+        'pptx', 'docm', 'xlsm', 'pptm', 'dotx', 'xltx', 'potx', 'thmx', 'vsdx', 'vsdm', 'one',
+        # OpenDocument（zip 容器）
+        'odt', 'ods', 'odp', 'odg', 'odf',
+        # Apple iWork（zip 容器）
+        'pages', 'numbers', 'key',
+        # 游戏存档/资源（内容为 zip 容器时会被 filetype 误判）
+        'sav', 'dat', 'pak', 'rpgsave', 'mcworld', 'mcpack', 'slot', 'profile', 'quicksave', 'autosave',
+        # 应用包/电子书（本质是 zip，解压破坏功能）
+        'jar', 'war', 'ear', 'aab', 'xapk', 'nupkg', 'vsix', 'appx', 'msix', 'ipa', 'whl', 'egg', 'xpi', 'crx', 'epub', 'cbz', 'kmz',
+    ]
 
     file_extension = os.path.splitext(filename)[1].strip().strip('.').strip()
     if file_extension.lower() in _exclude_file_extension:
