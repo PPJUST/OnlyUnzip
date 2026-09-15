@@ -17,6 +17,7 @@ class SettingViewer(QWidget):
     ChangeArchiveModelTest = Signal(bool, name="修改为测试模式")
     ChangeArchiveModelExtract = Signal(bool, name="修改为解压模式")
     ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
+    ChangeIgnoreExcludeList = Signal(bool, name="修改忽略内置排除列表")
     ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
     ChangeWriteFilename = Signal(bool, name="修改写入文件名")
     ChangeWriteFilenameLeftPart = Signal(str, name="修改密码格式左边部分")
@@ -102,6 +103,7 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode1_extract.setEnabled(is_enable)
         self.ui.checkBox_read_password_from_filename.setEnabled(is_enable)
         self.ui.checkBox_try_unknown_filetype.setEnabled(is_enable)
+        self.ui.checkBox_ignore_exclude_list.setEnabled(is_enable)
         self.ui.lineEdit_7zip_path.setEnabled(is_enable)
         self.ui.widget_test.setEnabled(is_enable)
         self.ui.widget_extract.setEnabled(is_enable)
@@ -140,6 +142,11 @@ class SettingViewer(QWidget):
         """通用选项
         设置是否尝试处理未知格式的文件"""
         self.ui.checkBox_try_unknown_filetype.setChecked(is_enable)
+
+    def set_setting_is_ignore_exclude_list(self, is_enable: bool):
+        """通用选项
+        设置是否忽略内置排除列表"""
+        self.ui.checkBox_ignore_exclude_list.setChecked(is_enable)
 
     def set_setting_is_read_password_from_filename(self, is_enable: bool):
         """通用选项
@@ -267,6 +274,8 @@ class SettingViewer(QWidget):
 
         # 处理未知文件
         self.ui.checkBox_try_unknown_filetype.stateChanged.connect(self.ChangeTryUnknownFiletype.emit)
+        # 忽略内置排除列表
+        self.ui.checkBox_ignore_exclude_list.stateChanged.connect(self.ChangeIgnoreExcludeList.emit)
         # 从文件名中读取密码
         self.ui.checkBox_read_password_from_filename.stateChanged.connect(self.ChangeReadPasswordFromFilename.emit)
         # 密码写入文件名

@@ -25,6 +25,7 @@ class SettingModel:
         # 实例设置项子类
         self._model_archive = _ChildSettingModelArchive(self.config)
         self._try_unknown_filetype = _ChildSettingTryUnknownFiletype(self.config)
+        self._ignore_exclude_list = _ChildSettingIgnoreExcludeList(self.config)
         self._read_password_from_filename = _ChildSettingReadPasswordFromFilename(self.config)
         self._write_filename = _ChildSettingWriteFilename(self.config)
         self._model_extract = _ChildSettingModelExtract(self.config)
@@ -62,6 +63,12 @@ class SettingModel:
 
     def set_try_unknown_filetype_is_enable(self, is_enable: bool):
         self._try_unknown_filetype.set(is_enable)
+
+    def get_ignore_exclude_list_is_enable(self):
+        return self._ignore_exclude_list.read()
+
+    def set_ignore_exclude_list_is_enable(self, is_enable: bool):
+        self._ignore_exclude_list.set(is_enable)
 
     def get_read_password_from_filename_is_enable(self):
         return self._read_password_from_filename.read()
@@ -304,6 +311,13 @@ class _ChildSettingTryUnknownFiletype(_ModuleChildSettingSingleEnable):
 
     def __init__(self, config):
         super().__init__(config, section='TryUnknownFiletype', key='is_enable', default_value=False)
+
+
+class _ChildSettingIgnoreExcludeList(_ModuleChildSettingSingleEnable):
+    """设置项 忽略内置排除列表"""
+
+    def __init__(self, config):
+        super().__init__(config, section='IgnoreExcludeList', key='is_enable', default_value=False)
 
 
 class _ChildSettingReadPasswordFromFilename(_ModuleChildSettingSingleEnable):

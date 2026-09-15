@@ -65,6 +65,11 @@ class Ui_Form(object):
 
         self.verticalLayout.addWidget(self.checkBox_try_unknown_filetype)
 
+        self.checkBox_ignore_exclude_list = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBox_ignore_exclude_list.setObjectName(u"checkBox_ignore_exclude_list")
+
+        self.verticalLayout.addWidget(self.checkBox_ignore_exclude_list)
+
         self.checkBox_read_password_from_filename = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_read_password_from_filename.setObjectName(u"checkBox_read_password_from_filename")
 
@@ -343,8 +348,11 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.checkBox_try_unknown_filetype.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u5904\u7406\u672a\u77e5\u683c\u5f0f\u6587\u4ef6", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_read_password_from_filename.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u53ef\u80fd\u5b58\u5728\u7684\u5bc6\u7801\u3002</p><p>\u652f\u6301\u7684\u683c\u5f0f\uff08\u4ee5xxx\u6307\u4ee3\u5bc6\u7801\uff09\uff1a</p><p>1. \u4ee5\u7a7a\u683c\u4e3a\u95f4\u9694\u7684\u4e24\u7aef\u5b57\u7b26\uff1axxx \u6587\u4ef6\u540d/\u6587\u4ef6\u540d xxx</p><p>2. \u4ee5#\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a#xxx \u6587\u4ef6\u540d</p><p>3. \u4ee5@\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a@xxx \u6587\u4ef6\u540d</p><p>4. \u5728\u3010\u3011\u3001[]\u3001()\u4e2d\u7684\u5b57\u7b26\uff1a\u3010xxx\u3011\u6587\u4ef6\u540d</p><p>5. \u4ee5&quot;\u5bc6\u7801&quot;\u3001&quot;\u89e3\u538b\u7801&quot;\u3001&quot;\u89e3\u538b\u5bc6\u7801&quot;\u3001&quot;pw&quot;\u3001&quot;PW&quot;\u4ee5\u53ca\u4e0a\u8ff0\u5b57\u7b26\u540e\u5e26&quot;:&quot;\u3001&quot;\uff1a&quot;\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a\u5bc6\u7801xxx \u6587\u4ef6\u540d/\u89e3\u538b\u5bc6\u7801:xxx \u6587"
-                        "\u4ef6\u540d</p></body></html>", None))
+        self.checkBox_ignore_exclude_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u52fe\u9009\u540e\uff0c\u5373\u4f7f\u6587\u4ef6\u6269\u5c55\u540d\u4f4d\u4e8e\u5185\u7f6e\u6392\u9664\u5217\u8868\u4e2d\uff08Office \u6587\u6863/\u6e38\u620f\u5b58\u6863/\u5e94\u7528\u5305/\u7535\u5b50\u4e66\u7b49\uff09\uff0c\u4e5f\u4f1a\u5c1d\u8bd5\u89e3\u538b\u3002</p><p>\u672a\u52fe\u9009\uff08\u9ed8\u8ba4\uff09\uff1a\u6392\u9664\u5217\u8868\u5185\u7684\u6587\u4ef6\u4e0d\u4f1a\u88ab\u5f53\u4f5c\u538b\u7f29\u5305\u5904\u7406\uff0c\u53ef\u907f\u514d\u6587\u6863/\u5b58\u6863\u88ab\u8bef\u89e3\u538b\u3002</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.checkBox_ignore_exclude_list.setText(QCoreApplication.translate("Form", u"\u5ffd\u7565\u5185\u7f6e\u6392\u9664\u5217\u8868", None))
+#if QT_CONFIG(tooltip)
+        self.checkBox_read_password_from_filename.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u53ef\u80fd\u5b58\u5728\u7684\u5bc6\u7801\u3002</p><p>\u652f\u6301\u7684\u683c\u5f0f\uff08\u4ee5xxx\u6307\u4ee3\u5bc6\u7801\uff09\uff1a</p><p>1. \u4ee5\u7a7a\u683c\u4e3a\u95f4\u9694\u7684\u4e24\u7aef\u5b57\u7b26\uff1axxx \u6587\u4ef6\u540d/\u6587\u4ef6\u540d xxx</p><p>2. \u4ee5#\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a#xxx \u6587\u4ef6\u540d</p><p>3. \u4ee5@\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a@xxx \u6587\u4ef6\u540d</p><p>4. \u5728\u3010\u3011\u3001[]\u3001()\u4e2d\u7684\u5b57\u7b26\uff1a\u3010xxx\u3011\u6587\u4ef6\u540d</p><p>5. \u4ee5&quot;\u5bc6\u7801&quot;\u3001&quot;\u89e3\u538b\u7801&quot;\u3001&quot;\u89e3\u538b\u5bc6\u7801&quot;\u3001&quot;pw&quot;\u3001&quot;PW&quot;\u4ee5\u53ca\u4e0a\u8ff0\u5b57\u7b26\u540e\u5e26&quot;:&quot;\u3001&quot;\uff1a&quot;\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a\u5bc6\u7801xxx \u6587\u4ef6\u540d/\u89e3\u538b\u5bc6\u7801:xxx \u6587\u4ef6\u540d</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_read_password_from_filename.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u5bc6\u7801", None))
 #if QT_CONFIG(tooltip)

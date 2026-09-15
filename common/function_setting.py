@@ -20,6 +20,12 @@ def get_is_try_unknown_filetype():
     return setting_presenter.get_try_unknown_filetype_is_enable()
 
 
+def get_is_ignore_exclude_list():
+    """获取是否忽略内置排除列表"""
+    setting_presenter = components.page_setting.get_presenter().model
+    return setting_presenter.get_ignore_exclude_list_is_enable()
+
+
 def get_7zip_path():
     """获取指定的7zip路径，若未指定则返回空"""
     setting_presenter = components.page_setting.get_presenter().model

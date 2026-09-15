@@ -103,6 +103,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="checkBox_ignore_exclude_list">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;勾选后，即使文件扩展名位于内置排除列表中（Office 文档/游戏存档/应用包/电子书等），也会尝试解压。&lt;/p&gt;&lt;p&gt;未勾选（默认）：排除列表内的文件不会被当作压缩包处理，可避免文档/存档被误解压。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>忽略内置排除列表</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="checkBox_read_password_from_filename">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从文件名中读取可能存在的密码。&lt;/p&gt;&lt;p&gt;支持的格式（以xxx指代密码）：&lt;/p&gt;&lt;p&gt;1. 以空格为间隔的两端字符：xxx 文件名/文件名 xxx&lt;/p&gt;&lt;p&gt;2. 以#开头，空格结尾的字符：#xxx 文件名&lt;/p&gt;&lt;p&gt;3. 以@开头，空格结尾的字符：@xxx 文件名&lt;/p&gt;&lt;p&gt;4. 在【】、[]、()中的字符：【xxx】文件名&lt;/p&gt;&lt;p&gt;5. 以&amp;quot;密码&amp;quot;、&amp;quot;解压码&amp;quot;、&amp;quot;解压密码&amp;quot;、&amp;quot;pw&amp;quot;、&amp;quot;PW&amp;quot;以及上述字符后带&amp;quot;:&amp;quot;、&amp;quot;：&amp;quot;开头，空格结尾的字符：密码xxx 文件名/解压密码:xxx 文件名&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

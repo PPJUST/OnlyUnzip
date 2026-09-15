@@ -107,12 +107,14 @@ class HomePresenter(QObject):
         # 所以先检查文件名再进行文件头检查
         # 待优化：文件较多时，读取文件头速度较慢，会堵塞UI线程（先仅用文件名判断的方法）
         if not is_try_unknown_filetype:
-            self.thread_check_filetype.set_files(files)
+            self.thread_check_filetype.set_files(files, function_setting.get_is_ignore_exclude_list())
             self.thread_check_filetype.start()
         else:
             # 处理未知文件时同样先应用排除列表，避免把 zip 容器格式
-            # （Office 文档/游戏存档等）误判为压缩包
-            files = [file for file in files if not is_exclude_file_extension(file)]
+            # （Office 文档/游戏存档等）误判为压缩包；
+            # 勾选「忽略内置排除列表」后跳过该过滤
+            if not function_setting.get_is_ignore_exclude_list():
+                files = [file for file in files if not is_exclude_file_extension(file)]
             self.deal_archive_files(files)
 
     def deal_archive_files(self, archives: list):

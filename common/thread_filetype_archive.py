@@ -12,14 +12,16 @@ class ThreadFiletypeArchive(QThread):
     def __init__(self, ):
         super().__init__()
         self.files = []  # 需要检查的文件列表
+        self.is_ignore_exclude = False  # 是否忽略内置排除列表（GUI 线程传入）
 
-    def set_files(self, files: list):
+    def set_files(self, files: list, is_ignore_exclude: bool = False):
         self.files = files
+        self.is_ignore_exclude = is_ignore_exclude
 
     def run(self):
         archive_files = []
         for file in self.files:
-            if not is_exclude_file_extension(file):
+            if self.is_ignore_exclude or not is_exclude_file_extension(file):
                 if lzytools_archive.is_archive_by_filename(os.path.basename(file)):
                     archive_files.append(file)
                 elif os.path.exists(file) and lzytools_archive.is_archive(file):
