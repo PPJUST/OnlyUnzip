@@ -39,6 +39,10 @@ class SettingPresenter(QObject):
         """获取是否尝试处理未知格式的文件"""
         return self.model.get_try_unknown_filetype_is_enable()
 
+    def get_is_ignore_exclude_list(self):
+        """获取是否忽略内置排除列表"""
+        return self.model.get_ignore_exclude_list_is_enable()
+
     def update_filename_with_pw_preview(self):
         """更新密码写入文件名的预览"""
         self.viewer.set_setting_write_filename_preview(self.model.get_write_filename_preview())
@@ -84,6 +88,7 @@ class SettingPresenter(QObject):
         self.viewer.ChangeArchiveModelExtract.connect(self.model.set_model_archive_extract)
         self.viewer.ChangeArchiveModelExtract.connect(self.SignalChangeArchiveModel.emit)
         self.viewer.ChangeTryUnknownFiletype.connect(self.model.set_try_unknown_filetype_is_enable)
+        self.viewer.ChangeIgnoreExcludeList.connect(self.model.set_ignore_exclude_list_is_enable)
         self.viewer.ChangeReadPasswordFromFilename.connect(self.model.set_read_password_from_filename_is_enable)
         self.viewer.ChangeWriteFilename.connect(self.model.set_write_filename_is_enable)
         self.viewer.ChangeWriteFilenameLeftPart.connect(self.model.set_write_filename_left_word)
@@ -121,6 +126,7 @@ class SettingPresenter(QObject):
             raise Exception(archive_model, "错误的设置项")
 
         self.viewer.set_setting_is_try_unknown_filetype(self.model.get_try_unknown_filetype_is_enable())
+        self.viewer.set_setting_is_ignore_exclude_list(self.model.get_ignore_exclude_list_is_enable())
         self.viewer.set_setting_is_read_password_from_filename(self.model.get_read_password_from_filename_is_enable())
 
         self.viewer.set_setting_write_filename(self.model.get_write_filename_is_enable())

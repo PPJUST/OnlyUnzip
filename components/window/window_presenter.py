@@ -230,11 +230,12 @@ class WindowPresenter:
         passwords_success = results.get_success_passwords()
         print('处理成功的密码', passwords_success)
 
+        # 剔除虚拟密码（无密码文件会命中 FAKEPASSWORD，不能计入密码本）
+        filter_passwords = [pw for pw in passwords_success if pw != function_7zip.FAKE_PASSWORD]
         # 剔除其中包含的临时密码（临时密码不写入密码本，但保留密码本中已存在的密码）
         db_passwords = self.page_password.get_passwords()
         temp_passwords = self.dialog_temp_password.get_passwords()
-        filter_passwords = passwords_success
-        for pw in passwords_success:
+        for pw in filter_passwords.copy():
             if pw in temp_passwords and pw not in db_passwords:
                 filter_passwords.remove(pw)
 
