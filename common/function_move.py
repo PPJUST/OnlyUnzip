@@ -19,6 +19,9 @@ def move_to_smart(dirpath: str, target_dirpath: str, dirname_=None):
     # （传入的dirpath路径为临时文件夹的路径，如果为其自身会导致该临时文件夹作为解压文件夹的外部文件夹）
     if deepest_file == dirpath:
         # 先新建指定文件名的文件夹，将内部文件移动至该文件夹下，然后在移动到外部
+        # 2026.09.16修复：解压文件夹内一级目录中同时存在多个文件，并且存在与压缩文件同名的文件夹，则移动到临时文件夹时会报错
+        if os.path.exists(dirpath) and len(os.listdir(dirpath)) >= 2 and dirname_.lower() in os.listdir(dirpath):
+            dirname_ = lzytools.file.create_nodup_filename_standard_digital_suffix(dirname_, dirpath)
         move_dirpath = os.path.normpath(os.path.join(dirpath, dirname_))
         _move_inside_file_to_folder(deepest_file, move_dirpath)
         new_file_dict = function_file.move_file_to_folder(move_dirpath, target_dirpath)
