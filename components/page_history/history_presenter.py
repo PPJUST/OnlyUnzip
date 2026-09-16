@@ -1,4 +1,5 @@
 # 历史模块的桥梁组件
+from common import function_history
 from common.class_7zip import RESULT_STATE_ALL, CLASS_RESULT_7ZIP
 from common.class_file_info import FileInfo
 from components.page_history.history_model import HistoryModel
@@ -12,6 +13,10 @@ class HistoryPresenter:
         self.viewer = viewer
         self.model = model
 
+        # 检查历史记录文件
+        function_history.check_history_file()
+        function_history.move_history_file()
+
         # 绑定信号
         self.viewer.HistoryFilter.connect(self.filter_result)
 
@@ -22,6 +27,7 @@ class HistoryPresenter:
         info, color, password = self.model.analyse_7zip_result(file_info)
         print('分析结果：', info, color, password)
         self.viewer.add_record(info, color, password, file_info)
+        self._save_history(file_info)
 
     def filter_result(self, result_state: str, search_text: str):
         """过滤结果"""
@@ -40,3 +46,7 @@ class HistoryPresenter:
                         result_class.append(class_)
 
             self.viewer.filter_history(result_class, search_text)
+
+    def _save_history(self, file_info: FileInfo):
+        """保存处理结果到本地"""
+        self.model.save_7zip_result(file_info)

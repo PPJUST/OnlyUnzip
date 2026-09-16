@@ -4,6 +4,7 @@ import os
 import time
 from typing import Tuple, Union
 
+from common import function_history
 from common.class_7zip import Result7zip
 from common.class_file_info import FileInfo
 from common.function_7zip import FAKE_PASSWORD
@@ -39,3 +40,8 @@ class HistoryModel:
                 return text_join, color, password
         else:
             return text_join, color, None
+
+    @staticmethod
+    def save_7zip_result(file_info: FileInfo):
+        """保存7zip结果类到本地"""
+        function_history.save_to_result(file_info)
