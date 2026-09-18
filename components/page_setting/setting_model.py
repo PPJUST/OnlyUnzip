@@ -60,10 +60,10 @@ class SettingModel:
         self.set_model_archive(ModelArchive.Test())
 
     def get_model_filename_check(self):
-        return self._model_filename_check.read()
+        return self._model_filename_check.read_mode()
 
     def set_model_filename_check(self, model: TYPES_MODEL_FILENAME_CHECK):
-        self._model_filename_check.set(model)
+        self._model_filename_check.set_mode(model)
 
     def set_model_filename_check_default(self):
         self.set_model_filename_check(ModelFilenameCheck.Default())
@@ -73,6 +73,18 @@ class SettingModel:
 
     def set_model_filename_check_whitelist(self):
         self.set_model_filename_check(ModelFilenameCheck.WhiteList())
+
+    def get_model_filename_check_blacklist_rule(self):
+        return self._model_filename_check.read_black_list()
+
+    def set_model_filename_check_blacklist_rule(self, rule: list[str]):
+        self._model_filename_check.set_black_list(rule)
+
+    def get_model_filename_check_whitelist_rule(self):
+        return self._model_filename_check.read_white_list()
+
+    def set_model_filename_check_whitelist_rule(self, rule: list[str]):
+        self._model_filename_check.set_white_list(rule)
 
     def get_try_unknown_filetype_is_enable(self):
         return self._try_unknown_filetype.read()
@@ -322,12 +334,19 @@ class _ChildSettingModelFilenameCheck(_ModuleChildSetting):
     def __init__(self, config):
         super().__init__(config)
         self.section = 'ModelFilenameCheck'
-        self.key = 'model'
-        self._default_value = ModelFilenameCheck.Default()
+        # 模式
+        self.key_mode = 'model'
+        self._default_value_mode = ModelFilenameCheck.Default()
+        # 黑名单规则（以双管道符间隔）
+        self.key_black_list = 'black_list'
+        self._default_value_black_list = r'\.xls$||\.xlsx$||\.xlsm$||\.doc$||\.docx$||\.docm$||\.ppt$||\.pptx$||\.pptm$||\.csv$||\.odt$||\.ods$||\.odp$||\.epub$||\.kmz$||\.cbz$||\.ipa$||\.jar$||\.war$||\.ear$||\.aar$||\.xpi$||\.crx$||\.vsix$||\.nupkg$||\.whl$||\.apk$||\.exe$||\.appx$||\.msix$||\.aab$||\.xapk$||\.vpk$||\.pck$||\.ba2$||\.love$||\.mcpack$||\.mcworld$||\.bsa$||\.mpq$||\.sav$||\.dat$||\.pak$||\.quicksave$||\.autosave$'
+        # 　白名单规则（以双管道符间隔）
+        self.key_white_list = 'white_list'
+        self._default_value_white_list = r'\.zip$||\.xz$||\.7z$||\.rar$||\.tar$||\.iso$||\.gz$||\.arj$||\.cramfs$||\.bzip2$||\.cab$||\.dmg$||\.wim$||\.gzip$||\.chm$||\.ext$||\.ar$||\.cpio$||\.\d+$||\.part\d+$||\.z\d+$'
 
-    def read(self) -> TYPES_MODEL_FILENAME_CHECK:
+    def read_mode(self) -> TYPES_MODEL_FILENAME_CHECK:
         """读取设置项"""
-        value = self._read_key(self.section, self.key, self._default_value)
+        value = self._read_key(self.section, self.key_mode, self._default_value_mode)
         # 将读取的文本值转换为对应的自定义类
         if isinstance(value, (ModelFilenameCheck.Default, ModelFilenameCheck.BlackList, ModelFilenameCheck.WhiteList)):
             return value
@@ -338,12 +357,40 @@ class _ChildSettingModelFilenameCheck(_ModuleChildSetting):
         elif value == ModelFilenameCheck.WhiteList.value:
             return ModelFilenameCheck.WhiteList()
         else:
-            raise ValueError(self.section, self.key, '无效的设置项值')
+            raise ValueError(self.section, self.key_mode, '无效的设置项值')
 
-    def set(self, value: TYPES_MODEL_FILENAME_CHECK):
+    def set_mode(self, value: TYPES_MODEL_FILENAME_CHECK):
         """设置设置项"""
         value_str = value.value
-        self._set_value(self.section, self.key, value_str)
+        self._set_value(self.section, self.key_mode, value_str)
+
+    def read_black_list(self) -> list[str]:
+        """读取设置项"""
+        value = self._read_key(self.section, self.key_black_list, self._default_value_black_list)
+        value = value.split('||')
+        if value:
+            return value
+        else:
+            return []
+
+    def set_black_list(self, value: list[str]):
+        """设置设置项"""
+        value_str = '||'.join(value)
+        self._set_value(self.section, self.key_black_list, value_str)
+
+    def read_white_list(self) -> list[str]:
+        """读取设置项"""
+        value = self._read_key(self.section, self.key_white_list, self._default_value_white_list)
+        value = value.split('||')
+        if value:
+            return value
+        else:
+            return []
+
+    def set_white_list(self, value: list[str]):
+        """设置设置项"""
+        value_str = '||'.join(value)
+        self._set_value(self.section, self.key_white_list, value_str)
 
 
 class _ChildSettingTryUnknownFiletype(_ModuleChildSettingSingleEnable):

@@ -5,7 +5,7 @@ import sys
 
 import lzytools
 import lzytools_Qt
-from PySide6.QtCore import Signal, QEvent
+from PySide6.QtCore import Signal, QEvent, QTimer
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog
 
 from components.page_setting.res.icon_base64 import ICON_CHOOSE, ICON_OPEN, ICON_BLACK_LIST, ICON_WHITE_LIST
@@ -18,7 +18,9 @@ class SettingViewer(QWidget):
     ChangeArchiveModelExtract = Signal(bool, name="修改为解压模式")
     ChangeFilenameCheckModeDefault = Signal(bool, name="修改文件名预检查模式为默认模式")
     ChangeFilenameCheckModeBlackList = Signal(bool, name="修改文件名预检查模式为黑名单模式")
+    ChangeFilenameCheckModeBlackListRule = Signal(list, name="修改文件名预检查模式黑名单规则")
     ChangeFilenameCheckModeWhiteList = Signal(bool, name="修改文件名预检查模式为白名单模式")
+    ChangeFilenameCheckModeWhiteListRule = Signal(list, name="修改文件名预检查模式白名单规则")
     ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
     ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
     ChangeWriteFilename = Signal(bool, name="修改写入文件名")
@@ -49,6 +51,17 @@ class SettingViewer(QWidget):
         # 初始化
         self._bind_signal()
         self._set_icon()
+
+        # 更新延时器
+        self._timer_black_list_rule = QTimer()
+        self._timer_black_list_rule.setInterval(1000)
+        self._timer_black_list_rule.setSingleShot(True)
+        self._timer_black_list_rule.timeout.connect(self._emit_black_list_rule)
+
+        self._timer_white_list_rule = QTimer()
+        self._timer_white_list_rule.setInterval(1000)
+        self._timer_white_list_rule.setSingleShot(True)
+        self._timer_white_list_rule.timeout.connect(self._emit_white_list_rule)
 
         # 为ComboBox安装事件过滤器，屏蔽其滚轮事件
         self.ui.comboBox_break_folder.installEventFilter(self)
@@ -148,11 +161,25 @@ class SettingViewer(QWidget):
         self.ui.radioButton_filename_check_mode_default.setChecked(False)
         self.ui.radioButton_filename_check_mode_white_list.setChecked(False)
 
+    def set_setting_filename_check_mode_black_list_rule(self, rules: list[str]):
+        """设置文件名预检查模式：黑名单模式规则"""
+        self.ui.textEdit_black_list.clear()
+        for rule in rules:
+            if rule:
+                self.ui.textEdit_black_list.append(rule)
+
     def set_setting_filename_check_mode_white_list(self):
         """设置文件名预检查模式：白名单模式"""
         self.ui.radioButton_filename_check_mode_white_list.setChecked(True)
         self.ui.radioButton_filename_check_mode_default.setChecked(False)
         self.ui.radioButton_filename_check_mode_black_list.setChecked(False)
+
+    def set_setting_filename_check_mode_white_list_rule(self, rules: list[str]):
+        """设置文件名预检查模式：白名单模式规则"""
+        self.ui.textEdit_white_list.clear()
+        for rule in rules:
+            if rule:
+                self.ui.textEdit_white_list.append(rule)
 
     def _show_settings_extract(self):
         """显示解压模式的设置项，隐藏测试模式的设置项"""
@@ -296,6 +323,12 @@ class SettingViewer(QWidget):
         self.ui.radioButton_filename_check_mode_default.clicked.connect(self._change_filename_check_model)
         self.ui.radioButton_filename_check_mode_black_list.clicked.connect(self._change_filename_check_model)
         self.ui.radioButton_filename_check_mode_white_list.clicked.connect(self._change_filename_check_model)
+        self.ui.textEdit_black_list.textChanged.connect(self._change_black_list_rule)
+        self.ui.textEdit_white_list.textChanged.connect(self._change_white_list_rule)
+        self.ui.toolButton_open_black_list.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
+        self.ui.toolButton_open_white_list.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(2))
+        self.ui.pushButton_return_1.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
+        self.ui.pushButton_return_2.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
 
         # 处理未知文件
         self.ui.checkBox_try_unknown_filetype.stateChanged.connect(self.ChangeTryUnknownFiletype.emit)
@@ -357,6 +390,22 @@ class SettingViewer(QWidget):
             self.ChangeExtractModelDirect.emit(True)
         elif self.ui.radioButton_mode2_extract_same_folder.isChecked():
             self.ChangeExtractModelSameFolder.emit(True)
+
+    def _change_black_list_rule(self):
+        self._timer_black_list_rule.start()
+
+    def _change_white_list_rule(self):
+        self._timer_white_list_rule.start()
+
+    def _emit_black_list_rule(self):
+        rule = self.ui.textEdit_black_list.toPlainText()
+        rules = [i for i in rule.split('\n') if i]
+        self.ChangeFilenameCheckModeBlackListRule.emit(rules)
+
+    def _emit_white_list_rule(self):
+        rule = self.ui.textEdit_white_list.toPlainText()
+        rules = [i for i in rule.split('\n') if i]
+        self.ChangeFilenameCheckModeWhiteListRule.emit(rules)
 
     def eventFilter(self, obj, event):
         # 忽略ComboBox的滚轮事件

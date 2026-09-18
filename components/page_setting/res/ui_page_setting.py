@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingiFXdgn.ui'
+## Form generated from reading UI file 'page_settinglceaRT.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.0
 ##
@@ -15,64 +15,65 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
-    QFrame, QHBoxLayout, QLabel, QLineEdit,
-    QPlainTextEdit, QRadioButton, QScrollArea, QSizePolicy,
-    QSpacerItem, QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
+    QPushButton, QRadioButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QStackedWidget, QTextEdit, QToolButton,
+    QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(320, 240)
-        self.verticalLayout_2 = QVBoxLayout(Form)
-        self.verticalLayout_2.setSpacing(0)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.scrollArea = QScrollArea(Form)
+        Form.resize(240, 228)
+        self.verticalLayout = QVBoxLayout(Form)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.stackedWidget = QStackedWidget(Form)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.page = QWidget()
+        self.page.setObjectName(u"page")
+        self.verticalLayout_6 = QVBoxLayout(self.page)
+        self.verticalLayout_6.setSpacing(0)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.scrollArea = QScrollArea(self.page)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 763))
-        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
-        self.verticalLayout.setSpacing(3)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 221, 763))
+        self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setSpacing(3)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.radioButton_mode1_test = QRadioButton(self.scrollAreaWidgetContents)
-        self.buttonGroup = QButtonGroup(Form)
-        self.buttonGroup.setObjectName(u"buttonGroup")
-        self.buttonGroup.addButton(self.radioButton_mode1_test)
         self.radioButton_mode1_test.setObjectName(u"radioButton_mode1_test")
 
-        self.verticalLayout.addWidget(self.radioButton_mode1_test)
+        self.verticalLayout_2.addWidget(self.radioButton_mode1_test)
 
         self.radioButton_mode1_extract = QRadioButton(self.scrollAreaWidgetContents)
-        self.buttonGroup.addButton(self.radioButton_mode1_extract)
         self.radioButton_mode1_extract.setObjectName(u"radioButton_mode1_extract")
 
-        self.verticalLayout.addWidget(self.radioButton_mode1_extract)
+        self.verticalLayout_2.addWidget(self.radioButton_mode1_extract)
 
         self.line = QFrame(self.scrollAreaWidgetContents)
         self.line.setObjectName(u"line")
         self.line.setFrameShape(QFrame.Shape.HLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout.addWidget(self.line)
+        self.verticalLayout_2.addWidget(self.line)
 
         self.radioButton_filename_check_mode_default = QRadioButton(self.scrollAreaWidgetContents)
-        self.buttonGroup_2 = QButtonGroup(Form)
-        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
-        self.buttonGroup_2.addButton(self.radioButton_filename_check_mode_default)
         self.radioButton_filename_check_mode_default.setObjectName(u"radioButton_filename_check_mode_default")
 
-        self.verticalLayout.addWidget(self.radioButton_filename_check_mode_default)
+        self.verticalLayout_2.addWidget(self.radioButton_filename_check_mode_default)
 
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setSpacing(0)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.radioButton_filename_check_mode_black_list = QRadioButton(self.scrollAreaWidgetContents)
-        self.buttonGroup_2.addButton(self.radioButton_filename_check_mode_black_list)
         self.radioButton_filename_check_mode_black_list.setObjectName(u"radioButton_filename_check_mode_black_list")
 
         self.horizontalLayout_8.addWidget(self.radioButton_filename_check_mode_black_list)
@@ -87,13 +88,12 @@ class Ui_Form(object):
         self.horizontalLayout_8.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_8)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_8)
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setSpacing(0)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.radioButton_filename_check_mode_white_list = QRadioButton(self.scrollAreaWidgetContents)
-        self.buttonGroup_2.addButton(self.radioButton_filename_check_mode_white_list)
         self.radioButton_filename_check_mode_white_list.setObjectName(u"radioButton_filename_check_mode_white_list")
 
         self.horizontalLayout_9.addWidget(self.radioButton_filename_check_mode_white_list)
@@ -108,31 +108,31 @@ class Ui_Form(object):
         self.horizontalLayout_9.addItem(self.horizontalSpacer_2)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_9)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_9)
 
         self.line_6 = QFrame(self.scrollAreaWidgetContents)
         self.line_6.setObjectName(u"line_6")
         self.line_6.setFrameShape(QFrame.Shape.HLine)
         self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout.addWidget(self.line_6)
+        self.verticalLayout_2.addWidget(self.line_6)
 
         self.checkBox_try_unknown_filetype = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_try_unknown_filetype.setObjectName(u"checkBox_try_unknown_filetype")
 
-        self.verticalLayout.addWidget(self.checkBox_try_unknown_filetype)
+        self.verticalLayout_2.addWidget(self.checkBox_try_unknown_filetype)
 
         self.checkBox_read_password_from_filename = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_read_password_from_filename.setObjectName(u"checkBox_read_password_from_filename")
 
-        self.verticalLayout.addWidget(self.checkBox_read_password_from_filename)
+        self.verticalLayout_2.addWidget(self.checkBox_read_password_from_filename)
 
         self.line_4 = QFrame(self.scrollAreaWidgetContents)
         self.line_4.setObjectName(u"line_4")
         self.line_4.setFrameShape(QFrame.Shape.HLine)
         self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout.addWidget(self.line_4)
+        self.verticalLayout_2.addWidget(self.line_4)
 
         self.widget_test = QWidget(self.scrollAreaWidgetContents)
         self.widget_test.setObjectName(u"widget_test")
@@ -212,7 +212,7 @@ class Ui_Form(object):
         self.verticalLayout_3.addLayout(self.verticalLayout_5)
 
 
-        self.verticalLayout.addWidget(self.widget_test)
+        self.verticalLayout_2.addWidget(self.widget_test)
 
         self.widget_extract = QWidget(self.scrollAreaWidgetContents)
         self.widget_extract.setObjectName(u"widget_extract")
@@ -329,19 +329,19 @@ class Ui_Form(object):
         self.verticalLayout_4.addWidget(self.plainTextEdit_extract_filter_rule)
 
 
-        self.verticalLayout.addWidget(self.widget_extract)
+        self.verticalLayout_2.addWidget(self.widget_extract)
 
         self.line_2 = QFrame(self.scrollAreaWidgetContents)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.Shape.HLine)
         self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout.addWidget(self.line_2)
+        self.verticalLayout_2.addWidget(self.line_2)
 
         self.label_7 = QLabel(self.scrollAreaWidgetContents)
         self.label_7.setObjectName(u"label_7")
 
-        self.verticalLayout.addWidget(self.label_7)
+        self.verticalLayout_2.addWidget(self.label_7)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
@@ -356,31 +356,82 @@ class Ui_Form(object):
         self.horizontalLayout_7.addWidget(self.toolButton_choose_7zip_path)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_7)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_7)
 
         self.line_3 = QFrame(self.scrollAreaWidgetContents)
         self.line_3.setObjectName(u"line_3")
         self.line_3.setFrameShape(QFrame.Shape.HLine)
         self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.verticalLayout.addWidget(self.line_3)
+        self.verticalLayout_2.addWidget(self.line_3)
 
         self.checkBox_top_window = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_top_window.setObjectName(u"checkBox_top_window")
 
-        self.verticalLayout.addWidget(self.checkBox_top_window)
+        self.verticalLayout_2.addWidget(self.checkBox_top_window)
 
         self.checkBox_lock_size = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_lock_size.setObjectName(u"checkBox_lock_size")
 
-        self.verticalLayout.addWidget(self.checkBox_lock_size)
+        self.verticalLayout_2.addWidget(self.checkBox_lock_size)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
-        self.verticalLayout_2.addWidget(self.scrollArea)
+        self.verticalLayout_6.addWidget(self.scrollArea)
+
+        self.stackedWidget.addWidget(self.page)
+        self.page_black_list = QWidget()
+        self.page_black_list.setObjectName(u"page_black_list")
+        self.verticalLayout_8 = QVBoxLayout(self.page_black_list)
+        self.verticalLayout_8.setSpacing(3)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(3, 3, 3, 3)
+        self.label_8 = QLabel(self.page_black_list)
+        self.label_8.setObjectName(u"label_8")
+
+        self.verticalLayout_8.addWidget(self.label_8)
+
+        self.textEdit_black_list = QTextEdit(self.page_black_list)
+        self.textEdit_black_list.setObjectName(u"textEdit_black_list")
+
+        self.verticalLayout_8.addWidget(self.textEdit_black_list)
+
+        self.pushButton_return_1 = QPushButton(self.page_black_list)
+        self.pushButton_return_1.setObjectName(u"pushButton_return_1")
+
+        self.verticalLayout_8.addWidget(self.pushButton_return_1)
+
+        self.stackedWidget.addWidget(self.page_black_list)
+        self.page_white_list = QWidget()
+        self.page_white_list.setObjectName(u"page_white_list")
+        self.verticalLayout_7 = QVBoxLayout(self.page_white_list)
+        self.verticalLayout_7.setSpacing(3)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_7.setContentsMargins(3, 3, 3, 3)
+        self.label_9 = QLabel(self.page_white_list)
+        self.label_9.setObjectName(u"label_9")
+
+        self.verticalLayout_7.addWidget(self.label_9)
+
+        self.textEdit_white_list = QTextEdit(self.page_white_list)
+        self.textEdit_white_list.setObjectName(u"textEdit_white_list")
+
+        self.verticalLayout_7.addWidget(self.textEdit_white_list)
+
+        self.pushButton_return_2 = QPushButton(self.page_white_list)
+        self.pushButton_return_2.setObjectName(u"pushButton_return_2")
+
+        self.verticalLayout_7.addWidget(self.pushButton_return_2)
+
+        self.stackedWidget.addWidget(self.page_white_list)
+
+        self.verticalLayout.addWidget(self.stackedWidget)
 
 
         self.retranslateUi(Form)
+
+        self.stackedWidget.setCurrentIndex(0)
+
 
         QMetaObject.connectSlotsByName(Form)
     # setupUi
@@ -500,5 +551,15 @@ class Ui_Form(object):
         self.checkBox_lock_size.setToolTip(QCoreApplication.translate("Form", u"\u9501\u5b9a\u7a97\u53e3\u5c3a\u5bf8\uff0c\u7981\u6b62\u4fee\u6539", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_lock_size.setText(QCoreApplication.translate("Form", u"\u9501\u5b9a\u7a97\u53e3\u5927\u5c0f", None))
+        self.label_8.setText(QCoreApplication.translate("Form", u"\u9ed1\u540d\u5355\u89c4\u5219\n"
+"\u6ce8\u610f\uff1a\n"
+"\u7f16\u5199\u89c4\u5219\u65f6\u4f7f\u7528\u6b63\u5219\u8868\u8fbe\u5f0f\u3002\n"
+"\u4e00\u4e2a\u89c4\u5219\u5360\u4e00\u884c\u3002", None))
+        self.pushButton_return_1.setText(QCoreApplication.translate("Form", u"\u8fd4\u56de", None))
+        self.label_9.setText(QCoreApplication.translate("Form", u"\u9ed1\u540d\u5355\u89c4\u5219\n"
+"\u6ce8\u610f\uff1a\n"
+"\u7f16\u5199\u89c4\u5219\u65f6\u4f7f\u7528\u6b63\u5219\u8868\u8fbe\u5f0f\u3002\n"
+"\u4e00\u4e2a\u89c4\u5219\u5360\u4e00\u884c\u3002", None))
+        self.pushButton_return_2.setText(QCoreApplication.translate("Form", u"\u8fd4\u56de", None))
     # retranslateUi
 
