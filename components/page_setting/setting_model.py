@@ -5,7 +5,8 @@ import os
 from typing import Union
 
 from common.class_7zip import ModelArchive, Position, ModelExtract, ModelCoverFile, ModelBreakFolder, \
-    TYPES_MODEL_ARCHIVE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_COVER_FILE, TYPES_MODEL_EXTRACT
+    TYPES_MODEL_ARCHIVE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_COVER_FILE, TYPES_MODEL_EXTRACT, \
+    TYPES_MODEL_FILENAME_CHECK, ModelFilenameCheck
 
 _CONFIG_FILE = 'setting.ini'  # 配置文件的相对路径（默认在主程序的同目录下）
 _SPLIT_WORD = '丨'
@@ -24,6 +25,7 @@ class SettingModel:
 
         # 实例设置项子类
         self._model_archive = _ChildSettingModelArchive(self.config)
+        self._model_filename_check = _ChildSettingModelFilenameCheck(self.config)
         self._try_unknown_filetype = _ChildSettingTryUnknownFiletype(self.config)
         self._read_password_from_filename = _ChildSettingReadPasswordFromFilename(self.config)
         self._write_filename = _ChildSettingWriteFilename(self.config)
@@ -56,6 +58,21 @@ class SettingModel:
 
     def set_model_archive_test(self):
         self.set_model_archive(ModelArchive.Test())
+
+    def get_model_filename_check(self):
+        return self._model_filename_check.read()
+
+    def set_model_filename_check(self, model: TYPES_MODEL_FILENAME_CHECK):
+        self._model_filename_check.set(model)
+
+    def set_model_filename_check_default(self):
+        self.set_model_filename_check(ModelFilenameCheck.Default())
+
+    def set_model_filename_check_blacklist(self):
+        self.set_model_filename_check(ModelFilenameCheck.BlackList())
+
+    def set_model_filename_check_whitelist(self):
+        self.set_model_filename_check(ModelFilenameCheck.WhiteList())
 
     def get_try_unknown_filetype_is_enable(self):
         return self._try_unknown_filetype.read()
@@ -294,6 +311,36 @@ class _ChildSettingModelArchive(_ModuleChildSetting):
             raise ValueError(self.section, self.key, '无效的设置项值')
 
     def set(self, value: TYPES_MODEL_ARCHIVE):
+        """设置设置项"""
+        value_str = value.value
+        self._set_value(self.section, self.key, value_str)
+
+
+class _ChildSettingModelFilenameCheck(_ModuleChildSetting):
+    """设置项 文件名预检查模式"""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.section = 'ModelFilenameCheck'
+        self.key = 'model'
+        self._default_value = ModelFilenameCheck.Default()
+
+    def read(self) -> TYPES_MODEL_FILENAME_CHECK:
+        """读取设置项"""
+        value = self._read_key(self.section, self.key, self._default_value)
+        # 将读取的文本值转换为对应的自定义类
+        if isinstance(value, (ModelFilenameCheck.Default, ModelFilenameCheck.BlackList, ModelFilenameCheck.WhiteList)):
+            return value
+        elif value == ModelFilenameCheck.Default.value:
+            return ModelFilenameCheck.Default()
+        elif value == ModelFilenameCheck.BlackList.value:
+            return ModelFilenameCheck.BlackList()
+        elif value == ModelFilenameCheck.WhiteList.value:
+            return ModelFilenameCheck.WhiteList()
+        else:
+            raise ValueError(self.section, self.key, '无效的设置项值')
+
+    def set(self, value: TYPES_MODEL_FILENAME_CHECK):
         """设置设置项"""
         value_str = value.value
         self._set_value(self.section, self.key, value_str)

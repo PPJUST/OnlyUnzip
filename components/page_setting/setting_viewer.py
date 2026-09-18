@@ -8,7 +8,7 @@ import lzytools_Qt
 from PySide6.QtCore import Signal, QEvent
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog
 
-from components.page_setting.res.icon_base64 import ICON_CHOOSE, ICON_OPEN
+from components.page_setting.res.icon_base64 import ICON_CHOOSE, ICON_OPEN, ICON_BLACK_LIST, ICON_WHITE_LIST
 from components.page_setting.res.ui_page_setting import Ui_Form
 
 
@@ -16,6 +16,9 @@ class SettingViewer(QWidget):
     """设置模块的界面组件"""
     ChangeArchiveModelTest = Signal(bool, name="修改为测试模式")
     ChangeArchiveModelExtract = Signal(bool, name="修改为解压模式")
+    ChangeFilenameCheckModeDefault = Signal(bool, name="修改文件名预检查模式为默认模式")
+    ChangeFilenameCheckModeBlackList = Signal(bool, name="修改文件名预检查模式为黑名单模式")
+    ChangeFilenameCheckModeWhiteList = Signal(bool, name="修改文件名预检查模式为白名单模式")
     ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
     ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
     ChangeWriteFilename = Signal(bool, name="修改写入文件名")
@@ -93,6 +96,8 @@ class SettingViewer(QWidget):
             os.startfile(dirpath)
 
     def _set_icon(self):
+        self.ui.toolButton_open_black_list.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_BLACK_LIST))
+        self.ui.toolButton_open_white_list.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_WHITE_LIST))
         self.ui.toolButton_choose.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_CHOOSE))
         self.ui.toolButton_open.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_OPEN))
         self.ui.toolButton_choose_7zip_path.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_CHOOSE))
@@ -100,6 +105,11 @@ class SettingViewer(QWidget):
     def _set_enable(self, is_enable: bool):
         self.ui.radioButton_mode1_test.setEnabled(is_enable)
         self.ui.radioButton_mode1_extract.setEnabled(is_enable)
+        self.ui.radioButton_filename_check_mode_default.setEnabled(is_enable)
+        self.ui.radioButton_filename_check_mode_black_list.setEnabled(is_enable)
+        self.ui.radioButton_filename_check_mode_white_list.setEnabled(is_enable)
+        self.ui.toolButton_open_black_list.setEnabled(is_enable)
+        self.ui.toolButton_open_white_list.setEnabled(is_enable)
         self.ui.checkBox_read_password_from_filename.setEnabled(is_enable)
         self.ui.checkBox_try_unknown_filetype.setEnabled(is_enable)
         self.ui.lineEdit_7zip_path.setEnabled(is_enable)
@@ -125,6 +135,24 @@ class SettingViewer(QWidget):
         self._show_settings_test()
         # 手动发送一次信号
         self.ChangeArchiveModelTest.emit(True)
+
+    def set_setting_filename_check_mode_default(self):
+        """设置文件名预检查模式：默认模式"""
+        self.ui.radioButton_filename_check_mode_default.setChecked(True)
+        self.ui.radioButton_filename_check_mode_black_list.setChecked(False)
+        self.ui.radioButton_filename_check_mode_white_list.setChecked(False)
+
+    def set_setting_filename_check_mode_black_list(self):
+        """设置文件名预检查模式：黑名单模式"""
+        self.ui.radioButton_filename_check_mode_black_list.setChecked(True)
+        self.ui.radioButton_filename_check_mode_default.setChecked(False)
+        self.ui.radioButton_filename_check_mode_white_list.setChecked(False)
+
+    def set_setting_filename_check_mode_white_list(self):
+        """设置文件名预检查模式：白名单模式"""
+        self.ui.radioButton_filename_check_mode_white_list.setChecked(True)
+        self.ui.radioButton_filename_check_mode_default.setChecked(False)
+        self.ui.radioButton_filename_check_mode_black_list.setChecked(False)
 
     def _show_settings_extract(self):
         """显示解压模式的设置项，隐藏测试模式的设置项"""
@@ -264,6 +292,10 @@ class SettingViewer(QWidget):
         # 模式
         self.ui.radioButton_mode1_extract.clicked.connect(self._change_archive_model)
         self.ui.radioButton_mode1_test.clicked.connect(self._change_archive_model)
+        # 文件名预检查模式
+        self.ui.radioButton_filename_check_mode_default.clicked.connect(self._change_filename_check_model)
+        self.ui.radioButton_filename_check_mode_black_list.clicked.connect(self._change_filename_check_model)
+        self.ui.radioButton_filename_check_mode_white_list.clicked.connect(self._change_filename_check_model)
 
         # 处理未知文件
         self.ui.checkBox_try_unknown_filetype.stateChanged.connect(self.ChangeTryUnknownFiletype.emit)
@@ -309,6 +341,14 @@ class SettingViewer(QWidget):
         elif self.ui.radioButton_mode1_test.isChecked():
             self.ChangeArchiveModelTest.emit(True)
             self._show_settings_test()
+
+    def _change_filename_check_model(self):
+        if self.ui.radioButton_filename_check_mode_default.isChecked():
+            self.ChangeFilenameCheckModeDefault.emit(True)
+        elif self.ui.radioButton_filename_check_mode_black_list.isChecked():
+            self.ChangeFilenameCheckModeBlackList.emit(True)
+        elif self.ui.radioButton_filename_check_mode_white_list.isChecked():
+            self.ChangeFilenameCheckModeWhiteList.emit(True)
 
     def _change_extract_model(self):
         if self.ui.radioButton_mode2_smart_extract.isChecked():

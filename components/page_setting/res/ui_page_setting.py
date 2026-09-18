@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingRvMayQ.ui'
+## Form generated from reading UI file 'page_settingiFXdgn.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.11.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
     QFrame, QHBoxLayout, QLabel, QLineEdit,
     QPlainTextEdit, QRadioButton, QScrollArea, QSizePolicy,
-    QToolButton, QVBoxLayout, QWidget)
+    QSpacerItem, QToolButton, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -445, 301, 683))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 763))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -59,6 +59,63 @@ class Ui_Form(object):
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.verticalLayout.addWidget(self.line)
+
+        self.radioButton_filename_check_mode_default = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2 = QButtonGroup(Form)
+        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
+        self.buttonGroup_2.addButton(self.radioButton_filename_check_mode_default)
+        self.radioButton_filename_check_mode_default.setObjectName(u"radioButton_filename_check_mode_default")
+
+        self.verticalLayout.addWidget(self.radioButton_filename_check_mode_default)
+
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setSpacing(0)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.radioButton_filename_check_mode_black_list = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2.addButton(self.radioButton_filename_check_mode_black_list)
+        self.radioButton_filename_check_mode_black_list.setObjectName(u"radioButton_filename_check_mode_black_list")
+
+        self.horizontalLayout_8.addWidget(self.radioButton_filename_check_mode_black_list)
+
+        self.toolButton_open_black_list = QToolButton(self.scrollAreaWidgetContents)
+        self.toolButton_open_black_list.setObjectName(u"toolButton_open_black_list")
+
+        self.horizontalLayout_8.addWidget(self.toolButton_open_black_list)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_8)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setSpacing(0)
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.radioButton_filename_check_mode_white_list = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2.addButton(self.radioButton_filename_check_mode_white_list)
+        self.radioButton_filename_check_mode_white_list.setObjectName(u"radioButton_filename_check_mode_white_list")
+
+        self.horizontalLayout_9.addWidget(self.radioButton_filename_check_mode_white_list)
+
+        self.toolButton_open_white_list = QToolButton(self.scrollAreaWidgetContents)
+        self.toolButton_open_white_list.setObjectName(u"toolButton_open_white_list")
+
+        self.horizontalLayout_9.addWidget(self.toolButton_open_white_list)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_9.addItem(self.horizontalSpacer_2)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_9)
+
+        self.line_6 = QFrame(self.scrollAreaWidgetContents)
+        self.line_6.setObjectName(u"line_6")
+        self.line_6.setFrameShape(QFrame.Shape.HLine)
+        self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line_6)
 
         self.checkBox_try_unknown_filetype = QCheckBox(self.scrollAreaWidgetContents)
         self.checkBox_try_unknown_filetype.setObjectName(u"checkBox_try_unknown_filetype")
@@ -338,6 +395,20 @@ class Ui_Form(object):
         self.radioButton_mode1_extract.setToolTip(QCoreApplication.translate("Form", u"\u6d4b\u8bd5\u5bc6\u7801\u5e76\u89e3\u538b\u5230\u672c\u5730", None))
 #endif // QT_CONFIG(tooltip)
         self.radioButton_mode1_extract.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u6587\u4ef6", None))
+#if QT_CONFIG(tooltip)
+        self.radioButton_filename_check_mode_default.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u9ed8\u8ba4\u5904\u7406\u5168\u90e8\u6587\u4ef6</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButton_filename_check_mode_default.setText(QCoreApplication.translate("Form", u"\u9ed8\u8ba4\u6a21\u5f0f", None))
+#if QT_CONFIG(tooltip)
+        self.radioButton_filename_check_mode_black_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4e0d\u5904\u7406\u9ed1\u540d\u5355\u89c4\u5219\u4e2d\u7684\u6587\u4ef6</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButton_filename_check_mode_black_list.setText(QCoreApplication.translate("Form", u"\u9ed1\u540d\u5355\u6a21\u5f0f", None))
+        self.toolButton_open_black_list.setText(QCoreApplication.translate("Form", u"bl", None))
+#if QT_CONFIG(tooltip)
+        self.radioButton_filename_check_mode_white_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4ec5\u5904\u7406\u767d\u540d\u5355\u89c4\u5219\u4e2d\u7684\u6587\u4ef6</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButton_filename_check_mode_white_list.setText(QCoreApplication.translate("Form", u"\u767d\u540d\u5355\u6a21\u5f0f", None))
+        self.toolButton_open_white_list.setText(QCoreApplication.translate("Form", u"wl", None))
 #if QT_CONFIG(tooltip)
         self.checkBox_try_unknown_filetype.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5ffd\u7565\u6587\u4ef6\u7c7b\u578b\uff0c\u5bf9\u6240\u6709\u7c7b\u578b\u7684\u6587\u4ef6\u8fdb\u884c\u6d4b\u8bd5\u6216\u89e3\u538b</p><p>\u6ce8\u610f\uff1a</p><p>1. \u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u89e3\u538b\u65f6\uff0c\u4f1a\u5bfc\u81f4 exe/doc/xls \u7b49\u7c7b\u578b\u7684\u6587\u4ef6\u88ab\u89e3\u538b\u3002</p><p>2. \u5224\u65ad\u6587\u4ef6\u7c7b\u578b\u7684\u65b9\u6cd5\u4e3a\u8bfb\u53d6\u6587\u4ef6\u5934\uff0c\u53ef\u80fd\u5b58\u5728\u90e8\u5206\u6587\u4ef6\u7c7b\u578b\u88ab\u8bef\u5224/\u65e0\u6cd5\u5224\u65ad\u7684\u60c5\u51b5\u3002</p><p>3. \u5bf9\u4e8e\u4f2a\u88c5\u4e3a\u5a92\u4f53\u683c\u5f0f\u7684\u538b\u7f29\u6587\u4ef6\uff0c\u53ef\u4ee5\u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u5c1d\u8bd5\uff08\u90e8\u5206\u6587\u4ef6\u53ef\u4ee5\u6b63\u5e38\u8fdb\u884c\u6d4b\u8bd5/\u89e3\u538b\uff09\u3002</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

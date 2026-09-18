@@ -2,7 +2,7 @@
 # 用于接收Viewer的信号，并在选项修改时通过Model修改本地配置文件，并通知Viewer更新
 from PySide6.QtCore import QObject, Signal
 
-from common.class_7zip import ModelArchive, ModelExtract, TYPES_MODEL_ARCHIVE
+from common.class_7zip import ModelArchive, ModelExtract, TYPES_MODEL_ARCHIVE, ModelFilenameCheck
 from components.page_setting.setting_model import SettingModel
 from components.page_setting.setting_viewer import SettingViewer
 
@@ -53,7 +53,6 @@ class SettingPresenter(QObject):
 
     def change_archive_model(self, archive_model: TYPES_MODEL_ARCHIVE):
         """手工修改压缩文件处理模式"""
-        print(archive_model)
         if isinstance(archive_model, ModelArchive.Test):
             self.viewer.set_setting_model_test()
         elif isinstance(archive_model, ModelArchive.Extract):
@@ -83,6 +82,9 @@ class SettingPresenter(QObject):
         self.viewer.ChangeArchiveModelTest.connect(self.SignalChangeArchiveModel.emit)
         self.viewer.ChangeArchiveModelExtract.connect(self.model.set_model_archive_extract)
         self.viewer.ChangeArchiveModelExtract.connect(self.SignalChangeArchiveModel.emit)
+        self.viewer.ChangeFilenameCheckModeDefault.connect(self.model.set_model_filename_check_default)
+        self.viewer.ChangeFilenameCheckModeBlackList.connect(self.model.set_model_filename_check_blacklist)
+        self.viewer.ChangeFilenameCheckModeWhiteList.connect(self.model.set_model_filename_check_whitelist)
         self.viewer.ChangeTryUnknownFiletype.connect(self.model.set_try_unknown_filetype_is_enable)
         self.viewer.ChangeReadPasswordFromFilename.connect(self.model.set_read_password_from_filename_is_enable)
         self.viewer.ChangeWriteFilename.connect(self.model.set_write_filename_is_enable)
@@ -119,6 +121,16 @@ class SettingPresenter(QObject):
             self.viewer.set_setting_model_extract()
         else:
             raise Exception(archive_model, "错误的设置项")
+
+        filename_check_model = self.model.get_model_filename_check()
+        if isinstance(filename_check_model, ModelFilenameCheck.Default):
+            self.viewer.set_setting_filename_check_mode_default()
+        elif isinstance(filename_check_model, ModelFilenameCheck.BlackList):
+            self.viewer.set_setting_filename_check_mode_black_list()
+        elif isinstance(filename_check_model, ModelFilenameCheck.WhiteList):
+            self.viewer.set_setting_filename_check_mode_white_list()
+        else:
+            raise Exception(filename_check_model, "错误的设置项")
 
         self.viewer.set_setting_is_try_unknown_filetype(self.model.get_try_unknown_filetype_is_enable())
         self.viewer.set_setting_is_read_password_from_filename(self.model.get_read_password_from_filename_is_enable())

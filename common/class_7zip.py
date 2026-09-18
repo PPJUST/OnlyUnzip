@@ -15,6 +15,22 @@ class ModelArchive:
         value = 'test'
 
 
+class ModelFilenameCheck:
+    """文件名预检查模式，默认/黑名单/白名单"""
+
+    class Default:
+        """默认"""
+        value = 'default'
+
+    class BlackList:
+        """黑名单"""
+        value = 'blacklist'
+
+    class WhiteList:
+        """白名单"""
+        value = 'whitelist'
+
+
 class ModelExtract:
     """解压模式，智能解压/解压到同名文件夹/直接解压"""
 
@@ -212,6 +228,9 @@ class Position:
 
 
 TYPES_MODEL_ARCHIVE = Union[ModelArchive.Extract, ModelArchive.Test]
+
+TYPES_MODEL_FILENAME_CHECK = Union[
+    ModelFilenameCheck.Default, ModelFilenameCheck.BlackList, ModelFilenameCheck.WhiteList]
 
 TYPES_MODEL_EXTRACT = Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct]
 
