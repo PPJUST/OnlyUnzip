@@ -6,7 +6,7 @@ from typing import Union
 
 from common.class_7zip import ModelArchive, Position, ModelExtract, ModelCoverFile, ModelBreakFolder, \
     TYPES_MODEL_ARCHIVE, TYPES_MODEL_BREAK_FOLDER, TYPES_POSITION, TYPES_MODEL_COVER_FILE, TYPES_MODEL_EXTRACT, \
-    TYPES_MODEL_FILENAME_CHECK, ModelFilenameCheck
+    TYPES_MODEL_PRE_FILTER, ModelPreFilter
 
 _CONFIG_FILE = 'setting.ini'  # 配置文件的相对路径（默认在主程序的同目录下）
 _SPLIT_WORD = '丨'
@@ -25,7 +25,7 @@ class SettingModel:
 
         # 实例设置项子类
         self._model_archive = _ChildSettingModelArchive(self.config)
-        self._model_filename_check = _ChildSettingModelFilenameCheck(self.config)
+        self._model_pre_filter = _ChildSettingModelPreFilter(self.config)
         self._try_unknown_filetype = _ChildSettingTryUnknownFiletype(self.config)
         self._read_password_from_filename = _ChildSettingReadPasswordFromFilename(self.config)
         self._write_filename = _ChildSettingWriteFilename(self.config)
@@ -59,32 +59,32 @@ class SettingModel:
     def set_model_archive_test(self):
         self.set_model_archive(ModelArchive.Test())
 
-    def get_model_filename_check(self):
-        return self._model_filename_check.read_mode()
+    def get_model_pre_filter(self):
+        return self._model_pre_filter.read_mode()
 
-    def set_model_filename_check(self, model: TYPES_MODEL_FILENAME_CHECK):
-        self._model_filename_check.set_mode(model)
+    def set_model_pre_filter(self, model: TYPES_MODEL_PRE_FILTER):
+        self._model_pre_filter.set_mode(model)
 
-    def set_model_filename_check_default(self):
-        self.set_model_filename_check(ModelFilenameCheck.Default())
+    def set_model_pre_filter_default(self):
+        self.set_model_pre_filter(ModelPreFilter.Default())
 
-    def set_model_filename_check_blacklist(self):
-        self.set_model_filename_check(ModelFilenameCheck.BlackList())
+    def set_model_pre_filter_blacklist(self):
+        self.set_model_pre_filter(ModelPreFilter.BlackList())
 
-    def set_model_filename_check_whitelist(self):
-        self.set_model_filename_check(ModelFilenameCheck.WhiteList())
+    def set_model_pre_filter_whitelist(self):
+        self.set_model_pre_filter(ModelPreFilter.WhiteList())
 
-    def get_model_filename_check_blacklist_rule(self):
-        return self._model_filename_check.read_black_list()
+    def get_model_pre_filter_blacklist_rule(self):
+        return self._model_pre_filter.read_black_list()
 
-    def set_model_filename_check_blacklist_rule(self, rule: list[str]):
-        self._model_filename_check.set_black_list(rule)
+    def set_model_pre_filter_blacklist_rule(self, rule: list[str]):
+        self._model_pre_filter.set_black_list(rule)
 
-    def get_model_filename_check_whitelist_rule(self):
-        return self._model_filename_check.read_white_list()
+    def get_model_pre_filter_whitelist_rule(self):
+        return self._model_pre_filter.read_white_list()
 
-    def set_model_filename_check_whitelist_rule(self, rule: list[str]):
-        self._model_filename_check.set_white_list(rule)
+    def set_model_pre_filter_whitelist_rule(self, rule: list[str]):
+        self._model_pre_filter.set_white_list(rule)
 
     def get_try_unknown_filetype_is_enable(self):
         return self._try_unknown_filetype.read()
@@ -328,15 +328,15 @@ class _ChildSettingModelArchive(_ModuleChildSetting):
         self._set_value(self.section, self.key, value_str)
 
 
-class _ChildSettingModelFilenameCheck(_ModuleChildSetting):
-    """设置项 文件名预检查模式"""
+class _ChildSettingModelPreFilter(_ModuleChildSetting):
+    """设置项 文件预筛选模式"""
 
     def __init__(self, config):
         super().__init__(config)
-        self.section = 'ModelFilenameCheck'
+        self.section = 'ModelPreFilter'
         # 模式
         self.key_mode = 'model'
-        self._default_value_mode = ModelFilenameCheck.Default()
+        self._default_value_mode = ModelPreFilter.Default()
         # 黑名单规则（以双管道符间隔）
         self.key_black_list = 'black_list'
         self._default_value_black_list = r'\.xls$||\.xlsx$||\.xlsm$||\.doc$||\.docx$||\.docm$||\.ppt$||\.pptx$||\.pptm$||\.csv$||\.odt$||\.ods$||\.odp$||\.epub$||\.kmz$||\.cbz$||\.ipa$||\.jar$||\.war$||\.ear$||\.aar$||\.xpi$||\.crx$||\.vsix$||\.nupkg$||\.whl$||\.apk$||\.exe$||\.appx$||\.msix$||\.aab$||\.xapk$||\.vpk$||\.pck$||\.ba2$||\.love$||\.mcpack$||\.mcworld$||\.bsa$||\.mpq$||\.sav$||\.dat$||\.pak$||\.quicksave$||\.autosave$'
@@ -344,22 +344,22 @@ class _ChildSettingModelFilenameCheck(_ModuleChildSetting):
         self.key_white_list = 'white_list'
         self._default_value_white_list = r'\.zip$||\.xz$||\.7z$||\.rar$||\.tar$||\.iso$||\.gz$||\.arj$||\.cramfs$||\.bzip2$||\.cab$||\.dmg$||\.wim$||\.gzip$||\.chm$||\.ext$||\.ar$||\.cpio$||\.\d+$||\.part\d+$||\.z\d+$'
 
-    def read_mode(self) -> TYPES_MODEL_FILENAME_CHECK:
+    def read_mode(self) -> TYPES_MODEL_PRE_FILTER:
         """读取设置项"""
         value = self._read_key(self.section, self.key_mode, self._default_value_mode)
         # 将读取的文本值转换为对应的自定义类
-        if isinstance(value, (ModelFilenameCheck.Default, ModelFilenameCheck.BlackList, ModelFilenameCheck.WhiteList)):
+        if isinstance(value, (ModelPreFilter.Default, ModelPreFilter.BlackList, ModelPreFilter.WhiteList)):
             return value
-        elif value == ModelFilenameCheck.Default.value:
-            return ModelFilenameCheck.Default()
-        elif value == ModelFilenameCheck.BlackList.value:
-            return ModelFilenameCheck.BlackList()
-        elif value == ModelFilenameCheck.WhiteList.value:
-            return ModelFilenameCheck.WhiteList()
+        elif value == ModelPreFilter.Default.value:
+            return ModelPreFilter.Default()
+        elif value == ModelPreFilter.BlackList.value:
+            return ModelPreFilter.BlackList()
+        elif value == ModelPreFilter.WhiteList.value:
+            return ModelPreFilter.WhiteList()
         else:
             raise ValueError(self.section, self.key_mode, '无效的设置项值')
 
-    def set_mode(self, value: TYPES_MODEL_FILENAME_CHECK):
+    def set_mode(self, value: TYPES_MODEL_PRE_FILTER):
         """设置设置项"""
         value_str = value.value
         self._set_value(self.section, self.key_mode, value_str)

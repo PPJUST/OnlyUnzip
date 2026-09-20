@@ -16,11 +16,11 @@ class SettingViewer(QWidget):
     """设置模块的界面组件"""
     ChangeArchiveModelTest = Signal(bool, name="修改为测试模式")
     ChangeArchiveModelExtract = Signal(bool, name="修改为解压模式")
-    ChangeFilenameCheckModeDefault = Signal(bool, name="修改文件名预检查模式为默认模式")
-    ChangeFilenameCheckModeBlackList = Signal(bool, name="修改文件名预检查模式为黑名单模式")
-    ChangeFilenameCheckModeBlackListRule = Signal(list, name="修改文件名预检查模式黑名单规则")
-    ChangeFilenameCheckModeWhiteList = Signal(bool, name="修改文件名预检查模式为白名单模式")
-    ChangeFilenameCheckModeWhiteListRule = Signal(list, name="修改文件名预检查模式白名单规则")
+    ChangePreFilterModeDefault = Signal(bool, name="修改文件预筛选模式为默认模式")
+    ChangePreFilterModeBlackList = Signal(bool, name="修改文件预筛选模式为黑名单模式")
+    ChangePreFilterModeBlackListRule = Signal(list, name="修改文件预筛选模式的黑名单规则")
+    ChangePreFilterModeWhiteList = Signal(bool, name="修改文件预筛选模式为白名单模式")
+    ChangePreFilterModeWhiteListRule = Signal(list, name="修改文件预筛选模式的白名单规则")
     ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
     ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
     ChangeWriteFilename = Signal(bool, name="修改写入文件名")
@@ -118,9 +118,9 @@ class SettingViewer(QWidget):
     def _set_enable(self, is_enable: bool):
         self.ui.radioButton_mode1_test.setEnabled(is_enable)
         self.ui.radioButton_mode1_extract.setEnabled(is_enable)
-        self.ui.radioButton_filename_check_mode_default.setEnabled(is_enable)
-        self.ui.radioButton_filename_check_mode_black_list.setEnabled(is_enable)
-        self.ui.radioButton_filename_check_mode_white_list.setEnabled(is_enable)
+        self.ui.radioButton_pre_filter_mode_default.setEnabled(is_enable)
+        self.ui.radioButton_pre_filter_mode_black_list.setEnabled(is_enable)
+        self.ui.radioButton_pre_filter_mode_white_list.setEnabled(is_enable)
         self.ui.toolButton_open_black_list.setEnabled(is_enable)
         self.ui.toolButton_open_white_list.setEnabled(is_enable)
         self.ui.checkBox_read_password_from_filename.setEnabled(is_enable)
@@ -149,33 +149,33 @@ class SettingViewer(QWidget):
         # 手动发送一次信号
         self.ChangeArchiveModelTest.emit(True)
 
-    def set_setting_filename_check_mode_default(self):
-        """设置文件名预检查模式：默认模式"""
-        self.ui.radioButton_filename_check_mode_default.setChecked(True)
-        self.ui.radioButton_filename_check_mode_black_list.setChecked(False)
-        self.ui.radioButton_filename_check_mode_white_list.setChecked(False)
+    def set_setting_pre_filter_mode_default(self):
+        """设置文件预筛选模式：默认模式"""
+        self.ui.radioButton_pre_filter_mode_default.setChecked(True)
+        self.ui.radioButton_pre_filter_mode_black_list.setChecked(False)
+        self.ui.radioButton_pre_filter_mode_white_list.setChecked(False)
 
-    def set_setting_filename_check_mode_black_list(self):
-        """设置文件名预检查模式：黑名单模式"""
-        self.ui.radioButton_filename_check_mode_black_list.setChecked(True)
-        self.ui.radioButton_filename_check_mode_default.setChecked(False)
-        self.ui.radioButton_filename_check_mode_white_list.setChecked(False)
+    def set_setting_pre_filter_mode_black_list(self):
+        """设置文件预筛选模式：黑名单模式"""
+        self.ui.radioButton_pre_filter_mode_black_list.setChecked(True)
+        self.ui.radioButton_pre_filter_mode_default.setChecked(False)
+        self.ui.radioButton_pre_filter_mode_white_list.setChecked(False)
 
-    def set_setting_filename_check_mode_black_list_rule(self, rules: list[str]):
-        """设置文件名预检查模式：黑名单模式规则"""
+    def set_setting_pre_filter_mode_black_list_rule(self, rules: list[str]):
+        """设置文件预筛选模式：黑名单模式规则"""
         self.ui.textEdit_black_list.clear()
         for rule in rules:
             if rule:
                 self.ui.textEdit_black_list.append(rule)
 
-    def set_setting_filename_check_mode_white_list(self):
-        """设置文件名预检查模式：白名单模式"""
-        self.ui.radioButton_filename_check_mode_white_list.setChecked(True)
-        self.ui.radioButton_filename_check_mode_default.setChecked(False)
-        self.ui.radioButton_filename_check_mode_black_list.setChecked(False)
+    def set_setting_pre_filter_mode_white_list(self):
+        """设置文件预筛选模式：白名单模式"""
+        self.ui.radioButton_pre_filter_mode_white_list.setChecked(True)
+        self.ui.radioButton_pre_filter_mode_default.setChecked(False)
+        self.ui.radioButton_pre_filter_mode_black_list.setChecked(False)
 
-    def set_setting_filename_check_mode_white_list_rule(self, rules: list[str]):
-        """设置文件名预检查模式：白名单模式规则"""
+    def set_setting_pre_filter_mode_white_list_rule(self, rules: list[str]):
+        """设置文件预筛选模式：白名单模式规则"""
         self.ui.textEdit_white_list.clear()
         for rule in rules:
             if rule:
@@ -319,10 +319,10 @@ class SettingViewer(QWidget):
         # 模式
         self.ui.radioButton_mode1_extract.clicked.connect(self._change_archive_model)
         self.ui.radioButton_mode1_test.clicked.connect(self._change_archive_model)
-        # 文件名预检查模式
-        self.ui.radioButton_filename_check_mode_default.clicked.connect(self._change_filename_check_model)
-        self.ui.radioButton_filename_check_mode_black_list.clicked.connect(self._change_filename_check_model)
-        self.ui.radioButton_filename_check_mode_white_list.clicked.connect(self._change_filename_check_model)
+        # 文件预筛选模式
+        self.ui.radioButton_pre_filter_mode_default.clicked.connect(self._change_pre_filter_model)
+        self.ui.radioButton_pre_filter_mode_black_list.clicked.connect(self._change_pre_filter_model)
+        self.ui.radioButton_pre_filter_mode_white_list.clicked.connect(self._change_pre_filter_model)
         self.ui.textEdit_black_list.textChanged.connect(self._change_black_list_rule)
         self.ui.textEdit_white_list.textChanged.connect(self._change_white_list_rule)
         self.ui.toolButton_open_black_list.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
@@ -375,13 +375,13 @@ class SettingViewer(QWidget):
             self.ChangeArchiveModelTest.emit(True)
             self._show_settings_test()
 
-    def _change_filename_check_model(self):
-        if self.ui.radioButton_filename_check_mode_default.isChecked():
-            self.ChangeFilenameCheckModeDefault.emit(True)
-        elif self.ui.radioButton_filename_check_mode_black_list.isChecked():
-            self.ChangeFilenameCheckModeBlackList.emit(True)
-        elif self.ui.radioButton_filename_check_mode_white_list.isChecked():
-            self.ChangeFilenameCheckModeWhiteList.emit(True)
+    def _change_pre_filter_model(self):
+        if self.ui.radioButton_pre_filter_mode_default.isChecked():
+            self.ChangePreFilterModeDefault.emit(True)
+        elif self.ui.radioButton_pre_filter_mode_black_list.isChecked():
+            self.ChangePreFilterModeBlackList.emit(True)
+        elif self.ui.radioButton_pre_filter_mode_white_list.isChecked():
+            self.ChangePreFilterModeWhiteList.emit(True)
 
     def _change_extract_model(self):
         if self.ui.radioButton_mode2_smart_extract.isChecked():
@@ -400,12 +400,12 @@ class SettingViewer(QWidget):
     def _emit_black_list_rule(self):
         rule = self.ui.textEdit_black_list.toPlainText()
         rules = [i for i in rule.split('\n') if i]
-        self.ChangeFilenameCheckModeBlackListRule.emit(rules)
+        self.ChangePreFilterModeBlackListRule.emit(rules)
 
     def _emit_white_list_rule(self):
         rule = self.ui.textEdit_white_list.toPlainText()
         rules = [i for i in rule.split('\n') if i]
-        self.ChangeFilenameCheckModeWhiteListRule.emit(rules)
+        self.ChangePreFilterModeWhiteListRule.emit(rules)
 
     def eventFilter(self, obj, event):
         # 忽略ComboBox的滚轮事件

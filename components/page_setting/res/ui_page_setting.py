@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settinglceaRT.ui'
+## Form generated from reading UI file 'page_settingTAfqNO.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.0
 ##
@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
-    QPushButton, QRadioButton, QScrollArea, QSizePolicy,
-    QSpacerItem, QStackedWidget, QTextEdit, QToolButton,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
+    QFrame, QHBoxLayout, QLabel, QLineEdit,
+    QPlainTextEdit, QPushButton, QRadioButton, QScrollArea,
+    QSizePolicy, QSpacerItem, QStackedWidget, QTextEdit,
+    QToolButton, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -49,11 +49,15 @@ class Ui_Form(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.radioButton_mode1_test = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup = QButtonGroup(Form)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.radioButton_mode1_test)
         self.radioButton_mode1_test.setObjectName(u"radioButton_mode1_test")
 
         self.verticalLayout_2.addWidget(self.radioButton_mode1_test)
 
         self.radioButton_mode1_extract = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.radioButton_mode1_extract)
         self.radioButton_mode1_extract.setObjectName(u"radioButton_mode1_extract")
 
         self.verticalLayout_2.addWidget(self.radioButton_mode1_extract)
@@ -65,18 +69,22 @@ class Ui_Form(object):
 
         self.verticalLayout_2.addWidget(self.line)
 
-        self.radioButton_filename_check_mode_default = QRadioButton(self.scrollAreaWidgetContents)
-        self.radioButton_filename_check_mode_default.setObjectName(u"radioButton_filename_check_mode_default")
+        self.radioButton_pre_filter_mode_default = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2 = QButtonGroup(Form)
+        self.buttonGroup_2.setObjectName(u"buttonGroup_2")
+        self.buttonGroup_2.addButton(self.radioButton_pre_filter_mode_default)
+        self.radioButton_pre_filter_mode_default.setObjectName(u"radioButton_pre_filter_mode_default")
 
-        self.verticalLayout_2.addWidget(self.radioButton_filename_check_mode_default)
+        self.verticalLayout_2.addWidget(self.radioButton_pre_filter_mode_default)
 
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setSpacing(0)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.radioButton_filename_check_mode_black_list = QRadioButton(self.scrollAreaWidgetContents)
-        self.radioButton_filename_check_mode_black_list.setObjectName(u"radioButton_filename_check_mode_black_list")
+        self.radioButton_pre_filter_mode_black_list = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2.addButton(self.radioButton_pre_filter_mode_black_list)
+        self.radioButton_pre_filter_mode_black_list.setObjectName(u"radioButton_pre_filter_mode_black_list")
 
-        self.horizontalLayout_8.addWidget(self.radioButton_filename_check_mode_black_list)
+        self.horizontalLayout_8.addWidget(self.radioButton_pre_filter_mode_black_list)
 
         self.toolButton_open_black_list = QToolButton(self.scrollAreaWidgetContents)
         self.toolButton_open_black_list.setObjectName(u"toolButton_open_black_list")
@@ -93,10 +101,11 @@ class Ui_Form(object):
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setSpacing(0)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.radioButton_filename_check_mode_white_list = QRadioButton(self.scrollAreaWidgetContents)
-        self.radioButton_filename_check_mode_white_list.setObjectName(u"radioButton_filename_check_mode_white_list")
+        self.radioButton_pre_filter_mode_white_list = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2.addButton(self.radioButton_pre_filter_mode_white_list)
+        self.radioButton_pre_filter_mode_white_list.setObjectName(u"radioButton_pre_filter_mode_white_list")
 
-        self.horizontalLayout_9.addWidget(self.radioButton_filename_check_mode_white_list)
+        self.horizontalLayout_9.addWidget(self.radioButton_pre_filter_mode_white_list)
 
         self.toolButton_open_white_list = QToolButton(self.scrollAreaWidgetContents)
         self.toolButton_open_white_list.setObjectName(u"toolButton_open_white_list")
@@ -443,27 +452,34 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.radioButton_mode1_test.setText(QCoreApplication.translate("Form", u"\u6d4b\u8bd5\u5bc6\u7801", None))
 #if QT_CONFIG(tooltip)
-        self.radioButton_mode1_extract.setToolTip(QCoreApplication.translate("Form", u"\u6d4b\u8bd5\u5bc6\u7801\u5e76\u89e3\u538b\u5230\u672c\u5730", None))
+        self.radioButton_mode1_extract.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u6d4b\u8bd5\u5bc6\u7801\u5e76\u89e3\u538b\u5230\u538b\u7f29\u6587\u4ef6\u540c\u76ee\u5f55\u4e0b\uff08\u672a\u6307\u5b9a\u89e3\u538b\u76ee\u5f55\u65f6\uff09</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.radioButton_mode1_extract.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u6587\u4ef6", None))
 #if QT_CONFIG(tooltip)
-        self.radioButton_filename_check_mode_default.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u9ed8\u8ba4\u5904\u7406\u5168\u90e8\u6587\u4ef6</p></body></html>", None))
+        self.radioButton_pre_filter_mode_default.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u9ed8\u8ba4\u5904\u7406\u5168\u90e8\u6587\u4ef6</p><p>\u6ce8\u610f\uff1a\u8be5\u9009\u9879\u4f18\u5148\u4e8e\u201c\u5f3a\u5236\u5904\u7406\u5168\u90e8\u6587\u4ef6\u201d\u9009\u9879</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.radioButton_filename_check_mode_default.setText(QCoreApplication.translate("Form", u"\u9ed8\u8ba4\u6a21\u5f0f", None))
+        self.radioButton_pre_filter_mode_default.setText(QCoreApplication.translate("Form", u"\u9ed8\u8ba4\u6a21\u5f0f", None))
 #if QT_CONFIG(tooltip)
-        self.radioButton_filename_check_mode_black_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4e0d\u5904\u7406\u9ed1\u540d\u5355\u89c4\u5219\u4e2d\u7684\u6587\u4ef6</p></body></html>", None))
+        self.radioButton_pre_filter_mode_black_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4e0d\u5904\u7406\u9ed1\u540d\u5355\u89c4\u5219\u4e2d\u7684\u6587\u4ef6\uff08\u901a\u8fc7\u6587\u4ef6\u540d\u5224\u65ad\uff09</p><p>\u9ed8\u8ba4\u89c4\u5219\u4e3a\u4ee5zip\u4e3a\u5bb9\u5668\u7684\u5176\u4ed6\u683c\u5f0f\u6587\u4ef6</p><p>\u4f7f\u7528\u6b63\u5219\u7f16\u5199\u9ed1\u540d\u5355\uff0c\u5bf9\u6587\u4ef6\u540d\u8fdb\u884c\u5339\u914d\u5224\u65ad</p><p>\u6ce8\u610f\uff1a\u8be5\u9009\u9879\u4f18\u5148\u4e8e\u201c\u5f3a\u5236\u5904\u7406\u5168\u90e8\u6587\u4ef6\u201d\u9009\u9879</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.radioButton_filename_check_mode_black_list.setText(QCoreApplication.translate("Form", u"\u9ed1\u540d\u5355\u6a21\u5f0f", None))
+        self.radioButton_pre_filter_mode_black_list.setText(QCoreApplication.translate("Form", u"\u9ed1\u540d\u5355\u6a21\u5f0f", None))
+#if QT_CONFIG(tooltip)
+        self.toolButton_open_black_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u6253\u5f00\u9ed1\u540d\u5355</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.toolButton_open_black_list.setText(QCoreApplication.translate("Form", u"bl", None))
 #if QT_CONFIG(tooltip)
-        self.radioButton_filename_check_mode_white_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4ec5\u5904\u7406\u767d\u540d\u5355\u89c4\u5219\u4e2d\u7684\u6587\u4ef6</p></body></html>", None))
+        self.radioButton_pre_filter_mode_white_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4ec5\u5904\u7406\u767d\u540d\u5355\u89c4\u5219\u4e2d\u7684\u6587\u4ef6\uff08\u901a\u8fc7\u6587\u4ef6\u540d\u5224\u65ad\uff09</p><p>\u9ed8\u8ba4\u89c4\u5219\u4e3a7-Zip\u652f\u6301\u7684\u538b\u7f29\u6587\u4ef6\u7c7b\u578b\u4ee5\u53ca\u5206\u5377\u538b\u7f29\u6587\u4ef6\u6269\u5c55\u540d</p><p>\u4f7f\u7528\u6b63\u5219\u7f16\u5199\u767d\u540d\u5355\uff0c\u5bf9\u6587\u4ef6\u540d\u8fdb\u884c\u5339\u914d\u5224\u65ad</p><p>\u6ce8\u610f\uff1a\u8be5\u9009\u9879\u4f18\u5148\u4e8e\u201c\u5f3a\u5236\u5904\u7406\u5168\u90e8\u6587\u4ef6\u201d\u9009\u9879</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.radioButton_filename_check_mode_white_list.setText(QCoreApplication.translate("Form", u"\u767d\u540d\u5355\u6a21\u5f0f", None))
+        self.radioButton_pre_filter_mode_white_list.setText(QCoreApplication.translate("Form", u"\u767d\u540d\u5355\u6a21\u5f0f", None))
+#if QT_CONFIG(tooltip)
+        self.toolButton_open_white_list.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u6253\u5f00\u767d\u540d\u5355</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.toolButton_open_white_list.setText(QCoreApplication.translate("Form", u"wl", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_try_unknown_filetype.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5ffd\u7565\u6587\u4ef6\u7c7b\u578b\uff0c\u5bf9\u6240\u6709\u7c7b\u578b\u7684\u6587\u4ef6\u8fdb\u884c\u6d4b\u8bd5\u6216\u89e3\u538b</p><p>\u6ce8\u610f\uff1a</p><p>1. \u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u89e3\u538b\u65f6\uff0c\u4f1a\u5bfc\u81f4 exe/doc/xls \u7b49\u7c7b\u578b\u7684\u6587\u4ef6\u88ab\u89e3\u538b\u3002</p><p>2. \u5224\u65ad\u6587\u4ef6\u7c7b\u578b\u7684\u65b9\u6cd5\u4e3a\u8bfb\u53d6\u6587\u4ef6\u5934\uff0c\u53ef\u80fd\u5b58\u5728\u90e8\u5206\u6587\u4ef6\u7c7b\u578b\u88ab\u8bef\u5224/\u65e0\u6cd5\u5224\u65ad\u7684\u60c5\u51b5\u3002</p><p>3. \u5bf9\u4e8e\u4f2a\u88c5\u4e3a\u5a92\u4f53\u683c\u5f0f\u7684\u538b\u7f29\u6587\u4ef6\uff0c\u53ef\u4ee5\u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u5c1d\u8bd5\uff08\u90e8\u5206\u6587\u4ef6\u53ef\u4ee5\u6b63\u5e38\u8fdb\u884c\u6d4b\u8bd5/\u89e3\u538b\uff09\u3002</p></body></html>", None))
+        self.checkBox_try_unknown_filetype.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5ffd\u7565\u6587\u4ef6\u7c7b\u578b\uff0c\u5bf9\u6240\u6709\u6587\u4ef6\u8fdb\u884c\u6d4b\u8bd5\u6216\u89e3\u538b\uff08\u8be5\u9009\u9879\u6ede\u540e\u4e8e\u9ed8\u8ba4\u6a21\u5f0f/\u9ed1\u540d\u5355\u6a21\u5f0f/\u767d\u540d\u5355\u6a21\u5f0f\uff09</p><p>\u9002\u7528\u60c5\u51b5\uff1a</p><p>1. \u60f3\u8981\u5904\u7406\u4f2a\u88c5\u4e3a\u5a92\u4f53\u683c\u5f0f\u7684\u538b\u7f29\u6587\u4ef6\u3002</p><p>2. \u4fee\u6539\u8fc7\u6587\u4ef6\u6269\u5c55\u540d\u7684\u538b\u7f29\u6587\u4ef6\u3002</p><p>\u6ce8\u610f\uff1a</p><p>1. \u4e0d\u5efa\u8bae\u5728\u5904\u7406\u6e38\u620f\u6587\u4ef6\u3001\u8f6f\u4ef6\u6587\u4ef6\u7b49\u590d\u6742\u6587\u4ef6\u65f6\u4f7f\u7528</p><p>2. \u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u89e3\u538b\u65f6\uff0c\u4ee5 zip \u683c\u5f0f\u4e3a\u5bb9\u5668\u7684\u5176\u4ed6\u7c7b\u578b\u6587\u4ef6\uff08\u5982 doc\u3001xls\u3001exe \u7b49\uff09\u4e5f\u4f1a\u88ab\u89e3\u538b\u3002</p><p>3. \u5224\u65ad\u6587\u4ef6\u7c7b\u578b\u7684\u65b9\u6cd5\u4e3a\u6587\u4ef6\u540d\u8bc6\u522b"
+                        "+\u8bfb\u53d6\u6587\u4ef6\u5934\uff0c\u53ef\u80fd\u5b58\u5728\u90e8\u5206\u6587\u4ef6\u7c7b\u578b\u88ab\u8bef\u5224/\u65e0\u6cd5\u5224\u65ad\u7684\u60c5\u51b5\u3002</p><p>4. \u5bf9\u4e8e\u4f2a\u88c5\u4e3a\u5a92\u4f53\u683c\u5f0f\u7684\u538b\u7f29\u6587\u4ef6\uff0c\u53ef\u4ee5\u542f\u7528\u8be5\u9009\u9879\u8fdb\u884c\u5c1d\u8bd5\uff08\u90e8\u5206\u6587\u4ef6\u53ef\u4ee5\u6b63\u5e38\u8fdb\u884c\u6d4b\u8bd5/\u89e3\u538b\uff09\u3002</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.checkBox_try_unknown_filetype.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u5904\u7406\u672a\u77e5\u683c\u5f0f\u6587\u4ef6", None))
+        self.checkBox_try_unknown_filetype.setText(QCoreApplication.translate("Form", u"\u5f3a\u5236\u5904\u7406\u5168\u90e8\u6587\u4ef6", None))
 #if QT_CONFIG(tooltip)
         self.checkBox_read_password_from_filename.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u53ef\u80fd\u5b58\u5728\u7684\u5bc6\u7801\u3002</p><p>\u652f\u6301\u7684\u683c\u5f0f\uff08\u4ee5xxx\u6307\u4ee3\u5bc6\u7801\uff09\uff1a</p><p>1. \u4ee5\u7a7a\u683c\u4e3a\u95f4\u9694\u7684\u4e24\u7aef\u5b57\u7b26\uff1axxx \u6587\u4ef6\u540d/\u6587\u4ef6\u540d xxx</p><p>2. \u4ee5#\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a#xxx \u6587\u4ef6\u540d</p><p>3. \u4ee5@\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a@xxx \u6587\u4ef6\u540d</p><p>4. \u5728\u3010\u3011\u3001[]\u3001()\u4e2d\u7684\u5b57\u7b26\uff1a\u3010xxx\u3011\u6587\u4ef6\u540d</p><p>5. \u4ee5&quot;\u5bc6\u7801&quot;\u3001&quot;\u89e3\u538b\u7801&quot;\u3001&quot;\u89e3\u538b\u5bc6\u7801&quot;\u3001&quot;pw&quot;\u3001&quot;PW&quot;\u4ee5\u53ca\u4e0a\u8ff0\u5b57\u7b26\u540e\u5e26&quot;:&quot;\u3001&quot;\uff1a&quot;\u5f00\u5934\uff0c\u7a7a\u683c\u7ed3\u5c3e\u7684\u5b57\u7b26\uff1a\u5bc6\u7801xxx \u6587\u4ef6\u540d/\u89e3\u538b\u5bc6\u7801:xxx \u6587"
                         "\u4ef6\u540d</p></body></html>", None))

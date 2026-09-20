@@ -2,7 +2,7 @@
 # 用于接收Viewer的信号，并在选项修改时通过Model修改本地配置文件，并通知Viewer更新
 from PySide6.QtCore import QObject, Signal
 
-from common.class_7zip import ModelArchive, ModelExtract, TYPES_MODEL_ARCHIVE, ModelFilenameCheck
+from common.class_7zip import ModelArchive, ModelExtract, TYPES_MODEL_ARCHIVE, ModelPreFilter
 from components.page_setting.setting_model import SettingModel
 from components.page_setting.setting_viewer import SettingViewer
 
@@ -82,11 +82,11 @@ class SettingPresenter(QObject):
         self.viewer.ChangeArchiveModelTest.connect(self.SignalChangeArchiveModel.emit)
         self.viewer.ChangeArchiveModelExtract.connect(self.model.set_model_archive_extract)
         self.viewer.ChangeArchiveModelExtract.connect(self.SignalChangeArchiveModel.emit)
-        self.viewer.ChangeFilenameCheckModeDefault.connect(self.model.set_model_filename_check_default)
-        self.viewer.ChangeFilenameCheckModeBlackList.connect(self.model.set_model_filename_check_blacklist)
-        self.viewer.ChangeFilenameCheckModeBlackListRule.connect(self.model.set_model_filename_check_blacklist_rule)
-        self.viewer.ChangeFilenameCheckModeWhiteList.connect(self.model.set_model_filename_check_whitelist)
-        self.viewer.ChangeFilenameCheckModeWhiteListRule.connect(self.model.set_model_filename_check_whitelist_rule)
+        self.viewer.ChangePreFilterModeDefault.connect(self.model.set_model_pre_filter_default)
+        self.viewer.ChangePreFilterModeBlackList.connect(self.model.set_model_pre_filter_blacklist)
+        self.viewer.ChangePreFilterModeBlackListRule.connect(self.model.set_model_pre_filter_blacklist_rule)
+        self.viewer.ChangePreFilterModeWhiteList.connect(self.model.set_model_pre_filter_whitelist)
+        self.viewer.ChangePreFilterModeWhiteListRule.connect(self.model.set_model_pre_filter_whitelist_rule)
         self.viewer.ChangeTryUnknownFiletype.connect(self.model.set_try_unknown_filetype_is_enable)
         self.viewer.ChangeReadPasswordFromFilename.connect(self.model.set_read_password_from_filename_is_enable)
         self.viewer.ChangeWriteFilename.connect(self.model.set_write_filename_is_enable)
@@ -124,20 +124,20 @@ class SettingPresenter(QObject):
         else:
             raise Exception(archive_model, "错误的设置项")
 
-        filename_check_model = self.model.get_model_filename_check()
-        if isinstance(filename_check_model, ModelFilenameCheck.Default):
-            self.viewer.set_setting_filename_check_mode_default()
-        elif isinstance(filename_check_model, ModelFilenameCheck.BlackList):
-            self.viewer.set_setting_filename_check_mode_black_list()
-        elif isinstance(filename_check_model, ModelFilenameCheck.WhiteList):
-            self.viewer.set_setting_filename_check_mode_white_list()
+        pre_filter_model = self.model.get_model_pre_filter()
+        if isinstance(pre_filter_model, ModelPreFilter.Default):
+            self.viewer.set_setting_pre_filter_mode_default()
+        elif isinstance(pre_filter_model, ModelPreFilter.BlackList):
+            self.viewer.set_setting_pre_filter_mode_black_list()
+        elif isinstance(pre_filter_model, ModelPreFilter.WhiteList):
+            self.viewer.set_setting_pre_filter_mode_white_list()
         else:
-            raise Exception(filename_check_model, "错误的设置项")
+            raise Exception(pre_filter_model, "错误的设置项")
 
-        self.viewer.set_setting_filename_check_mode_black_list_rule(
-            self.model.get_model_filename_check_blacklist_rule())
-        self.viewer.set_setting_filename_check_mode_white_list_rule(
-            self.model.get_model_filename_check_whitelist_rule())
+        self.viewer.set_setting_pre_filter_mode_black_list_rule(
+            self.model.get_model_pre_filter_blacklist_rule())
+        self.viewer.set_setting_pre_filter_mode_white_list_rule(
+            self.model.get_model_pre_filter_whitelist_rule())
 
         self.viewer.set_setting_is_try_unknown_filetype(self.model.get_try_unknown_filetype_is_enable())
         self.viewer.set_setting_is_read_password_from_filename(self.model.get_read_password_from_filename_is_enable())

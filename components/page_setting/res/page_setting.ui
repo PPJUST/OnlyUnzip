@@ -89,16 +89,22 @@
              <property name="text">
               <string>测试密码</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
             </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="radioButton_mode1_extract">
              <property name="toolTip">
-              <string>测试密码并解压到本地</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;测试密码并解压到压缩文件同目录下（未指定解压目录时）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>解压文件</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -109,13 +115,16 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_filename_check_mode_default">
+            <widget class="QRadioButton" name="radioButton_pre_filter_mode_default">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;默认处理全部文件&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;默认处理全部文件&lt;/p&gt;&lt;p&gt;注意：该选项优先于“强制处理全部文件”选项&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>默认模式</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_2</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -124,17 +133,23 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QRadioButton" name="radioButton_filename_check_mode_black_list">
+              <widget class="QRadioButton" name="radioButton_pre_filter_mode_black_list">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;不处理黑名单规则中的文件&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;不处理黑名单规则中的文件（通过文件名判断）&lt;/p&gt;&lt;p&gt;默认规则为以zip为容器的其他格式文件&lt;/p&gt;&lt;p&gt;使用正则编写黑名单，对文件名进行匹配判断&lt;/p&gt;&lt;p&gt;注意：该选项优先于“强制处理全部文件”选项&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>黑名单模式</string>
                </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup_2</string>
+               </attribute>
               </widget>
              </item>
              <item>
               <widget class="QToolButton" name="toolButton_open_black_list">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;打开黑名单&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
                 <string>bl</string>
                </property>
@@ -161,17 +176,23 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QRadioButton" name="radioButton_filename_check_mode_white_list">
+              <widget class="QRadioButton" name="radioButton_pre_filter_mode_white_list">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅处理白名单规则中的文件&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅处理白名单规则中的文件（通过文件名判断）&lt;/p&gt;&lt;p&gt;默认规则为7-Zip支持的压缩文件类型以及分卷压缩文件扩展名&lt;/p&gt;&lt;p&gt;使用正则编写白名单，对文件名进行匹配判断&lt;/p&gt;&lt;p&gt;注意：该选项优先于“强制处理全部文件”选项&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>白名单模式</string>
                </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup_2</string>
+               </attribute>
               </widget>
              </item>
              <item>
               <widget class="QToolButton" name="toolButton_open_white_list">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;打开白名单&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
                 <string>wl</string>
                </property>
@@ -202,10 +223,10 @@
            <item>
             <widget class="QCheckBox" name="checkBox_try_unknown_filetype">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;忽略文件类型，对所有类型的文件进行测试或解压&lt;/p&gt;&lt;p&gt;注意：&lt;/p&gt;&lt;p&gt;1. 启用该选项进行解压时，会导致 exe/doc/xls 等类型的文件被解压。&lt;/p&gt;&lt;p&gt;2. 判断文件类型的方法为读取文件头，可能存在部分文件类型被误判/无法判断的情况。&lt;/p&gt;&lt;p&gt;3. 对于伪装为媒体格式的压缩文件，可以启用该选项进行尝试（部分文件可以正常进行测试/解压）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;忽略文件类型，对所有文件进行测试或解压（该选项滞后于默认模式/黑名单模式/白名单模式）&lt;/p&gt;&lt;p&gt;适用情况：&lt;/p&gt;&lt;p&gt;1. 想要处理伪装为媒体格式的压缩文件。&lt;/p&gt;&lt;p&gt;2. 修改过文件扩展名的压缩文件。&lt;/p&gt;&lt;p&gt;注意：&lt;/p&gt;&lt;p&gt;1. 不建议在处理游戏文件、软件文件等复杂文件时使用&lt;/p&gt;&lt;p&gt;2. 启用该选项进行解压时，以 zip 格式为容器的其他类型文件（如 doc、xls、exe 等）也会被解压。&lt;/p&gt;&lt;p&gt;3. 判断文件类型的方法为文件名识别+读取文件头，可能存在部分文件类型被误判/无法判断的情况。&lt;/p&gt;&lt;p&gt;4. 对于伪装为媒体格式的压缩文件，可以启用该选项进行尝试（部分文件可以正常进行测试/解压）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>尝试处理未知格式文件</string>
+              <string>强制处理全部文件</string>
              </property>
             </widget>
            </item>
@@ -697,4 +718,8 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
 </ui>

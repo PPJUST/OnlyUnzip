@@ -47,6 +47,8 @@ def save_to_result(file_info: FileInfo):
                 password = file_info.password
         else:
             password = ''
+    else:
+        password = ''
 
     if file_info.extract_path:
         is_success_unzip = '是'

@@ -6,7 +6,7 @@ from typing import Union
 from PySide6.QtCore import Signal, QObject
 
 from common import function_setting, function_extract, function_7zip
-from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE
+from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE, ModelPreFilter
 from common.class_file_info import FileInfoList
 from common.thread_filetype_archive import ThreadFiletypeArchive
 from components.page_home.home_model import HomeModel
@@ -100,17 +100,19 @@ class HomePresenter(QObject):
                 self.SignalExistsTempFolder.emit(temp_path)
                 return
 
-        # 如果勾选了仅处理压缩文件，则进行一次筛选，剔除非压缩文件
         self.set_step_notice("""检查文件类型中...""")
+        # 预筛选文件，根据不同的模式筛选需要进行后续处理的文件
+        filter_mode = function_setting.get_pre_filter_model()
+        files_pre_filter = self.pre_filter_files(files, filter_mode)
+
+        # 如果勾选了仅处理压缩文件，则进行一次筛选，剔除非压缩文件
         is_try_unknown_filetype = function_setting.get_is_try_unknown_filetype()
-        # filetype库无法正确识别分卷压缩包的文件类型，并且通过读取文件头检查文件类型的方法速度较慢
-        # 所以先检查文件名再进行文件头检查
-        # 待优化：文件较多时，读取文件头速度较慢，会堵塞UI线程（先仅用文件名判断的方法）
+        # filetype库无法正确识别分卷压缩包的文件类型，并且通过读取文件头检查文件类型的方法速度较慢，所以先检查文件名再进行文件头检查
         if not is_try_unknown_filetype:
-            self.thread_check_filetype.set_files(files)
+            self.thread_check_filetype.set_files(files_pre_filter)
             self.thread_check_filetype.start()
         else:
-            self.deal_archive_files(files)
+            self.deal_archive_files(files_pre_filter)
 
     def deal_archive_files(self, archives: list):
         """处理压缩文件"""
@@ -131,6 +133,17 @@ class HomePresenter(QObject):
 
         # 发送信号，传递文件信息类
         self.FileInfo.emit(file_info_list)
+
+    def pre_filter_files(self, files: list, filter_mode: ModelPreFilter):
+        """预筛选文件"""
+        if isinstance(filter_mode, ModelPreFilter.Default):
+            return files
+        elif isinstance(filter_mode, ModelPreFilter.BlackList):
+            return function_setting.filter_by_black_list(files)
+        elif isinstance(filter_mode, ModelPreFilter.WhiteList):
+            return function_setting.filter_by_white_list(files)
+        else:
+            raise Exception('未知的预筛选模式')
 
     def banned_drop(self):
         """禁止拖入文件"""

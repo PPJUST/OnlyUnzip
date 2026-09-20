@@ -15,8 +15,8 @@ class ModelArchive:
         value = 'test'
 
 
-class ModelFilenameCheck:
-    """文件名预检查模式，默认/黑名单/白名单"""
+class ModelPreFilter:
+    """文件预筛选模式，默认/黑名单/白名单"""
 
     class Default:
         """默认"""
@@ -229,8 +229,8 @@ class Position:
 
 TYPES_MODEL_ARCHIVE = Union[ModelArchive.Extract, ModelArchive.Test]
 
-TYPES_MODEL_FILENAME_CHECK = Union[
-    ModelFilenameCheck.Default, ModelFilenameCheck.BlackList, ModelFilenameCheck.WhiteList]
+TYPES_MODEL_PRE_FILTER = Union[
+    ModelPreFilter.Default, ModelPreFilter.BlackList, ModelPreFilter.WhiteList]
 
 TYPES_MODEL_EXTRACT = Union[ModelExtract.Smart, ModelExtract.SameFolder, ModelExtract.Direct]
 
