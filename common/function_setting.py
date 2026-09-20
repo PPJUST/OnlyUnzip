@@ -21,7 +21,7 @@ def filter_by_black_list(files: list[str]):
     """根据文件预筛选黑名单规则，筛选传入文件"""
     files_filter = files.copy()
     black_list = get_pre_filter_black_list()
-    patterns = [re.compile(rule) for rule in black_list]
+    patterns = [re.compile(rule, flags=re.IGNORECASE) for rule in black_list]
     for file in files:
         filename = os.path.basename(file)
         for pattern in patterns:
@@ -42,7 +42,7 @@ def filter_by_white_list(files: list[str]):
     """根据文件预筛选白名单规则，筛选传入文件"""
     files_filter = []
     white_list = get_pre_filter_white_list()
-    patterns = [re.compile(rule) for rule in white_list]
+    patterns = [re.compile(rule, flags=re.IGNORECASE) for rule in white_list]
     for file in files:
         filename = os.path.basename(file)
         for pattern in patterns:
