@@ -45,3 +45,8 @@ class HistoryModel:
     def save_7zip_result(file_info: FileInfo):
         """保存7zip结果类到本地"""
         function_history.save_to_result(file_info)
+
+    @staticmethod
+    def search_cache(search_text: str):
+        """搜索缓存对应的文本"""
+        return function_history.search_cache(search_text)

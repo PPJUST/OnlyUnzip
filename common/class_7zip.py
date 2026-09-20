@@ -258,5 +258,6 @@ CLASS_RESULT_7ZIP = [Result7zip.Success, Result7zip.Skip,
                      Result7zip.NotEnoughMemory, Result7zip.UserStopped]
 
 RESULT_STATE_ALL = '全部'
+RESULT_STATE_CACHE = '缓存'
 RESULT_STATES = [RESULT_STATE_ALL, Result7zip.Success.result_state, Result7zip.Warning.result_state,
-                 Result7zip.Skip.result_state]
+                 Result7zip.Skip.result_state, RESULT_STATE_CACHE]

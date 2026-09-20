@@ -8,6 +8,7 @@ from common.function_7zip import FAKE_PASSWORD
 
 HISTORY_FILE = 'history.txt'
 HISTORY_CACHE = 'history_cache'  # 历史记录以每日的文件备份保存
+SEPARATOR = f'{'-' * 20}\n'  # 间隔符
 
 
 def check_history_file():
@@ -19,6 +20,35 @@ def check_history_file():
 
     if not os.path.exists(HISTORY_CACHE):
         os.mkdir(HISTORY_CACHE)
+
+
+def read_history_file(filename: str):
+    """读取历史文件"""
+    if not filename.endswith('.txt'):
+        filename = filename + '.txt'
+    # 先判断文件在程序目录下还是在缓存目录下
+    if os.path.exists(os.path.join(HISTORY_CACHE, filename)):
+        history_file = os.path.join(HISTORY_CACHE, filename)
+    else:
+        history_file = HISTORY_FILE
+
+    with open(history_file, 'r', encoding='utf-8') as f:
+        return f.read().split(SEPARATOR)
+
+
+def read_all_history():
+    """读取所有历史文件"""
+    history_filenames = ['占位']
+
+    for filename in os.listdir(HISTORY_CACHE):
+        if filename.endswith('.txt'):
+            history_filenames.append(filename)
+
+    historys = []
+    for filename in history_filenames:
+        historys.extend(read_history_file(filename))
+
+    return historys
 
 
 def move_history_file():
@@ -62,7 +92,19 @@ def save_to_result(file_info: FileInfo):
             f'文件密码：{password}\n'
             f'是否完成解压：{is_success_unzip}\n'
             f'处理时间：{_time}\n'
-            f'{'-' * 20}\n')
+            f'{SEPARATOR}')
 
     with open(HISTORY_FILE, 'a', encoding='utf-8') as f:
         f.write(info)
+
+
+def search_cache(search_text: str):
+    """搜索缓存对应的文本"""
+    historys = read_all_history()
+
+    historys_filter = []
+    for history in historys:
+        if search_text in history:
+            historys_filter.append(history)
+
+    return historys_filter

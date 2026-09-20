@@ -43,7 +43,7 @@ class HistoryViewer(QWidget):
         if password:  # 如果显示了密码，则将密码设置为UserRole属性，用于右键提取
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setData(Qt.UserRole, password)
-        if file_info:  # 将对于的FileInfo写入item中，用于提取其他数据
+        if file_info:  # 将对应的FileInfo写入item中，用于提取其他数据
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setData(Qt.UserRole + 1, file_info)
 
@@ -58,15 +58,16 @@ class HistoryViewer(QWidget):
         for i in range(self.ui.listWidget_records.count()):
             item = self.ui.listWidget_records.item(i)
             file_info: FileInfo = item.data(Qt.UserRole + 1)
-            result_7zip = file_info.get_7zip_result()
+            if file_info:
+                result_7zip = file_info.get_7zip_result()
 
-            if result_7zip:
-                for class_ in result_class:
-                    if isinstance(result_7zip, class_):
-                        item.setHidden(False)
-                        break
-                    else:
-                        item.setHidden(True)
+                if result_7zip:
+                    for class_ in result_class:
+                        if isinstance(result_7zip, class_):
+                            item.setHidden(False)
+                            break
+                        else:
+                            item.setHidden(True)
 
             if search_text:
                 if item.isHidden():
