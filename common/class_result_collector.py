@@ -1,9 +1,9 @@
-# 7zip结果收集类
+# 7zip?????
 from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
 
 
 class ResultCollector:
-    """7zip结果收集类"""
+    """7zip?????"""
 
     def __init__(self):
         self._success = []
@@ -18,7 +18,7 @@ class ResultCollector:
         self._user_stopped = []
 
     def add_result(self, result: TYPES_RESULT_7ZIP):
-        """添加结果"""
+        """????"""
         if isinstance(result, Result7zip.Success):
             self._success.append(result)
         elif isinstance(result, Result7zip.Skip):
@@ -41,16 +41,16 @@ class ResultCollector:
             self._user_stopped.append(result)
 
     def get_result_info(self):
-        """获取两种格式的结果文本
-        :return: 精简文本，详细文本"""
+        """???????????
+        :return: ????,????"""
         info_simple = self._get_result_info_simple()
         info_detail = self._get_result_info_detail()
-        # 提取文本后重置计数
+        # ?????????
         self._reset()
         return info_simple, info_detail
 
     def get_count_all_result(self) -> int:
-        """获取所有结果的计数"""
+        """?????????"""
         count = (len(self._success) +
                  len(self._skip) +
                  len(self._warning) +
@@ -65,7 +65,7 @@ class ResultCollector:
         return count
 
     def _get_result_info_simple(self):
-        """获取精简的结果文本，仅区分成功和失败"""
+        """?????????,????????"""
         success_count = len(self._success)
         fail_count = (len(self._skip) +
                       len(self._warning) +
@@ -76,23 +76,23 @@ class ResultCollector:
                       len(self._error_command) +
                       len(self._not_enough_memory) +
                       len(self._user_stopped))
-        return f'成功:{success_count}, 失败:{fail_count}'
+        return f'??:{success_count}, ??:{fail_count}'
 
     def _get_result_info_detail(self):
-        """获取详细的结果文本"""
-        return (f'成功:{len(self._success)}\n'
-                f'跳过:{len(self._skip)}\n'
-                f'文件占用:{len(self._warning)}\n'
-                f'密码错误:{len(self._wrong_password)}\n'
-                f'缺失分卷:{len(self._missing_volume)}\n'
-                f'文件类型错误:{len(self._wrong_filetype)}\n'
-                f'未知错误:{len(self._unknown_error)}\n'
-                f'命令行错误:{len(self._error_command)}\n'
-                f'磁盘空间不足:{len(self._not_enough_memory)}\n'
-                f'用户停止:{len(self._user_stopped)}\n')
+        """?????????"""
+        return (f'??:{len(self._success)}\n'
+                f'??:{len(self._skip)}\n'
+                f'????:{len(self._warning)}\n'
+                f'????:{len(self._wrong_password)}\n'
+                f'????:{len(self._missing_volume)}\n'
+                f'??????:{len(self._wrong_filetype)}\n'
+                f'????:{len(self._unknown_error)}\n'
+                f'?????:{len(self._error_command)}\n'
+                f'??????:{len(self._not_enough_memory)}\n'
+                f'????:{len(self._user_stopped)}\n')
 
     def _reset(self):
-        """重置结果"""
+        """????"""
         self._success.clear()
         self._skip.clear()
         self._warning.clear()

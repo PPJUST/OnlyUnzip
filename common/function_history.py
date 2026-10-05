@@ -7,12 +7,12 @@ from common.class_file_info import FileInfo
 from common.function_7zip import FAKE_PASSWORD
 
 HISTORY_FILE = 'history.txt'
-HISTORY_CACHE = 'history_cache'  # 历史记录以每日的文件备份保存
-SEPARATOR = f'{'-' * 20}\n'  # 间隔符
+HISTORY_CACHE = 'history_cache'  # ??????????????
+SEPARATOR = f'{'-' * 20}\n'  # ???
 
 
 def check_history_file():
-    """检查历史文件是否存在"""
+    """??????????"""
     if not os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
             today = time.strftime('%Y-%m-%d', time.localtime())
@@ -23,10 +23,10 @@ def check_history_file():
 
 
 def read_history_file(filename: str):
-    """读取历史文件"""
+    """??????"""
     if not filename.endswith('.txt'):
         filename = filename + '.txt'
-    # 先判断文件在程序目录下还是在缓存目录下
+    # ???????????????????
     if os.path.exists(os.path.join(HISTORY_CACHE, filename)):
         history_file = os.path.join(HISTORY_CACHE, filename)
     else:
@@ -37,8 +37,8 @@ def read_history_file(filename: str):
 
 
 def read_all_history():
-    """读取所有历史文件"""
-    history_filenames = ['占位']
+    """????????"""
+    history_filenames = ['??']
 
     for filename in os.listdir(HISTORY_CACHE):
         if filename.endswith('.txt'):
@@ -52,7 +52,7 @@ def read_all_history():
 
 
 def move_history_file():
-    """移动每日历史文件"""
+    """????????"""
     with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
         history_date = f.readline().strip()
         f.close()
@@ -64,7 +64,7 @@ def move_history_file():
 
 
 def save_to_result(file_info: FileInfo):
-    """保存文件信息类到本地"""
+    """??????????"""
     filepath = file_info.filepath
 
     _7zip_result = file_info.get_7zip_result().return_text
@@ -72,7 +72,7 @@ def save_to_result(file_info: FileInfo):
     if _7zip_result == Result7zip.Success.return_text:
         if file_info.password:
             if file_info.password == FAKE_PASSWORD:
-                password = '无密码'
+                password = '???'
             else:
                 password = file_info.password
         else:
@@ -81,17 +81,17 @@ def save_to_result(file_info: FileInfo):
         password = ''
 
     if file_info.extract_path:
-        is_success_unzip = '是'
+        is_success_unzip = '?'
     else:
-        is_success_unzip = '否'
+        is_success_unzip = '?'
 
     _time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
-    info = (f'文件路径：{filepath}\n'
-            f'处理结果：{_7zip_result}\n'
-            f'文件密码：{password}\n'
-            f'是否完成解压：{is_success_unzip}\n'
-            f'处理时间：{_time}\n'
+    info = (f'????:{filepath}\n'
+            f'????:{_7zip_result}\n'
+            f'????:{password}\n'
+            f'??????:{is_success_unzip}\n'
+            f'????:{_time}\n'
             f'{SEPARATOR}')
 
     with open(HISTORY_FILE, 'a', encoding='utf-8') as f:
@@ -99,7 +99,7 @@ def save_to_result(file_info: FileInfo):
 
 
 def search_cache(search_text: str):
-    """搜索缓存对应的文本"""
+    """?????????"""
     historys = read_all_history()
 
     historys_filter = []

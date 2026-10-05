@@ -256,10 +256,51 @@ class Ui_Form(object):
 
         self.verticalLayout_4.addWidget(self.checkBox_delete_origin)
 
+        # v2.2.1：删除方式下拉框
+        self.horizontalLayout_delete_mode = QHBoxLayout()
+        self.horizontalLayout_delete_mode.setObjectName(u"horizontalLayout_delete_mode")
+        self.label_delete_mode = QLabel(self.widget_extract)
+        self.label_delete_mode.setObjectName(u"label_delete_mode")
+
+        self.horizontalLayout_delete_mode.addWidget(self.label_delete_mode)
+
+        self.comboBox_delete_mode = QComboBox(self.widget_extract)
+        self.comboBox_delete_mode.addItem("")
+        self.comboBox_delete_mode.addItem("")
+        self.comboBox_delete_mode.setObjectName(u"comboBox_delete_mode")
+
+        self.horizontalLayout_delete_mode.addWidget(self.comboBox_delete_mode)
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_delete_mode)
+
         self.checkBox_recursive_extract = QCheckBox(self.widget_extract)
         self.checkBox_recursive_extract.setObjectName(u"checkBox_recursive_extract")
 
         self.verticalLayout_4.addWidget(self.checkBox_recursive_extract)
+
+        # v2.2.1：webp转jpg
+        self.checkBox_webp_to_jpg = QCheckBox(self.widget_extract)
+        self.checkBox_webp_to_jpg.setObjectName(u"checkBox_webp_to_jpg")
+
+        self.verticalLayout_4.addWidget(self.checkBox_webp_to_jpg)
+
+        # v2.2.1：webp转换后删除源文件
+        self.checkBox_webp_delete_source = QCheckBox(self.widget_extract)
+        self.checkBox_webp_delete_source.setObjectName(u"checkBox_webp_delete_source")
+
+        self.verticalLayout_4.addWidget(self.checkBox_webp_delete_source)
+
+        # v2.2.1：tiff图片解压后自动转换jpg
+        self.checkBox_tiff_to_jpg = QCheckBox(self.widget_extract)
+        self.checkBox_tiff_to_jpg.setObjectName(u"checkBox_tiff_to_jpg")
+
+        self.verticalLayout_4.addWidget(self.checkBox_tiff_to_jpg)
+
+        # v2.2.1：tiff转换后删除源文件
+        self.checkBox_tiff_delete_source = QCheckBox(self.widget_extract)
+        self.checkBox_tiff_delete_source.setObjectName(u"checkBox_tiff_delete_source")
+
+        self.verticalLayout_4.addWidget(self.checkBox_tiff_delete_source)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -337,6 +378,13 @@ class Ui_Form(object):
 
         self.verticalLayout_4.addWidget(self.plainTextEdit_extract_filter_rule)
 
+        # v2.2.1：智能后缀识别说明
+        self.label_suffix_hint = QLabel(self.widget_extract)
+        self.label_suffix_hint.setObjectName(u"label_suffix_hint")
+        self.label_suffix_hint.setWordWrap(True)
+
+        self.verticalLayout_4.addWidget(self.label_suffix_hint)
+
 
         self.verticalLayout_2.addWidget(self.widget_extract)
 
@@ -387,6 +435,12 @@ class Ui_Form(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.verticalLayout_6.addWidget(self.scrollArea)
+
+        # v2.2.1：调整区域顺序按钮
+        self.pushButton_adjust_area_order = QPushButton(self.page)
+        self.pushButton_adjust_area_order.setObjectName(u"pushButton_adjust_area_order")
+
+        self.verticalLayout_6.addWidget(self.pushButton_adjust_area_order)
 
         self.stackedWidget.addWidget(self.page)
         self.page_black_list = QWidget()
@@ -523,10 +577,17 @@ class Ui_Form(object):
         self.checkBox_delete_origin.setToolTip(QCoreApplication.translate("Form", u"\u6210\u529f\u89e3\u538b\u540e\u5220\u9664\u6e90\u6587\u4ef6", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_delete_origin.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u540e\u5220\u9664\u539f\u6587\u4ef6", None))
+        self.label_delete_mode.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u65b9\u5f0f", None))
+        self.comboBox_delete_mode.setItemText(0, QCoreApplication.translate("Form", u"\u5220\u9664\u5230\u56de\u6536\u7ad9", None))
+        self.comboBox_delete_mode.setItemText(1, QCoreApplication.translate("Form", u"\u76f4\u63a5\u8fdb\u884c\u5220\u9664", None))
 #if QT_CONFIG(tooltip)
         self.checkBox_recursive_extract.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u89e3\u538b\u5d4c\u5957\u7684\u538b\u7f29\u6587\u4ef6\uff0c\u76f4\u5230\u89e3\u538b\u7ed3\u679c\u4e2d\u4e0d\u5b58\u5728\u538b\u7f29\u6587\u4ef6\u3002</p><p>\u5b9e\u73b0\u65b9\u6cd5\uff1a\u5bf9\u89e3\u538b\u7684\u7ed3\u679c\u8fdb\u884c\u518d\u4e00\u6b21\u7684\u89e3\u538b\u3002</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_recursive_extract.setText(QCoreApplication.translate("Form", u"\u9012\u5f52\u89e3\u538b\u5d4c\u5957\u538b\u7f29\u5305", None))
+        self.checkBox_webp_to_jpg.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u540ewebp\u56fe\u7247\u81ea\u52a8\u8f6c\u6362\u4e3ajpg", None))
+        self.checkBox_webp_delete_source.setText(QCoreApplication.translate("Form", u"webp\u8f6c\u6362\u540e\u5220\u9664\u6e90\u6587\u4ef6", None))
+        self.checkBox_tiff_to_jpg.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u540etiff\u56fe\u7247\u81ea\u52a8\u8f6c\u6362\u4e3ajpg", None))
+        self.checkBox_tiff_delete_source.setText(QCoreApplication.translate("Form", u"tiff\u8f6c\u6362\u540e\u5220\u9664\u6e90\u6587\u4ef6", None))
         self.label.setText(QCoreApplication.translate("Form", u"\u8986\u76d6\u6a21\u5f0f", None))
         self.comboBox_cover_file.setItemText(0, QCoreApplication.translate("Form", u"\u8986\u76d6\u91cd\u590d\u6587\u4ef6", None))
         self.comboBox_cover_file.setItemText(1, QCoreApplication.translate("Form", u"\u8df3\u8fc7\u91cd\u590d\u6587\u4ef6", None))
@@ -557,6 +618,7 @@ class Ui_Form(object):
 #if QT_CONFIG(tooltip)
         self.plainTextEdit_extract_filter_rule.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u89e3\u538b\u65f6\u8fc7\u6ee4\u6389\u7b26\u5408\u89c4\u5219\u7684\u6587\u4ef6\uff0c\u901a\u914d\u7b26\u4e3a*\uff0c\u5982\u65e0\u7279\u6b8a\u9700\u6c42\u5efa\u8bae\u4e0d\u4f7f\u7528\u8be5\u529f\u80fd\u3002</p><p>\u793a\u4f8b\uff1a</p><p>1. \u8fc7\u6ee4\u6307\u5b9a\u6587\u4ef6\u540d\uff1a\u5e7f\u544a.*</p><p>2. \u8fc7\u6ee4\u90e8\u5206\u6587\u4ef6\u540d\uff1a*\u6c49\u5316\u7ec4*.*</p><p>3. \u8fc7\u6ee4\u6307\u5b9a\u6587\u4ef6\u6269\u5c55\u540d\uff1a*.html</p><p>3. \u8fc7\u6ee4\u4e0d\u7a33\u6587\u4ef6\u6269\u5c55\uff1a*.*xls*</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
+        self.label_suffix_hint.setText(QCoreApplication.translate("Form", u"\u667a\u80fd\u540e\u7f00\u8bc6\u522b\uff1a\u8f93\u5165\u7eaf\u540e\u7f00\uff08\u5982html\uff09\u81ea\u52a8\u8f6c\u4e3a*.html", None))
         self.label_7.setText(QCoreApplication.translate("Form", u"\u81ea\u5b9a\u4e497Zip\u8def\u5f84", None))
         self.toolButton_choose_7zip_path.setText(QCoreApplication.translate("Form", u"c", None))
 #if QT_CONFIG(tooltip)
@@ -577,5 +639,6 @@ class Ui_Form(object):
 "\u7f16\u5199\u89c4\u5219\u65f6\u4f7f\u7528\u6b63\u5219\u8868\u8fbe\u5f0f\u3002\n"
 "\u4e00\u4e2a\u89c4\u5219\u5360\u4e00\u884c\u3002", None))
         self.pushButton_return_2.setText(QCoreApplication.translate("Form", u"\u8fd4\u56de", None))
+        self.pushButton_adjust_area_order.setText(QCoreApplication.translate("Form", u"\u8c03\u6574\u533a\u57df\u987a\u5e8f", None))
     # retranslateUi
 

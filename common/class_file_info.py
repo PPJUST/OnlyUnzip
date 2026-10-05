@@ -1,45 +1,45 @@
-# 文件信息类
+# ?????
 from common.class_7zip import ArchiveRole, Result7zip, TYPES_ARCHIVE_ROLE, TYPES_RESULT_7ZIP
 
 
 class FileInfo:
-    """单个文件信息类"""
+    """???????"""
 
     def __init__(self, filepath: str,
                  file_role: TYPES_ARCHIVE_ROLE,
                  related_files: list = None):
-        # 一般属性
-        self.filepath = filepath  # 文件路径
-        self.file_role: TYPES_ARCHIVE_ROLE = file_role  # 该文件的角色，是首个分卷包还是内部分卷，处理时仅处理首个分卷包角色
-        self.related_files = related_files  # 文件角色为普通或首个分卷包时使用，同一组内的其他分卷文件（包含其自身）
+        # ????
+        self.filepath = filepath  # ????
+        self.file_role: TYPES_ARCHIVE_ROLE = file_role  # ??????,????????????,?????????????
+        self.related_files = related_files  # ????????????????,???????????(?????)
 
-        # 非分卷成员角色强制输入关联文件
+        # ???????????????
         if file_role is not ArchiveRole.VolumeMember and not related_files:
-            raise Exception('文件信息类初始化错误，分卷压缩包未输入关联文件')
+            raise Exception('??????????,????????????')
 
-        # 调用7zip后设置的属性
-        self._7zip_result: TYPES_RESULT_7ZIP = None  # 7zip测试/解压解压结果
-        self.password = None  # 文件密码
-        self.extract_path = None  # 仅在解压模式且成功解压时使用，解压结果的路径
+        # ??7zip??????
+        self._7zip_result: TYPES_RESULT_7ZIP = None  # 7zip??/??????
+        self.password = None  # ????
+        self.extract_path = None  # ??????????????,???????
 
     def set_7zip_result(self, result: TYPES_RESULT_7ZIP):
-        """设置7zip测试/解压解压结果"""
+        """??7zip??/??????"""
         self._7zip_result = result
 
     def get_7zip_result(self) -> TYPES_RESULT_7ZIP:
-        """获取7zip测试/解压解压结果"""
+        """??7zip??/??????"""
         return self._7zip_result
 
     def set_password(self, password: str):
-        """设置文件密码"""
+        """??????"""
         self.password = password
 
     def set_extract_path(self, path: str):
-        """设置解压结果的路径"""
+        """?????????"""
         self.extract_path = path
 
     def print_info(self):
-        """打印内部信息"""
+        """??????"""
         info_dict = {'filepath': self.filepath,
                      'file_role': self.file_role,
                      'related_files': self.related_files,
@@ -51,10 +51,10 @@ class FileInfo:
 
 
 class FileInfoList:
-    """文件信息类列表"""
+    """???????"""
 
     def __init__(self):
-        self.files_info = dict()  # 归集字典
+        self.files_info = dict()  # ????
 
     def add_file(self, filepath: str,
                  file_role: TYPES_ARCHIVE_ROLE,
@@ -63,20 +63,20 @@ class FileInfoList:
         self.files_info[filepath] = file_info
 
     def count(self) -> int:
-        """统计个数"""
+        """????"""
         return len(self.files_info)
 
     def get_file_info(self, filepath: str) -> FileInfo:
-        """获取对应的文件信息类"""
+        """??????????"""
         return self.files_info[filepath]
 
     def get_file_infos(self) -> list[FileInfo]:
-        """获取文件信息类列表"""
+        """?????????"""
         return list(self.files_info.values())
 
     def get_success_files(self):
-        """获取处理成功的文件的路径"""
-        # 如果是解压模式，则为解压后的路径
+        """????????????"""
+        # ???????,????????
         success = []
         for file_info in self.get_file_infos():
             result = file_info.get_7zip_result()
@@ -88,7 +88,7 @@ class FileInfoList:
         return success
 
     def get_success_passwords(self):
-        """获取处理成功的密码"""
+        """?????????"""
         passwords = []
         for file_info in self.get_file_infos():
             result = file_info.get_7zip_result()
@@ -97,7 +97,7 @@ class FileInfoList:
         return passwords
 
     def count_success(self):
-        """统计处理成功的个数"""
+        """?????????"""
         count = 0
         for file_info in self.get_file_infos():
             result = file_info.get_7zip_result()
@@ -106,7 +106,7 @@ class FileInfoList:
         return count
 
     def is_user_stop(self):
-        """是否用户主动终止"""
+        """????????"""
         for file_info in self.get_file_infos():
             result = file_info.get_7zip_result()
             if result and isinstance(result, Result7zip.UserStopped):

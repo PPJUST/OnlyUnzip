@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>主页</string>
+         <string>??</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -60,7 +60,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>密码</string>
+         <string>??</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -76,7 +76,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>设置</string>
+         <string>??</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -92,7 +92,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>历史</string>
+         <string>??</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -108,7 +108,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>报错</string>
+         <string>??</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -124,7 +124,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>关于</string>
+         <string>??</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>

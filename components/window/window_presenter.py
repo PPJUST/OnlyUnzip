@@ -148,6 +148,21 @@ class WindowPresenter:
         delete_file = self.page_setting.model.get_delete_file_is_enable()
         self.model.set_is_delete_file(delete_file)
 
+        delete_mode = self.page_setting.model.get_delete_file_mode()
+        self.model.set_delete_mode(delete_mode)
+
+        webp_to_jpg = self.page_setting.model.get_webp_to_jpg_is_enable()
+        self.model.set_is_webp_to_jpg(webp_to_jpg)
+
+        webp_delete_source = self.page_setting.model.get_webp_delete_source_is_enable()
+        self.model.set_webp_delete_source(webp_delete_source)
+
+        tiff_to_jpg = self.page_setting.model.get_tiff_to_jpg_is_enable()
+        self.model.set_is_tiff_to_jpg(tiff_to_jpg)
+
+        tiff_delete_source = self.page_setting.model.get_tiff_delete_source_is_enable()
+        self.model.set_tiff_delete_source(tiff_delete_source)
+
         recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
         self.model.set_is_recursive_extract(recursive_extract)
 
@@ -250,7 +265,23 @@ class WindowPresenter:
             # 进行递归解压，并累计处理结果
             if is_recursive_extract:
                 success_filepaths = results.get_success_files()
-                self.page_home.drop_paths(success_filepaths, is_recursive=True)
+                # v2.2.1：递归解压前过滤非压缩文件，避免把mp4等文件当作压缩文件处理
+                import lzytools_archive
+                archive_filepaths = []
+                for fp in success_filepaths:
+                    # v2.2.1：跳过目录，避免is_archive读取目录报PermissionError
+                    if not os.path.isfile(fp):
+                        continue
+                    if lzytools_archive.is_archive_by_filename(os.path.basename(fp)):
+                        archive_filepaths.append(fp)
+                    elif os.path.exists(fp) and lzytools_archive.is_archive(fp):
+                        archive_filepaths.append(fp)
+                if archive_filepaths:
+                    self.page_home.drop_paths(archive_filepaths, is_recursive=True)
+                else:
+                    # 没有需要递归解压的压缩文件，直接结束
+                    result_info_simple, file_info_detail = self.result_collector.get_result_info()
+                    self.page_home.set_info_finished(result_info_simple, result_info_tip=file_info_detail)
             # 如果不需要进行递归解压，则结束本批次任务，显示结束信息
             else:
                 result_info_simple, file_info_detail = self.result_collector.get_result_info()

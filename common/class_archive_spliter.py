@@ -70,6 +70,27 @@ class ArchiveSpliter:
                 volume_archives.append(file)
             else:
                 normal_archives.append(file)
+
+        # v2.2.1：检查普通压缩文件是否是分卷首部分（缺少.001后缀的情况）
+        # 例如：圣诞特辑1.7z 和 圣诞特辑1.7z.002 同时存在时，把圣诞特辑1.7z当作分卷首部分
+        normal_to_volume = []
+        for normal_file in normal_archives:
+            dirpath = os.path.dirname(normal_file)
+            basename = os.path.basename(normal_file)
+            # 检查同目录下是否存在 basename.002, basename.003 等分卷文件
+            if os.path.exists(dirpath):
+                for i in range(2, 100):
+                    volume_candidate = os.path.join(dirpath, f"{basename}.{i:03d}")
+                    if os.path.exists(volume_candidate):
+                        normal_to_volume.append(normal_file)
+                        break
+        # 把识别为分卷首部分的文件从普通列表移到分卷列表
+        for f in normal_to_volume:
+            if f in normal_archives:
+                normal_archives.remove(f)
+            if f not in volume_archives:
+                volume_archives.append(f)
+
         return normal_archives, volume_archives
 
     @staticmethod
@@ -83,8 +104,12 @@ class ArchiveSpliter:
         for file in volume_archives:
             # 生成对应的虚拟的首个压缩卷路径，并作为匹配的key
             virtual_first_volume_filename = lzytools_archive.guess_first_volume_archive_filename(file)
-            virtual_first_volume_path = os.path.normpath(
-                os.path.join(os.path.dirname(file), virtual_first_volume_filename))
+            if virtual_first_volume_filename:
+                virtual_first_volume_path = os.path.normpath(
+                    os.path.join(os.path.dirname(file), virtual_first_volume_filename))
+            else:
+                # v2.2.1：对于不带.001后缀的分卷首部分（如圣诞特辑1.7z），直接把它自己当作首个分卷
+                virtual_first_volume_path = os.path.normpath(file)
             if virtual_first_volume_path not in first_volumes:
                 first_volumes.append(virtual_first_volume_path)
                 members[virtual_first_volume_path] = []

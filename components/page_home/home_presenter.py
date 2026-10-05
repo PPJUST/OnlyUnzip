@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal, QObject
 from common import function_setting, function_extract, function_7zip
 from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE, ModelPreFilter
 from common.class_file_info import FileInfoList
-from common.thread_filetype_archive import ThreadFiletypeArchive
+from common.thread_filetype_archive import ThreadFiletypeArchive, try_fix_archive_extension
 from components.page_home.home_model import HomeModel
 from components.page_home.home_viewer import HomeViewer
 from components.page_home.res.icon_base64 import *
@@ -104,6 +104,14 @@ class HomePresenter(QObject):
         # 预筛选文件，根据不同的模式筛选需要进行后续处理的文件
         filter_mode = function_setting.get_pre_filter_model()
         files_pre_filter = self.pre_filter_files(files, filter_mode)
+
+        # v2.2.1：智能后缀修复，在文件类型识别之前修正后缀中的中文和多余字符
+        # 不管是否勾选"尝试未知文件类型"，都先修正后缀
+        files_fixed = []
+        for file in files_pre_filter:
+            fixed_file = try_fix_archive_extension(file)
+            files_fixed.append(fixed_file if fixed_file else file)
+        files_pre_filter = files_fixed
 
         # 如果勾选了仅处理压缩文件，则进行一次筛选，剔除非压缩文件
         is_try_unknown_filetype = function_setting.get_is_try_unknown_filetype()

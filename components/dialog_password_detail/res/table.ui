@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>密码详情</string>
+   <string>????</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -32,7 +32,7 @@
    <item>
     <widget class="QPushButton" name="pushButton_quit">
      <property name="text">
-      <string>退出</string>
+      <string>??</string>
      </property>
     </widget>
    </item>

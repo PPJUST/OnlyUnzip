@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>临时密码</string>
+   <string>????</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
    <property name="spacing">
@@ -45,7 +45,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>读取剪切板</string>
+          <string>?????</string>
          </property>
         </widget>
        </item>
@@ -58,7 +58,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>清空</string>
+          <string>??</string>
          </property>
         </widget>
        </item>
@@ -73,7 +73,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>存储到密码本</string>
+        <string>??????</string>
        </property>
       </widget>
      </item>

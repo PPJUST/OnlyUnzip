@@ -93,6 +93,26 @@ class WindowModel(QObject):
     def set_is_delete_file(self, value: bool):
         self.model_extract_file.set_is_delete_file(value)
 
+    def set_delete_mode(self, value: str):
+        """v2.2.1：设置删除方式"""
+        self.model_extract_file.set_delete_mode(value)
+
+    def set_is_webp_to_jpg(self, value: bool):
+        """v2.2.1：设置webp转jpg"""
+        self.model_extract_file.set_is_webp_to_jpg(value)
+
+    def set_webp_delete_source(self, value: bool):
+        """v2.2.1：设置webp转换后是否删除源文件"""
+        self.model_extract_file.set_webp_delete_source(value)
+
+    def set_is_tiff_to_jpg(self, value: bool):
+        """v2.2.1：设置tiff转jpg"""
+        self.model_extract_file.set_is_tiff_to_jpg(value)
+
+    def set_tiff_delete_source(self, value: bool):
+        """v2.2.1：设置tiff转换后是否删除源文件"""
+        self.model_extract_file.set_tiff_delete_source(value)
+
     def set_is_recursive_extract(self, value: bool):
         self.model_extract_file.set_is_recursive_extract(value)
 
@@ -199,6 +219,11 @@ class ModelExtractFile(TemplateModelSignal):
         self.is_read_password_from_filename = False  # 是否从文件名中读取密码
         self.extract_model = ModelExtract.Smart()  # 解压模式
         self.is_delete_file = False  # 完成后是否删除原文件
+        self.delete_mode = 'trash'  # v2.2.1：删除方式（trash/direct）
+        self.is_webp_to_jpg = True  # v2.2.1：webp转jpg
+        self.webp_delete_source = True  # v2.2.1：webp转换后删除源文件
+        self.is_tiff_to_jpg = True  # v2.2.1：tiff转jpg
+        self.tiff_delete_source = True  # v2.2.1：tiff转换后删除源文件
         self.is_recursive_extract = False  # 是否递归解压
         self.cover_model = ModelCoverFile.Overwrite()  # 重名文件覆盖模式
         self.is_break_folder = False  # 是否解散文件夹
@@ -235,6 +260,26 @@ class ModelExtractFile(TemplateModelSignal):
 
     def set_is_delete_file(self, value: bool):
         self.is_delete_file = value
+
+    def set_delete_mode(self, value: str):
+        """v2.2.1：设置删除方式"""
+        self.delete_mode = value
+
+    def set_is_webp_to_jpg(self, value: bool):
+        """v2.2.1：设置webp转jpg"""
+        self.is_webp_to_jpg = value
+
+    def set_webp_delete_source(self, value: bool):
+        """v2.2.1：设置webp转换后是否删除源文件"""
+        self.webp_delete_source = value
+
+    def set_is_tiff_to_jpg(self, value: bool):
+        """v2.2.1：设置tiff转jpg"""
+        self.is_tiff_to_jpg = value
+
+    def set_tiff_delete_source(self, value: bool):
+        """v2.2.1：设置tiff转换后是否删除源文件"""
+        self.tiff_delete_source = value
 
     def set_is_recursive_extract(self, value: bool):
         self.is_recursive_extract = value
@@ -277,3 +322,8 @@ class ModelExtractFile(TemplateModelSignal):
         self.thread_extract.is_break_folder = self.is_break_folder
         self.thread_extract.break_folder_model = self.break_folder_model
         self.thread_extract.is_delete_file = self.is_delete_file
+        self.thread_extract.delete_mode = self.delete_mode
+        self.thread_extract.is_webp_to_jpg = self.is_webp_to_jpg
+        self.thread_extract.webp_delete_source = self.webp_delete_source
+        self.thread_extract.is_tiff_to_jpg = self.is_tiff_to_jpg
+        self.thread_extract.tiff_delete_source = self.tiff_delete_source

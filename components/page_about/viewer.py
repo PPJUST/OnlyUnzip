@@ -1,4 +1,4 @@
-# 关于模块的界面组件
+# ?????????
 
 from PySide6.QtWidgets import QApplication, QWidget
 
@@ -6,7 +6,7 @@ from components.page_about.res.ui_about import Ui_Form
 
 
 class AboutViewer(QWidget):
-    """关于模块的界面组件"""
+    """?????????"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -20,26 +20,26 @@ class AboutViewer(QWidget):
 
         self.set_info()
 
-        # 屏蔽弃用文本
+        # ??????
         self.ui.label_3.setVisible(False)
         self.ui.label_10.setVisible(False)
         self.ui.label_feedback.setVisible(False)
         self.ui.label_other.setVisible(False)
 
     def set_info(self):
-        # 版本号
+        # ???
         self.ui.label_version.setText('v2.2.0')
-        # 编译日期
+        # ????
         self.ui.label_date.setText('2026.09.22')
-        # 项目主页
+        # ????
         self.ui.label_project.setText('<a href="https://github.com/PPJUST/OnlyUnzip">Github</a>')
-        # 下载地址
+        # ????
         self.ui.label_download_link_1.setText('<a href="https://github.com/PPJUST/OnlyUnzip/releases">Github</a>')
-        self.ui.label_download_link_2.setText('<a href="https://wwvb.lanzout.com/b01fna1qh">蓝奏云 密码1234</a>')
-        # 反馈地址
-        self.ui.label_feedback.setText('<a href="https://wj.qq.com/s2/23570318/20f3/">点击直达</a>')
-        # 其他说明
-        self.ui.label_other.setText('<a>有问题推荐在<br>Github反馈</a>')
+        self.ui.label_download_link_2.setText('<a href="https://wwvb.lanzout.com/b01fna1qh">??? ??1234</a>')
+        # ????
+        self.ui.label_feedback.setText('<a href="https://wj.qq.com/s2/23570318/20f3/">????</a>')
+        # ????
+        self.ui.label_other.setText('<a>??????<br>Github??</a>')
 
 
 if __name__ == "__main__":

@@ -100,6 +100,12 @@ class SettingPresenter(QObject):
         self.viewer.ChangeExtractModelDirect.connect(self.model.set_model_extract_direct)
         self.viewer.ChangeExtractModelSameFolder.connect(self.model.set_model_extract_same_folder)
         self.viewer.ChangeDeleteFile.connect(self.model.set_delete_file_is_enable)
+        self.viewer.ChangeDeleteMode.connect(self.model.set_delete_file_mode)
+        self.viewer.ChangeWebpToJpg.connect(self.model.set_webp_to_jpg_is_enable)
+        self.viewer.ChangeWebpDeleteSource.connect(self.model.set_webp_delete_source_is_enable)
+        self.viewer.ChangeTiffToJpg.connect(self.model.set_tiff_to_jpg_is_enable)
+        self.viewer.ChangeTiffDeleteSource.connect(self.model.set_tiff_delete_source_is_enable)
+        self.viewer.ClickAdjustAreaOrder.connect(self._adjust_area_order)
         self.viewer.ChangeRecursiveExtract.connect(self.model.set_recursive_extract_is_enable)
         self.viewer.ChangeCoverModel.connect(self.model.set_model_cover)
         self.viewer.ChangeBreakFolder.connect(self.model.set_break_folder_is_enable)
@@ -159,6 +165,11 @@ class SettingPresenter(QObject):
             raise Exception(extract_model, "错误的设置项")
 
         self.viewer.set_setting_delete_file(self.model.get_delete_file_is_enable())
+        self.viewer.set_setting_delete_mode(self.model.get_delete_file_mode())
+        self.viewer.set_setting_webp_to_jpg(self.model.get_webp_to_jpg_is_enable())
+        self.viewer.set_setting_webp_delete_source(self.model.get_webp_delete_source_is_enable())
+        self.viewer.set_setting_tiff_to_jpg(self.model.get_tiff_to_jpg_is_enable())
+        self.viewer.set_setting_tiff_delete_source(self.model.get_tiff_delete_source_is_enable())
 
         self.viewer.set_setting_recursive_extract(self.model.get_recursive_extract_is_enable())
 
@@ -179,3 +190,20 @@ class SettingPresenter(QObject):
         self.viewer.set_top_window(self.model.get_top_window_is_enable())
 
         self.viewer.set_lock_size(self.model.get_lock_size_is_enable())
+
+    def _adjust_area_order(self):
+        """v2.2.1：调整设置区域顺序"""
+        from PySide6.QtWidgets import QInputDialog, QMessageBox
+        areas = ['压缩包处理', '预筛选', '密码处理', '解压设置', '其他设置']
+        current_order = self.model.get_area_order()
+        if current_order:
+            current_list = current_order.split(',')
+        else:
+            current_list = areas
+        text, ok = QInputDialog.getText(
+            None, '调整区域顺序',
+            '输入区域顺序（逗号分隔）：\n' + '\n'.join([f'{i+1}. {a}' for i, a in enumerate(current_list)]),
+            text=','.join(current_list))
+        if ok and text:
+            self.model.set_area_order(text.strip())
+            QMessageBox.information(None, '提示', '区域顺序已保存，重启软件后生效')

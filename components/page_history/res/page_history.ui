@@ -34,7 +34,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>筛选器：</string>
+        <string>???:</string>
        </property>
       </widget>
      </item>
@@ -53,7 +53,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>查询</string>
+        <string>??</string>
        </property>
       </widget>
      </item>

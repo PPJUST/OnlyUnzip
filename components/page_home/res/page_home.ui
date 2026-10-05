@@ -49,7 +49,7 @@
        <item>
         <widget class="QLabel" name="label_about">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;拖入文件到右侧区域即可处理文件&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;open_about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#004275;&quot;&gt;关于&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;???????????????&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;open_about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#004275;&quot;&gt;??&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -60,7 +60,7 @@
        <item>
         <widget class="QLabel" name="label_step_notice">
          <property name="text">
-          <string>步骤提示</string>
+          <string>????</string>
          </property>
         </widget>
        </item>
@@ -90,7 +90,7 @@
            <item>
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>总进度</string>
+              <string>???</string>
              </property>
             </widget>
            </item>
@@ -108,7 +108,7 @@
            <item>
             <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>总耗时:</string>
+              <string>???:</string>
              </property>
             </widget>
            </item>
@@ -126,7 +126,7 @@
            <item>
             <widget class="QLabel" name="label_10">
              <property name="text">
-              <string>当前耗时:</string>
+              <string>????:</string>
              </property>
             </widget>
            </item>
@@ -147,7 +147,7 @@
            <item>
             <widget class="QToolButton" name="toolButton_stop">
              <property name="toolTip">
-              <string>点击终止任务</string>
+              <string>??????</string>
              </property>
              <property name="text">
               <string>...</string>
@@ -157,7 +157,7 @@
            <item>
             <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>当前文件:</string>
+              <string>????:</string>
              </property>
             </widget>
            </item>
@@ -199,7 +199,7 @@
              <item>
               <widget class="QLabel" name="label_14">
                <property name="text">
-                <string>测试密码:</string>
+                <string>????:</string>
                </property>
               </widget>
              </item>
@@ -217,7 +217,7 @@
              <item>
               <widget class="QLabel" name="label_15">
                <property name="text">
-                <string>当前密码:</string>
+                <string>????:</string>
                </property>
               </widget>
              </item>
@@ -254,7 +254,7 @@
              <item>
               <widget class="QLabel" name="label_16">
                <property name="text">
-                <string>解压进度:</string>
+                <string>????:</string>
                </property>
               </widget>
              </item>
@@ -296,7 +296,7 @@
            <item>
             <widget class="QLabel" name="label_current_file_step_tip">
              <property name="text">
-              <string>文件步骤提示</string>
+              <string>??????</string>
              </property>
             </widget>
            </item>
@@ -311,7 +311,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_17">
          <property name="text">
-          <string>耗时:</string>
+          <string>??:</string>
          </property>
         </widget>
        </item>
@@ -325,7 +325,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_18">
          <property name="text">
-          <string>处理文件数量:</string>
+          <string>??????:</string>
          </property>
         </widget>
        </item>
@@ -339,14 +339,14 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_19">
          <property name="text">
-          <string>处理结果统计:</string>
+          <string>??????:</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
         <widget class="QLabel" name="label_result_count">
          <property name="text">
-          <string>成功:0, 失败:0</string>
+          <string>??:0, ??:0</string>
          </property>
         </widget>
        </item>

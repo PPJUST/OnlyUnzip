@@ -1,11 +1,22 @@
-/backup/
+# ????
+*.exe
+*.dist
+*.build
+*.onefile-build
+
+# ??????
+password_output.txt
 password.pkl
 setting.ini
-test.py
-password_output.txt
-/测试用情景
-/bug处理
-/cmd_pw.txt
-/history.txt
-/history_cache/
-/.idea/
+history.txt
+history_cache/
+
+# ?????
+7-Zip/
+
+# IDE
+.idea/
+.vscode/
+
+# ??
+?????/

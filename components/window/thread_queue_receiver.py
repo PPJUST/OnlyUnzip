@@ -1,4 +1,4 @@
-# 接受queue的子线程
+# ??queue????
 from PySide6.QtCore import QThread, Signal
 
 from common import function_queue

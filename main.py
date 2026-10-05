@@ -7,36 +7,46 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from components import window
 
-paths_cmd = []  # 通过命令行或者程序直接打开的文件路径
-try:  # 提取路径
+paths_cmd = []  # ??????????????????
+try:  # ????
     cmd_args = sys.argv[1:]
     _folder = os.getcwd()
     for i in cmd_args:
-        if os.path.isabs(i):  # 如果是绝对路径，则直接添加
+        if os.path.isabs(i):  # ???????,?????
             paths_cmd.append(i)
-        else:  # 如果是相对路径，则添加程序路径头
+        else:  # ???????,????????
             paths_cmd.append(os.path.normpath(os.path.join(_folder, i)))
 except IndexError:
     pass
 
 
 def load_app(paths: list = None):
-    """:param paths: 通过命令行或者程序直接打开的文件路径"""
+    """:param paths: ??????????????????"""
     app_ = QApplication()
     app_.setStyle('Fusion')
-    # 设置白色背景色
+    # ???????
     # palette = QPalette()
     # palette.setColor(QPalette.Window, QColor(255, 255, 255))
     # app_.setPalette(palette)
 
-    # 设置全局字体
-    font = QFont("Microsoft YaHei", 10)  # 字体名称和大小
+    # ??????
+    font = QFont("Microsoft YaHei", 10)  # ???????
     app_.setFont(font)
+
+    # v2.2.1:????????????,?????????password_output.txt
+    from common import function_password
+    function_password.auto_import_passwords_if_empty()
 
     presenter = window.get_presenter()
     viewer = presenter.viewer
     model = presenter.model
-    presenter.set_default_app_title('OnlyUnzip v2.2.0')
+    presenter.set_default_app_title('OnlyUnzip v2.2.1')
+    # ???????,?????????
+    from PySide6.QtCore import Qt
+    viewer.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+    viewer.show()
+    # ?????????,????????
+    viewer.setWindowFlag(Qt.WindowStaysOnTopHint, False)
     viewer.show()
     if paths:
         presenter.accept_paths_from_cmd(paths)
@@ -44,7 +54,7 @@ def load_app(paths: list = None):
 
 
 def send_args(path: list):
-    """:param path: 通过命令行或者程序直接打开的文件路径"""
+    """:param path: ??????????????????"""
     presenter = window.get_presenter()
     presenter.accept_paths_from_cmd(path)
 
@@ -52,32 +62,25 @@ def send_args(path: list):
 def show_dup_info():
     app_ = QApplication([])
     messagebox = QMessageBox()
-    messagebox.setText('OnlyUnzip已经运行了一个实例，请勿重复运行。')
+    messagebox.setText('OnlyUnzip?????????,???????')
     messagebox.exec()
     sys.exit(1)
 
 
 def set_working_directory_to_exe_path():
-    """设置工作目录为程序所在目录，防止拖入文件/命令行启动时程序工作目录错误"""
-    print('工作路径测试')
-    print('sys.argv', sys.argv)
-    print('sys.executable', sys.executable)
-    print('__file__', __file__)
-    print('工作路径测试完成')
-
+    """?????????????,??????/??????????????"""
     exe_path = sys.argv[0]
     exe_parent = os.path.dirname(exe_path)
     os.chdir(exe_parent)
-    print(f'设置工作路径为{exe_parent}')
 
 
 if __name__ == "__main__":
     set_working_directory_to_exe_path()
 
-    if not lzytools.common.check_mutex('OnlyUnzip'):  # 互斥体检查（单个实例）
+    if not lzytools.common.check_mutex('OnlyUnzip'):  # ?????(????)
         load_app(paths_cmd)
     else:
-        if not paths_cmd:  # 重复打开，并且没有传参，则进行提示
+        if not paths_cmd:  # ????,??????,?????
             show_dup_info()
-        else:  # 否则将参数传递给程序
+        else:  # ??????????
             send_args(paths_cmd)

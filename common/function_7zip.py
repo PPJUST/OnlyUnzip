@@ -90,6 +90,8 @@ def _process_7zip_with_run(_7zip_command: Union[str, list]):
                              stderr=subprocess.PIPE,
                              creationflags=subprocess.CREATE_NO_WINDOW,
                              text=True,
+                             encoding='utf-8',
+                             errors='replace',
                              shell=True)
     delete_cmd_pw_file()  # 删除临时密码文件
     print('返回码', process.returncode)
@@ -284,12 +286,22 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
     elif return_code == 255:
         return Result7zip.UserStopped()
     else:  # 兜底
+        if error_type:
+            return error_type
         return Result7zip.UnknownError('未知错误')
 
 
-def get_temp_dirpath(dirpath: str):
-    """获取根据传入路径计算的临时文件夹路径"""
-    return os.path.normpath(os.path.join(dirpath, TEMP_EXTRACT_FOLDER))
+def get_temp_dirpath(dirpath: str, file_path: str = None):
+    """获取根据传入路径计算的临时文件夹路径
+    :param dirpath: 输出目录
+    :param file_path: 压缩包文件路径（可选，提供则以压缩包文件名命名临时文件夹）
+    """
+    if file_path:
+        # 使用压缩包文件名（不含扩展名）+ UnzipTempFolder 作为临时文件夹名
+        folder_name = os.path.splitext(os.path.basename(file_path))[0] + "UnzipTempFolder"
+    else:
+        folder_name = TEMP_EXTRACT_FOLDER
+    return os.path.normpath(os.path.join(dirpath, folder_name))
 
 
 def progress_7zip_x_with_temp_folder(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
@@ -302,7 +314,7 @@ def progress_7zip_x_with_temp_folder(_7zip_path: str, file: str, password: str, 
     :param output_folder: 解压输出目录
     :param filter_rule: 文件过滤器规则
     :return: 7zip结果类"""
-    extract_dirpath_temp = get_temp_dirpath(output_folder)
+    extract_dirpath_temp = get_temp_dirpath(output_folder, file)
     return process_7zip_x(_7zip_path, file, password, cover_model, extract_dirpath_temp, filter_rule)
 
 
@@ -311,15 +323,19 @@ def _analyse_process_return(process: subprocess.CompletedProcess):
     :param process: subprocess调用结果对象
     :return: 7zip结果类"""
     return_code = process.returncode
+    # shell=True时cmd可能干扰退出码，所有非0返回码都先检查Wrong password
+    if return_code != 0:
+        output = str(process.stderr) + str(process.stdout)
+        if 'Wrong password' in output:
+            print(f'返回码={return_code}, 检测到Wrong password, 返回WrongPassword')
+            return Result7zip.WrongPassword()
     if return_code == 0:
         return Result7zip.Success()
     elif return_code == 1:
         return Result7zip.Warning()
     elif return_code == 2:
         output = str(process.stderr) + str(process.stdout)
-        if 'Wrong password' in output:
-            return Result7zip.WrongPassword()
-        elif 'Missing volume' in output:
+        if 'Missing volume' in output:
             return Result7zip.MissingVolume()
         elif 'Cannot open the file as' in output:
             return Result7zip.WrongFiletype()
@@ -375,12 +391,18 @@ def get_smallest_file_in_archive(archive_path: str):
     # 测试一次压缩文件，读取返回信息
     _7ZIP_PATH = get_7zip_path()
     command = [_7ZIP_PATH, "l", archive_path, f"-p{FAKE_PASSWORD}"]  # 需要指定密码，否则7zip会卡在输入密码阶段
-    result = subprocess.run(command,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            creationflags=subprocess.CREATE_NO_WINDOW,
-                            text=True,
-                            universal_newlines=True)
+    try:
+        result = subprocess.run(command,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                creationflags=subprocess.CREATE_NO_WINDOW,
+                                text=True,
+                                encoding='utf-8',
+                                errors='replace',
+                                universal_newlines=True)
+    except Exception as e:
+        print(f'获取内部文件路径异常: {e}')
+        return None
 
     # 解析返回信息，提取文件结构
     if "--------" not in result.stdout:

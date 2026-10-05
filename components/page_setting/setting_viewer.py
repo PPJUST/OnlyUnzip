@@ -31,7 +31,13 @@ class SettingViewer(QWidget):
     ChangeExtractModelDirect = Signal(bool, name="修改直接解压模式")
     ChangeExtractModelSameFolder = Signal(bool, name="修改同名目录解压模式")
     ChangeDeleteFile = Signal(bool, name="修改解压后删除原文件")
+    ChangeDeleteMode = Signal(str, name="修改删除方式")
     ChangeRecursiveExtract = Signal(bool, name="修改递归解压")
+    ChangeWebpToJpg = Signal(bool, name="修改webp转jpg")
+    ChangeWebpDeleteSource = Signal(bool, name="修改webp删除源文件")
+    ChangeTiffToJpg = Signal(bool, name="修改tiff转jpg")
+    ChangeTiffDeleteSource = Signal(bool, name="修改tiff删除源文件")
+    ClickAdjustAreaOrder = Signal(name="点击调整区域顺序")
     ChangeCoverModel = Signal(str, name="修改覆盖模式")
     ChangeBreakFolder = Signal(bool, name="修改解散文件夹")
     ChangeBreakFolderModel = Signal(str, name="修改解散文件夹模式")
@@ -253,6 +259,29 @@ class SettingViewer(QWidget):
         设置解压后删除原文件"""
         self.ui.checkBox_delete_origin.setChecked(is_enable)
 
+    def set_setting_delete_mode(self, mode: str):
+        """v2.2.1：设置删除方式（trash/direct）"""
+        if mode == 'direct':
+            self.ui.comboBox_delete_mode.setCurrentIndex(1)
+        else:
+            self.ui.comboBox_delete_mode.setCurrentIndex(0)
+
+    def set_setting_webp_to_jpg(self, is_enable: bool):
+        """v2.2.1：设置webp转jpg"""
+        self.ui.checkBox_webp_to_jpg.setChecked(is_enable)
+
+    def set_setting_webp_delete_source(self, is_enable: bool):
+        """v2.2.1：设置webp转换后是否删除源文件"""
+        self.ui.checkBox_webp_delete_source.setChecked(is_enable)
+
+    def set_setting_tiff_to_jpg(self, is_enable: bool):
+        """v2.2.1：设置tiff转jpg"""
+        self.ui.checkBox_tiff_to_jpg.setChecked(is_enable)
+
+    def set_setting_tiff_delete_source(self, is_enable: bool):
+        """v2.2.1：设置tiff转换后是否删除源文件"""
+        self.ui.checkBox_tiff_delete_source.setChecked(is_enable)
+
     def set_setting_recursive_extract(self, is_enable: bool):
         """解压模式选项
         设置完成解压任务后是否进行递归解压（再次执行直到没有能解压的文件）"""
@@ -345,6 +374,17 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode2_extract_same_folder.clicked.connect(self._change_extract_model)
         # 删除原文件
         self.ui.checkBox_delete_origin.stateChanged.connect(self.ChangeDeleteFile.emit)
+        # v2.2.1：删除方式
+        self.ui.comboBox_delete_mode.currentTextChanged.connect(
+            lambda: self.ChangeDeleteMode.emit('direct' if self.ui.comboBox_delete_mode.currentIndex() == 1 else 'trash'))
+        # v2.2.1：webp转jpg
+        self.ui.checkBox_webp_to_jpg.stateChanged.connect(self.ChangeWebpToJpg.emit)
+        # v2.2.1：webp删除源文件
+        self.ui.checkBox_webp_delete_source.stateChanged.connect(self.ChangeWebpDeleteSource.emit)
+        # v2.2.1：tiff转jpg
+        self.ui.checkBox_tiff_to_jpg.stateChanged.connect(self.ChangeTiffToJpg.emit)
+        # v2.2.1：tiff删除源文件
+        self.ui.checkBox_tiff_delete_source.stateChanged.connect(self.ChangeTiffDeleteSource.emit)
         # 递归解压
         self.ui.checkBox_recursive_extract.stateChanged.connect(self.ChangeRecursiveExtract.emit)
         # 覆盖模式
@@ -366,6 +406,8 @@ class SettingViewer(QWidget):
         self.ui.checkBox_top_window.stateChanged.connect(self.ChangeTopWindow.emit)
         # 锁定窗口大小
         self.ui.checkBox_lock_size.stateChanged.connect(self.ChangeLockSize.emit)
+        # v2.2.1：调整区域顺序
+        self.ui.pushButton_adjust_area_order.clicked.connect(self.ClickAdjustAreaOrder.emit)
 
     def _change_archive_model(self):
         if self.ui.radioButton_mode1_extract.isChecked():

@@ -39,6 +39,11 @@ class SettingModel:
         self._7zip_path = _ChildSetting7ZipPath(self.config)
         self._top_window = _ChildSettingTopWindow(self.config)
         self._lock_size = _ChildSettingLockSize(self.config)
+        self._webp_to_jpg = _ChildSettingWebpToJpg(self.config)
+        self._webp_delete_source = _ChildSettingWebpDeleteSource(self.config)
+        self._tiff_to_jpg = _ChildSettingTiffToJpg(self.config)
+        self._tiff_delete_source = _ChildSettingTiffDeleteSource(self.config)
+        self._area_order = _ChildSettingAreaOrder(self.config)
 
     @staticmethod
     def _check_config_exists():
@@ -144,10 +149,22 @@ class SettingModel:
         self.set_model_extract(ModelExtract.SameFolder())
 
     def get_delete_file_is_enable(self):
-        return self._delete_file.read()
+        return self._delete_file.read_is_enable()
 
     def set_delete_file_is_enable(self, is_enable: bool):
-        self._delete_file.set(is_enable)
+        self._delete_file.set_is_enable(is_enable)
+
+    def get_delete_file_mode(self):
+        """v2.2.1：获取删除方式"""
+        return self._delete_file.read_delete_mode()
+
+    def set_delete_file_mode(self, mode: str):
+        """v2.2.1：设置删除方式"""
+        self._delete_file.set_delete_mode(mode)
+
+    def get_delete_file_is_send_to_trash(self):
+        """v2.2.1：是否删除到回收站"""
+        return self._delete_file.is_send_to_trash()
 
     def get_recursive_extract_is_enable(self):
         return self._recursive_extract.read()
@@ -235,6 +252,46 @@ class SettingModel:
 
     def set_lock_size_width(self, width: int):
         self._lock_size.set_width(width)
+
+    def get_webp_to_jpg_is_enable(self):
+        """v2.2.1：获取webp转jpg是否启用"""
+        return self._webp_to_jpg.read()
+
+    def set_webp_to_jpg_is_enable(self, is_enable: bool):
+        """v2.2.1：设置webp转jpg是否启用"""
+        self._webp_to_jpg.set(is_enable)
+
+    def get_webp_delete_source_is_enable(self):
+        """v2.2.1：获取webp转换后是否删除源文件"""
+        return self._webp_delete_source.read()
+
+    def set_webp_delete_source_is_enable(self, is_enable: bool):
+        """v2.2.1：设置webp转换后是否删除源文件"""
+        self._webp_delete_source.set(is_enable)
+
+    def get_tiff_to_jpg_is_enable(self):
+        """v2.2.1：获取tiff转jpg是否启用"""
+        return self._tiff_to_jpg.read()
+
+    def set_tiff_to_jpg_is_enable(self, is_enable: bool):
+        """v2.2.1：设置tiff转jpg是否启用"""
+        self._tiff_to_jpg.set(is_enable)
+
+    def get_tiff_delete_source_is_enable(self):
+        """v2.2.1：获取tiff转换后是否删除源文件"""
+        return self._tiff_delete_source.read()
+
+    def set_tiff_delete_source_is_enable(self, is_enable: bool):
+        """v2.2.1：设置tiff转换后是否删除源文件"""
+        self._tiff_delete_source.set(is_enable)
+
+    def get_area_order(self):
+        """v2.2.1：获取设置区域顺序"""
+        return self._area_order.read()
+
+    def set_area_order(self, order: str):
+        """v2.2.1：设置设置区域顺序"""
+        self._area_order.set(order)
 
 
 class _ModuleChildSetting:
@@ -529,11 +586,46 @@ class _ChildSettingModelExtract(_ModuleChildSetting):
         self._set_value(self.section, self.key, value_str)
 
 
-class _ChildSettingDeleteFile(_ModuleChildSettingSingleEnable):
-    """设置项 是否删除原文件"""
+class _ChildSettingDeleteFile(_ModuleChildSetting):
+    """设置项 是否删除原文件及删除方式（v2.2.1：支持删除到回收站/直接删除）"""
 
     def __init__(self, config):
-        super().__init__(config, section='DeleteFile', key='is_enable', default_value=False)
+        super().__init__(config)
+        self.section = 'DeleteFile'
+        # 是否启用
+        self.key_is_enable = 'is_enable'
+        self._default_value_is_enable = False
+        # 删除方式：trash（删除到回收站）/ direct（直接删除）
+        self.key_delete_mode = 'delete_mode'
+        self._default_value_delete_mode = 'trash'
+
+    def read_is_enable(self) -> bool:
+        """读取设置项 是否启用"""
+        value = self._read_key(self.section, self.key_is_enable, self._default_value_is_enable)
+        if isinstance(value, bool):
+            return value
+        elif value == 'True':
+            return True
+        elif value == 'False':
+            return False
+        else:
+            raise ValueError(self.section, self.key_is_enable, '无效的设置项值')
+
+    def set_is_enable(self, value: bool):
+        """设置设置项 是否启用"""
+        self._set_value(self.section, self.key_is_enable, str(value))
+
+    def read_delete_mode(self) -> str:
+        """读取设置项 删除方式"""
+        return self._read_key(self.section, self.key_delete_mode, self._default_value_delete_mode)
+
+    def set_delete_mode(self, value: str):
+        """设置设置项 删除方式"""
+        self._set_value(self.section, self.key_delete_mode, value)
+
+    def is_send_to_trash(self) -> bool:
+        """是否删除到回收站"""
+        return self.read_delete_mode() == 'trash'
 
 
 class _ChildSettingRecursiveExtract(_ModuleChildSettingSingleEnable):
@@ -717,12 +809,25 @@ class _ChildSettingExtractFilter(_ModuleChildSetting):
         return text
 
     def set_rules(self, value: Union[str, list]):
-        """设置设置项 过滤规则"""
+        """设置设置项 过滤规则（v2.2.1：智能后缀识别，输入html自动转为*.html）"""
         # 转换字符转为7zip switch格式
         if isinstance(value, str):
             value = value.split('\n')
         value = [i for i in value if i]
-        value_join = _SPLIT_WORD.join(value)
+        # v2.2.1：智能后缀识别，如果输入的是纯后缀（如html），自动转为*.html
+        processed = []
+        for rule in value:
+            rule = rule.strip()
+            if rule and not rule.startswith('-xr!') and not rule.startswith('*') and '.' not in rule and not rule.startswith('\\'):
+                # 纯后缀（仅ASCII字符，如html、jpg），自动添加*.前缀
+                # 包含中文的广告过滤规则（如发布页）不加*.前缀
+                if all(ord(c) < 128 for c in rule):
+                    processed.append(f'*.{rule}')
+                else:
+                    processed.append(rule)
+            else:
+                processed.append(rule)
+        value_join = _SPLIT_WORD.join(processed)
         self._set_value(self.section, self.key_rules, value_join)
 
 
@@ -789,3 +894,49 @@ class _ChildSettingLockSize(_ModuleChildSetting):
     def set_width(self, value: int):
         """设置设置项 窗口宽度"""
         self._set_value(self.section, self.key_width, str(value))
+
+
+class _ChildSettingWebpToJpg(_ModuleChildSettingSingleEnable):
+    """设置项 v2.2.1：webp图片解压后自动转换jpg格式"""
+
+    def __init__(self, config):
+        super().__init__(config, section='WebpToJpg', key='is_enable', default_value=True)
+
+
+class _ChildSettingWebpDeleteSource(_ModuleChildSettingSingleEnable):
+    """设置项 v2.2.1：webp转换后是否删除源文件"""
+
+    def __init__(self, config):
+        super().__init__(config, section='WebpToJpg', key='delete_source', default_value=True)
+
+
+class _ChildSettingTiffToJpg(_ModuleChildSettingSingleEnable):
+    """设置项 v2.2.1：tiff图片解压后自动转换jpg格式"""
+
+    def __init__(self, config):
+        super().__init__(config, section='TiffToJpg', key='is_enable', default_value=True)
+
+
+class _ChildSettingTiffDeleteSource(_ModuleChildSettingSingleEnable):
+    """设置项 v2.2.1：tiff转换后是否删除源文件"""
+
+    def __init__(self, config):
+        super().__init__(config, section='TiffToJpg', key='delete_source', default_value=True)
+
+
+class _ChildSettingAreaOrder(_ModuleChildSetting):
+    """设置项 v2.2.1：设置页面区域顺序"""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.section = 'AreaOrder'
+        self.key = 'order'
+        self._default_value = ''
+
+    def read(self) -> str:
+        """读取设置项 区域顺序"""
+        return self._read_key(self.section, self.key, self._default_value)
+
+    def set(self, value: str):
+        """设置设置项 区域顺序"""
+        self._set_value(self.section, self.key, value)

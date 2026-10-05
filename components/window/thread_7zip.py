@@ -1,4 +1,4 @@
-import os
+﻿import os
 import time
 
 import lzytools
@@ -9,6 +9,122 @@ from common import function_move, function_file, function_filename, function_7zi
 from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
+
+
+def _convert_webp_to_jpg_in_folder(folder_path: str, delete_source: bool = True):
+    """v2.2.1：递归将文件夹中的webp图片转换为jpg格式
+    :param folder_path: 要处理的文件夹路径
+    :param delete_source: 转换后是否删除源webp文件"""
+    try:
+        from PIL import Image
+    except ImportError:
+        print('Pillow未安装，跳过webp转jpg')
+        return
+
+    converted_count = 0
+    for root, dirs, files in os.walk(folder_path):
+        for filename in files:
+            if filename.lower().endswith('.webp'):
+                webp_path = os.path.join(root, filename)
+                jpg_path = os.path.splitext(webp_path)[0] + '.jpg'
+                try:
+                    img = Image.open(webp_path)
+                    # 处理RGBA模式（webp可能带透明通道）
+                    if img.mode in ('RGBA', 'P'):
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        if img.mode == 'P':
+                            img = img.convert('RGBA')
+                        background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                        img = background
+                    else:
+                        img = img.convert('RGB')
+                    img.save(jpg_path, 'JPEG', quality=95)
+                    img.close()
+                    # v2.2.1：根据设置决定是否删除原webp文件
+                    if delete_source:
+                        lzytools.file.delete(webp_path, send_to_trash=False)
+                    converted_count += 1
+                except Exception as e:
+                    print(f'webp转jpg失败: {webp_path}, 错误: {e}')
+    if converted_count > 0:
+        print(f'webp转jpg完成，共转换 {converted_count} 个文件')
+
+
+def _convert_tiff_to_jpg_in_folder(folder_path: str, delete_source: bool = True):
+    """v2.2.1：递归将文件夹中的tiff/tif图片转换为jpg格式
+    :param folder_path: 要处理的文件夹路径
+    :param delete_source: 转换后是否删除源tiff文件"""
+    try:
+        from PIL import Image
+    except ImportError:
+        print('Pillow未安装，跳过tiff转jpg')
+        return
+
+    converted_count = 0
+    for root, dirs, files in os.walk(folder_path):
+        for filename in files:
+            if filename.lower().endswith(('.tiff', '.tif')):
+                tiff_path = os.path.join(root, filename)
+                jpg_path = os.path.splitext(tiff_path)[0] + '.jpg'
+                try:
+                    img = Image.open(tiff_path)
+                    # 处理RGBA模式（tiff可能带透明通道）
+                    if img.mode in ('RGBA', 'P', 'I;16', 'I;16L', 'I;16B', 'F'):
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        if img.mode in ('P', 'I;16', 'I;16L', 'I;16B', 'F'):
+                            img = img.convert('RGBA')
+                        background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                        img = background
+                    else:
+                        img = img.convert('RGB')
+                    img.save(jpg_path, 'JPEG', quality=95)
+                    img.close()
+                    if delete_source:
+                        lzytools.file.delete(tiff_path, send_to_trash=False)
+                    converted_count += 1
+                except Exception as e:
+                    print(f'tiff转jpg失败: {tiff_path}, 错误: {e}')
+    if converted_count > 0:
+        print(f'tiff转jpg完成，共转换 {converted_count} 个文件')
+
+
+def _convert_tiff_to_jpg_in_folder(folder_path: str, delete_source: bool = True):
+    """v2.2.2：递归将文件夹中的tiff图片转换为jpg格式
+    :param folder_path: 要处理的文件夹路径
+    :param delete_source: 转换后是否删除源tiff文件"""
+    try:
+        from PIL import Image
+    except ImportError:
+        print('Pillow未安装，跳过tiff转jpg')
+        return
+
+    converted_count = 0
+    for root, dirs, files in os.walk(folder_path):
+        for filename in files:
+            if filename.lower().endswith(('.tiff', '.tif')):
+                tiff_path = os.path.join(root, filename)
+                jpg_path = os.path.splitext(tiff_path)[0] + '.jpg'
+                try:
+                    img = Image.open(tiff_path)
+                    # 处理RGBA模式（tiff可能带透明通道）
+                    if img.mode in ('RGBA', 'P', 'I;16', 'I;16B', 'F'):
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        if img.mode in ('P', 'I;16', 'I;16B', 'F'):
+                            img = img.convert('RGBA')
+                        background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                        img = background
+                    else:
+                        img = img.convert('RGB')
+                    img.save(jpg_path, 'JPEG', quality=95)
+                    img.close()
+                    # v2.2.2：根据设置决定是否删除原tiff文件
+                    if delete_source:
+                        lzytools.file.delete(tiff_path, send_to_trash=False)
+                    converted_count += 1
+                except Exception as e:
+                    print(f'tiff转jpg失败: {tiff_path}, 错误: {e}')
+    if converted_count > 0:
+        print(f'tiff转jpg完成，共转换 {converted_count} 个文件')
 
 
 class TemplateThread(QThread):
@@ -71,9 +187,9 @@ class TemplateThread(QThread):
         # elif isinstance(test_result, Result7zip.WrongFiletype):
         #     return True
         # 如果是其他致命错误，则终止后续操作，直接返回该错误
-        elif test_result in (Result7zip.WrongFiletype, Result7zip.Skip, Result7zip.Warning, Result7zip.MissingVolume,
+        elif isinstance(test_result, (Result7zip.WrongFiletype, Result7zip.Skip, Result7zip.Warning, Result7zip.MissingVolume,
                              Result7zip.UnknownError, Result7zip.ErrorCommand, Result7zip.NotEnoughMemory,
-                             Result7zip.UserStopped):
+                             Result7zip.UserStopped)):
             return test_result
         else:
             return False
@@ -238,7 +354,12 @@ class ThreadExtract(TemplateThread):
         self.extract_output_path: str = ''
         self.is_filter: bool = False
         self.filter_rules: list = []
-        self.is_delete_file: bool = False
+        self.is_delete_file: bool = True
+        self.delete_mode: str = 'trash'  # v2.2.1：删除方式（trash/direct）
+        self.is_webp_to_jpg: bool = True  # v2.2.1：解压后webp转jpg
+        self.webp_delete_source: bool = True  # v2.2.1：webp转换后删除源文件
+        self.is_tiff_to_jpg: bool = True  # v2.2.1：解压后tiff转jpg
+        self.tiff_delete_source: bool = True  # v2.2.1：tiff转换后删除源文件
         self.last_temp_folder = ''  # 上一个任务的临时文件夹，用于判断是否删除临时文件夹
 
         # 解压后参数
@@ -270,7 +391,7 @@ class ThreadExtract(TemplateThread):
                 part_extract_to = self.extract_output_path
             else:
                 part_extract_to = os.path.dirname(file_first)
-            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+            guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to, file_first)
             if self.last_temp_folder:
                 if self.last_temp_folder.lower() == guess_temp_folder.lower():
                     pass
@@ -321,7 +442,6 @@ class ThreadExtract(TemplateThread):
             print('直接使用x指令尝试解压')
             final_result, extract_path = self.extract_with_test_x(filepath, passwords)
         else:  # 压缩文件存在致命错误，不进行后续操作
-            print('虚拟密码测试检测出文件存在问题，不进行后续测试')
             final_result = fake_result
             extract_path = None
 
@@ -459,6 +579,19 @@ class ThreadExtract(TemplateThread):
                                                                      output_folder=part_extract_to,
                                                                      filter_rule=filter_rule)
 
+        # 修复：solid压缩包使用过滤规则时，如果所有文件都被过滤，7zip会显示"No files to process"
+        # 检测到这种情况时，自动关闭过滤规则重新解压一次
+        if (isinstance(result_7zip, Result7zip.UnknownError)
+                and hasattr(result_7zip, 'error_text')
+                and 'No files to process' in (result_7zip.error_text or '')
+                and filter_rule):
+            print('[修复] 检测到"No files to process"，关闭过滤规则重新解压')
+            self.StepInfo.emit('过滤规则导致无文件可处理，关闭过滤重新解压...')
+            result_7zip = function_7zip.progress_7zip_x_with_temp_folder(_7ZIP_PATH, file, password,
+                                                                         cover_model=part_cover,
+                                                                         output_folder=part_extract_to,
+                                                                         filter_rule=[])
+
         # 提取原文件的文件名（剔除压缩文件后缀格式）
         filename_origin = lzytools_archive.get_filetitle(os.path.basename(file))
 
@@ -466,7 +599,7 @@ class ThreadExtract(TemplateThread):
         if isinstance(result_7zip, Result7zip.Success):
             # 根据对应模式移动临时文件夹下的文件/文件夹
             self.StepInfo.emit('解压完成，移出临时文件夹中...')
-            temp_folder = function_7zip.get_temp_dirpath(part_extract_to)  # 要移动的文件夹
+            temp_folder = function_7zip.get_temp_dirpath(part_extract_to, file)  # 要移动的文件夹
             parent_folder = os.path.dirname(temp_folder)  # 移动至该文件夹下
             if isinstance(self.extract_model, ModelExtract.Smart):
                 extract_path = function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
@@ -488,19 +621,28 @@ class ThreadExtract(TemplateThread):
                         extract_path = function_file.break_folder_files(extract_path)
                     else:
                         pass
-            # 是否删除原文件（删除同组中的全部文件）
+            # v2.1.32：webp图片自动转jpg
+            if self.is_webp_to_jpg and extract_path and os.path.exists(extract_path):
+                self.StepInfo.emit('解压完成，webp图片转换jpg中...')
+                _convert_webp_to_jpg_in_folder(extract_path, delete_source=self.webp_delete_source)
+            # v2.2.1：tiff图片自动转jpg
+            if self.is_tiff_to_jpg and extract_path and os.path.exists(extract_path):
+                self.StepInfo.emit('解压完成，tiff图片转换jpg中...')
+                _convert_tiff_to_jpg_in_folder(extract_path, delete_source=self.tiff_delete_source)
+            # 是否删除原文件（删除同组中的全部文件，v2.2.1：根据删除方式选择回收站/直接删除）
             file_info = self.fileinfo_task.get_file_info(file)
             related_files = file_info.related_files
             if self.is_delete_file:
+                send_to_trash = (self.delete_mode == 'trash')
                 for i in related_files:
-                    lzytools.file.delete(i, send_to_trash=True)
+                    lzytools.file.delete(i, send_to_trash=send_to_trash)
 
             print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
             return result_7zip, extract_path
         else:
             # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
             if self.is_stop_task:
-                guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+                guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to, file)
                 if os.path.exists(guess_temp_folder):
                     lzytools.file.delete(guess_temp_folder)
 
