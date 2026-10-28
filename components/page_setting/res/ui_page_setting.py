@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingTAfqNO.ui'
+## Form generated from reading UI file 'page_settingQpXLQk.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.0
+## Created by: Qt User Interface Compiler version 6.11.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -572,7 +572,7 @@ class Ui_Form(object):
 "\u7f16\u5199\u89c4\u5219\u65f6\u4f7f\u7528\u6b63\u5219\u8868\u8fbe\u5f0f\u3002\n"
 "\u4e00\u4e2a\u89c4\u5219\u5360\u4e00\u884c\u3002", None))
         self.pushButton_return_1.setText(QCoreApplication.translate("Form", u"\u8fd4\u56de", None))
-        self.label_9.setText(QCoreApplication.translate("Form", u"\u9ed1\u540d\u5355\u89c4\u5219\n"
+        self.label_9.setText(QCoreApplication.translate("Form", u"\u767d\u540d\u5355\u89c4\u5219\n"
 "\u6ce8\u610f\uff1a\n"
 "\u7f16\u5199\u89c4\u5219\u65f6\u4f7f\u7528\u6b63\u5219\u8868\u8fbe\u5f0f\u3002\n"
 "\u4e00\u4e2a\u89c4\u5219\u5360\u4e00\u884c\u3002", None))

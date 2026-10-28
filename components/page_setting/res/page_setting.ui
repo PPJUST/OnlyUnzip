@@ -693,7 +693,7 @@
        <item>
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>黑名单规则
+          <string>白名单规则
 注意：
 编写规则时使用正则表达式。
 一个规则占一行。</string>
