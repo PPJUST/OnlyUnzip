@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingQpXLQk.ui'
+## Form generated from reading UI file 'page_settingyqmozE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.3
 ##
@@ -486,7 +486,7 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.checkBox_read_password_from_filename.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u5bc6\u7801", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_write_filename.setToolTip(QCoreApplication.translate("Form", u"\u5982\u679c\u68c0\u7d22\u5230\u6b63\u786e\u7684\u5bc6\u7801\uff0c\u5219\u5c06\u6539\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d\u4e2d", None))
+        self.checkBox_write_filename.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5982\u679c\u68c0\u7d22\u5230\u6b63\u786e\u7684\u5bc6\u7801\uff0c\u5219\u5c06\u8be5\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d\u4e2d</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_write_filename.setText(QCoreApplication.translate("Form", u"\u5c06\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d", None))
         self.label_4.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u6587\u672c\u683c\u5f0f:", None))

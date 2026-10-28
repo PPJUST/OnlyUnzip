@@ -265,7 +265,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_write_filename">
                 <property name="toolTip">
-                 <string>如果检索到正确的密码，则将改密码写入文件名中</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如果检索到正确的密码，则将该密码写入文件名中&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string>将密码写入文件名</string>
@@ -719,7 +719,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
