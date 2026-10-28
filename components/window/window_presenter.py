@@ -364,9 +364,9 @@ class WindowPresenter:
         archive_model = self.page_setting.get_archive_model()
         suffix = ''
         if isinstance(archive_model, ModelArchive.Test):
-            suffix = '[测试]'
+            suffix = '[T]'
         elif isinstance(archive_model, ModelArchive.Extract):
-            suffix = '[解压]'
+            suffix = '[E]'
 
         new_title = f'{self.app_title_default} {suffix}'
         self.viewer.setWindowTitle(new_title)
