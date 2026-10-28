@@ -22,7 +22,11 @@ class PasswordModel:
 
     def get_passwords(self):
         """获取密码列表"""
-        return self.password_db.get_passwords()
+        pws = self.password_db.get_passwords()
+        # 剔除临时密码
+        if "无密码" in pws:
+            pws.remove("无密码")
+        return pws
 
     @staticmethod
     def read_clipboard():

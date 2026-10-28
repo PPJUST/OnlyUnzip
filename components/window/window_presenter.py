@@ -28,6 +28,7 @@ class WindowPresenter:
 
         # 结果收集类
         self.result_collector = ResultCollector()
+        self.passwords_used = []  # 本次程序运行时使用过的密码（处理成功的）
 
         # 判断用户是否主动终止（特殊使用）
         self.is_user_stop = False
@@ -121,7 +122,8 @@ class WindowPresenter:
         """传递密码组件的密码列表给模型组件"""
         passwords = self.page_password.get_passwords()
         temp_passwords = self.dialog_temp_password.get_passwords()
-        joined = temp_passwords + passwords
+        # 传递的密码的顺序为　本次使用过的密码＋临时密码＋密码本
+        joined = self.passwords_used + temp_passwords + passwords
         joined = lzytools.common.dedup_list(joined)
         self.model.set_passwords(joined)
 
@@ -228,6 +230,7 @@ class WindowPresenter:
 
         # 如果有解压成功的文件，则增加对应密码的使用次数
         passwords_success = results.get_success_passwords()
+        self.passwords_used += passwords_success
         print('处理成功的密码', passwords_success)
 
         # 剔除其中包含的临时密码（临时密码不写入密码本，但保留密码本中已存在的密码）
