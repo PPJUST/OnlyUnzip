@@ -3,6 +3,7 @@ import lzytools_Qt
 from PySide6.QtCore import Signal
 from PySide6.QtGui import Qt, QFont
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
+from PyTaskbar import TaskbarProgress, ProgressType
 
 from components.window.res.icon_base64 import ICON_HOMEPAGE, ICON_PASSWORD, ICON_SETTING, ICON_HISTORY, \
     ICON_PIXEL_128X128, ICON_ABOUT, ICON_WARNING
@@ -22,6 +23,11 @@ class WindowViewer(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # Windows任务栏进度条显示
+        self._progress = None  # 任务栏状态对象
+        self._last_progress_state = None  # 当前显示的任务栏状态类
+        self._count_progress = 0  # 进度总数
+        self._index_progress = 0  # 当前进度
         # 初始化
         self.resize(330, 330)
         self.ui.pushButton_error.setVisible(False)
@@ -127,6 +133,40 @@ class WindowViewer(QMainWindow):
         self.setMinimumSize(0, 0)
         self.setMaximumSize(16777215, 16777215)
 
+    def set_progress_count(self, count: int):
+        self._count_progress = count
+
+    def set_progress_index(self, index: int):
+        self._index_progress = index
+        percent = int(self._index_progress / self._count_progress * 100)
+        self.show_normal_progress(percent)
+
+    def show_indeterminate_progress(self):
+        """任务栏显示不确定进度状态"""
+        if self._last_progress_state is not ProgressType.INDETERMINATE:
+            self._last_progress_state = ProgressType.INDETERMINATE
+            self._progress.set_progress_type(ProgressType.INDETERMINATE)
+
+    def show_normal_progress(self, value: int):
+        """任务栏显示正常进度状态
+        :param value:int，0~100"""
+        if self._last_progress_state is not ProgressType.NORMAL:
+            self._last_progress_state = ProgressType.NORMAL
+            self._progress.set_progress_type(ProgressType.NORMAL)
+        self._progress.set_progress(value)
+
+    def show_error_progress(self):
+        """任务栏显示错误进度状态"""
+        if self._last_progress_state is not ProgressType.ERROR:
+            self._last_progress_state = ProgressType.ERROR
+            self._progress.set_progress_type(ProgressType.ERROR)
+
+    def show_finish_progress(self):
+        """任务栏显示结束进度状态"""
+        if self._last_progress_state is not ProgressType.NOPROGRESS:
+            self._last_progress_state = ProgressType.NOPROGRESS
+            self._progress.set_progress_type(ProgressType.NOPROGRESS)
+
     def _set_button_size(self):
         """设置按钮尺寸"""
         self.ui.pushButton_home.setFixedHeight(round(self.ui.pushButton_home.width() * 0.618, 0))
@@ -150,6 +190,11 @@ class WindowViewer(QMainWindow):
         height = event.size().height()
         max_ = max(width, height)
         self.resize(max_, max_)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        if self._progress is None:
+            self._progress = TaskbarProgress(int(self.winId()))
 
 
 if __name__ == "__main__":

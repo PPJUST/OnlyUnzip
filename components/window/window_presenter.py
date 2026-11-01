@@ -101,11 +101,13 @@ class WindowPresenter:
 
     def accept_paths_from_cmd(self, paths: list):
         """接收命令行参数"""
+        self.viewer.show_indeterminate_progress()
         self.is_user_stop = False
         self.page_home.drop_paths(paths)
 
     def accept_file_info_list(self, file_info: FileInfoList):
         """接收文件信息类，传递给模型组件"""
+        self.viewer.show_indeterminate_progress()
         self.is_user_stop = False
         # 锁定设置项，防止被修改
         self.page_setting.lock_setting()
@@ -183,6 +185,8 @@ class WindowPresenter:
 
     def show_stderr_info(self, info: str):
         """显示报错信息"""
+        self.viewer.show_error_progress()
+
         # 设置主页状态
         self.page_home.set_info_error()
         # 报错信息页中显示报错信息
@@ -219,6 +223,8 @@ class WindowPresenter:
 
     def finished(self, results: FileInfoList):
         """处理结束信号"""
+        self.viewer.show_finish_progress()
+
         # 解锁设置项
         self.page_setting.unlock_setting()
 
@@ -264,6 +270,8 @@ class WindowPresenter:
 
     def finished_by_no_files(self):
         """提前终止：由于主页模块信号-没有需要处理的文件"""
+        self.viewer.show_finish_progress()
+
         # 解锁设置项
         self.page_setting.unlock_setting()
         # 启用主页的拖入功能
@@ -277,6 +285,8 @@ class WindowPresenter:
 
     def finished_by_temp_folder(self, path: str = ''):
         """提前终止：由于主页模块信号-存在临时文件夹"""
+        self.viewer.show_error_progress()
+
         # 解锁设置项
         self.page_setting.unlock_setting()
 
@@ -287,6 +297,8 @@ class WindowPresenter:
 
     def finished_by_error_7zip_path(self, path: str = ''):
         """提前终止：由于主页模块信号-7zip路径错误"""
+        self.viewer.show_error_progress()
+
         # 解锁设置项
         self.page_setting.unlock_setting()
 
@@ -297,6 +309,8 @@ class WindowPresenter:
 
     def finished_by_user_stop(self):
         """提前终止：用户主动终止"""
+        self.viewer.show_finish_progress()
+
         # 解锁设置项
         self.page_setting.unlock_setting()
         # 启用主页的拖入功能
@@ -312,6 +326,8 @@ class WindowPresenter:
 
     def finished_by_user_stop_after_current(self):
         """提前终止：用户主动终止（延迟终止，完成当前任务后再终止）"""
+        self.viewer.show_finish_progress()
+
         self.is_user_stop = True
         self.model.stop_task()
 
@@ -403,7 +419,9 @@ class WindowPresenter:
         """绑定模型信号，链接到其他组件"""
         self.model.SignalCurrentFile.connect(self.page_home.set_current_file)
         self.model.SignalTaskCount.connect(self.page_home.set_task_count)
+        self.model.SignalTaskCount.connect(self.viewer.set_progress_count)
         self.model.SignalTaskIndex.connect(self.page_home.set_task_index)
+        self.model.SignalTaskIndex.connect(self.viewer.set_progress_index)
         self.model.SignalCurrentPw.connect(self.page_home.set_current_password)
         self.model.SignalPwCount.connect(self.page_home.set_password_count)
         self.model.SignalPwIndex.connect(self.page_home.set_password_index)
