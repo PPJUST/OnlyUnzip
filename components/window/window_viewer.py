@@ -166,6 +166,7 @@ class WindowViewer(QMainWindow):
         if self._last_progress_state is not ProgressType.NOPROGRESS:
             self._last_progress_state = ProgressType.NOPROGRESS
             self._progress.set_progress_type(ProgressType.NOPROGRESS)
+            self._progress.flash_done()
 
     def _set_button_size(self):
         """设置按钮尺寸"""
