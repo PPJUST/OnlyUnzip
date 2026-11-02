@@ -89,7 +89,7 @@ class SettingPresenter(QObject):
         self.viewer.ChangePreFilterModeWhiteListRule.connect(self.model.set_model_pre_filter_whitelist_rule)
         self.viewer.ChangeTryUnknownFiletype.connect(self.model.set_try_unknown_filetype_is_enable)
         self.viewer.ChangeReadPasswordFromFilename.connect(self.model.set_read_password_from_filename_is_enable)
-        self.viewer.ChangeWriteFilename.connect(self.model.set_write_filename_is_enable)
+        self.viewer.ChangeWriteFilenameT.connect(self.model.set_write_filename_is_enable)
         self.viewer.ChangeWriteFilenameLeftPart.connect(self.model.set_write_filename_left_word)
         self.viewer.ChangeWriteFilenameLeftPart.connect(self.update_filename_with_pw_preview)
         self.viewer.ChangeWriteFilenameRightPart.connect(self.model.set_write_filename_right_word)
@@ -142,7 +142,7 @@ class SettingPresenter(QObject):
         self.viewer.set_setting_is_try_unknown_filetype(self.model.get_try_unknown_filetype_is_enable())
         self.viewer.set_setting_is_read_password_from_filename(self.model.get_read_password_from_filename_is_enable())
 
-        self.viewer.set_setting_write_filename(self.model.get_write_filename_is_enable())
+        self.viewer.set_setting_write_filename_t(self.model.get_write_filename_is_enable())
         self.viewer.set_setting_write_filename_left_part(self.model.get_write_filename_left_word())
         self.viewer.set_setting_write_filename_right_part(self.model.get_write_filename_right_word())
         self.viewer.set_setting_write_filename_position(self.model.get_write_filename_position_str())

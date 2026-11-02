@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingNUidAG.ui'
+## Form generated from reading UI file 'page_settingnedPNg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.3
 ##
@@ -25,7 +25,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(240, 228)
+        Form.resize(225, 225)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -43,7 +43,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -86, 221, 751))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -577, 206, 1007))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setSpacing(3)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -148,10 +148,10 @@ class Ui_Form(object):
         self.verticalLayout_3 = QVBoxLayout(self.widget_test)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.checkBox_write_filename = QCheckBox(self.widget_test)
-        self.checkBox_write_filename.setObjectName(u"checkBox_write_filename")
+        self.checkBox_write_filename_t = QCheckBox(self.widget_test)
+        self.checkBox_write_filename_t.setObjectName(u"checkBox_write_filename_t")
 
-        self.verticalLayout_3.addWidget(self.checkBox_write_filename)
+        self.verticalLayout_3.addWidget(self.checkBox_write_filename_t)
 
         self.widget_write_filename = QWidget(self.widget_test)
         self.widget_write_filename.setObjectName(u"widget_write_filename")
@@ -260,15 +260,143 @@ class Ui_Form(object):
 
         self.verticalLayout_4.addWidget(self.line_5)
 
-        self.checkBox_delete_origin = QCheckBox(self.widget_extract)
-        self.checkBox_delete_origin.setObjectName(u"checkBox_delete_origin")
-
-        self.verticalLayout_4.addWidget(self.checkBox_delete_origin)
-
         self.checkBox_recursive_extract = QCheckBox(self.widget_extract)
         self.checkBox_recursive_extract.setObjectName(u"checkBox_recursive_extract")
 
         self.verticalLayout_4.addWidget(self.checkBox_recursive_extract)
+
+        self.checkBox_file_operation_after_extract_success = QCheckBox(self.widget_extract)
+        self.checkBox_file_operation_after_extract_success.setObjectName(u"checkBox_file_operation_after_extract_success")
+
+        self.verticalLayout_4.addWidget(self.checkBox_file_operation_after_extract_success)
+
+        self.widget_file_operation_after_extract_success = QWidget(self.widget_extract)
+        self.widget_file_operation_after_extract_success.setObjectName(u"widget_file_operation_after_extract_success")
+        self.verticalLayout_10 = QVBoxLayout(self.widget_file_operation_after_extract_success)
+        self.verticalLayout_10.setSpacing(3)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_10.setContentsMargins(20, 0, 0, 0)
+        self.checkBox_delete_origin = QCheckBox(self.widget_file_operation_after_extract_success)
+        self.checkBox_delete_origin.setObjectName(u"checkBox_delete_origin")
+
+        self.verticalLayout_10.addWidget(self.checkBox_delete_origin)
+
+        self.checkBox_move_origin_file_after_success = QCheckBox(self.widget_file_operation_after_extract_success)
+        self.checkBox_move_origin_file_after_success.setObjectName(u"checkBox_move_origin_file_after_success")
+
+        self.verticalLayout_10.addWidget(self.checkBox_move_origin_file_after_success)
+
+        self.lineEdit_move_origin_file_after_success = QLineEdit(self.widget_file_operation_after_extract_success)
+        self.lineEdit_move_origin_file_after_success.setObjectName(u"lineEdit_move_origin_file_after_success")
+
+        self.verticalLayout_10.addWidget(self.lineEdit_move_origin_file_after_success)
+
+        self.checkBox_write_filename_e = QCheckBox(self.widget_file_operation_after_extract_success)
+        self.checkBox_write_filename_e.setObjectName(u"checkBox_write_filename_e")
+
+        self.verticalLayout_10.addWidget(self.checkBox_write_filename_e)
+
+        self.checkBox_insert_char_to_filename_after_success = QCheckBox(self.widget_file_operation_after_extract_success)
+        self.checkBox_insert_char_to_filename_after_success.setObjectName(u"checkBox_insert_char_to_filename_after_success")
+
+        self.verticalLayout_10.addWidget(self.checkBox_insert_char_to_filename_after_success)
+
+        self.widget_insert_char_to_filename_after_success = QWidget(self.widget_file_operation_after_extract_success)
+        self.widget_insert_char_to_filename_after_success.setObjectName(u"widget_insert_char_to_filename_after_success")
+        self.horizontalLayout_12 = QHBoxLayout(self.widget_insert_char_to_filename_after_success)
+        self.horizontalLayout_12.setSpacing(3)
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.horizontalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.label_11 = QLabel(self.widget_insert_char_to_filename_after_success)
+        self.label_11.setObjectName(u"label_11")
+
+        self.horizontalLayout_12.addWidget(self.label_11)
+
+        self.comboBox_insert_char_to_filename_after_success_position = QComboBox(self.widget_insert_char_to_filename_after_success)
+        self.comboBox_insert_char_to_filename_after_success_position.setObjectName(u"comboBox_insert_char_to_filename_after_success_position")
+
+        self.horizontalLayout_12.addWidget(self.comboBox_insert_char_to_filename_after_success_position)
+
+        self.label_10 = QLabel(self.widget_insert_char_to_filename_after_success)
+        self.label_10.setObjectName(u"label_10")
+
+        self.horizontalLayout_12.addWidget(self.label_10)
+
+        self.lineEdit_insert_char_to_filename_after_success_char = QLineEdit(self.widget_insert_char_to_filename_after_success)
+        self.lineEdit_insert_char_to_filename_after_success_char.setObjectName(u"lineEdit_insert_char_to_filename_after_success_char")
+
+        self.horizontalLayout_12.addWidget(self.lineEdit_insert_char_to_filename_after_success_char)
+
+
+        self.verticalLayout_10.addWidget(self.widget_insert_char_to_filename_after_success)
+
+
+        self.verticalLayout_4.addWidget(self.widget_file_operation_after_extract_success)
+
+        self.checkBox_file_operation_after_extract_failure = QCheckBox(self.widget_extract)
+        self.checkBox_file_operation_after_extract_failure.setObjectName(u"checkBox_file_operation_after_extract_failure")
+
+        self.verticalLayout_4.addWidget(self.checkBox_file_operation_after_extract_failure)
+
+        self.widget_file_operation_after_extract_failure = QWidget(self.widget_extract)
+        self.widget_file_operation_after_extract_failure.setObjectName(u"widget_file_operation_after_extract_failure")
+        self.verticalLayout_11 = QVBoxLayout(self.widget_file_operation_after_extract_failure)
+        self.verticalLayout_11.setSpacing(3)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_11.setContentsMargins(20, 0, 0, 0)
+        self.checkBox_move_origin_file_after_failure = QCheckBox(self.widget_file_operation_after_extract_failure)
+        self.checkBox_move_origin_file_after_failure.setObjectName(u"checkBox_move_origin_file_after_failure")
+
+        self.verticalLayout_11.addWidget(self.checkBox_move_origin_file_after_failure)
+
+        self.lineEdit_move_origin_file_after_failure = QLineEdit(self.widget_file_operation_after_extract_failure)
+        self.lineEdit_move_origin_file_after_failure.setObjectName(u"lineEdit_move_origin_file_after_failure")
+
+        self.verticalLayout_11.addWidget(self.lineEdit_move_origin_file_after_failure)
+
+        self.checkBox_insert_char_to_filename_after_failure = QCheckBox(self.widget_file_operation_after_extract_failure)
+        self.checkBox_insert_char_to_filename_after_failure.setObjectName(u"checkBox_insert_char_to_filename_after_failure")
+
+        self.verticalLayout_11.addWidget(self.checkBox_insert_char_to_filename_after_failure)
+
+        self.widget_insert_char_to_filename_after_failure = QWidget(self.widget_file_operation_after_extract_failure)
+        self.widget_insert_char_to_filename_after_failure.setObjectName(u"widget_insert_char_to_filename_after_failure")
+        self.horizontalLayout_10 = QHBoxLayout(self.widget_insert_char_to_filename_after_failure)
+        self.horizontalLayout_10.setSpacing(3)
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.label_12 = QLabel(self.widget_insert_char_to_filename_after_failure)
+        self.label_12.setObjectName(u"label_12")
+
+        self.horizontalLayout_10.addWidget(self.label_12)
+
+        self.comboBox_insert_char_to_filename_after_failure_position = QComboBox(self.widget_insert_char_to_filename_after_failure)
+        self.comboBox_insert_char_to_filename_after_failure_position.setObjectName(u"comboBox_insert_char_to_filename_after_failure_position")
+
+        self.horizontalLayout_10.addWidget(self.comboBox_insert_char_to_filename_after_failure_position)
+
+        self.label_13 = QLabel(self.widget_insert_char_to_filename_after_failure)
+        self.label_13.setObjectName(u"label_13")
+
+        self.horizontalLayout_10.addWidget(self.label_13)
+
+        self.lineEdit_insert_char_to_filename_after_failure_char = QLineEdit(self.widget_insert_char_to_filename_after_failure)
+        self.lineEdit_insert_char_to_filename_after_failure_char.setObjectName(u"lineEdit_insert_char_to_filename_after_failure_char")
+
+        self.horizontalLayout_10.addWidget(self.lineEdit_insert_char_to_filename_after_failure_char)
+
+
+        self.verticalLayout_11.addWidget(self.widget_insert_char_to_filename_after_failure)
+
+
+        self.verticalLayout_4.addWidget(self.widget_file_operation_after_extract_failure)
+
+        self.line_7 = QFrame(self.widget_extract)
+        self.line_7.setObjectName(u"line_7")
+        self.line_7.setFrameShape(QFrame.Shape.HLine)
+        self.line_7.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout_4.addWidget(self.line_7)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -495,9 +623,9 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.checkBox_read_password_from_filename.setText(QCoreApplication.translate("Form", u"\u5c1d\u8bd5\u4ece\u6587\u4ef6\u540d\u4e2d\u8bfb\u53d6\u5bc6\u7801", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_write_filename.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5982\u679c\u68c0\u7d22\u5230\u6b63\u786e\u7684\u5bc6\u7801\uff0c\u5219\u5c06\u8be5\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d\u4e2d</p></body></html>", None))
+        self.checkBox_write_filename_t.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u5982\u679c\u68c0\u7d22\u5230\u6b63\u786e\u7684\u5bc6\u7801\uff0c\u5219\u5c06\u8be5\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d\u4e2d</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.checkBox_write_filename.setText(QCoreApplication.translate("Form", u"\u5c06\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d", None))
+        self.checkBox_write_filename_t.setText(QCoreApplication.translate("Form", u"\u5c06\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d", None))
         self.label_4.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u6587\u672c\u683c\u5f0f:", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"\u5bc6\u7801\u5de6\u4fa7\u5b57\u7b26:", None))
 #if QT_CONFIG(tooltip)
@@ -529,13 +657,21 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.radioButton_mode2_extract_same_folder.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u5230\u540c\u540d\u76ee\u5f55", None))
 #if QT_CONFIG(tooltip)
-        self.checkBox_delete_origin.setToolTip(QCoreApplication.translate("Form", u"\u6210\u529f\u89e3\u538b\u540e\u5220\u9664\u6e90\u6587\u4ef6", None))
-#endif // QT_CONFIG(tooltip)
-        self.checkBox_delete_origin.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u540e\u5220\u9664\u539f\u6587\u4ef6", None))
-#if QT_CONFIG(tooltip)
         self.checkBox_recursive_extract.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p>\u89e3\u538b\u5d4c\u5957\u7684\u538b\u7f29\u6587\u4ef6\uff0c\u76f4\u5230\u89e3\u538b\u7ed3\u679c\u4e2d\u4e0d\u5b58\u5728\u538b\u7f29\u6587\u4ef6\u3002</p><p>\u5b9e\u73b0\u65b9\u6cd5\uff1a\u5bf9\u89e3\u538b\u7684\u7ed3\u679c\u8fdb\u884c\u518d\u4e00\u6b21\u7684\u89e3\u538b\u3002</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.checkBox_recursive_extract.setText(QCoreApplication.translate("Form", u"\u9012\u5f52\u89e3\u538b\u5d4c\u5957\u538b\u7f29\u5305", None))
+        self.checkBox_file_operation_after_extract_success.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u6210\u529f\u540e\u7684\u6587\u4ef6\u64cd\u4f5c", None))
+        self.checkBox_delete_origin.setText(QCoreApplication.translate("Form", u"\u5220\u9664\u539f\u6587\u4ef6", None))
+        self.checkBox_move_origin_file_after_success.setText(QCoreApplication.translate("Form", u"\u79fb\u52a8\u5230\u6307\u5b9a\u8def\u5f84", None))
+        self.checkBox_write_filename_e.setText(QCoreApplication.translate("Form", u"\u5c06\u5bc6\u7801\u5199\u5165\u6587\u4ef6\u540d", None))
+        self.checkBox_insert_char_to_filename_after_success.setText(QCoreApplication.translate("Form", u"\u5411\u6587\u4ef6\u540d\u4e2d\u6dfb\u52a0\u6307\u5b9a\u6587\u672c", None))
+        self.label_11.setText(QCoreApplication.translate("Form", u"\u5728", None))
+        self.label_10.setText(QCoreApplication.translate("Form", u"\u6dfb\u52a0", None))
+        self.checkBox_file_operation_after_extract_failure.setText(QCoreApplication.translate("Form", u"\u89e3\u538b\u5931\u8d25\u540e\u7684\u6587\u4ef6\u64cd\u4f5c", None))
+        self.checkBox_move_origin_file_after_failure.setText(QCoreApplication.translate("Form", u"\u79fb\u52a8\u5230\u6307\u5b9a\u8def\u5f84", None))
+        self.checkBox_insert_char_to_filename_after_failure.setText(QCoreApplication.translate("Form", u"\u5411\u6587\u4ef6\u540d\u4e2d\u6dfb\u52a0\u6307\u5b9a\u6587\u672c", None))
+        self.label_12.setText(QCoreApplication.translate("Form", u"\u5728", None))
+        self.label_13.setText(QCoreApplication.translate("Form", u"\u6dfb\u52a0", None))
         self.label.setText(QCoreApplication.translate("Form", u"\u8986\u76d6\u6a21\u5f0f", None))
         self.comboBox_cover_file.setItemText(0, QCoreApplication.translate("Form", u"\u8986\u76d6\u91cd\u590d\u6587\u4ef6", None))
         self.comboBox_cover_file.setItemText(1, QCoreApplication.translate("Form", u"\u8df3\u8fc7\u91cd\u590d\u6587\u4ef6", None))

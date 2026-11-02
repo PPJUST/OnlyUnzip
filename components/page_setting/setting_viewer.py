@@ -23,15 +23,28 @@ class SettingViewer(QWidget):
     ChangePreFilterModeWhiteListRule = Signal(list, name="修改文件预筛选模式的白名单规则")
     ChangeTryUnknownFiletype = Signal(bool, name="修改处理未知格式的文件")
     ChangeReadPasswordFromFilename = Signal(bool, name="修改从文件名中读取密码")
-    ChangeWriteFilename = Signal(bool, name="修改写入文件名")
+    ChangeWriteFilenameT = Signal(bool, name="修改测试模式的密码写入文件名")
     ChangeWriteFilenameLeftPart = Signal(str, name="修改密码格式左边部分")
     ChangeWriteFilenameRightPart = Signal(str, name="修改密码格式右边部分")
     ChangeWriteFilenamePosition = Signal(str, name="修改密码格式位置")
     ChangeExtractModelSmart = Signal(bool, name="修改智能解压模式")
     ChangeExtractModelDirect = Signal(bool, name="修改直接解压模式")
     ChangeExtractModelSameFolder = Signal(bool, name="修改同名目录解压模式")
-    ChangeDeleteFile = Signal(bool, name="修改解压后删除原文件")
     ChangeRecursiveExtract = Signal(bool, name="修改递归解压")
+    ChangeFileOperationAfterExtractSuccess = Signal(bool, name="修改解压成功后的文件操作")
+    ChangeDeleteFile = Signal(bool, name="修改解压成功后的文件操作-删除文件")
+    ChangeMoveOriginFileAfterSuccess = Signal(bool, name="修改解压成功后的文件操作-移动到指定路径")
+    ChangeWriteFilenameE = Signal(bool, name="修改解压成功后的文件操作-密码写入文件名")
+    ChangeInsertCharToFilenameAfterSuccess = Signal(bool, name="修改解压成功后的文件操作-向文件名中添加指定文本")
+    ChangeInsertCharToFilenameAfterSuccessPosition = Signal(str,
+                                                            name="修改解压成功后的文件操作-向文件名中添加指定文本的位置")
+    ChangeInsertCharToFilenameAfterSuccessChar = Signal(str, name="修改解压成功后的文件操作-向文件名中添加的指定文本")
+    ChangeFileOperationAfterExtractFailure = Signal(bool, name="修改解压失败后的文件操作")
+    ChangeMoveOriginFileAfterFailure = Signal(bool, name="修改解压失败后的文件操作-移动到指定路径")
+    ChangeInsertCharToFilenameAfterFailure = Signal(bool, name="修改解压失败后的文件操作-向文件名中添加指定文本")
+    ChangeInsertCharToFilenameAfterFailurePosition = Signal(str,
+                                                            name="修改解压失败后的文件操作-向文件名中添加指定文本的位置")
+    ChangeInsertCharToFilenameAfterFailureChar = Signal(str, name="修改解压失败后的文件操作-向文件名中添加的指定文本")
     ChangeCoverModel = Signal(str, name="修改覆盖模式")
     ChangeBreakFolder = Signal(bool, name="修改解散文件夹")
     ChangeBreakFolderModel = Signal(str, name="修改解散文件夹模式")
@@ -201,10 +214,10 @@ class SettingViewer(QWidget):
         设置是否尝试从文件名中读取密码"""
         self.ui.checkBox_read_password_from_filename.setChecked(is_enable)
 
-    def set_setting_write_filename(self, is_enable: bool):
+    def set_setting_write_filename_t(self, is_enable: bool):
         """测试模式选项
         设置检索到正确密码后是否将其写入文件名"""
-        self.ui.checkBox_write_filename.setChecked(is_enable)
+        self.ui.checkBox_write_filename_t.setChecked(is_enable)
         self._show_setting_write_filename(is_enable)
 
     def _show_setting_write_filename(self, is_show: bool):
@@ -253,15 +266,110 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode2_direct_extract.setChecked(False)
         self.ui.radioButton_mode2_extract_same_folder.setChecked(True)
 
-    def set_setting_delete_file(self, is_enable: bool):
-        """解压模式选项
-        设置解压后删除原文件"""
-        self.ui.checkBox_delete_origin.setChecked(is_enable)
-
     def set_setting_recursive_extract(self, is_enable: bool):
         """解压模式选项
         设置完成解压任务后是否进行递归解压（再次执行直到没有能解压的文件）"""
         self.ui.checkBox_recursive_extract.setChecked(is_enable)
+
+    def _set_setting_file_operation_after_extract_success(self, is_enable: bool):
+        """解压模式选项
+        设置解压成功后是否文件进行操作"""
+        self.ui.checkBox_file_operation_after_extract_success.setChecked(is_enable)
+        self._show_setting_file_operation_after_extract_success(is_enable)
+
+    def _show_setting_file_operation_after_extract_success(self, is_show: bool):
+        """显示/隐藏解压成功后文件操作选项"""
+        self.ui.widget_file_operation_after_extract_success.setVisible(is_show)
+
+    def set_setting_delete_file(self, is_enable: bool):
+        """解压模式选项
+        设置解压成功后删除原文件"""
+        self.ui.checkBox_delete_origin.setChecked(is_enable)
+
+    def set_setting_is_move_origin_file_after_success(self, is_enable: bool):
+        """解压模式选项
+        设置解压成功后移动原文件"""
+        self.ui.checkBox_move_origin_file_after_success.setChecked(is_enable)
+        self._show_setting_move_origin_file_after_success(is_enable)
+
+    def set_setting_path_move_origin_file_after_success(self, path: str):
+        """解压模式选项
+        设置解压成功后移动原文件的指定路径"""
+        self.ui.lineEdit_move_origin_file_after_success.setText(path)
+
+    def _show_setting_move_origin_file_after_success(self, is_show: bool):
+        """显示/隐藏解压成功后移动原文件"""
+        self.ui.lineEdit_move_origin_file_after_success.setVisible(is_show)
+
+    def set_setting_write_filename_e(self, is_enable: bool):
+        """解压模式选项
+        设置解压成功后是否将其写入原文件的文件名"""
+        self.ui.checkBox_write_filename_e.setChecked(is_enable)
+
+    def set_setting_is_insert_char_to_filename_after_success(self, is_enable: bool):
+        """解压模式选项
+        设置解压成功后向文件名中添加指定文本"""
+        self.ui.checkBox_insert_char_to_filename_after_success.setChecked(is_enable)
+        self._show_setting_insert_char_to_filename_after_success(is_enable)
+
+    def set_setting_position_insert_char_to_filename_after_success(self, option: str):
+        """解压模式选项
+        设置解压成功后向文件名中添加指定文本的位置"""
+        self.ui.comboBox_insert_char_to_filename_after_success_position.setCurrentText(option)
+
+    def set_setting_char_insert_char_to_filename_after_success(self, char: str):
+        """解压模式选项
+        设置解压成功后向文件名中添加的指定文本"""
+        self.ui.lineEdit_insert_char_to_filename_after_success_char.setText(char)
+
+    def _show_setting_insert_char_to_filename_after_success(self, is_show: bool):
+        """显示/隐藏解压成功后向文件名中添加指定文本"""
+        self.ui.widget_insert_char_to_filename_after_success.setVisible(is_show)
+
+    def _set_setting_file_operation_after_extract_failure(self, is_enable: bool):
+        """解压模式选项
+        设置解压失败后是否文件进行操作"""
+        self.ui.checkBox_file_operation_after_extract_failure.setChecked(is_enable)
+        self._show_setting_file_operation_after_extract_success(is_enable)
+
+    def _show_setting_file_operation_after_extract_failure(self, is_show: bool):
+        """显示/隐藏解压失败后文件操作选项"""
+        self.ui.widget_file_operation_after_extract_failure.setVisible(is_show)
+
+    def set_setting_is_move_origin_file_after_failure(self, is_enable: bool):
+        """解压模式选项
+        设置解压失败后移动原文件"""
+        self.ui.checkBox_move_origin_file_after_failure.setChecked(is_enable)
+        self._show_setting_move_origin_file_after_failure(is_enable)
+
+    def set_setting_path_move_origin_file_after_failure(self, path: str):
+        """解压模式选项
+        设置解压失败后移动原文件的指定路径"""
+        self.ui.lineEdit_move_origin_file_after_failure.setText(path)
+
+    def _show_setting_move_origin_file_after_failure(self, is_show: bool):
+        """显示/隐藏解压失败后移动原文件"""
+        self.ui.lineEdit_move_origin_file_after_failure.setVisible(is_show)
+
+    def set_setting_is_insert_char_to_filename_after_failure(self, is_enable: bool):
+        """解压模式选项
+        设置解压失败后向文件名中添加指定文本"""
+        self.ui.checkBox_insert_char_to_filename_after_failure.setChecked(is_enable)
+        self._show_setting_insert_char_to_filename_after_failure(is_enable)
+
+    def set_setting_position_insert_char_to_filename_after_failure(self, option: str):
+        """解压模式选项
+        设置解压失败后向文件名中添加指定文本的位置"""
+        self.ui.comboBox_insert_char_to_filename_after_failure_position.setCurrentText(option)
+
+    def set_setting_char_insert_char_to_filename_after_failure(self, char: str):
+        """解压模式选项
+        设置解压失败后向文件名中添加的指定文本"""
+        self.ui.lineEdit_insert_char_to_filename_after_failure_char.setText(char)
+
+    def _show_setting_insert_char_to_filename_after_failure(self, is_show: bool):
+        """显示/隐藏解压失败后向文件名中添加指定文本"""
+        self.ui.widget_insert_char_to_filename_after_failure.setVisible(is_show)
 
     def set_setting_cover_model(self, option: str):
         """解压模式选项
@@ -339,9 +447,9 @@ class SettingViewer(QWidget):
         self.ui.checkBox_try_unknown_filetype.stateChanged.connect(self.ChangeTryUnknownFiletype.emit)
         # 从文件名中读取密码
         self.ui.checkBox_read_password_from_filename.stateChanged.connect(self.ChangeReadPasswordFromFilename.emit)
-        # 密码写入文件名
-        self.ui.checkBox_write_filename.stateChanged.connect(self.ChangeWriteFilename.emit)
-        self.ui.checkBox_write_filename.stateChanged.connect(self._show_setting_write_filename)
+        # 测试模式的密码写入文件名
+        self.ui.checkBox_write_filename_t.stateChanged.connect(self.ChangeWriteFilenameT.emit)
+        self.ui.checkBox_write_filename_t.stateChanged.connect(self._show_setting_write_filename)
         self.ui.lineEdit_left_word.textChanged.connect(self.ChangeWriteFilenameLeftPart.emit)
         self.ui.lineEdit_right_word.textChanged.connect(self.ChangeWriteFilenameRightPart.emit)
         self.ui.comboBox_pw_position.currentTextChanged.connect(self.ChangeWriteFilenamePosition.emit)
@@ -349,10 +457,51 @@ class SettingViewer(QWidget):
         self.ui.radioButton_mode2_smart_extract.clicked.connect(self._change_extract_model)
         self.ui.radioButton_mode2_direct_extract.clicked.connect(self._change_extract_model)
         self.ui.radioButton_mode2_extract_same_folder.clicked.connect(self._change_extract_model)
-        # 删除原文件
-        self.ui.checkBox_delete_origin.stateChanged.connect(self.ChangeDeleteFile.emit)
         # 递归解压
         self.ui.checkBox_recursive_extract.stateChanged.connect(self.ChangeRecursiveExtract.emit)
+
+        # 解压成功后的文件操作
+        self.ui.checkBox_file_operation_after_extract_success.stateChanged.connect(
+            self.ChangeFileOperationAfterExtractSuccess.emit)
+        self.ui.checkBox_file_operation_after_extract_success.stateChanged.connect(
+            self._show_setting_file_operation_after_extract_success)
+        # 删除原文件
+        self.ui.checkBox_delete_origin.stateChanged.connect(self.ChangeDeleteFile.emit)
+        # 移动到指定路径
+        self.ui.checkBox_move_origin_file_after_success.stateChanged.connect(self.ChangeMoveOriginFileAfterSuccess.emit)
+        self.ui.checkBox_move_origin_file_after_success.stateChanged.connect(
+            self._show_setting_move_origin_file_after_success)
+        # 密码写入文件名
+        self.ui.checkBox_write_filename_e.stateChanged.connect(self.ChangeWriteFilenameE.emit)
+        # 向文件名中添加指定文本
+        self.ui.checkBox_insert_char_to_filename_after_success.stateChanged.connect(
+            self.ChangeInsertCharToFilenameAfterSuccess.emit)
+        self.ui.checkBox_insert_char_to_filename_after_success.stateChanged.connect(
+            self._show_setting_insert_char_to_filename_after_success)
+        self.ui.comboBox_insert_char_to_filename_after_success_position.currentTextChanged.connect(
+            self.ChangeInsertCharToFilenameAfterSuccessPosition.emit)
+        self.ui.lineEdit_insert_char_to_filename_after_success_char.textChanged.connect(
+            self.ChangeInsertCharToFilenameAfterSuccessChar.emit)
+
+        # 解压失败后的文件操作
+        self.ui.checkBox_file_operation_after_extract_failure.stateChanged.connect(
+            self.ChangeFileOperationAfterExtractFailure.emit)
+        self.ui.checkBox_file_operation_after_extract_failure.stateChanged.connect(
+            self._show_setting_file_operation_after_extract_failure)
+        # 移动到指定路径
+        self.ui.checkBox_move_origin_file_after_failure.stateChanged.connect(self.ChangeMoveOriginFileAfterFailure.emit)
+        self.ui.checkBox_move_origin_file_after_failure.stateChanged.connect(
+            self._show_setting_move_origin_file_after_failure)
+        # 向文件名中添加指定文本
+        self.ui.checkBox_insert_char_to_filename_after_failure.stateChanged.connect(
+            self.ChangeInsertCharToFilenameAfterFailure.emit)
+        self.ui.checkBox_insert_char_to_filename_after_failure.stateChanged.connect(
+            self._show_setting_insert_char_to_filename_after_failure)
+        self.ui.comboBox_insert_char_to_filename_after_failure_position.currentTextChanged.connect(
+            self.ChangeInsertCharToFilenameAfterFailurePosition.emit)
+        self.ui.lineEdit_insert_char_to_filename_after_failure_char.textChanged.connect(
+            self.ChangeInsertCharToFilenameAfterFailureChar.emit)
+
         # 覆盖模式
         self.ui.comboBox_cover_file.currentTextChanged.connect(self.ChangeCoverModel.emit)
         # 解散文件夹
