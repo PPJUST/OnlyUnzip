@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'page_settingyqmozE.ui'
+## Form generated from reading UI file 'page_settingNUidAG.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.11.3
 ##
@@ -43,7 +43,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 221, 763))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -86, 221, 751))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setSpacing(3)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -153,49 +153,55 @@ class Ui_Form(object):
 
         self.verticalLayout_3.addWidget(self.checkBox_write_filename)
 
-        self.label_4 = QLabel(self.widget_test)
+        self.widget_write_filename = QWidget(self.widget_test)
+        self.widget_write_filename.setObjectName(u"widget_write_filename")
+        self.verticalLayout_9 = QVBoxLayout(self.widget_write_filename)
+        self.verticalLayout_9.setSpacing(3)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.verticalLayout_9.setContentsMargins(20, 0, 0, 0)
+        self.label_4 = QLabel(self.widget_write_filename)
         self.label_4.setObjectName(u"label_4")
 
-        self.verticalLayout_3.addWidget(self.label_4)
+        self.verticalLayout_9.addWidget(self.label_4)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_2 = QLabel(self.widget_test)
+        self.label_2 = QLabel(self.widget_write_filename)
         self.label_2.setObjectName(u"label_2")
 
         self.horizontalLayout_4.addWidget(self.label_2)
 
-        self.lineEdit_left_word = QLineEdit(self.widget_test)
+        self.lineEdit_left_word = QLineEdit(self.widget_write_filename)
         self.lineEdit_left_word.setObjectName(u"lineEdit_left_word")
 
         self.horizontalLayout_4.addWidget(self.lineEdit_left_word)
 
 
-        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_4)
 
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_3 = QLabel(self.widget_test)
+        self.label_3 = QLabel(self.widget_write_filename)
         self.label_3.setObjectName(u"label_3")
 
         self.horizontalLayout_5.addWidget(self.label_3)
 
-        self.lineEdit_right_word = QLineEdit(self.widget_test)
+        self.lineEdit_right_word = QLineEdit(self.widget_write_filename)
         self.lineEdit_right_word.setObjectName(u"lineEdit_right_word")
 
         self.horizontalLayout_5.addWidget(self.lineEdit_right_word)
 
 
-        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_5)
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.label_5 = QLabel(self.widget_test)
+        self.label_5 = QLabel(self.widget_write_filename)
         self.label_5.setObjectName(u"label_5")
 
         self.horizontalLayout_6.addWidget(self.label_5)
 
-        self.comboBox_pw_position = QComboBox(self.widget_test)
+        self.comboBox_pw_position = QComboBox(self.widget_write_filename)
         self.comboBox_pw_position.addItem("")
         self.comboBox_pw_position.addItem("")
         self.comboBox_pw_position.setObjectName(u"comboBox_pw_position")
@@ -203,22 +209,25 @@ class Ui_Form(object):
         self.horizontalLayout_6.addWidget(self.comboBox_pw_position)
 
 
-        self.verticalLayout_3.addLayout(self.horizontalLayout_6)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_6)
 
         self.verticalLayout_5 = QVBoxLayout()
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.label_6 = QLabel(self.widget_test)
+        self.label_6 = QLabel(self.widget_write_filename)
         self.label_6.setObjectName(u"label_6")
 
         self.verticalLayout_5.addWidget(self.label_6)
 
-        self.label_preview_filename = QLabel(self.widget_test)
+        self.label_preview_filename = QLabel(self.widget_write_filename)
         self.label_preview_filename.setObjectName(u"label_preview_filename")
 
         self.verticalLayout_5.addWidget(self.label_preview_filename)
 
 
-        self.verticalLayout_3.addLayout(self.verticalLayout_5)
+        self.verticalLayout_9.addLayout(self.verticalLayout_5)
+
+
+        self.verticalLayout_3.addWidget(self.widget_write_filename)
 
 
         self.verticalLayout_2.addWidget(self.widget_test)

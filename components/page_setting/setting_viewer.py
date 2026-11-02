@@ -205,6 +205,11 @@ class SettingViewer(QWidget):
         """测试模式选项
         设置检索到正确密码后是否将其写入文件名"""
         self.ui.checkBox_write_filename.setChecked(is_enable)
+        self._show_setting_write_filename(is_enable)
+
+    def _show_setting_write_filename(self, is_show: bool):
+        """显示/隐藏写入文件名选项的子选项"""
+        self.ui.widget_write_filename.setVisible(is_show)
 
     def set_setting_write_filename_left_part(self, text: str):
         """测试模式选项
@@ -336,6 +341,7 @@ class SettingViewer(QWidget):
         self.ui.checkBox_read_password_from_filename.stateChanged.connect(self.ChangeReadPasswordFromFilename.emit)
         # 密码写入文件名
         self.ui.checkBox_write_filename.stateChanged.connect(self.ChangeWriteFilename.emit)
+        self.ui.checkBox_write_filename.stateChanged.connect(self._show_setting_write_filename)
         self.ui.lineEdit_left_word.textChanged.connect(self.ChangeWriteFilenameLeftPart.emit)
         self.ui.lineEdit_right_word.textChanged.connect(self.ChangeWriteFilenameRightPart.emit)
         self.ui.comboBox_pw_position.currentTextChanged.connect(self.ChangeWriteFilenamePosition.emit)
