@@ -394,6 +394,7 @@ class SettingViewer(QWidget):
         """解压模式选项
         设置是否解压至指定目录"""
         self.ui.checkBox_extract_output_folder.setChecked(is_enable)
+        self._show_setting_extract_to_folder(is_enable)
 
     def set_setting_extract_output_folder(self, dirpath: str):
         """测试模式选项
@@ -401,15 +402,26 @@ class SettingViewer(QWidget):
         self.ui.lineEdit_extract_output_folder.setText(dirpath)
         self.ui.lineEdit_extract_output_folder.setToolTip(dirpath)
 
+    def _show_setting_extract_to_folder(self, is_show: bool):
+        """显示/隐藏解压至指定目录选项"""
+        self.ui.lineEdit_extract_output_folder.setVisible(is_show)
+        self.ui.toolButton_choose.setVisible(is_show)
+        self.ui.toolButton_open.setVisible(is_show)
+
     def set_setting_filter(self, is_enable: bool):
         """解压模式选项
         设置解压时是否过滤文件"""
         self.ui.checkBox_extract_filter.setChecked(is_enable)
+        self._show_setting_filter(is_enable)
 
     def set_setting_filter_rule(self, rule: str):
         """测试模式选项
         设置过滤文件规则"""
         self.ui.plainTextEdit_extract_filter_rule.setPlainText(rule)
+
+    def _show_setting_filter(self, is_show: bool):
+        """显示/隐藏过滤文件规则选项"""
+        self.ui.plainTextEdit_extract_filter_rule.setVisible(is_show)
 
     def set_setting_7zip_path(self, filepath: str):
         """设置7zip路径"""
@@ -512,9 +524,11 @@ class SettingViewer(QWidget):
             lambda: self.ChangeBreakFolderModel.emit(self.ui.comboBox_break_folder.currentText()))
         # 解压到指定目录
         self.ui.checkBox_extract_output_folder.stateChanged.connect(self.ChangeExtractOutputFolder.emit)
+        self.ui.checkBox_extract_output_folder.stateChanged.connect(self._show_setting_extract_to_folder)
         self.ui.lineEdit_extract_output_folder.textChanged.connect(self.ChangeExtractOutputFolderPath.emit)
         # 过滤文件
         self.ui.checkBox_extract_filter.stateChanged.connect(self.ChangeExtractFilter.emit)
+        self.ui.checkBox_extract_filter.stateChanged.connect(self._show_setting_filter)
         self.ui.plainTextEdit_extract_filter_rule.textChanged.connect(
             lambda: self.ChangeExtractFilterRule.emit(self.ui.plainTextEdit_extract_filter_rule.toPlainText()))
         # 自定义7Zip路径
