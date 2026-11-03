@@ -30,8 +30,15 @@ class SettingModel:
         self._read_password_from_filename = _ChildSettingReadPasswordFromFilename(self.config)
         self._write_filename = _ChildSettingWriteFilename(self.config)
         self._model_extract = _ChildSettingModelExtract(self.config)
-        self._delete_file = _ChildSettingDeleteFile(self.config)
         self._recursive_extract = _ChildSettingRecursiveExtract(self.config)
+        self._file_operation_after_extract_success = _ChildSettingFileOperationAfterExtractSuccess(self.config)
+        self._delete_file = _ChildSettingDeleteFile(self.config)
+        self._move_origin_file_after_success = _ChildSettingMoveOriginFileAfterSuccess(self.config)
+        self._write_filename_after_extract_success = _ChildSettingWriteFilenameAfterExtractSuccess(self.config)
+        self._insert_char_to_filename_after_success = _ChildSettingInsertCharToFilenameAfterSuccess(self.config)
+        self._file_operation_after_extract_failure = _ChildSettingFileOperationAfterExtractFailure(self.config)
+        self._move_origin_file_after_failure = _ChildSettingMoveOriginFileAfterFailure(self.config)
+        self._insert_char_to_filename_after_failure = _ChildSettingInsertCharToFilenameAfterFailure(self.config)
         self._mode_cover_file = _ChildSettingModelCover(self.config)
         self._break_folder = _ChildSettingBreakFolder(self.config)
         self._extract_output_folder = _ChildSettingExtractOutputFolder(self.config)
@@ -143,17 +150,101 @@ class SettingModel:
     def set_model_extract_same_folder(self):
         self.set_model_extract(ModelExtract.SameFolder())
 
+    def get_recursive_extract_is_enable(self):
+        return self._recursive_extract.read()
+
+    def set_recursive_extract_is_enable(self, is_enable: bool):
+        self._recursive_extract.set(is_enable)
+
+    def get_file_operation_after_extract_success_is_enable(self):
+        return self._file_operation_after_extract_success.read()
+
+    def set_file_operation_after_extract_success_is_enable(self, is_enable: bool):
+        self._file_operation_after_extract_success.set(is_enable)
+
     def get_delete_file_is_enable(self):
         return self._delete_file.read()
 
     def set_delete_file_is_enable(self, is_enable: bool):
         self._delete_file.set(is_enable)
 
-    def get_recursive_extract_is_enable(self):
-        return self._recursive_extract.read()
+    def get_move_origin_file_after_success_is_enable(self):
+        return self._move_origin_file_after_success.read_is_enable()
 
-    def set_recursive_extract_is_enable(self, is_enable: bool):
-        self._recursive_extract.set(is_enable)
+    def set_move_origin_file_after_success_is_enable(self, is_enable: bool):
+        self._move_origin_file_after_success.set_is_enable(is_enable)
+
+    def get_move_origin_file_after_success_path(self):
+        return self._move_origin_file_after_success.read_path()
+
+    def set_move_origin_file_after_success_path(self, path: str):
+        self._move_origin_file_after_success.set_path(path)
+
+    def get_write_filename_after_extract_success_is_enable(self):
+        return self._write_filename_after_extract_success.read()
+
+    def set_write_filename_after_extract_success_is_enable(self, is_enable: bool):
+        self._write_filename_after_extract_success.set(is_enable)
+
+    def get_insert_char_to_filename_after_success_is_enable(self):
+        return self._insert_char_to_filename_after_success.read_is_enable()
+
+    def set_insert_char_to_filename_after_success_is_enable(self, is_enable: bool):
+        self._insert_char_to_filename_after_success.set_is_enable(is_enable)
+
+    def get_insert_char_to_filename_after_success_position(self):
+        return self._insert_char_to_filename_after_success.read_position()
+
+    def get_insert_char_to_filename_after_success_position_str(self):
+        return self._insert_char_to_filename_after_success.read_position().text
+
+    def set_insert_char_to_filename_after_success_position(self, position: str):
+        self._insert_char_to_filename_after_success.set_position(position)
+
+    def get_insert_char_to_filename_after_success_char(self):
+        return self._insert_char_to_filename_after_success.read_char()
+
+    def set_insert_char_to_filename_after_success_char(self, char: str):
+        self._insert_char_to_filename_after_success.set_char(char)
+
+    def get_file_operation_after_extract_failure_is_enable(self):
+        return self._file_operation_after_extract_failure.read()
+
+    def set_file_operation_after_extract_failure_is_enable(self, is_enable: bool):
+        self._file_operation_after_extract_failure.set(is_enable)
+
+    def get_move_origin_file_after_failure_is_enable(self):
+        return self._move_origin_file_after_failure.read_is_enable()
+
+    def set_move_origin_file_after_failure_is_enable(self, is_enable: bool):
+        self._move_origin_file_after_failure.set_is_enable(is_enable)
+
+    def get_move_origin_file_after_failure_path(self):
+        return self._move_origin_file_after_failure.read_path()
+
+    def set_move_origin_file_after_failure_path(self, path: str):
+        self._move_origin_file_after_failure.set_path(path)
+
+    def get_insert_char_to_filename_after_failure_is_enable(self):
+        return self._insert_char_to_filename_after_failure.read_is_enable()
+
+    def set_insert_char_to_filename_after_failure_is_enable(self, is_enable: bool):
+        self._insert_char_to_filename_after_failure.set_is_enable(is_enable)
+
+    def get_insert_char_to_filename_after_failure_position(self):
+        return self._insert_char_to_filename_after_failure.read_position()
+
+    def get_insert_char_to_filename_after_failure_position_str(self):
+        return self._insert_char_to_filename_after_failure.read_position().text
+
+    def set_insert_char_to_filename_after_failure_position(self, position: str):
+        self._insert_char_to_filename_after_failure.set_position(position)
+
+    def get_insert_char_to_filename_after_failure_char(self):
+        return self._insert_char_to_filename_after_failure.read_char()
+
+    def set_insert_char_to_filename_after_failure_char(self, char: str):
+        self._insert_char_to_filename_after_failure.set_char(char)
 
     def get_model_cover(self):
         return self._mode_cover_file.read()
@@ -529,13 +620,6 @@ class _ChildSettingModelExtract(_ModuleChildSetting):
         self._set_value(self.section, self.key, value_str)
 
 
-class _ChildSettingDeleteFile(_ModuleChildSettingSingleEnable):
-    """设置项 是否删除原文件"""
-
-    def __init__(self, config):
-        super().__init__(config, section='DeleteFile', key='is_enable', default_value=False)
-
-
 class _ChildSettingRecursiveExtract(_ModuleChildSettingSingleEnable):
     """设置项 是否递归解压"""
 
@@ -545,6 +629,232 @@ class _ChildSettingRecursiveExtract(_ModuleChildSettingSingleEnable):
     def set(self, value: bool):
         """设置设置项"""
         self._set_value(self.section, self.key, str(value))
+
+
+class _ChildSettingFileOperationAfterExtractSuccess(_ModuleChildSettingSingleEnable):
+    """设置项 解压成功后是否进行文件操作"""
+
+    def __init__(self, config):
+        super().__init__(config, section='FileOperationAfterExtractSuccess', key='is_enable', default_value=False)
+
+
+class _ChildSettingDeleteFile(_ModuleChildSettingSingleEnable):
+    """设置项 是否删除原文件"""
+
+    def __init__(self, config):
+        super().__init__(config, section='DeleteFile', key='is_enable', default_value=False)
+
+
+class _ChildSettingMoveOriginFileAfterSuccess(_ModuleChildSetting):
+    """设置项 解压成功后移动原文件"""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.section = 'MoveOriginFileAfterSuccess'
+        # 是否启用
+        self.key_is_enable = 'is_enable'
+        self._default_value_is_enable = False
+        # 移动目录
+        self.key_path = 'path'
+        self._default_value_path = ''
+
+    def read_is_enable(self) -> bool:
+        """读取设置项 是否启用"""
+        value = self._read_key(self.section, self.key_is_enable, self._default_value_is_enable)
+        if isinstance(value, bool):
+            return value
+        elif value == 'True':
+            return True
+        elif value == 'False':
+            return False
+        else:
+            raise ValueError(self.section, self.key_is_enable, '无效的设置项值')
+
+    def set_is_enable(self, value: bool):
+        """设置设置项 是否启用"""
+        self._set_value(self.section, self.key_is_enable, str(value))
+
+    def read_path(self) -> str:
+        """读取设置项 移动目录"""
+        return self._read_key(self.section, self.key_path, self._default_value_path)
+
+    def set_path(self, value: str):
+        """设置设置项 移动目录"""
+        self._set_value(self.section, self.key_path, value)
+
+
+class _ChildSettingWriteFilenameAfterExtractSuccess(_ModuleChildSettingSingleEnable):
+    """设置项 解压成功后是否将解压密码写入原文件的文件名"""
+
+    def __init__(self, config):
+        super().__init__(config, section='WriteFilenameAfterExtractSuccess', key='is_enable', default_value=False)
+
+
+class _ChildSettingInsertCharToFilenameAfterSuccess(_ModuleChildSetting):
+    """设置项 解压成功后向文件名中添加指定文本"""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.section = 'InsertCharToFilenameAfterSuccess'
+        # 是否启用
+        self.key_is_enable = 'is_enable'
+        self._default_value_is_enable = False
+        # 添加的文本
+        self.key_char = 'char'
+        self._default_value_char = ''
+        # 密码文本格式 位置
+        self.key_position = 'position'
+        self._default_value_position = Position.Left()
+
+    def read_is_enable(self) -> bool:
+        """读取设置项 是否启用"""
+        value = self._read_key(self.section, self.key_is_enable, self._default_value_is_enable)
+        if isinstance(value, bool):
+            return value
+        elif value == 'True':
+            return True
+        elif value == 'False':
+            return False
+        else:
+            raise ValueError(self.section, self.key_is_enable, '无效的设置项值')
+
+    def set_is_enable(self, value: bool):
+        """设置设置项 是否启用"""
+        self._set_value(self.section, self.key_is_enable, str(value))
+
+    def read_char(self) -> str:
+        """读取设置项 添加的文本"""
+        return self._read_key(self.section, self.key_char, self._default_value_char)
+
+    def set_char(self, value: str):
+        """设置设置项 添加的文本"""
+        self._set_value(self.section, self.key_char, str(value))
+
+    def read_position(self) -> TYPES_POSITION:
+        """读取设置项 密码位置"""
+        value = self._read_key(self.section, self.key_position, self._default_value_position)
+        if isinstance(value, (Position.Left, Position.Right)):
+            return value
+        elif value == Position.Left.text:
+            return Position.Left()
+        elif value == Position.Right.text:
+            return Position.Right()
+        else:
+            raise ValueError(self.section, self.key_position, '无效的设置项值')
+
+    def set_position(self, value: TYPES_POSITION):
+        """设置设置项 密码位置"""
+        if isinstance(value, (Position.Left, Position.Right)):
+            value_str = value.text
+        else:
+            value_str = value
+        self._set_value(self.section, self.key_position, value_str)
+
+
+class _ChildSettingFileOperationAfterExtractFailure(_ModuleChildSettingSingleEnable):
+    """设置项 解压失败后是否进行文件操作"""
+
+    def __init__(self, config):
+        super().__init__(config, section='FileOperationAfterExtractFailure', key='is_enable', default_value=False)
+
+
+class _ChildSettingMoveOriginFileAfterFailure(_ModuleChildSetting):
+    """设置项 解压失败后移动原文件"""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.section = 'MoveOriginFileAfterFailure'
+        # 是否启用
+        self.key_is_enable = 'is_enable'
+        self._default_value_is_enable = False
+        # 移动目录
+        self.key_path = 'path'
+        self._default_value_path = ''
+
+    def read_is_enable(self) -> bool:
+        """读取设置项 是否启用"""
+        value = self._read_key(self.section, self.key_is_enable, self._default_value_is_enable)
+        if isinstance(value, bool):
+            return value
+        elif value == 'True':
+            return True
+        elif value == 'False':
+            return False
+        else:
+            raise ValueError(self.section, self.key_is_enable, '无效的设置项值')
+
+    def set_is_enable(self, value: bool):
+        """设置设置项 是否启用"""
+        self._set_value(self.section, self.key_is_enable, str(value))
+
+    def read_path(self) -> str:
+        """读取设置项 移动目录"""
+        return self._read_key(self.section, self.key_path, self._default_value_path)
+
+    def set_path(self, value: str):
+        """设置设置项 移动目录"""
+        self._set_value(self.section, self.key_path, value)
+
+
+class _ChildSettingInsertCharToFilenameAfterFailure(_ModuleChildSetting):
+    """设置项 解压失败后向文件名中添加指定文本"""
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.section = 'InsertCharToFilenameAfterFailure'
+        # 是否启用
+        self.key_is_enable = 'is_enable'
+        self._default_value_is_enable = False
+        # 添加的文本
+        self.key_char = 'char'
+        self._default_value_char = ''
+        # 密码文本格式 位置
+        self.key_position = 'position'
+        self._default_value_position = Position.Left()
+
+    def read_is_enable(self) -> bool:
+        """读取设置项 是否启用"""
+        value = self._read_key(self.section, self.key_is_enable, self._default_value_is_enable)
+        if isinstance(value, bool):
+            return value
+        elif value == 'True':
+            return True
+        elif value == 'False':
+            return False
+        else:
+            raise ValueError(self.section, self.key_is_enable, '无效的设置项值')
+
+    def set_is_enable(self, value: bool):
+        """设置设置项 是否启用"""
+        self._set_value(self.section, self.key_is_enable, str(value))
+
+    def read_char(self) -> str:
+        """读取设置项 添加的文本"""
+        return self._read_key(self.section, self.key_char, self._default_value_char)
+
+    def set_char(self, value: str):
+        """设置设置项 添加的文本"""
+        self._set_value(self.section, self.key_char, str(value))
+
+    def read_position(self) -> TYPES_POSITION:
+        """读取设置项 密码位置"""
+        value = self._read_key(self.section, self.key_position, self._default_value_position)
+        if isinstance(value, (Position.Left, Position.Right)):
+            return value
+        elif value == Position.Left.text:
+            return Position.Left()
+        elif value == Position.Right.text:
+            return Position.Right()
+        else:
+            raise ValueError(self.section, self.key_position, '无效的设置项值')
+
+    def set_position(self, value: TYPES_POSITION):
+        """设置设置项 密码位置"""
+        if isinstance(value, (Position.Left, Position.Right)):
+            value_str = value.text
+        else:
+            value_str = value
+        self._set_value(self.section, self.key_position, value_str)
 
 
 class _ChildSettingModelCover(_ModuleChildSetting):

@@ -34,6 +34,7 @@ class SettingViewer(QWidget):
     ChangeFileOperationAfterExtractSuccess = Signal(bool, name="修改解压成功后的文件操作")
     ChangeDeleteFile = Signal(bool, name="修改解压成功后的文件操作-删除文件")
     ChangeMoveOriginFileAfterSuccess = Signal(bool, name="修改解压成功后的文件操作-移动到指定路径")
+    ChangePathMoveOriginFileAfterSuccess = Signal(str, name="修改解压成功后的文件操作-移动到的指定路径")
     ChangeWriteFilenameE = Signal(bool, name="修改解压成功后的文件操作-密码写入文件名")
     ChangeInsertCharToFilenameAfterSuccess = Signal(bool, name="修改解压成功后的文件操作-向文件名中添加指定文本")
     ChangeInsertCharToFilenameAfterSuccessPosition = Signal(str,
@@ -41,6 +42,7 @@ class SettingViewer(QWidget):
     ChangeInsertCharToFilenameAfterSuccessChar = Signal(str, name="修改解压成功后的文件操作-向文件名中添加的指定文本")
     ChangeFileOperationAfterExtractFailure = Signal(bool, name="修改解压失败后的文件操作")
     ChangeMoveOriginFileAfterFailure = Signal(bool, name="修改解压失败后的文件操作-移动到指定路径")
+    ChangePathMoveOriginFileAfterFailure = Signal(str, name="修改解压失败后的文件操作-移动到的指定路径")
     ChangeInsertCharToFilenameAfterFailure = Signal(bool, name="修改解压失败后的文件操作-向文件名中添加指定文本")
     ChangeInsertCharToFilenameAfterFailurePosition = Signal(str,
                                                             name="修改解压失败后的文件操作-向文件名中添加指定文本的位置")
@@ -271,9 +273,9 @@ class SettingViewer(QWidget):
         设置完成解压任务后是否进行递归解压（再次执行直到没有能解压的文件）"""
         self.ui.checkBox_recursive_extract.setChecked(is_enable)
 
-    def _set_setting_file_operation_after_extract_success(self, is_enable: bool):
+    def set_setting_file_operation_after_extract_success(self, is_enable: bool):
         """解压模式选项
-        设置解压成功后是否文件进行操作"""
+        设置解压成功后是否进行文件操作"""
         self.ui.checkBox_file_operation_after_extract_success.setChecked(is_enable)
         self._show_setting_file_operation_after_extract_success(is_enable)
 
@@ -303,7 +305,7 @@ class SettingViewer(QWidget):
 
     def set_setting_write_filename_e(self, is_enable: bool):
         """解压模式选项
-        设置解压成功后是否将其写入原文件的文件名"""
+        设置解压成功后是否将解压密码写入原文件的文件名"""
         self.ui.checkBox_write_filename_e.setChecked(is_enable)
 
     def set_setting_is_insert_char_to_filename_after_success(self, is_enable: bool):
@@ -326,11 +328,11 @@ class SettingViewer(QWidget):
         """显示/隐藏解压成功后向文件名中添加指定文本"""
         self.ui.widget_insert_char_to_filename_after_success.setVisible(is_show)
 
-    def _set_setting_file_operation_after_extract_failure(self, is_enable: bool):
+    def set_setting_file_operation_after_extract_failure(self, is_enable: bool):
         """解压模式选项
-        设置解压失败后是否文件进行操作"""
+        设置解压失败后是否进行文件操作"""
         self.ui.checkBox_file_operation_after_extract_failure.setChecked(is_enable)
-        self._show_setting_file_operation_after_extract_success(is_enable)
+        self._show_setting_file_operation_after_extract_failure(is_enable)
 
     def _show_setting_file_operation_after_extract_failure(self, is_show: bool):
         """显示/隐藏解压失败后文件操作选项"""
