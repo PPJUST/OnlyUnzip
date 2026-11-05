@@ -110,7 +110,7 @@ class HistoryViewer(QWidget):
                 menu.addAction(copy_action)
 
             if is_show_action_open_origin:
-                open_origin_path_action = QAction('打开原文件路径', menu)
+                open_origin_path_action = QAction('打开源文件路径', menu)
                 open_origin_path_action.triggered.connect(self._open_origin_path)
                 menu.addAction(open_origin_path_action)
 
@@ -128,7 +128,7 @@ class HistoryViewer(QWidget):
         QApplication.clipboard().setText(password)
 
     def _open_origin_path(self):
-        """打开行项目中的原文件路径"""
+        """打开行项目中的源文件路径"""
         selected_item = self.ui.listWidget_records.currentItem()
         file_info = selected_item.data(Qt.UserRole + 1)
         origin_filepath = file_info.filepath

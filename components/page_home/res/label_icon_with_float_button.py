@@ -19,7 +19,7 @@ class LabelIconWithFloatButton(LabelIcon):
     ChangeSettingArchiveModel = Signal(object, name="设置模式选项")
     ChangeSettingTryUnknownFiletype = Signal(bool, name="设置处理未知格式文件选项")
     ChangeSettingRecursiveExtract = Signal(bool, name="设置递归解压选项")
-    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除原文件选项")
+    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除源文件选项")
     ChangeSettingTopWindow = Signal(bool, name="设置置顶选项")
 
     def __init__(self, parent=None):
@@ -63,7 +63,7 @@ class LabelIconWithFloatButton(LabelIcon):
         self.float_button_rc.setParent(self)
         self.float_button_rc.clicked.connect(self._click_rc_button)
         self.float_button_rc.hide()
-        # 修改删除原文件选项的按钮
+        # 修改删除源文件选项的按钮
         self.setting_is_enable_delete_origin: bool = False
         self.float_button_do = QToolButton()
         self.float_button_do.setFixedSize(_BUTTON_WIDTH, _BUTTON_HEIGHT)
@@ -181,7 +181,7 @@ class LabelIconWithFloatButton(LabelIcon):
         self.float_button_rc.setStyleSheet(stylesheet)
 
     def _click_do_button(self):
-        """点击删除原文件按钮"""
+        """点击删除源文件按钮"""
         # 反转选项
         self.setting_is_enable_delete_origin = not self.setting_is_enable_delete_origin
         # 修改按钮样式
@@ -190,7 +190,7 @@ class LabelIconWithFloatButton(LabelIcon):
         self.ChangeSettingDeleteOrigin.emit(self.setting_is_enable_delete_origin)
 
     def _change_do_button_style(self):
-        """修改删除原文件按钮的样式"""
+        """修改删除源文件按钮的样式"""
         stylesheet = _HIGHLIGHT_STYLESHEET if self.setting_is_enable_delete_origin else _NORMAL_STYLESHEET
         self.float_button_do.setStyleSheet(stylesheet)
 

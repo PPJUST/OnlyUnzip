@@ -281,7 +281,36 @@ class ThreadExtract(TemplateThread):
                 pass
             self.last_temp_folder = guess_temp_folder
 
+            # 执行解压
             extract_result, extract_path = self.extract_file(file_first, self.passwords)
+
+            # 根据选项处理源文件
+            file_info = self.fileinfo_task.get_file_info(file_first)
+            related_files = file_info.related_files
+            # 解压成功后的处理
+            if self.process_file_after_extract_success and isinstance(extract_result, Result7zip.Success):
+                # 成功后删除源文件
+                if self.is_delete_file:
+                    for i in related_files:
+                        lzytools.file.delete(i, send_to_trash=True)
+                # 成功后移动到指定路径
+                if self.is_move_origin_file_after_success:
+                    pass  # todo
+                # 成功后将正确密码写入文件名
+                if self.is_write_password_to_filename_e:
+                    pass  # todo
+                # 成功后向文件名中添加指定文本
+                if self.is_insert_char_after_success:
+                    pass  # todo
+
+            # 解压失败后的处理
+            if self.process_file_after_extract_failure and not isinstance(extract_result, Result7zip.Success):
+                # 失败后移动到指定路径
+                if self.is_move_origin_file_after_failure:
+                    pass  # todo
+                # 失败后向文件名中添加指定文本
+                if self.is_insert_char_after_failure:
+                    pass  # todo
 
             # 将结果写入文件信息类，并发送信号
             file_info.set_7zip_result(extract_result)
@@ -459,7 +488,7 @@ class ThreadExtract(TemplateThread):
                                                                      output_folder=part_extract_to,
                                                                      filter_rule=filter_rule)
 
-        # 提取原文件的文件名（剔除压缩文件后缀格式）
+        # 提取源文件的文件名（剔除压缩文件后缀格式）
         filename_origin = lzytools_archive.get_filetitle(os.path.basename(file))
 
         # 如果处理成功，则进行进一步处理
@@ -488,12 +517,6 @@ class ThreadExtract(TemplateThread):
                         extract_path = function_file.break_folder_files(extract_path)
                     else:
                         pass
-            # 是否删除原文件（删除同组中的全部文件）
-            file_info = self.fileinfo_task.get_file_info(file)
-            related_files = file_info.related_files
-            if self.is_delete_file:
-                for i in related_files:
-                    lzytools.file.delete(i, send_to_trash=True)
 
             print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
             return result_7zip, extract_path

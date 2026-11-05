@@ -101,8 +101,8 @@ class SettingPresenter(QObject):
         self.viewer.ChangeExtractModelSameFolder.connect(self.model.set_model_extract_same_folder)
         self.viewer.ChangeRecursiveExtract.connect(self.model.set_recursive_extract_is_enable)
 
-        self.viewer.ChangeFileOperationAfterExtractSuccess.connect(
-            self.model.set_file_operation_after_extract_success_is_enable)
+        self.viewer.ChangeProcessFileAfterExtractSuccess.connect(
+            self.model.set_process_file_after_extract_success_is_enable)
         self.viewer.ChangeDeleteFile.connect(self.model.set_delete_file_is_enable)
         self.viewer.ChangeMoveOriginFileAfterSuccess.connect(self.model.set_move_origin_file_after_success_is_enable)
         self.viewer.ChangePathMoveOriginFileAfterSuccess.connect(self.model.set_move_origin_file_after_success_path)
@@ -113,8 +113,8 @@ class SettingPresenter(QObject):
             self.model.set_insert_char_to_filename_after_success_position)
         self.viewer.ChangeInsertCharToFilenameAfterSuccessChar.connect(
             self.model.set_insert_char_to_filename_after_success_char)
-        self.viewer.ChangeFileOperationAfterExtractFailure.connect(
-            self.model.set_file_operation_after_extract_failure_is_enable)
+        self.viewer.ChangeProcessFileAfterExtractFailure.connect(
+            self.model.set_process_file_after_extract_failure_is_enable)
         self.viewer.ChangeMoveOriginFileAfterFailure.connect(self.model.set_move_origin_file_after_failure_is_enable)
         self.viewer.ChangePathMoveOriginFileAfterFailure.connect(self.model.set_move_origin_file_after_failure_path)
         self.viewer.ChangeInsertCharToFilenameAfterFailure.connect(
@@ -183,8 +183,8 @@ class SettingPresenter(QObject):
 
         self.viewer.set_setting_recursive_extract(self.model.get_recursive_extract_is_enable())
 
-        self.viewer.set_setting_file_operation_after_extract_success(
-            self.model.get_file_operation_after_extract_success_is_enable())
+        self.viewer.set_setting_process_file_after_extract_success(
+            self.model.get_process_file_after_extract_success_is_enable())
 
         self.viewer.set_setting_delete_file(self.model.get_delete_file_is_enable())
 
@@ -202,8 +202,8 @@ class SettingPresenter(QObject):
         self.viewer.set_setting_char_insert_char_to_filename_after_success(
             self.model.get_insert_char_to_filename_after_success_char())
 
-        self.viewer.set_setting_file_operation_after_extract_failure(
-            self.model.get_file_operation_after_extract_failure_is_enable())
+        self.viewer.set_setting_process_file_after_extract_failure(
+            self.model.get_process_file_after_extract_failure_is_enable())
 
         self.viewer.set_setting_is_move_origin_file_after_failure(
             self.model.get_move_origin_file_after_failure_is_enable())

@@ -23,7 +23,7 @@ class HomeViewer(QWidget):
     ChangeSettingArchiveModel = Signal(object, name="设置模式选项")
     ChangeSettingTryUnknownFiletype = Signal(bool, name="设置处理未知格式文件选项")
     ChangeSettingRecursiveExtract = Signal(bool, name="设置递归解压选项")
-    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除原文件选项")
+    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除源文件选项")
     ChangeSettingTopWindow = Signal(bool, name="设置置顶选项")
 
     def __init__(self, parent=None):

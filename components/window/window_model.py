@@ -198,7 +198,7 @@ class ModelExtractFile(TemplateModelSignal):
         # 初始化参数项
         self.is_read_password_from_filename = False  # 是否从文件名中读取密码
         self.extract_model = ModelExtract.Smart()  # 解压模式
-        self.is_delete_file = False  # 完成后是否删除原文件
+        self.is_delete_file = False  # 完成后是否删除源文件
         self.is_recursive_extract = False  # 是否递归解压
         self.cover_model = ModelCoverFile.Overwrite()  # 重名文件覆盖模式
         self.is_break_folder = False  # 是否解散文件夹

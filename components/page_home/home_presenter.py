@@ -28,7 +28,7 @@ class HomePresenter(QObject):
     ChangeSettingArchiveModel = Signal(object, name="设置模式选项")
     ChangeSettingTryUnknownFiletype = Signal(bool, name="设置处理未知格式文件选项")
     ChangeSettingRecursiveExtract = Signal(bool, name="设置递归解压选项")
-    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除原文件选项")
+    ChangeSettingDeleteOrigin = Signal(bool, name="设置删除源文件选项")
     ChangeSettingTopWindow = Signal(bool, name="设置置顶选项")
 
     def __init__(self, viewer: HomeViewer, model: HomeModel):
@@ -67,7 +67,7 @@ class HomePresenter(QObject):
     def drop_paths(self, paths: list, is_recursive: bool = False):
         """拖入文件
         :param paths: 文件路径
-        :param is_recursive: 是否是递归解压模式进行的文件操作"""
+        :param is_recursive: 是否是递归解压模式进行的源文件操作"""
         print('接收文件列表，进行后续处理')
         # 检查7zip路径
         _7zip_path = function_7zip.get_7zip_path()

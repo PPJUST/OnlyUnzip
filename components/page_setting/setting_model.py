@@ -31,12 +31,12 @@ class SettingModel:
         self._write_filename = _ChildSettingWriteFilename(self.config)
         self._model_extract = _ChildSettingModelExtract(self.config)
         self._recursive_extract = _ChildSettingRecursiveExtract(self.config)
-        self._file_operation_after_extract_success = _ChildSettingFileOperationAfterExtractSuccess(self.config)
+        self._process_file_after_extract_success = _ChildSettingProcessFileAfterExtractSuccess(self.config)
         self._delete_file = _ChildSettingDeleteFile(self.config)
         self._move_origin_file_after_success = _ChildSettingMoveOriginFileAfterSuccess(self.config)
         self._write_filename_after_extract_success = _ChildSettingWriteFilenameAfterExtractSuccess(self.config)
         self._insert_char_to_filename_after_success = _ChildSettingInsertCharToFilenameAfterSuccess(self.config)
-        self._file_operation_after_extract_failure = _ChildSettingFileOperationAfterExtractFailure(self.config)
+        self._process_file_after_extract_failure = _ChildSettingProcessFileAfterExtractFailure(self.config)
         self._move_origin_file_after_failure = _ChildSettingMoveOriginFileAfterFailure(self.config)
         self._insert_char_to_filename_after_failure = _ChildSettingInsertCharToFilenameAfterFailure(self.config)
         self._mode_cover_file = _ChildSettingModelCover(self.config)
@@ -156,11 +156,11 @@ class SettingModel:
     def set_recursive_extract_is_enable(self, is_enable: bool):
         self._recursive_extract.set(is_enable)
 
-    def get_file_operation_after_extract_success_is_enable(self):
-        return self._file_operation_after_extract_success.read()
+    def get_process_file_after_extract_success_is_enable(self):
+        return self._process_file_after_extract_success.read()
 
-    def set_file_operation_after_extract_success_is_enable(self, is_enable: bool):
-        self._file_operation_after_extract_success.set(is_enable)
+    def set_process_file_after_extract_success_is_enable(self, is_enable: bool):
+        self._process_file_after_extract_success.set(is_enable)
 
     def get_delete_file_is_enable(self):
         return self._delete_file.read()
@@ -207,11 +207,11 @@ class SettingModel:
     def set_insert_char_to_filename_after_success_char(self, char: str):
         self._insert_char_to_filename_after_success.set_char(char)
 
-    def get_file_operation_after_extract_failure_is_enable(self):
-        return self._file_operation_after_extract_failure.read()
+    def get_process_file_after_extract_failure_is_enable(self):
+        return self._process_file_after_extract_failure.read()
 
-    def set_file_operation_after_extract_failure_is_enable(self, is_enable: bool):
-        self._file_operation_after_extract_failure.set(is_enable)
+    def set_process_file_after_extract_failure_is_enable(self, is_enable: bool):
+        self._process_file_after_extract_failure.set(is_enable)
 
     def get_move_origin_file_after_failure_is_enable(self):
         return self._move_origin_file_after_failure.read_is_enable()
@@ -527,7 +527,7 @@ class _ChildSettingWriteFilename(_ModuleChildSetting):
         elif isinstance(position, Position.Right) and not left_part:
             left_part = ' '
         pw_part = f'{left_part}密码{right_part}'
-        filename_part = '原文件名'
+        filename_part = '源文件名'
         if isinstance(position, Position.Left):
             preview = f'{pw_part}{filename_part}'
         elif isinstance(position, Position.Right):
@@ -631,22 +631,22 @@ class _ChildSettingRecursiveExtract(_ModuleChildSettingSingleEnable):
         self._set_value(self.section, self.key, str(value))
 
 
-class _ChildSettingFileOperationAfterExtractSuccess(_ModuleChildSettingSingleEnable):
-    """设置项 解压成功后是否进行文件操作"""
+class _ChildSettingProcessFileAfterExtractSuccess(_ModuleChildSettingSingleEnable):
+    """设置项 解压成功后是否进行源文件操作"""
 
     def __init__(self, config):
-        super().__init__(config, section='FileOperationAfterExtractSuccess', key='is_enable', default_value=False)
+        super().__init__(config, section='ProcessFileAfterExtractSuccess', key='is_enable', default_value=False)
 
 
 class _ChildSettingDeleteFile(_ModuleChildSettingSingleEnable):
-    """设置项 是否删除原文件"""
+    """设置项 是否删除源文件"""
 
     def __init__(self, config):
         super().__init__(config, section='DeleteFile', key='is_enable', default_value=False)
 
 
 class _ChildSettingMoveOriginFileAfterSuccess(_ModuleChildSetting):
-    """设置项 解压成功后移动原文件"""
+    """设置项 解压成功后移动源文件"""
 
     def __init__(self, config):
         super().__init__(config)
@@ -684,7 +684,7 @@ class _ChildSettingMoveOriginFileAfterSuccess(_ModuleChildSetting):
 
 
 class _ChildSettingWriteFilenameAfterExtractSuccess(_ModuleChildSettingSingleEnable):
-    """设置项 解压成功后是否将解压密码写入原文件的文件名"""
+    """设置项 解压成功后是否将解压密码写入源文件的文件名"""
 
     def __init__(self, config):
         super().__init__(config, section='WriteFilenameAfterExtractSuccess', key='is_enable', default_value=False)
@@ -751,15 +751,15 @@ class _ChildSettingInsertCharToFilenameAfterSuccess(_ModuleChildSetting):
         self._set_value(self.section, self.key_position, value_str)
 
 
-class _ChildSettingFileOperationAfterExtractFailure(_ModuleChildSettingSingleEnable):
-    """设置项 解压失败后是否进行文件操作"""
+class _ChildSettingProcessFileAfterExtractFailure(_ModuleChildSettingSingleEnable):
+    """设置项 解压失败后是否进行源文件操作"""
 
     def __init__(self, config):
-        super().__init__(config, section='FileOperationAfterExtractFailure', key='is_enable', default_value=False)
+        super().__init__(config, section='ProcessFileAfterExtractFailure', key='is_enable', default_value=False)
 
 
 class _ChildSettingMoveOriginFileAfterFailure(_ModuleChildSetting):
-    """设置项 解压失败后移动原文件"""
+    """设置项 解压失败后移动源文件"""
 
     def __init__(self, config):
         super().__init__(config)

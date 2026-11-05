@@ -451,14 +451,14 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_file_operation_after_extract_success">
+               <widget class="QCheckBox" name="checkBox_process_file_after_extract_success">
                 <property name="text">
-                 <string>解压成功后的文件操作</string>
+                 <string>解压成功后的源文件操作</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QWidget" name="widget_file_operation_after_extract_success" native="true">
+               <widget class="QWidget" name="widget_process_file_after_extract_success" native="true">
                 <layout class="QVBoxLayout" name="verticalLayout_10">
                  <property name="spacing">
                   <number>3</number>
@@ -478,7 +478,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_delete_origin">
                    <property name="text">
-                    <string>删除原文件</string>
+                    <string>删除源文件</string>
                    </property>
                   </widget>
                  </item>
@@ -551,14 +551,14 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_file_operation_after_extract_failure">
+               <widget class="QCheckBox" name="checkBox_process_file_after_extract_failure">
                 <property name="text">
-                 <string>解压失败后的文件操作</string>
+                 <string>解压失败后的源文件操作</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QWidget" name="widget_file_operation_after_extract_failure" native="true">
+               <widget class="QWidget" name="widget_process_file_after_extract_failure" native="true">
                 <layout class="QVBoxLayout" name="verticalLayout_11">
                  <property name="spacing">
                   <number>3</number>
