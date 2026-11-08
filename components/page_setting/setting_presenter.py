@@ -2,6 +2,7 @@
 # 用于接收Viewer的信号，并在选项修改时通过Model修改本地配置文件，并通知Viewer更新
 from PySide6.QtCore import QObject, Signal
 
+from common import class_setting
 from common.class_7zip import ModelArchive, ModelExtract, TYPES_MODEL_ARCHIVE, ModelPreFilter
 from components.page_setting.setting_model import SettingModel
 from components.page_setting.setting_viewer import SettingViewer
@@ -16,7 +17,7 @@ class SettingPresenter(QObject):
     def __init__(self, viewer: SettingViewer, model: SettingModel):
         super().__init__()
         self.viewer = viewer
-        self.model = model
+        self.model = class_setting.ModelSetting()
 
         # 初始化
         self._load_setting()  # 注意 必须在绑定信号前加载初始设置更新UI，否则更新时会触发对应信号
