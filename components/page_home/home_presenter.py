@@ -25,6 +25,7 @@ class HomePresenter(QObject):
     OpenAbout = Signal(name="打开关于页")
     OpenTempPassword = Signal(name="打开临时密码页")
     AskUpdateSetting = Signal(name="请求更新选项参数")
+    # 主页左上角显示的便捷选项
     ChangeSettingArchiveModel = Signal(object, name="设置模式选项")
     ChangeSettingTryUnknownFiletype = Signal(bool, name="设置处理未知格式文件选项")
     ChangeSettingRecursiveExtract = Signal(bool, name="设置递归解压选项")

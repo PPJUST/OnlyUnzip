@@ -9,6 +9,7 @@ from common import function_move, function_file, function_filename, function_7zi
 from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
+from common.class_setting import ModelSetting
 
 
 class TemplateThread(QThread):
@@ -28,8 +29,43 @@ class TemplateThread(QThread):
         super().__init__()
         self.fileinfo_task: FileInfoList = None  # 待处理的文件信息类清单
         self.passwords = list()  # 密码清单
-        self.is_read_pw_from_filename = False  # 是否从文件名中读取密码
         self.is_stop_task = False  # 是否终止任务
+
+        # 设置项
+        self.setting = ModelSetting()
+        # 通用项
+        self.is_read_password_from_filename: bool = False  # 是否从文件名中读取密码
+        # 测试模式
+        self.is_write_filename_t: bool = False  # 成功后将正确密码写入文件名
+        self.write_left_part_t: str = ''
+        self.write_right_part_t: str = ''
+        self.write_position_t = Position.Left()
+        # 解压模式
+        self.cover_model: str = ''  # 解压冲突时的文件覆盖模式
+        self.is_extract_to_folder: bool = False  # 是否解压到指定文件夹
+        self.extract_output_path: str = ''
+        self.is_filter: bool = False  # 是否过滤解压出的文件
+        self.filter_rules: list = []
+        self.extract_model: TYPES_MODEL_EXTRACT = None  # 解压模式
+        self.is_break_folder: bool = False  # 解压后是否解散结果文件夹
+        self.break_folder_model: TYPES_MODEL_BREAK_FOLDER = None
+        self.process_file_after_extract_success: bool = False  # 解压成功后的处理
+        self.is_delete_file: bool = False  # 成功后删除源文件
+        self.is_move_origin_file_after_success: bool = False  # 成功后移动到指定路径
+        self.path_move_origin_file_after_success: str = ''
+        self.is_write_password_to_filename_e: bool = False  # 成功后将正确密码写入文件名
+        self.write_left_part_e: str = ''
+        self.write_right_part_e: str = ''
+        self.write_position_e = Position.Left()
+        self.is_insert_char_after_success: bool = False  # 成功后向文件名中添加指定文本
+        self.char_insert_after_success: str = ''
+        self.position_insert_char_after_success = Position.Left()
+        self.process_file_after_extract_failure: bool = False  # 解压失败后的处理
+        self.is_move_origin_file_after_failure: bool = False  # 失败后移动到指定路径
+        self.path_move_origin_file_after_failure: str = ''
+        self.is_insert_char_after_failure: bool = False  # 失败后向文件名中添加指定文本
+        self.char_insert_after_failure: str = ''
+        self.position_insert_char_after_failure = Position.Left()
 
     def set_task(self, task: FileInfoList):
         """设置任务清单"""
@@ -44,13 +80,45 @@ class TemplateThread(QThread):
         if function_7zip.FAKE_PASSWORD not in self.passwords:
             self.passwords.insert(0, function_7zip.FAKE_PASSWORD)
 
-    def set_is_read_pw_from_filename(self, is_enable: bool):
-        """设置是否从文件名中读取密码"""
-        self.is_read_pw_from_filename = is_enable
-
     def stop_task(self):
         """终止任务"""
         self.is_stop_task = True
+
+    def load_setting(self):
+        """加载设置项"""
+        # 通用项
+        self.is_read_password_from_filename = self.setting.get_read_password_from_filename_is_enable()
+        # 测试模式
+        self.is_write_filename_t = self.setting.get_write_filename_is_enable()
+        self.write_left_part_t = self.setting.get_write_filename_left_word()
+        self.write_right_part_t = self.setting.get_write_filename_right_word()
+        self.write_position_t = self.setting.get_write_filename_position()
+        # 解压模式
+        self.cover_model = self.setting.get_model_cover()
+        self.is_extract_to_folder = self.setting.get_extract_output_folder_is_enable()
+        self.extract_output_path = self.setting.get_extract_output_folder_path()
+        self.is_filter = self.setting.get_extract_filter_is_enable()
+        self.filter_rules = self.setting.get_extract_filter_rules()
+        self.extract_model = self.setting.get_model_extract()
+        self.is_break_folder = self.setting.get_break_folder_is_enable()
+        self.break_folder_model = self.setting.get_break_folder_model()
+        self.process_file_after_extract_success = self.setting.get_process_file_after_extract_success_is_enable()
+        self.is_delete_file = self.setting.get_delete_file_is_enable()
+        self.is_move_origin_file_after_success = self.setting.get_move_origin_file_after_success_is_enable()
+        self.path_move_origin_file_after_success = self.setting.get_move_origin_file_after_success_path()
+        self.is_write_password_to_filename_e = self.setting.get_write_filename_after_extract_success_is_enable()
+        self.write_left_part_e = self.setting.get_write_filename_left_word()
+        self.write_right_part_e = self.setting.get_write_filename_right_word()
+        self.write_position_e = self.setting.get_write_filename_position()
+        self.is_insert_char_after_success = self.setting.get_write_filename_after_extract_success_is_enable()
+        self.char_insert_after_success = self.setting.get_insert_char_to_filename_after_success_char()
+        self.position_insert_char_after_success = self.setting.get_insert_char_to_filename_after_success_position()
+        self.process_file_after_extract_failure = self.setting.get_process_file_after_extract_failure_is_enable()
+        self.is_move_origin_file_after_failure = self.setting.get_move_origin_file_after_failure_is_enable()
+        self.path_move_origin_file_after_failure = self.setting.get_move_origin_file_after_failure_path()
+        self.is_insert_char_after_failure = self.setting.get_insert_char_to_filename_after_failure_is_enable()
+        self.char_insert_after_failure = self.setting.get_insert_char_to_filename_after_failure_char()
+        self.position_insert_char_after_failure = self.setting.get_insert_char_to_filename_after_failure_position()
 
     def _run_command_l_with_fake_password(self, file: str):
         """使用虚拟密码进行l指令测试，根据返回结果决定后续指令的使用
@@ -84,10 +152,6 @@ class ThreadTest(TemplateThread):
 
     def __init__(self):
         super().__init__()
-        self.is_write_filename = False
-        self.write_left_part = ''
-        self.write_right_part = ''
-        self.write_position = Position.Left()
 
     def run(self):
         print('执行测试子线程')
@@ -112,7 +176,7 @@ class ThreadTest(TemplateThread):
             # 如果结果为成功，则进行进一步操作
             if isinstance(test_result, Result7zip.Success):
                 # 是否将密码写入文件名
-                if self.is_write_filename:
+                if self.is_write_filename_t:
                     right_password = test_result.password
                     self._write_to_filename(file_info, right_password)
 
@@ -132,7 +196,7 @@ class ThreadTest(TemplateThread):
             return Result7zip.Skip()
 
         # 根据选项是否提取文件名中可能存在的密码
-        if self.is_read_pw_from_filename:
+        if self.is_read_password_from_filename:
             _filetitle = lzytools_archive.get_filetitle(os.path.basename(filepath))
             pws_filename = function_filename.read_password_from_filename(_filetitle)
             for _pw in pws_filename:
@@ -195,9 +259,9 @@ class ThreadTest(TemplateThread):
         if password == function_7zip.FAKE_PASSWORD:
             return
         # 组合密码部分
-        position = self.write_position
-        left_part = self.write_left_part
-        right_part = self.write_right_part
+        position = self.write_position_t
+        left_part = self.write_left_part_t
+        right_part = self.write_right_part_t
         if isinstance(position, Position.Left) and not right_part:  # 防止密码与文件名之间没有间隔符号
             right_part = ' '
         elif isinstance(position, Position.Right) and not left_part:
@@ -232,19 +296,7 @@ class ThreadExtract(TemplateThread):
 
     def __init__(self):
         super().__init__()
-        # 解压时参数
-        self.cover_model: str = ''
-        self.is_extract_to_folder: bool = False
-        self.extract_output_path: str = ''
-        self.is_filter: bool = False
-        self.filter_rules: list = []
-        self.is_delete_file: bool = False
         self.last_temp_folder = ''  # 上一个任务的临时文件夹，用于判断是否删除临时文件夹
-
-        # 解压后参数
-        self.extract_model: TYPES_MODEL_EXTRACT = None  # 解压模式
-        self.is_break_folder: bool = False  # 是否解散文件夹
-        self.break_folder_model: TYPES_MODEL_BREAK_FOLDER = None
 
     def run(self):
         print('执行解压子线程')
@@ -333,7 +385,7 @@ class ThreadExtract(TemplateThread):
             return Result7zip.Skip(), None
 
         # 根据选项是否提取文件名中可能存在的密码
-        if self.is_read_pw_from_filename:
+        if self.is_read_password_from_filename:
             _filetitle = lzytools_archive.get_filetitle(os.path.basename(filepath))
             pws_filename = function_filename.read_password_from_filename(_filetitle)
             for _pw in pws_filename:

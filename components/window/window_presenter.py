@@ -69,9 +69,6 @@ class WindowPresenter:
         self.queue_receiver.Data.connect(self.update_extract_progress)
         self.queue_receiver.start()
 
-        # 传参
-        self.set_model_setting()
-
         # 修改窗口属性
         self._get_window_setting()
 
@@ -96,8 +93,8 @@ class WindowPresenter:
         self.page_password.OpenPasswordManager.connect(self.open_password_manager)
         self.page_password_manager.SignalDeleted.connect(self.deleted_passwords)
         self.dialog_temp_password.WriteTODB.connect(self.write_temp_pws_to_db)
-        self._bind_model_signal()
         self.viewer.PageChanged.connect(self._page_changed)
+        self._bind_model_signal()
 
     def accept_paths_from_cmd(self, paths: list):
         """接收命令行参数"""
@@ -115,7 +112,6 @@ class WindowPresenter:
         self.page_home.banned_drop()
         # 传递文件信息类前传递必要参数
         self.set_model_passwords()
-        self.set_model_setting()
         # 传递给模型组件
         self.show_page_test_or_extract()
         self.model.accept_files(file_info)
@@ -128,50 +124,6 @@ class WindowPresenter:
         joined = self.passwords_used + temp_passwords + passwords
         joined = lzytools.common.dedup_list(joined)
         self.model.set_passwords(joined)
-
-    def set_model_setting(self):
-        """传递设置组件的设置项给模型组件"""
-        archive_model = self.page_setting.model.get_model_archive()
-        self.model.set_archive_model(archive_model)
-
-        read_pw_from_filename = self.page_setting.model.get_read_password_from_filename_is_enable()
-        self.model.set_is_read_password_from_filename(read_pw_from_filename)
-
-        is_write_filename = self.page_setting.model.get_write_filename_is_enable()
-        write_filename_left_part = self.page_setting.model.get_write_filename_left_word()
-        write_filename_right_part = self.page_setting.model.get_write_filename_right_word()
-        write_filename_position = self.page_setting.model.get_write_filename_position()
-        self.model.set_is_write_filename(is_write_filename)
-        self.model.set_write_filename_left_word(write_filename_left_part)
-        self.model.set_write_filename_right_word(write_filename_right_part)
-        self.model.set_write_filename_position(write_filename_position)
-
-        extract_model = self.page_setting.model.get_model_extract()
-        self.model.set_extract_model(extract_model)
-
-        delete_file = self.page_setting.model.get_delete_file_is_enable()
-        self.model.set_is_delete_file(delete_file)
-
-        recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
-        self.model.set_is_recursive_extract(recursive_extract)
-
-        cover_model = self.page_setting.model.get_model_cover()
-        self.model.set_cover_model(cover_model)
-
-        is_break_folder = self.page_setting.model.get_break_folder_is_enable()
-        break_folder_model = self.page_setting.model.get_break_folder_model()
-        self.model.set_is_break_folder(is_break_folder)
-        self.model.set_break_folder_model(break_folder_model)
-
-        is_extract_to_folder = self.page_setting.model.get_extract_output_folder_is_enable()
-        extract_output_folder = self.page_setting.model.get_extract_output_folder_path()
-        self.model.set_is_extract_to_folder(is_extract_to_folder)
-        self.model.set_extract_output_folder(extract_output_folder)
-
-        is_filter = self.page_setting.model.get_extract_filter_is_enable()
-        filter_rule = self.page_setting.model.get_extract_filter_rules()
-        self.model.set_is_filter(is_filter)
-        self.model.set_filter_rules(filter_rule)
 
     def show_page_test_or_extract(self):
         """显示主页为测试页或解压页"""
