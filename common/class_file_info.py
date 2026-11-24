@@ -10,24 +10,32 @@ class FileInfo:
                  related_files: list = None):
         # 一般属性
         self.filepath = filepath  # 文件路径
-        self.file_role: TYPES_ARCHIVE_ROLE = file_role  # 该文件的角色，是首个分卷包还是内部分卷，处理时仅处理首个分卷包角色
-        self.related_files = related_files  # 文件角色为普通或首个分卷包时使用，同一组内的其他分卷文件（包含其自身）
+        self.file_role: TYPES_ARCHIVE_ROLE = file_role  # 该文件的角色，处理时仅处理首个分卷包角色
+        self.related_files = related_files  # 同组内的其他分卷文件（包含自身）
 
-        # 非分卷成员角色强制输入关联文件
+        # 普通包和首个分卷必须输入关联文件
         if file_role is not ArchiveRole.VolumeMember and not related_files:
-            raise Exception('文件信息类初始化错误，分卷压缩包未输入关联文件')
+            raise Exception('文件信息类初始化错误，普通压缩包或首个分卷包未输入关联文件')
 
         # 调用7zip后设置的属性
-        self._7zip_result: TYPES_RESULT_7ZIP = None  # 7zip测试/解压解压结果
+        self._7zip_result: TYPES_RESULT_7ZIP = None  # 7zip测试/解压结果
         self.password = None  # 文件密码
-        self.extract_path = None  # 仅在解压模式且成功解压时使用，解压结果的路径
+        self.extract_path = None  # 解压结果的路径
+
+    def is_success(self) -> bool:
+        """7zip处理结果是否为成功"""
+        return isinstance(self._7zip_result, Result7zip.Success)
+
+    def is_user_stopped(self) -> bool:
+        """是否为用户主动终止"""
+        return isinstance(self._7zip_result, Result7zip.UserStopped)
 
     def set_7zip_result(self, result: TYPES_RESULT_7ZIP):
-        """设置7zip测试/解压解压结果"""
+        """设置7zip测试/解压结果"""
         self._7zip_result = result
 
     def get_7zip_result(self) -> TYPES_RESULT_7ZIP:
-        """获取7zip测试/解压解压结果"""
+        """获取7zip测试/解压结果"""
         return self._7zip_result
 
     def set_password(self, password: str):
@@ -74,25 +82,19 @@ class FileInfoList:
         """获取文件信息类列表"""
         return list(self.files_info.values())
 
-    def get_success_files(self):
-        """获取处理成功的文件的路径"""
-        # 如果是解压模式，则为解压后的路径
+    def get_success_files(self) -> list[str]:
+        """获取处理成功的文件的路径，解压模式下为解压后的路径"""
         success = []
         for file_info in self.get_file_infos():
-            result = file_info.get_7zip_result()
-            if result and isinstance(result, Result7zip.Success):
-                extract_path = file_info.extract_path
-                if extract_path:
-                    success.append(extract_path)
-
+            if file_info.is_success() and file_info.extract_path:
+                success.append(file_info.extract_path)
         return success
 
     def get_success_passwords(self):
         """获取处理成功的密码"""
         passwords = []
         for file_info in self.get_file_infos():
-            result = file_info.get_7zip_result()
-            if result and isinstance(result, Result7zip.Success):
+            if file_info.is_success():
                 passwords.append(file_info.password)
         return passwords
 
@@ -100,15 +102,13 @@ class FileInfoList:
         """统计处理成功的个数"""
         count = 0
         for file_info in self.get_file_infos():
-            result = file_info.get_7zip_result()
-            if result and isinstance(result, Result7zip.Success):
+            if file_info.is_success():
                 count += 1
         return count
 
     def is_user_stop(self):
         """是否用户主动终止"""
         for file_info in self.get_file_infos():
-            result = file_info.get_7zip_result()
-            if result and isinstance(result, Result7zip.UserStopped):
+            if file_info.is_user_stopped():
                 return True
         return False
