@@ -5,8 +5,7 @@ from components.page_setting.setting_viewer import SettingViewer
 
 
 def get_presenter() -> SettingPresenter:
-    """获取模块的Presenter"""
+    """创建并返回设置模块的 Presenter"""
     viewer = SettingViewer()
     model = SettingModel()
-    presenter = SettingPresenter(viewer, model)
-    return presenter
+    return SettingPresenter(viewer, model)
