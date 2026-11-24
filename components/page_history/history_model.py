@@ -5,41 +5,43 @@ import time
 from typing import Tuple, Union
 
 from common import function_history
-from common.class_7zip import Result7zip
+from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
 from common.class_file_info import FileInfo
 from common.function_7zip import FAKE_PASSWORD
+
+DATETIME_FORMAT = '%Y.%m.%d %H:%M:%S'
+SEPARATOR = '\n■'
 
 
 class HistoryModel:
     """历史模块的模型组件"""
 
-    def __init__(self):
-        pass
-
     @staticmethod
     def analyse_7zip_result(file_info: FileInfo) -> Tuple[str, Tuple[int, int, int], Union[str, None]]:
         """分析7zip结果类
         :return: (行文本, 对应颜色, 正确密码)"""
-        split_word = '\n■'
-        part_time = time.strftime('%Y.%m.%d %H:%M:%S', time.localtime())
-        part_filetitle = os.path.basename(file_info.filepath)
-        _7zip_result = file_info._7zip_result
-        part_7zip_result = _7zip_result.return_text
-        color = _7zip_result.color
-        text_join = (part_time +
-                     split_word + part_filetitle +
-                     split_word + part_7zip_result)
+        result = file_info.get_7zip_result()
+        password = HistoryModel._get_right_password(result)
 
-        # 只在解压结果为成功时才添加密码文本行和返回密码
-        if isinstance(_7zip_result, Result7zip.Success):
-            password = _7zip_result.password
-            if password == FAKE_PASSWORD:
-                return text_join, color, None
-            else:
-                text_join += (split_word + '解压密码：' + password)
-                return text_join, color, password
-        else:
-            return text_join, color, None
+        parts = [
+            time.strftime(DATETIME_FORMAT, time.localtime()),
+            os.path.basename(file_info.filepath),
+            result.return_text
+        ]
+        if password:
+            parts.append('解压密码：' + password)
+
+        text: str = SEPARATOR.join(parts)
+        return text, result.color, password
+
+    @staticmethod
+    def _get_right_password(result: TYPES_RESULT_7ZIP) -> Union[str, None]:
+        """获取正确密码，仅成功且非虚拟密码时返回"""
+        if not isinstance(result, Result7zip.Success):
+            return None
+        if result.password == FAKE_PASSWORD:
+            return None
+        return result.password
 
     @staticmethod
     def save_7zip_result(file_info: FileInfo):

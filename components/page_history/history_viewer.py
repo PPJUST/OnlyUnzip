@@ -10,6 +10,9 @@ from common.class_7zip import RESULT_STATES
 from common.class_file_info import FileInfo
 from components.page_history.res.ui_page_history import Ui_Form
 
+PASSWORD_ROLE = Qt.UserRole
+FILE_INFO_ROLE = Qt.UserRole + 1
+
 
 class HistoryViewer(QWidget):
     """历史模块的界面组件"""
@@ -36,16 +39,16 @@ class HistoryViewer(QWidget):
                    file_info: FileInfo = None):
         """添加记录"""
         item = QListWidgetItem()
-        record_text = record_text + '\n' + '-' * 20
-        item.setText(record_text)
+        item.setText(record_text + '\n' + '-' * 20)
         if color:
             item.setForeground(QColor(color[0], color[1], color[2]))
-        if password:  # 如果显示了密码，则将密码设置为UserRole属性，用于右键提取
+
+        if password or file_info:
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            item.setData(Qt.UserRole, password)
-        if file_info:  # 将对应的FileInfo写入item中，用于提取其他数据
-            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            item.setData(Qt.UserRole + 1, file_info)
+        if password:  # 密码用于右键复制
+            item.setData(PASSWORD_ROLE, password)
+        if file_info:  # 文件信息用于右键打开路径、按结果类型筛选
+            item.setData(FILE_INFO_ROLE, file_info)
 
         self.ui.listWidget_records.addItem(item)
         self.ui.listWidget_records.scrollToBottom()  # 滚动到底部
@@ -54,29 +57,28 @@ class HistoryViewer(QWidget):
         """筛选历史记录
         :param result_class: 需要筛选的结果类
         :param search_text: 需要搜索的文本"""
-        # 遍历添加的记录项，显示或者删除符合的行项目
         for i in range(self.ui.listWidget_records.count()):
             item = self.ui.listWidget_records.item(i)
-            file_info: FileInfo = item.data(Qt.UserRole + 1)
-            if file_info:
-                result_7zip = file_info.get_7zip_result()
+            self._update_item_visible(item, result_class, search_text)
 
-                if result_7zip:
-                    for class_ in result_class:
-                        if isinstance(result_7zip, class_):
-                            item.setHidden(False)
-                            break
-                        else:
-                            item.setHidden(True)
+    def _update_item_visible(self, item: QListWidgetItem, result_class: list, search_text: str):
+        """更新单个行项目的显示状态"""
+        file_info: FileInfo = item.data(FILE_INFO_ROLE)
+        if file_info and result_class:
+            result_7zip = file_info.get_7zip_result()
+            if result_7zip:
+                item.setHidden(not self._is_match_result_class(result_7zip, result_class))
 
-            if search_text:
-                if item.isHidden():
-                    pass
-                else:
-                    if search_text in item.text():
-                        item.setHidden(False)
-                    else:
-                        item.setHidden(True)
+        if search_text and not item.isHidden() and search_text not in item.text():
+            item.setHidden(True)
+
+    @staticmethod
+    def _is_match_result_class(result_7zip, result_class: list) -> bool:
+        """判断结果是否属于指定的结果类"""
+        for class_ in result_class:
+            if isinstance(result_7zip, class_):
+                return True
+        return False
 
     def show_all_history(self):
         """显示所有历史记录"""
@@ -93,53 +95,55 @@ class HistoryViewer(QWidget):
     def _context_menu(self, pos):
         """右键菜单"""
         selected_item = self.ui.listWidget_records.currentItem()
-        file_info: FileInfo = selected_item.data(Qt.UserRole + 1)
-        is_show_action_password = True if file_info and file_info.password else False
-        is_show_action_open_origin = True if file_info and file_info.filepath and os.path.exists(
-            file_info.filepath) else False
-        is_show_action_open_extract = True if file_info and file_info.extract_path and os.path.exists(
-            file_info.extract_path) else False
+        if not selected_item or not selected_item.data(PASSWORD_ROLE):
+            return
 
-        if selected_item and selected_item.data(Qt.UserRole):
-            menu = QMenu()
-            menu.adjustSize()
+        file_info: FileInfo = selected_item.data(FILE_INFO_ROLE)
+        is_show_password = bool(file_info and file_info.password)
+        is_show_origin = bool(file_info and file_info.filepath and os.path.exists(file_info.filepath))
+        is_show_extract = bool(file_info and file_info.extract_path and os.path.exists(file_info.extract_path))
 
-            if is_show_action_password:
-                copy_action = QAction('复制密码', menu)
-                copy_action.triggered.connect(self._copy_password)
-                menu.addAction(copy_action)
+        menu = QMenu()
+        menu.adjustSize()
+        if is_show_password:
+            self._add_menu_action(menu, '复制密码', self._copy_password)
+        if is_show_origin:
+            self._add_menu_action(menu, '打开源文件路径', self._open_origin_path)
+        if is_show_extract:
+            self._add_menu_action(menu, '打开文件解压结果路径', self._open_extract_result_path)
+        menu.exec(self.mapToGlobal(pos))
 
-            if is_show_action_open_origin:
-                open_origin_path_action = QAction('打开源文件路径', menu)
-                open_origin_path_action.triggered.connect(self._open_origin_path)
-                menu.addAction(open_origin_path_action)
-
-            if is_show_action_open_extract:
-                open_extract_result_path_action = QAction('打开文件解压结果路径', menu)
-                open_extract_result_path_action.triggered.connect(self._open_extract_result_path)
-                menu.addAction(open_extract_result_path_action)
-
-            menu.exec(self.mapToGlobal(pos))
+    @staticmethod
+    def _add_menu_action(menu: QMenu, text: str, slot):
+        """向菜单添加动作并绑定处理方法"""
+        action = QAction(text, menu)
+        action.triggered.connect(slot)
+        menu.addAction(action)
 
     def _copy_password(self):
         """复制行项目中的密码到剪切板"""
         selected_item = self.ui.listWidget_records.currentItem()
-        password = selected_item.data(Qt.UserRole)
-        QApplication.clipboard().setText(password)
+        if selected_item:
+            QApplication.clipboard().setText(selected_item.data(PASSWORD_ROLE))
 
     def _open_origin_path(self):
         """打开行项目中的源文件路径"""
-        selected_item = self.ui.listWidget_records.currentItem()
-        file_info = selected_item.data(Qt.UserRole + 1)
-        origin_filepath = file_info.filepath
-        os.startfile(origin_filepath)
+        file_info = self._get_selected_file_info()
+        if file_info and file_info.filepath:
+            os.startfile(file_info.filepath)
 
     def _open_extract_result_path(self):
         """打开行项目中的解压结果路径"""
+        file_info = self._get_selected_file_info()
+        if file_info and file_info.extract_path:
+            os.startfile(file_info.extract_path)
+
+    def _get_selected_file_info(self) -> FileInfo:
+        """获取当前行项目中的文件信息"""
         selected_item = self.ui.listWidget_records.currentItem()
-        file_info = selected_item.data(Qt.UserRole + 1)
-        extract_result = file_info.extract_path
-        os.startfile(extract_result)
+        if not selected_item:
+            return None
+        return selected_item.data(FILE_INFO_ROLE)
 
 
 if __name__ == "__main__":
