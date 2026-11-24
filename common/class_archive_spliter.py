@@ -1,6 +1,6 @@
 # 压缩文件拆分类
 import os
-from typing import Tuple, Dict
+from typing import Optional
 
 import lzytools_archive
 
@@ -8,97 +8,151 @@ from common.class_7zip import ArchiveRole, TYPES_ARCHIVE_ROLE
 
 
 class ArchiveSpliter:
-    """压缩文件拆分类 普通压缩文件/分卷压缩文件"""
+    """压缩文件拆分类，处理普通压缩文件和分卷压缩文件。"""
 
     def __init__(self):
-        self.archives = []  # 压缩文件列表（如果是分卷压缩文件，则仅包含首个分卷包）
-        self._archive_members: Dict[str, list] = dict()  # 压缩文件成员字典，格式为{首个文件:[该组的所有文件], ...}
-        self._archive_roles: Dict[str, TYPES_ARCHIVE_ROLE] = dict()  # 压缩文件角色字典，格式为{文件路径:压缩文件角色类, ...}
+        # 需要处理的压缩文件列表，分卷压缩文件只保留首个分卷
+        self.archives: list[str] = []
+        # 文件格式：{文件: [该文件所在分组的所有文件]}
+        self._archive_members: dict[str, list[str]] = {}
+        # 文件格式：{文件: 压缩文件角色}
+        self._archive_roles: dict[str, TYPES_ARCHIVE_ROLE] = {}
 
-    def analyse_files(self, files: list):
-        """处理文件列表
-        :param files: 需要拆分的文件列表"""
-        # 重置
-        self.archives = []
-        self._archive_members = dict()
-        # 先拆分为普通压缩文件和分卷压缩文件
-        normal_archives, volume_archives = self._split(files)
-        print('普通压缩文件和分卷压缩文件', normal_archives, volume_archives)
-        # 普通压缩文件写入对象
-        for archive in normal_archives:
-            self.archives.append(archive)
-            self._archive_members[archive] = [archive]
-            self._archive_roles[archive] = ArchiveRole.Normal()
-        # 进一步处理分卷压缩文件
-        first_volume_archives, volume_members = self._analyse_volume_archive(volume_archives)
-        # 分卷压缩文件写入对象
-        for i in first_volume_archives:
-            if i not in self.archives:
-                self.archives.append(i)
-                self._archive_members[i] = volume_members[i]
-            else:
-                self._archive_members[i].extend(volume_members[i])
-            self._archive_roles[i] = ArchiveRole.VolumeFirst()
-        for i in volume_members:
-            if i not in self._archive_roles:
-                self._archive_roles[i] = ArchiveRole.VolumeMember()
+    def analyse_files(self, files: list[str]):
+        """分析文件列表，每次调用都会清空上一次的分析结果。"""
+        self._reset_result()
+
+        normal_archives, volume_archives = self._split_archives(files)
+        first_volumes, volume_members = self._analyse_volume_archives(volume_archives)
+
+        self._add_normal_archives(normal_archives)
+        self._add_volume_archives(first_volumes, volume_members)
+        self._add_volume_member_roles(volume_members)
 
     def is_has_archives(self) -> bool:
-        """判断是否存在压缩文件"""
+        """判断是否存在需要处理的压缩文件。"""
         return len(self.archives) > 0
 
-    def get_role(self, filepath: str):
-        """获取文件路径对应的压缩文件角色"""
+    def get_role(self, filepath: str) -> TYPES_ARCHIVE_ROLE:
+        """获取文件路径对应的压缩文件角色。"""
         return self._archive_roles[filepath]
 
-    def get_files(self):
-        """获取文件列表（每组的首个文件）"""
+    def get_files(self) -> list[str]:
+        """获取文件列表，分卷压缩文件只返回首个分卷。"""
         return self.archives.copy()
 
-    def get_members(self, filepath: str):
-        """获取文件路径对应的压缩文件成员列表"""
+    def get_members(self, filepath: str) -> list[str]:
+        """获取文件路径对应的压缩文件成员列表。"""
         return self._archive_members[filepath].copy()
 
+    def _reset_result(self):
+        """清空上一次的分析结果。"""
+        self.archives = []
+        self._archive_members = {}
+        self._archive_roles = {}
+
+    def _add_normal_archives(self, normal_archives: list[str]):
+        """添加普通压缩文件。"""
+        for archive in normal_archives:
+            self._add_archive(archive, [archive])
+            self._archive_roles[archive] = ArchiveRole.Normal()
+
+    def _add_volume_archives(self, first_volumes: list[str], volume_members: dict[str, list[str]]):
+        """添加分卷压缩文件，首个分卷作为待处理文件。"""
+        for first_volume in first_volumes:
+            members = volume_members[first_volume]
+            if first_volume in self._archive_members:
+                self._merge_members(first_volume, members)
+            else:
+                self._add_archive(first_volume, members)
+            self._archive_roles[first_volume] = ArchiveRole.VolumeFirst()
+
+    def _add_volume_member_roles(self, volume_members: dict[str, list[str]]):
+        """为非首个分卷设置角色。"""
+        for filepath in volume_members:
+            if filepath not in self._archive_roles:
+                self._archive_roles[filepath] = ArchiveRole.VolumeMember()
+
+    def _add_archive(self, filepath: str, members: list[str]):
+        """添加一个待处理文件及其分组文件。"""
+        if filepath not in self.archives:
+            self.archives.append(filepath)
+        self._archive_members[filepath] = members.copy()
+
+    def _merge_members(self, filepath: str, members: list[str]):
+        """向已有分组中追加文件，并保持文件不重复。"""
+        for member in members:
+            self._append_unique(self._archive_members[filepath], member)
+
     @staticmethod
-    def _split(files) -> Tuple[list, list]:
-        """"按类型拆分压缩文件
-        :return: 普通压缩文件列表，分卷压缩文件列表"""
-        volume_archives = []
-        normal_archives = []
+    def _split_archives(files: list[str]) -> tuple[list[str], list[str]]:
+        """按文件名拆分普通压缩文件和分卷压缩文件。"""
+        normal_archives: list[str] = []
+        volume_archives: list[str] = []
+
         for file in files:
-            if lzytools_archive.is_volume_archive_by_filename(os.path.basename(file)):
+            filename = os.path.basename(file)
+            if lzytools_archive.is_volume_archive_by_filename(filename):
                 volume_archives.append(file)
             else:
                 normal_archives.append(file)
+
         return normal_archives, volume_archives
 
     @staticmethod
-    def _analyse_volume_archive(volume_archives: list) -> Tuple[list, dict]:
-        """"进一步处理分卷压缩文件
-        :return: 首个分卷包列表，分卷包成员字典（格式为{首个文件:[该组的所有文件], ...}）"""
-        parent_dirpaths = set()  # 父目录集合，用于后续补充缺失的分卷包
-        first_volumes = []  # 各个分卷组的首个分卷包列表
-        members = {}  # 分卷成员字典，格式为{首个文件:[该组的所有文件], ...}
-        # 合并同一组分卷
-        for file in volume_archives:
-            # 生成对应的虚拟的首个压缩卷路径，并作为匹配的key
-            virtual_first_volume_filename = lzytools_archive.guess_first_volume_archive_filename(file)
-            virtual_first_volume_path = os.path.normpath(
-                os.path.join(os.path.dirname(file), virtual_first_volume_filename))
-            if virtual_first_volume_path not in first_volumes:
-                first_volumes.append(virtual_first_volume_path)
-                members[virtual_first_volume_path] = []
-            members[virtual_first_volume_path].append(file)
-            parent_dirpaths.add(os.path.dirname(file))
+    def _analyse_volume_archives(volume_archives: list[str]) -> tuple[list[str], dict[str, list[str]]]:
+        """合并同一组分卷，并补充该组中缺失的分卷文件。"""
+        first_volumes: list[str] = []
+        members: dict[str, list[str]] = {}
+        parent_dirpaths: list[str] = []
 
-        # 补充缺失的分卷包
+        for file in volume_archives:
+            first_volume_path = ArchiveSpliter._get_first_volume_path(file)
+            if first_volume_path is None:
+                continue
+
+            if first_volume_path not in first_volumes:
+                first_volumes.append(first_volume_path)
+                members[first_volume_path] = []
+            ArchiveSpliter._append_unique(members[first_volume_path], file)
+
+            dirpath = os.path.dirname(file)
+            if dirpath not in parent_dirpaths:
+                parent_dirpaths.append(dirpath)
+
         for dirpath in parent_dirpaths:
-            listdir = [os.path.normpath(os.path.join(dirpath, i)) for i in os.listdir(dirpath)]
-            for path in listdir:
-                virtual_first_volume_filename = lzytools_archive.guess_first_volume_archive_filename(path)
-                if virtual_first_volume_filename:
-                    virtual_first_volume_path = os.path.normpath(os.path.join(dirpath, virtual_first_volume_filename))
-                    if virtual_first_volume_path in first_volumes and path not in members[virtual_first_volume_path]:
-                        members[virtual_first_volume_path].append(path)
+            ArchiveSpliter._append_missing_volume_members(dirpath, first_volumes, members)
 
         return first_volumes, members
+
+    @staticmethod
+    def _get_first_volume_path(file: str) -> Optional[str]:
+        """获取文件对应的首个分卷路径，无法推断时返回 None。"""
+        filename = lzytools_archive.guess_first_volume_archive_filename(os.path.basename(file))
+        if not filename:
+            return None
+
+        dirpath = os.path.dirname(file)
+        return os.path.normpath(os.path.join(dirpath, filename))
+
+    @staticmethod
+    def _append_missing_volume_members(dirpath: str, first_volumes: list[str],
+                                       members: dict[str, list[str]]):
+        """从目录中补充缺失的分卷文件。"""
+        if not os.path.isdir(dirpath):
+            return
+
+        for filename in sorted(os.listdir(dirpath)):
+            path = os.path.normpath(os.path.join(dirpath, filename))
+            if not os.path.isfile(path):
+                continue
+
+            first_volume_path = ArchiveSpliter._get_first_volume_path(path)
+            if first_volume_path in first_volumes:
+                ArchiveSpliter._append_unique(members[first_volume_path], path)
+
+    @staticmethod
+    def _append_unique(items: list[str], item: str):
+        """向列表中追加元素，元素已存在时不重复追加。"""
+        if item not in items:
+            items.append(item)
