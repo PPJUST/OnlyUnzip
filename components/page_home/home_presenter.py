@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal, QObject
 from common import function_setting, function_extract, function_7zip
 from common.class_7zip import ModelArchive, TYPES_MODEL_ARCHIVE, ModelPreFilter
 from common.class_file_info import FileInfoList
-from common.thread_filetype_archive import ThreadFiletypeArchive
+from common.thread_filetype_archive import ThreadCheckFiletype
 from components.page_home.home_model import HomeModel
 from components.page_home.home_viewer import HomeViewer
 from components.page_home.res.icon_base64 import *
@@ -47,7 +47,7 @@ class HomePresenter(QObject):
         self.set_icon_home()
 
         # 检查文件类型的子线程（防止堵塞ui线程）
-        self.thread_check_filetype = ThreadFiletypeArchive()
+        self.thread_check_filetype = ThreadCheckFiletype()
         self.thread_check_filetype.Archives.connect(self.deal_archive_files)
 
         # 绑定信号

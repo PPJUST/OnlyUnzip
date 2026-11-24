@@ -1,96 +1,89 @@
-import time
-from queue import Queue
+"""工作线程与界面线程之间的数据通道。
 
-from PySide6.QtCore import Signal, QObject
+数据流：工作线程 -> QueueSender -> Queue -> QueueReceiver -> Qt 信号 -> 界面。
+共享实例在模块底部创建，其他模块通过 get_sender/get_receiver/get_signals 获取。
+"""
+
+from __future__ import annotations
+
+from queue import Empty, Queue
+from threading import Event
+
+from PySide6.QtCore import QObject, Signal
+
+# 等待队列数据的最长时间（秒）：既避免空轮询占用 CPU，也能及时响应停止请求
+QUEUE_TIMEOUT = 0.1
 
 
 class CommunicationSignals(QObject):
-    # 定义一个信号，str类型参数用于传递接收到的数据
+    """将队列中的数据转发为 Qt 信号。"""
+
     data_received = Signal(int)
 
-    def emit_(self, data):
-        print('发送信号数据', data)
+    def emit_(self, data: int) -> None:
+        """发射数据接收信号。"""
         self.data_received.emit(data)
 
 
 class QueueSender:
-    _instance = None
-    _is_init = False
+    """数据发送端：线程安全地把数据写入共享队列。"""
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+    def __init__(self, queue: Queue[int]) -> None:
+        self.queue = queue
 
-    def __init__(self, queue=None):
-        if not hasattr(self, 'queue'):  # 防止重复初始化
-            self.queue = queue or Queue()
-
-    def send_data(self, data):
-        print(f"Sender: 发送数据 {data}")
+    def send_data(self, data: int) -> None:
+        """向队列写入一条数据。"""
         self.queue.put(data)
 
 
 class QueueReceiver(QObject):
-    _instance = None
+    """数据接收端：在调用方线程中循环读取队列并发射信号。"""
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self, queue, signal):
+    def __init__(self, queue: Queue[int], signal: CommunicationSignals) -> None:
         super().__init__()
         self.queue = queue
         self.signal = signal
-        self._running = True
+        self._stop_event = Event()
 
-    def receive_data(self):
-        while self._running:
-            if not self.queue.empty():
-                data = self.queue.get()
-                print(f"Receiver: 接收到数据 {type(data), data}")
-                # 发射信号
+    def receive_data(self) -> None:
+        """持续接收数据，直到调用 set_stop()。"""
+        while not self._stop_event.is_set():
+            try:
+                data = self.queue.get(timeout=QUEUE_TIMEOUT)
+            except Empty:
+                continue
+
+            try:
                 self.signal.emit_(data)
-                # self.signal.data_received.emit(data)
+            finally:
                 self.queue.task_done()
-            time.sleep(0.1)  # 避免CPU占用过高
 
-    def set_stop(self):
-        self._running = False
+    def set_stop(self) -> None:
+        """请求停止接收循环。"""
+        self._stop_event.set()
 
-    def set_start(self):
-        self._running = True
+    def set_start(self) -> None:
+        """允许接收循环继续运行。"""
+        self._stop_event.clear()
 
 
-# 模块级别创建单例，用于其他模块调用
-# 创建共享队列和信号对象
-shared_queue = Queue()
+# 模块级共享实例：整个进程内通过下方的 getter 访问同一组对象
+shared_queue: Queue[int] = Queue()
 signals_communication = CommunicationSignals()
-
-# 创建通信实例
 queue_sender = QueueSender(shared_queue)
 queue_receiver = QueueReceiver(shared_queue, signals_communication)
 
 
-# 创建接收线程
-# receiver_thread = Thread(target=queue_receiver.receive_data)
-
-
-# 提供访问接口
-def get_sender():
-    """获取发送器对象"""
+def get_sender() -> QueueSender:
+    """获取共享的数据发送器。"""
     return queue_sender
 
 
-def get_receiver():
-    """获取接收器对象"""
+def get_receiver() -> QueueReceiver:
+    """获取共享的数据接收器。"""
     return queue_receiver
 
 
-# def get_receiver_thread():
-#     """获取接收线程"""
-#     return receiver_thread
-def get_signals():
-    """获取信号对象"""
+def get_signals() -> CommunicationSignals:
+    """获取共享的信号对象。"""
     return signals_communication
