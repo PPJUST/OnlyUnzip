@@ -8,5 +8,4 @@ def get_presenter() -> TempPasswordPresenter:
     """获取模块的Presenter"""
     viewer = TempPasswordViewer()
     model = TempPasswordModel()
-    presenter = TempPasswordPresenter(viewer, model)
-    return presenter
+    return TempPasswordPresenter(viewer, model)

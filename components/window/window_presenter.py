@@ -92,7 +92,7 @@ class WindowPresenter:
         self.page_home.ChangeSettingTopWindow.connect(self.page_setting.change_top_window)
         self.page_password.OpenPasswordManager.connect(self.open_password_manager)
         self.page_password_manager.SignalDeleted.connect(self.deleted_passwords)
-        self.dialog_temp_password.WriteTODB.connect(self.write_temp_pws_to_db)
+        self.dialog_temp_password.WriteToDB.connect(self.write_temp_pws_to_db)
         self.viewer.PageChanged.connect(self._page_changed)
         self._bind_model_signal()
 
@@ -168,10 +168,9 @@ class WindowPresenter:
                                       delete_origin=delete_file,
                                       top_window=top_window)
 
-    def write_temp_pws_to_db(self):
+    def write_temp_pws_to_db(self, passwords):
         """将临时密码写入密码本"""
-        temp_pws = self.dialog_temp_password.get_passwords()
-        self.page_password.update_password(temp_pws)
+        self.page_password.update_password(passwords)
 
     def finished(self, results: FileInfoList):
         """处理结束信号"""

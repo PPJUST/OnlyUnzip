@@ -1,9 +1,6 @@
 # 密码详情表的界面组件
-from typing import Tuple
-
-import lzytools.time
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QDialog
+from PySide6.QtWidgets import QApplication, QDialog, QTableWidget, QTableWidgetItem
 
 from components.dialog_password_detail.res.ui_table import Ui_Dialog
 
@@ -17,46 +14,55 @@ class PasswordDetailViewer(QDialog):
         self.ui.setupUi(self)
 
         self._setup_table()
-
         self.ui.pushButton_quit.clicked.connect(self.close)
 
-    def add_record(self, password_info: Tuple[str, int, str, str]):
-        """添加记录
-        :param password_info: 密码，使用次数，添加时间，最后使用时间"""
-        row_count = self.ui.tableWidget.rowCount()
-        self.ui.tableWidget.insertRow(row_count)
+    def add_record(self, values: list):
+        """在表格末尾添加一行
 
-        _name = str(password_info[0])
-        use_count = str(password_info[1])
-        add_time = lzytools.time.convert_duration_to_date(password_info[2])
-        last_use_time = lzytools.time.convert_duration_to_date(password_info[3])
-        info = [_name, use_count, add_time, last_use_time]
+        :param values: 各列要显示的文本，顺序与表头一致
+        """
+        self.add_records([values])
 
-        for col, value in enumerate(info):
-            item = QTableWidgetItem(str(value))
-            item.setTextAlignment(Qt.AlignCenter)
-            self.ui.tableWidget.setItem(row_count, col, item)
+    def add_records(self, values_list: list):
+        """批量添加表格行
+
+        :param values_list: 每行文本组成的列表
+        """
+        table = self.ui.tableWidget
+        # 插入数据期间先关闭排序，避免行顺序被提前打乱
+        table.setSortingEnabled(False)
+
+        for values in values_list:
+            row = table.rowCount()
+            table.insertRow(row)
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                item.setTextAlignment(Qt.AlignCenter)
+                table.setItem(row, column, item)
+
+        table.setSortingEnabled(True)
+
+    def clear(self):
+        """清空表格中的记录，保留表头"""
+        self.ui.tableWidget.setRowCount(0)
 
     def _setup_table(self):
         """设置表格基本属性"""
-        # 设置列数
-        self.ui.tableWidget.setColumnCount(4)
+        table = self.ui.tableWidget
 
-        # 设置标题行
+        # 设置列数与标题行
+        table.setColumnCount(4)
         headers = ['密码', '使用次数', '添加时间', '最后使用时间']
-        self.ui.tableWidget.setHorizontalHeaderLabels(headers)
+        table.setHorizontalHeaderLabels(headers)
 
         # 设置单元格不可编辑
-        self.ui.tableWidget.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 
         # 设置交替行颜色（便于阅读）
-        self.ui.tableWidget.setAlternatingRowColors(True)
+        table.setAlternatingRowColors(True)
 
         # 启用排序（点击标题行自动排序）
-        self.ui.tableWidget.setSortingEnabled(True)
-
-    def clear(self):
-        self.ui.tableWidget.clear()
+        table.setSortingEnabled(True)
 
 
 if __name__ == "__main__":

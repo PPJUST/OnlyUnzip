@@ -5,8 +5,7 @@ from .password_manager_viewer import PasswordManagerViewer
 
 
 def get_presenter() -> PasswordManagerPresenter:
-    """获取模块的Presenter"""
+    """创建并返回密码管理器模块的 Presenter"""
     viewer = PasswordManagerViewer()
     model = PasswordManagerModel()
-    presenter = PasswordManagerPresenter(viewer, model)
-    return presenter
+    return PasswordManagerPresenter(viewer, model)

@@ -12,13 +12,15 @@ class ErrorInfoViewer(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
 
-        self._set_info()
+        # 没有信息时显示提示文本
+        self.ui.textBrowser.setPlaceholderText('报错信息')
 
     def append_info(self, info: str):
-        self.ui.textBrowser.append(info)
+        """在信息区域追加一行文本
 
-    def _set_info(self):
-        self.ui.textBrowser.setPlaceholderText('报错信息')
+        :param info: 已格式化好的信息文本
+        """
+        self.ui.textBrowser.append(info)
 
 
 if __name__ == "__main__":

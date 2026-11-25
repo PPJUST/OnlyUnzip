@@ -17,64 +17,85 @@ class TempPasswordViewer(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
-        # 初始化
+        # 初始化界面
         self.setFixedSize(300, 300)
-        self.ui.pushButton_write_to_db.setEnabled(False)
-        self._bind_signal()
-        self.ui.plainTextEdit_password.dropEvent = self.drop_event
-        self.ui.plainTextEdit_password.textChanged.connect(self.check_pw)
         self._set_tip()
+        self._bind_signal()
+        self._setup_password_edit()
 
     def append_pw(self, text: str):
         """向密码框中添加密码"""
-        self.ui.plainTextEdit_password.appendPlainText(text)
+        if text.strip():
+            self.ui.plainTextEdit_password.appendPlainText(text)
 
-    def get_passwords(self):
-        """获取当前密码"""
-        splits = self.ui.plainTextEdit_password.toPlainText().split('\n')
-        pws = [i for i in splits if i]
-        return pws
+    def get_passwords(self) -> list:
+        """获取密码框中的所有密码
 
-    def set_db_button_enable(self, is_enable: bool):
-        """设置写入密码本按钮是否启用"""
-        self.ui.pushButton_write_to_db.setEnabled(is_enable)
+        :return: 去掉空白行后的密码列表
+        """
+        text = self.ui.plainTextEdit_password.toPlainText()
+        passwords = []
+        for line in text.splitlines():
+            password = line
+            if password.strip():
+                passwords.append(password)
+        return passwords
 
     def clear_pw(self):
         """清空密码框"""
         self.ui.plainTextEdit_password.clear()
 
-    def check_pw(self):
-        """检查密码框"""
-        if self.ui.plainTextEdit_password.toPlainText():
-            self.set_db_button_enable(True)
-        else:
-            self.set_db_button_enable(False)
+    def _set_db_button_enable(self, is_enable: bool):
+        """设置写入密码本按钮是否启用"""
+        self.ui.pushButton_write_to_db.setEnabled(is_enable)
+
+    def _check_pw(self):
+        """根据密码框内容更新写入按钮状态"""
+        has_password = bool(self.ui.plainTextEdit_password.toPlainText().strip())
+        self._set_db_button_enable(has_password)
 
     def _bind_signal(self):
-        """绑定信号"""
+        """绑定按钮信号"""
         self.ui.pushButton_read_clipboard.clicked.connect(self.ReadClipboard.emit)
-        self.ui.pushButton_write_to_db.clicked.connect(self._emit_signal_write_to_db)
+        self.ui.pushButton_write_to_db.clicked.connect(self._write_to_db_clicked)
         self.ui.pushButton_clear_password.clicked.connect(self.clear_pw)
 
-    def _set_tip(self):
-        self.ui.plainTextEdit_password.setPlaceholderText(
-            '仅在本次运行期间生效\n\n程序退出后将自动删除\n\n临时密码即使被使用也不会写入密码本（除非主动写入）')
+    def _setup_password_edit(self):
+        """设置密码框的拖入与内容变化处理"""
+        self.ui.plainTextEdit_password.dropEvent = self.drop_event
+        self.ui.plainTextEdit_password.textChanged.connect(self._check_pw)
+        self._check_pw()
 
-    def _emit_signal_write_to_db(self):
+    def _set_tip(self):
+        """设置密码框提示文字"""
+        tip_lines = [
+            '仅在本次运行期间生效',
+            '',
+            '程序退出后将自动删除',
+            '',
+            '临时密码即使被使用也不会写入密码本（除非主动写入）',
+        ]
+        self.ui.plainTextEdit_password.setPlaceholderText('\n'.join(tip_lines))
+
+    def _write_to_db_clicked(self):
+        """点击写入按钮时发出信号并清空密码框"""
         self.WriteToDB.emit(self.get_passwords())
         self.clear_pw()
 
     def drop_event(self, event):
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
-
-            # 获取所有拖入文件的路径
-            urls = event.mimeData().urls()
-            file_paths = [url.toLocalFile() for url in urls]
-            self.DropFiles.emit(file_paths)
-
-        else:
+        """处理拖入文件的事件"""
+        if not event.mimeData().hasUrls():
             event.ignore()
+            return
+
+        event.acceptProposedAction()
+        file_paths = []
+        for url in event.mimeData().urls():
+            path = url.toLocalFile()
+            if path:
+                file_paths.append(path)
+        if file_paths:
+            self.DropFiles.emit(file_paths)
 
 
 if __name__ == "__main__":
