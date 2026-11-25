@@ -3,17 +3,31 @@ from typing import Union
 
 import lzytools_Qt
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QApplication, QWidget, QMessageBox
+from PySide6.QtWidgets import QApplication, QMessageBox, QWidget
 
 from common.class_7zip import TYPES_MODEL_ARCHIVE
 from common.function_7zip import FAKE_PASSWORD
-from components.page_home.res.icon_base64 import *
+from components.page_home.res.icon_base64 import (
+    ICON_BANNED_DROP,
+    ICON_DROP,
+    ICON_STOP,
+)
 from components.page_home.res.label_icon_with_float_button import LabelIconWithFloatButton
 from components.page_home.res.ui_page_home import Ui_Form
+
+PAGE_WELCOME = 0
+PAGE_STEP = 1
+PAGE_TEST_AND_EXTRACT = 2
+PAGE_RESULT = 3
+
+CHILD_PAGE_TEST = 0
+CHILD_PAGE_EXTRACT = 1
+CHILD_PAGE_STEP_TIP = 2
 
 
 class HomeViewer(QWidget):
     """主页模块的界面组件"""
+
     UserStop = Signal(name="用户主动停止（立即终止")
     UserStopAfter = Signal(name="用户主动停止（等待当前文件完成后终止）")
     DropFiles = Signal(list, name="拖入文件")
@@ -32,28 +46,39 @@ class HomeViewer(QWidget):
         self.ui.setupUi(self)
         self.setAcceptDrops(True)
 
-        # 初始化
-        self.is_banned_drop = False  # 是否禁用拖入（在执行测试解压操作后禁用拖入功能）
-        self.last_icon: bytes = None  # 上一个显示的图标，用于拖放文件后复原
-        self.last_icon_gif: bytes = None  # 上一个显示的gif图标，用于拖放文件后复原
+        self.is_banned_drop = False  # 是否禁用拖入（执行测试解压操作后禁用）
+        self.last_icon = None  # 上一个静态图标，用于拖放文件后复原
+        self.last_icon_gif = None  # 上一个动态图标，用于拖放文件后复原
+
+        self._init_widgets()
+        self._bind_signals()
         self.turn_page_welcome()
         self._set_stop_icon()
+
+    def _create_hidden_text_label(self, layout):
+        """创建超长文本自动省略的标签，并添加到指定布局"""
+        label = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
+        layout.addWidget(label)
+        return label
+
+    def _init_widgets(self):
+        """初始化界面控件"""
         self.ui.label_step_notice.setOpenExternalLinks(True)
         self.ui.label_about.setOpenExternalLinks(False)
-        self.ui.label_about.linkActivated.connect(self._open_about)
         self.ui.progressBar_progress_extract.setFixedHeight(self.ui.label_progress_total.height())
-        # 添加自定义Label
+
         self.label_icon = LabelIconWithFloatButton(self)
         self.ui.verticalLayout_label_drop.addWidget(self.label_icon)
-        self.label_current_file = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
-        self.ui.layout_current_file.addWidget(self.label_current_file)
-        self.label_current_password = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
-        self.ui.layout_current_password.addWidget(self.label_current_password)
-        self.label_right_password = lzytools_Qt.TableWidgetHiddenOverLengthText(self)
-        self.ui.layout_right_password.addWidget(self.label_right_password)
 
-        # 绑定信号
+        self.label_current_file = self._create_hidden_text_label(self.ui.layout_current_file)
+        self.label_current_password = self._create_hidden_text_label(self.ui.layout_current_password)
+        self.label_right_password = self._create_hidden_text_label(self.ui.layout_right_password)
+
+    def _bind_signals(self):
+        """绑定界面控件的信号"""
+        self.ui.label_about.linkActivated.connect(self._open_about)
         self.ui.toolButton_stop.clicked.connect(self._click_stop_button)
+
         self.label_icon.OpenTempPasswords.connect(self.OpenTempPassword.emit)
         self.label_icon.AskUpdateSetting.connect(self.AskUpdateSetting.emit)
         self.label_icon.ChangeSettingArchiveModel.connect(self.ChangeSettingArchiveModel.emit)
@@ -90,20 +115,28 @@ class HomeViewer(QWidget):
         """设置悬浮按钮是否可用"""
         self.label_icon.set_float_button_enable(is_enable)
 
-    """欢迎页"""
+    def _set_page(self, index: int):
+        """切换主页面"""
+        self.ui.stackedWidget.setCurrentIndex(index)
+
+    def _set_child_page(self, index: int):
+        """切换运行信息页"""
+        self.ui.stackedWidget_2.setCurrentIndex(index)
+
+    # 欢迎页
 
     def turn_page_welcome(self):
         """切换到欢迎页"""
-        self.ui.stackedWidget.setCurrentIndex(0)
+        self._set_page(PAGE_WELCOME)
 
     def _open_about(self):
         self.OpenAbout.emit()
 
-    """步骤提示页"""
+    # 步骤提示页
 
     def turn_page_step(self):
         """切换到步骤提示页"""
-        self.ui.stackedWidget.setCurrentIndex(1)
+        self._set_page(PAGE_STEP)
 
     def set_step_notice(self, notice: str):
         """设置步骤提示"""
@@ -114,11 +147,11 @@ class HomeViewer(QWidget):
         """设置停止按钮的图标"""
         self.ui.toolButton_stop.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_STOP))
 
-    """测试和解压页"""
+    # 测试和解压页
 
     def turn_page_test_and_extract(self):
         """切换到测试和解压页"""
-        self.ui.stackedWidget.setCurrentIndex(2)
+        self._set_page(PAGE_TEST_AND_EXTRACT)
 
     def set_progress_total(self, progress: str):
         """设置总进度 -/-
@@ -151,9 +184,8 @@ class HomeViewer(QWidget):
 
     def set_current_password(self, password: str):
         """设置当前测试的密码"""
-        if password == FAKE_PASSWORD:  # 如果是虚拟密码，则显示省略号
+        if password == FAKE_PASSWORD:
             password = '...'
-
         self.label_current_password.set_text(password)
         self.label_right_password.set_text(password)
 
@@ -170,62 +202,54 @@ class HomeViewer(QWidget):
 
     def _click_stop_button(self):
         """点击停止按钮"""
-        # 创建消息框
         msg_box = QMessageBox()
         msg_box.setWindowTitle('是否终止')
         msg_box.setText('是否终止当前任务\n立即终止：立刻终止当前任务\n延迟终止：在当前文件处理完成后终止')
         msg_box.setIcon(QMessageBox.Icon.Question)
 
-        # 添加自定义按钮
         btn_terminate = msg_box.addButton('立即终止', QMessageBox.ButtonRole.YesRole)
         btn_continue = msg_box.addButton('延迟终止', QMessageBox.ButtonRole.NoRole)
-        btn_cancel = msg_box.addButton('取消', QMessageBox.ButtonRole.RejectRole)
-
+        msg_box.addButton('取消', QMessageBox.ButtonRole.RejectRole)
         msg_box.setDefaultButton(btn_terminate)
 
-        # 执行对话框
         msg_box.exec()
 
-        # 获取点击的按钮
         clicked_button = msg_box.clickedButton()
-
         if clicked_button == btn_terminate:
             self._stop_progress_now()
         elif clicked_button == btn_continue:
             self._stop_progress_after()
-        elif clicked_button == btn_cancel:
-            pass
 
     def _stop_progress_now(self):
         """立即终止当前任务"""
         self.UserStop.emit()
 
     def _stop_progress_after(self):
-        """不立即当前任务，等待当前任务完成后再终止"""
+        """等待当前任务完成后再终止"""
         self.UserStopAfter.emit()
 
     def set_child_page_test(self):
         """切换运行信息页为测试模式"""
-        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self._set_child_page(CHILD_PAGE_TEST)
 
     def set_child_page_extract(self):
         """切换运行信息页为解压模式"""
-        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self._set_child_page(CHILD_PAGE_EXTRACT)
 
     def set_child_page_step_tip(self):
         """切换运行信息页为当前步骤提示"""
-        self.ui.stackedWidget_2.setCurrentIndex(2)
+        self._set_child_page(CHILD_PAGE_STEP_TIP)
 
-    """结果页"""
+    # 结果页
 
     def turn_page_result(self):
         """切换到结果页"""
-        self.ui.stackedWidget.setCurrentIndex(3)
+        self._set_page(PAGE_RESULT)
 
     def show_time_final(self):
         """设置全部任务结束后的总耗时"""
-        time = self.ui.label_runtime_total.text()  # 直接读取另一个label的文本即可
-        self.ui.label_time_final.setText(time)
+        runtime = self.ui.label_runtime_total.text()
+        self.ui.label_time_final.setText(runtime)
 
     def show_process_count(self, count: Union[int, str]):
         """设置处理的文件数量"""
@@ -238,34 +262,28 @@ class HomeViewer(QWidget):
         if result_info_tip:
             self.ui.label_result_count.setToolTip(result_info_tip)
 
-    """icon方法"""
+    # 图标方法
 
     def set_icon(self, icon: Union[bytes, str]):
-        """设置显示的图标"""
+        """设置静态图标"""
         self.label_icon.set_icon(icon)
-
-        # 赋值给变量，用于拖放后复原
         self.last_icon = icon
         self.last_icon_gif = None
 
     def set_gif_icon(self, icon: Union[bytes, str]):
-        """设置显示的图标"""
+        """设置动态图标"""
         self.label_icon.set_gif_icon(icon)
-
-        # 赋值给变量，用于拖放后复原
         self.last_icon = None
         self.last_icon_gif = icon
 
     def _show_last_icon(self):
-        """设置默认图标"""
+        """恢复拖放前的图标"""
         if self.last_icon:
-            print('显示静态图标')
             self.set_icon(self.last_icon)
         elif self.last_icon_gif:
-            print('显示动态图标')
             self.set_gif_icon(self.last_icon_gif)
 
-    """拖入事件"""
+    # 拖入事件
 
     def _drop_files(self, paths: list):
         """拖入文件/文件夹"""
@@ -282,25 +300,22 @@ class HomeViewer(QWidget):
         if event.mimeData().hasUrls():
             event.accept()
             if self.is_banned_drop:
-                self.label_icon.set_icon(ICON_BANNED_DROP)  # 显示禁止拖入图标
+                self.label_icon.set_icon(ICON_BANNED_DROP)
             else:
-                self.label_icon.set_icon(ICON_DROP)  # 显示拖入图标
+                self.label_icon.set_icon(ICON_DROP)
         else:
             event.ignore()
 
     def dragLeaveEvent(self, event):
         self._show_last_icon()
 
-    """缩放事件，用于修改icon控件的尺寸"""
+    # 缩放事件，用于修改icon控件的尺寸
 
     def resizeEvent(self, event):
         # icon控件以短边为基准，按比例缩放
         frame = self.size()
-        icon_width = frame.width()
-        icon_height = frame.width()
-        resize_width = min(icon_width, icon_height)
-        resize_height = min(icon_width, icon_height)
-        self.label_icon.resize(resize_width, resize_height)
+        icon_size = min(frame.width(), frame.height())
+        self.label_icon.resize(icon_size, icon_size)
         super().resizeEvent(event)
 
 
