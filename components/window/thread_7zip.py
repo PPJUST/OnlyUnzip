@@ -3,27 +3,18 @@ import time
 
 import lzytools
 import lzytools_archive
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread
 
 from common import function_move, function_file, function_filename, function_7zip
 from common.class_7zip import Result7zip, ModelCoverFile, ModelExtract, ModelBreakFolder, Position, \
     TYPES_MODEL_EXTRACT, TYPES_MODEL_BREAK_FOLDER
 from common.class_file_info import FileInfo, FileInfoList
 from common.class_setting import ModelSetting
+from components.window.window_signals import WindowSignals
 
 
-class TemplateThread(QThread):
+class TemplateThread(WindowSignals, QThread):
     """子线程模板"""
-    StepInfo = Signal(str, name='步骤信息')
-    SignalCurrentFile = Signal(str, name='当前处理的文件名')
-    SignalTaskCount = Signal(int, name='需要处理的文件总数')
-    SignalTaskIndex = Signal(int, name='当前处理的文件索引')
-    SignalCurrentPw = Signal(str, name='当前使用的密码')
-    SignalPwCount = Signal(int, name='待测试密码总数')
-    SignalPwIndex = Signal(int, name='当前使用的密码索引')
-    SignalResult = Signal(FileInfo, name='自定义文件信息类')
-    SignalStart = Signal(name='开始')
-    SignalFinish = Signal(FileInfoList, name='结束，传递最终的文件信息类清单')
 
     def __init__(self):
         super().__init__()
@@ -84,6 +75,11 @@ class TemplateThread(QThread):
         """终止任务"""
         self.is_stop_task = True
 
+    def emit_password_progress(self, index: int, password: str):
+        """发送当前密码的进度信息"""
+        self.SignalPwIndex.emit(index)
+        self.SignalCurrentPw.emit(password)
+
     def load_setting(self):
         """加载设置项"""
         # 通用项
@@ -121,30 +117,27 @@ class TemplateThread(QThread):
         self.position_insert_char_after_failure = self.setting.get_insert_char_to_filename_after_failure_position()
 
     def _run_command_l_with_fake_password(self, file: str):
-        """使用虚拟密码进行l指令测试，根据返回结果决定后续指令的使用
+        """使用虚拟密码进行 l 指令测试，根据返回结果决定后续指令的使用
         :return:True，可以使用l指令进行测试
                False，不能使用l指令进行测试
                Result7zip类，测试出错，返回错误结果"""
         self.StepInfo.emit('压缩文件完整性测试...')
-        print('虚拟密码测试')
         _7ZIP_PATH = function_7zip.get_7zip_path()
         test_result = function_7zip.process_7zip_l(_7ZIP_PATH, file, function_7zip.FAKE_PASSWORD)
-        # 如果是Success，则不信任测试结果，后续不再使用l命令测试
+
+        # Success 表示不信任 l 指令结果；WrongPassword 表示可以继续用 l 指令
         if isinstance(test_result, Result7zip.Success):
             return False
-        # 如果是Result7zip.WrongPassword，则继续使用l命令测试密码
-        elif isinstance(test_result, Result7zip.WrongPassword):
+        if isinstance(test_result, Result7zip.WrongPassword):
             return True
-        # 如果是Result7zip.WrongFiletype，则继续测试（暂定，有些后缀不对的压缩文件7zip会自动尝试正确的解压格式，不需要直接返回报错）
-        # elif isinstance(test_result, Result7zip.WrongFiletype):
-        #     return True
-        # 如果是其他致命错误，则终止后续操作，直接返回该错误
-        elif test_result in (Result7zip.WrongFiletype, Result7zip.Skip, Result7zip.Warning, Result7zip.MissingVolume,
-                             Result7zip.UnknownError, Result7zip.ErrorCommand, Result7zip.NotEnoughMemory,
-                             Result7zip.UserStopped):
+
+        # 其他致命错误直接返回，终止后续操作
+        fatal_results = (Result7zip.WrongFiletype, Result7zip.Skip, Result7zip.Warning, Result7zip.MissingVolume,
+                         Result7zip.UnknownError, Result7zip.ErrorCommand, Result7zip.NotEnoughMemory,
+                         Result7zip.UserStopped)
+        if isinstance(test_result, fatal_results):
             return test_result
-        else:
-            return False
+        return False
 
 
 class ThreadTest(TemplateThread):
@@ -163,8 +156,6 @@ class ThreadTest(TemplateThread):
         for index, file_info in enumerate(self.fileinfo_task.get_file_infos(), start=1):
             if self.is_stop_task:
                 break
-            else:
-                pass
 
             self.SignalTaskIndex.emit(index)
             file_info: FileInfo
@@ -189,69 +180,51 @@ class ThreadTest(TemplateThread):
         # 结束后发送结束信号
         self.SignalFinish.emit(self.fileinfo_task)
 
+    def test_passwords(self, filepath: str, passwords: list, command: str, inside_path: str):
+        """用指定的 7zip 命令逐个测试密码，返回第一个非密码错误的结果"""
+        final_result = Result7zip.WrongPassword()
+        _7ZIP_PATH = function_7zip.get_7zip_path()
+        for index, password in enumerate(passwords, start=1):
+            if self.is_stop_task:
+                break
+            self.emit_password_progress(index, password)
+            if command == 'l':
+                final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, password, inside_path)
+            else:
+                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, password, inside_path)
+            if not isinstance(final_result, Result7zip.WrongPassword):
+                break
+        return final_result
+
     def test_file(self, filepath: str, passwords: list):
         """测试指定文件"""
-        # 仅处理存在的文件
         if not os.path.exists(filepath):
             return Result7zip.Skip()
 
-        # 根据选项是否提取文件名中可能存在的密码
+        # 根据选项提取文件名中可能存在的密码
         if self.is_read_password_from_filename:
-            _filetitle = lzytools_archive.get_filetitle(os.path.basename(filepath))
-            pws_filename = function_filename.read_password_from_filename(_filetitle)
-            for _pw in pws_filename:
-                if _pw and _pw not in passwords:
-                    passwords.append(_pw)
+            filetitle = lzytools_archive.get_filetitle(os.path.basename(filepath))
+            pws_filename = function_filename.read_password_from_filename(filetitle)
+            for password in pws_filename:
+                if password and password not in passwords:
+                    passwords.append(password)
 
-        # 先测试一次虚拟密码，根据测试结果选择使用l或t指令（l指令比t指令要快，优先使用l指令）
-        print('测试模式 执行一次虚拟密码测试')
+        # 先用虚拟密码测试一次，l 指令比 t 指令快，能用 l 指令就优先使用
         fake_result = self._run_command_l_with_fake_password(filepath)
-        # 提取内部最小的文件路径，l或t可以仅测试其中一个文件，以加快速度
+        # 提取内部最小的文件路径，只测试其中一个文件可以加快速度
         smallest_file_path_inside = function_7zip.get_smallest_file_in_archive(filepath)
         print(f"最小文件 {smallest_file_path_inside}")
-        if fake_result is True:  # 可以使用l指令进行后续测试
+
+        if fake_result is True:
             print('使用l指令进行密码测试')
-            for index_pw, pw in enumerate(passwords, start=1):
-                if self.is_stop_task:
-                    break
-                else:
-                    pass
-                self.SignalPwIndex.emit(index_pw)
-                self.SignalCurrentPw.emit(pw)
-                _7ZIP_PATH = function_7zip.get_7zip_path()
-                final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw,
-                                                            smallest_file_path_inside)
-                # 如果测试结果是密码错误，则继续进行测试，否则直接中断
-                if isinstance(final_result, Result7zip.WrongPassword):
-                    continue
-                else:
-                    break
-        elif fake_result is False:  # 不可以使用l指令，可以使用t指令
+            final_result = self.test_passwords(filepath, passwords, 'l', smallest_file_path_inside)
+        elif fake_result is False:
             print('使用t指令进行密码测试')
-            for index_pw, pw in enumerate(passwords, start=1):
-                if self.is_stop_task:
-                    break
-                else:
-                    pass
-                self.SignalPwIndex.emit(index_pw)
-                self.SignalCurrentPw.emit(pw)
-                _7ZIP_PATH = function_7zip.get_7zip_path()
-                final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw,
-                                                            smallest_file_path_inside)
-                # 如果测试结果是密码错误，则继续进行测试，否则直接中断
-                if isinstance(final_result, Result7zip.WrongPassword):
-                    continue
-                else:
-                    break
-        else:  # 是具体的结果类时，说明文件有问题，不进行后续测试
+            final_result = self.test_passwords(filepath, passwords, 't', smallest_file_path_inside)
+        else:
             print('虚拟密码测试检测出文件存在问题，不进行后续测试')
             final_result = fake_result
-
-        # 返回最终结果
-        try:
-            return final_result
-        except:
-            return fake_result
+        return final_result
 
     def _write_to_filename(self, file_info: FileInfo, password: str):
         """将密码写入文件名"""
@@ -308,8 +281,6 @@ class ThreadExtract(TemplateThread):
         for index, file_info in enumerate(self.fileinfo_task.get_file_infos(), start=1):
             if self.is_stop_task:
                 break
-            else:
-                pass
 
             self.SignalTaskIndex.emit(index)
             file_info: FileInfo
@@ -323,14 +294,8 @@ class ThreadExtract(TemplateThread):
             else:
                 part_extract_to = os.path.dirname(file_first)
             guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
-            if self.last_temp_folder:
-                if self.last_temp_folder.lower() == guess_temp_folder.lower():
-                    pass
-                else:
-                    if os.path.exists(self.last_temp_folder) and not lzytools.file.get_size(self.last_temp_folder):
-                        lzytools.file.delete(self.last_temp_folder)
-            else:
-                pass
+            if self.last_temp_folder and self.last_temp_folder.lower() != guess_temp_folder.lower():
+                self.delete_empty_temp_folder(self.last_temp_folder)
             self.last_temp_folder = guess_temp_folder
 
             # 执行解压
@@ -372,12 +337,16 @@ class ThreadExtract(TemplateThread):
             self.SignalResult.emit(file_info)
 
         # 结束后删除最后一个临时文件夹
-        if os.path.exists(self.last_temp_folder) and not lzytools.file.get_size(self.last_temp_folder):
-            lzytools.file.delete(self.last_temp_folder)
+        self.delete_empty_temp_folder(self.last_temp_folder)
         self.last_temp_folder = ''
 
         # 结束后发送结束信号
         self.SignalFinish.emit(self.fileinfo_task)
+
+    def delete_empty_temp_folder(self, folder: str):
+        """临时文件夹为空时才删除"""
+        if folder and os.path.exists(folder) and not lzytools.file.get_size(folder):
+            lzytools.file.delete(folder)
 
     def extract_file(self, filepath: str, passwords: list):
         # 仅处理存在的文件
@@ -419,24 +388,16 @@ class ThreadExtract(TemplateThread):
         for index_pw, pw in enumerate(passwords, start=1):
             if self.is_stop_task:
                 break
-            else:
-                pass
 
-            self.SignalPwIndex.emit(index_pw)
-            self.SignalCurrentPw.emit(pw)
+            self.emit_password_progress(index_pw, pw)
             _7ZIP_PATH = function_7zip.get_7zip_path()
             final_result = function_7zip.process_7zip_l(_7ZIP_PATH, filepath, pw,
                                                         smallest_file_path_inside)
-            # 如果搜索到了正确密码，则进行解压操作
+            # 搜索到正确密码后解压；遇到其他报错则直接中断
             if isinstance(final_result, Result7zip.Success):
-                true_password = pw
-                final_result, extract_path = self.extract(filepath, true_password)
+                final_result, extract_path = self.extract(filepath, pw)
                 break
-            # 如果是测试结果是密码错误，则继续搜索
-            elif isinstance(final_result, Result7zip.WrongPassword):
-                pass
-            # 如果测试结果是其他报错，则直接中断
-            else:
+            if not isinstance(final_result, Result7zip.WrongPassword):
                 break
 
         return final_result, extract_path
@@ -457,25 +418,16 @@ class ThreadExtract(TemplateThread):
         for index_pw, pw in enumerate(passwords, start=1):
             if self.is_stop_task:
                 break
-            else:
-                pass
 
             if is_continue_with_t:
                 break
 
-            self.SignalPwIndex.emit(index_pw)
-            self.SignalCurrentPw.emit(pw)
+            self.emit_password_progress(index_pw, pw)
             start_time = time.time()
             final_result, extract_path = self.extract(filepath, pw)
             runtime_x = time.time() - start_time  # x命令的耗时
-            # 如果解压返回结果为成功，则退出循环
-            if isinstance(final_result, Result7zip.Success):
-                break
-            # 如果是解压返回结果是密码错误，则继续搜索
-            elif isinstance(final_result, Result7zip.WrongPassword):
-                pass
-            # 如果是其他报错，则直接退出循环
-            else:
+            # 成功或其他报错都退出循环，仅密码错误时继续搜索
+            if not isinstance(final_result, Result7zip.WrongPassword):
                 break
 
             # 对比耗时，使用耗时更短的指令
@@ -487,48 +439,63 @@ class ThreadExtract(TemplateThread):
             for index_pw, pw in enumerate(passwords, start=1):
                 if self.is_stop_task:
                     break
-                else:
-                    pass
 
-                self.SignalPwIndex.emit(index_pw)
-                self.SignalCurrentPw.emit(pw)
+                self.emit_password_progress(index_pw, pw)
                 _7ZIP_PATH = function_7zip.get_7zip_path()
                 final_result = function_7zip.process_7zip_t(_7ZIP_PATH, filepath, pw)
-                # 如果搜索到了正确密码，则进行解压操作
+                # 搜索到正确密码后解压；遇到其他报错则直接中断
                 if isinstance(final_result, Result7zip.Success):
                     final_result, extract_path = self.extract(filepath, pw)
                     break
-                # 如果是测试结果是密码错误，则继续搜索
-                elif isinstance(final_result, Result7zip.WrongPassword):
-                    pass
-                # 如果测试结果是其他报错，则直接中断
-                else:
+                if not isinstance(final_result, Result7zip.WrongPassword):
                     break
 
         return final_result, extract_path
 
+    def get_cover_part(self):
+        """获取解压命令使用的覆盖参数"""
+        if isinstance(self.cover_model, str):
+            return self.cover_model
+        cover_models = (ModelCoverFile.RenameOld, ModelCoverFile.RenameNew,
+                        ModelCoverFile.Skip, ModelCoverFile.Overwrite)
+        if isinstance(self.cover_model, cover_models):
+            return self.cover_model.switch
+        raise Exception('覆盖模式参数错误')
+
+    def move_extracted_files(self, temp_folder: str, parent_folder: str, filename_origin: str):
+        """根据解压模式把临时文件夹中的内容移动到目标位置"""
+        if isinstance(self.extract_model, ModelExtract.Smart):
+            return function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
+        if isinstance(self.extract_model, ModelExtract.SameFolder):
+            return function_move.move_to_same_dirname(temp_folder, parent_folder, dirname_=filename_origin)
+        if isinstance(self.extract_model, ModelExtract.Direct):
+            return function_move.move_to_no_deal(temp_folder, parent_folder)
+        return None
+
+    def break_result_folder(self, extract_path):
+        """按设置解散解压得到的文件夹"""
+        if not self.is_break_folder:
+            return extract_path
+        self.StepInfo.emit('解压完成，解散文件夹中...')
+        if not os.path.isdir(extract_path):
+            return extract_path
+        if isinstance(self.break_folder_model, ModelBreakFolder.MoveToTop):
+            return function_file.break_folder_top(extract_path)
+        if isinstance(self.break_folder_model, ModelBreakFolder.MoveBottom):
+            return function_file.break_folder_bottom(extract_path)
+        if isinstance(self.break_folder_model, ModelBreakFolder.MoveFiles):
+            return function_file.break_folder_files(extract_path)
+        return extract_path
+
     def extract(self, file, password):
         """解压操作"""
-        # 提取命令行参数
-        # 覆盖选项
-        if isinstance(self.cover_model, str):
-            part_cover = self.cover_model
-        elif isinstance(self.cover_model, (ModelCoverFile.RenameOld,
-                                           ModelCoverFile.RenameNew,
-                                           ModelCoverFile.Skip,
-                                           ModelCoverFile.Overwrite)):
-            part_cover = self.cover_model.switch
-        else:
-            raise Exception('覆盖模式参数错误')
+        part_cover = self.get_cover_part()
 
-        # 解压路径
         if self.is_extract_to_folder and self.extract_output_path:
             part_extract_to = self.extract_output_path
         else:
             part_extract_to = os.path.dirname(file)
-        print('part_extract_to', self.is_extract_to_folder, self.extract_output_path)
 
-        # 过滤器规则
         if self.is_filter and self.filter_rules:
             filter_rule = self.filter_rules
         else:
@@ -540,43 +507,20 @@ class ThreadExtract(TemplateThread):
                                                                      output_folder=part_extract_to,
                                                                      filter_rule=filter_rule)
 
-        # 提取源文件的文件名（剔除压缩文件后缀格式）
-        filename_origin = lzytools_archive.get_filetitle(os.path.basename(file))
-
-        # 如果处理成功，则进行进一步处理
-        if isinstance(result_7zip, Result7zip.Success):
-            # 根据对应模式移动临时文件夹下的文件/文件夹
-            self.StepInfo.emit('解压完成，移出临时文件夹中...')
-            temp_folder = function_7zip.get_temp_dirpath(part_extract_to)  # 要移动的文件夹
-            parent_folder = os.path.dirname(temp_folder)  # 移动至该文件夹下
-            if isinstance(self.extract_model, ModelExtract.Smart):
-                extract_path = function_move.move_to_smart(temp_folder, parent_folder, dirname_=filename_origin)
-            elif isinstance(self.extract_model, ModelExtract.SameFolder):
-                extract_path = function_move.move_to_same_dirname(temp_folder, parent_folder, dirname_=filename_origin)
-            elif isinstance(self.extract_model, ModelExtract.Direct):
-                extract_path = function_move.move_to_no_deal(temp_folder, parent_folder)
-            else:
-                extract_path = None
-            # 是否解散文件夹（仅在解压结果为文件夹时才执行）
-            if self.is_break_folder:
-                self.StepInfo.emit('解压完成，解散文件夹中...')
-                if os.path.isdir(extract_path):
-                    if isinstance(self.break_folder_model, ModelBreakFolder.MoveToTop):
-                        extract_path = function_file.break_folder_top(extract_path)
-                    elif isinstance(self.break_folder_model, ModelBreakFolder.MoveBottom):
-                        extract_path = function_file.break_folder_bottom(extract_path)
-                    elif isinstance(self.break_folder_model, ModelBreakFolder.MoveFiles):
-                        extract_path = function_file.break_folder_files(extract_path)
-                    else:
-                        pass
-
-            print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
-            return result_7zip, extract_path
-        else:
-            # 如果是由于用户主动终止而导致任务终止的，则删除整个临时文件夹（不管临时文件夹是否为空）
+        if not isinstance(result_7zip, Result7zip.Success):
+            # 用户主动终止时，删除整个临时文件夹（不论是否为空）
             if self.is_stop_task:
                 guess_temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
                 if os.path.exists(guess_temp_folder):
                     lzytools.file.delete(guess_temp_folder)
-
             return result_7zip, None
+
+        filename_origin = lzytools_archive.get_filetitle(os.path.basename(file))
+        self.StepInfo.emit('解压完成，移出临时文件夹中...')
+        temp_folder = function_7zip.get_temp_dirpath(part_extract_to)
+        parent_folder = os.path.dirname(temp_folder)
+        extract_path = self.move_extracted_files(temp_folder, parent_folder, filename_origin)
+        extract_path = self.break_result_folder(extract_path)
+
+        print("处理文件:", file, "处理结果", result_7zip, "解压路径", extract_path)
+        return result_7zip, extract_path

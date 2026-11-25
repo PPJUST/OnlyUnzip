@@ -1,5 +1,5 @@
 # 主窗口的桥梁组件
-import os
+
 import sys
 
 import lzytools
@@ -23,60 +23,65 @@ class WindowPresenter:
         self.viewer = viewer
         self.model = model
 
-        # 程序标题
         self.app_title_default = 'OnlyUnzip'  # 程序默认标题
-
-        # 结果收集类
         self.result_collector = ResultCollector()
-        self.passwords_used = []  # 本次程序运行时使用过的密码（处理成功的）
+        self.passwords_used = []  # 本次运行中使用成功的密码
+        self.is_user_stop = False  # 用户是否主动终止任务
 
-        # 判断用户是否主动终止（特殊使用）
-        self.is_user_stop = False
+        self._setup_stderr()
+        self._setup_pages()
+        self._setup_queue_receiver()
+        self._restore_window_setting()
+        self._bind_page_signals()
+        self._bind_model_signal()
 
-        # 报错处理
-        if getattr(sys, 'frozen', False) or getattr(sys, '_nuitka',
-                                                    False) or '__compiled__' in globals():  # frozen处理PyInstaller打包，_nuitka处理Nuitka打包
-            # 打包方式运行程序
-            # 创建自定义输出流
-            self.stderr_stream = ObjectEmittingStream()
-            # 将信号连接到界面的更新方法
-            self.stderr_stream.TextWritten.connect(self.show_stderr_info)
-            # 替换系统输出
-            sys.stderr = self.stderr_stream
-        else:
-            # 源码方式运行程序
-            pass
+    def _setup_stderr(self):
+        """打包运行时把标准错误输出显示到报错页面"""
+        is_packed = getattr(sys, 'frozen', False) or getattr(sys, '_nuitka', False) or '__compiled__' in globals()
+        if not is_packed:
+            return
+        self.stderr_stream = ObjectEmittingStream()
+        self.stderr_stream.TextWritten.connect(self.show_stderr_info)
+        sys.stderr = self.stderr_stream
 
-        # 添加各个组件的实例对象
+    def _setup_pages(self):
+        """创建各个页面组件并添加到主窗口"""
         self.page_home = page_home.get_presenter()
-        self.viewer.add_page_home(self.page_home.viewer)
+        self.viewer.add_page('home', self.page_home.viewer)
+
         self.page_password = page_password.get_presenter()
-        self.viewer.add_page_password(self.page_password.viewer)
+        self.viewer.add_page('password', self.page_password.viewer)
+
         self.page_setting = page_setting.get_presenter()
-        self.viewer.add_page_setting(self.page_setting.viewer)
+        self.viewer.add_page('setting', self.page_setting.viewer)
+
         self.page_history = page_history.get_presenter()
-        self.viewer.add_page_history(self.page_history.viewer)
+        self.viewer.add_page('history', self.page_history.viewer)
+
         self.page_error_info = page_error_info.get_presenter()
-        self.viewer.add_page_error_info(self.page_error_info.viewer)
+        self.viewer.add_page('error', self.page_error_info.viewer)
+
         self.page_about = page_about.get_viewer()
-        self.viewer.add_page_about(self.page_about)
+        self.viewer.add_page('about', self.page_about)
+
         self.page_password_manager = page_password_manager.get_presenter()
-        self.viewer.add_page_password_manager(self.page_password_manager.viewer)
+        self.viewer.add_page('password_manager', self.page_password_manager.viewer)
+
         self.dialog_temp_password = dialog_temp_password.get_presenter()
 
-        # 绑定接收线程
+    def _setup_queue_receiver(self):
+        """启动接收解压进度的线程"""
         self.queue_receiver = ThreadQueueReceiver()
         self.queue_receiver.Data.connect(self.update_extract_progress)
         self.queue_receiver.start()
 
-        # 修改窗口属性
-        self._get_window_setting()
-
-        # 绑定信号
+    def _bind_page_signals(self):
+        """绑定页面组件的信号"""
         self.page_setting.SignalTopWindow.connect(self.top_window)
         self.page_setting.SignalLockSize.connect(self.lock_size)
         self.page_setting.SignalChangeArchiveModel.connect(self.set_app_title_suffix)
-        self.page_home.FileInfo.connect(self.accept_file_info_list)  # 接收文件信息类
+
+        self.page_home.FileInfo.connect(self.accept_file_info_list)
         self.page_home.SignalNoFiles.connect(self.finished_by_no_files)
         self.page_home.SignalExistsTempFolder.connect(self.finished_by_temp_folder)
         self.page_home.SignalError7ZipPath.connect(self.finished_by_error_7zip_path)
@@ -90,11 +95,26 @@ class WindowPresenter:
         self.page_home.ChangeSettingRecursiveExtract.connect(self.page_setting.change_recursive_extract)
         self.page_home.ChangeSettingDeleteOrigin.connect(self.page_setting.change_delete_file)
         self.page_home.ChangeSettingTopWindow.connect(self.page_setting.change_top_window)
+
         self.page_password.OpenPasswordManager.connect(self.open_password_manager)
         self.page_password_manager.SignalDeleted.connect(self.deleted_passwords)
         self.dialog_temp_password.WriteToDB.connect(self.write_temp_pws_to_db)
+
         self.viewer.PageChanged.connect(self._page_changed)
-        self._bind_model_signal()
+
+    def _bind_model_signal(self):
+        """绑定模型信号，转发给对应组件"""
+        self.model.SignalCurrentFile.connect(self.page_home.set_current_file)
+        self.model.SignalTaskCount.connect(self.page_home.set_task_count)
+        self.model.SignalTaskCount.connect(self.viewer.set_progress_count)
+        self.model.SignalTaskIndex.connect(self.page_home.set_task_index)
+        self.model.SignalTaskIndex.connect(self.viewer.set_progress_index)
+        self.model.SignalCurrentPw.connect(self.page_home.set_current_password)
+        self.model.SignalPwCount.connect(self.page_home.set_password_count)
+        self.model.SignalPwIndex.connect(self.page_home.set_password_index)
+        self.model.SignalResult.connect(self.page_history.collection_history)
+        self.model.SignalFinish.connect(self.finished)
+        self.model.StepInfo.connect(self.page_home.set_current_file_step_tip)
 
     def accept_paths_from_cmd(self, paths: list):
         """接收命令行参数"""
@@ -106,13 +126,10 @@ class WindowPresenter:
         """接收文件信息类，传递给模型组件"""
         self.viewer.show_indeterminate_progress()
         self.is_user_stop = False
-        # 锁定设置项，防止被修改
+        # 锁定设置项并禁用主页的拖入功能，防止任务执行中被修改
         self.page_setting.lock_setting()
-        # 禁用主页的拖入功能
         self.page_home.banned_drop()
-        # 传递文件信息类前传递必要参数
         self.set_model_passwords()
-        # 传递给模型组件
         self.show_page_test_or_extract()
         self.model.accept_files(file_info)
 
@@ -120,36 +137,30 @@ class WindowPresenter:
         """传递密码组件的密码列表给模型组件"""
         passwords = self.page_password.get_passwords()
         temp_passwords = self.dialog_temp_password.get_passwords()
-        # 传递的密码的顺序为　本次使用过的密码＋临时密码＋密码本
+        # 密码顺序：本次使用过的密码 + 临时密码 + 密码本
         joined = self.passwords_used + temp_passwords + passwords
         joined = lzytools.common.dedup_list(joined)
         self.model.set_passwords(joined)
 
     def show_page_test_or_extract(self):
-        """显示主页为测试页或解压页"""
+        """把主页显示为测试页或解压页"""
         archive_model = self.page_setting.model.get_model_archive()
         if isinstance(archive_model, ModelArchive.Test):
             self.page_home.set_info_testing()
         elif isinstance(archive_model, ModelArchive.Extract):
             self.page_home.set_info_extracting()
-
         self.viewer.hide_button_error_info()
 
     def show_stderr_info(self, info: str):
         """显示报错信息"""
         self.viewer.show_error_progress()
-
-        # 设置主页状态
         self.page_home.set_info_error()
-        # 报错信息页中显示报错信息
         self.page_error_info.append_info(info)
-        # 切换到报错信息页
-        self.viewer.open_page_error_info()
-        # 启用报错信息页按钮
+        self.viewer.open_page('error')
         self.viewer.show_button_error_info()
 
     def open_about(self):
-        self.viewer.open_page_about()
+        self.viewer.open_page('about')
 
     def open_temp_password(self):
         self.dialog_temp_password.exec()
@@ -172,113 +183,89 @@ class WindowPresenter:
         """将临时密码写入密码本"""
         self.page_password.update_password(passwords)
 
-    def finished(self, results: FileInfoList):
-        """处理结束信号"""
-        self.viewer.show_finish_progress()
-
-        # 解锁设置项
+    def _reset_after_task(self, is_error=False):
+        """任务结束后的通用处理：更新进度、解锁设置、恢复拖入功能"""
+        if is_error:
+            self.viewer.show_error_progress()
+        else:
+            self.viewer.show_finish_progress()
         self.page_setting.unlock_setting()
-
-        # 启用主页的拖入功能
         self.page_home.allowed_drop()
 
-        # 接收到结束信号后，先传递给收集器，收集处理结果
+    def _show_finish_info(self):
+        """在主页显示当前批次的处理结果"""
+        result_info_simple, file_info_detail = self.result_collector.get_result_info()
+        self.page_home.set_info_finished(result_info_simple, result_info_tip=file_info_detail)
+
+    def _filter_temp_passwords(self, passwords):
+        """剔除不需要写入密码本的临时密码"""
+        db_passwords = self.page_password.get_passwords()
+        temp_passwords = self.dialog_temp_password.get_passwords()
+        result = []
+        for password in passwords:
+            if password in temp_passwords and password not in db_passwords:
+                continue
+            result.append(password)
+        return result
+
+    def finished(self, results: FileInfoList):
+        """处理结束信号"""
+        self._reset_after_task()
         self.collect_result(results)
 
-        # 如果有解压成功的文件，则增加对应密码的使用次数
+        # 记录本次使用成功的密码，并更新密码次数
         passwords_success = results.get_success_passwords()
         self.passwords_used += passwords_success
         print('处理成功的密码', passwords_success)
-
-        # 剔除其中包含的临时密码（临时密码不写入密码本，但保留密码本中已存在的密码）
-        db_passwords = self.page_password.get_passwords()
-        temp_passwords = self.dialog_temp_password.get_passwords()
-        filter_passwords = passwords_success
-        for pw in passwords_success:
-            if pw in temp_passwords and pw not in db_passwords:
-                filter_passwords.remove(pw)
-
-        # 更新密码次数
+        filter_passwords = self._filter_temp_passwords(passwords_success)
         if filter_passwords:
             self.page_password.update_use_count(filter_passwords)
             self.page_password.show_pw_count_info()
 
-        # 如果有成功处理的文件，则判断是否进行递归解压
+        # 成功处理完文件后，根据设置决定是否递归解压
         print('接收结束信号参数', results)
         if not self.is_user_stop and not results.is_user_stop() and results.count_success():
-            is_recursive_extract = self.page_setting.model.get_recursive_extract_is_enable()
-            # 进行递归解压，并累计处理结果
-            if is_recursive_extract:
+            if self.page_setting.model.get_recursive_extract_is_enable():
                 success_filepaths = results.get_success_files()
                 self.page_home.drop_paths(success_filepaths, is_recursive=True)
-            # 如果不需要进行递归解压，则结束本批次任务，显示结束信息
-            else:
-                result_info_simple, file_info_detail = self.result_collector.get_result_info()
-                self.page_home.set_info_finished(result_info_simple, result_info_tip=file_info_detail)
-        else:
-            result_info_simple, file_info_detail = self.result_collector.get_result_info()
-            self.page_home.set_info_finished(result_info_simple, result_info_tip=file_info_detail)
+                return
+        self._show_finish_info()
 
     def finished_by_no_files(self):
-        """提前终止：由于主页模块信号-没有需要处理的文件"""
-        self.viewer.show_finish_progress()
-
-        # 解锁设置项
-        self.page_setting.unlock_setting()
-        # 启用主页的拖入功能
-        self.page_home.allowed_drop()
-        # 如果没有处理任何文件就结束，则直接显示Skip提示，否则显示正常计数信息（递归解压到没有需要解压的文件）
+        """提前终止：主页模块没有需要处理的文件"""
+        self._reset_after_task()
+        # 没有处理任何文件时显示 Skip；递归解压后无文件可解压时显示正常结果
         if not self.result_collector.get_count_all_result():
             self.page_home.set_info_skip()
         else:
-            finish_info_simple, file_info_detail = self.result_collector.get_result_info()
-            self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
+            self._show_finish_info()
 
     def finished_by_temp_folder(self, path: str = ''):
-        """提前终止：由于主页模块信号-存在临时文件夹"""
-        self.viewer.show_error_progress()
-
-        # 解锁设置项
-        self.page_setting.unlock_setting()
-
-        # 启用主页的拖入功能
-        self.page_home.allowed_drop()
-
+        """提前终止：主页模块检测到临时文件夹"""
+        self._reset_after_task(is_error=True)
         self.page_home.set_info_exists_temp_folder(path)
 
     def finished_by_error_7zip_path(self, path: str = ''):
-        """提前终止：由于主页模块信号-7zip路径错误"""
-        self.viewer.show_error_progress()
-
-        # 解锁设置项
-        self.page_setting.unlock_setting()
-
-        # 启用主页的拖入功能
-        self.page_home.allowed_drop()
-
+        """提前终止：主页模块检测到 7zip 路径错误"""
+        self._reset_after_task(is_error=True)
         self.page_home.set_info_error_7zip_path()
 
     def finished_by_user_stop(self):
         """提前终止：用户主动终止"""
-        self.viewer.show_finish_progress()
-
-        # 解锁设置项
-        self.page_setting.unlock_setting()
-        # 启用主页的拖入功能
-        self.page_home.allowed_drop()
-        # 更新主页信息
-        finish_info_simple, file_info_detail = self.result_collector.get_result_info()
-        self.page_home.set_info_finished(finish_info_simple, result_info_tip=file_info_detail)
-        # 终止调用线程
-        self.is_user_stop = True
-        self.model.stop_task()
+        self._reset_after_task()
+        self._show_finish_info()
+        self._stop_running_task()
         process = function_7zip.get_running_process()
         function_subprocess.stop_process(process)
 
     def finished_by_user_stop_after_current(self):
-        """提前终止：用户主动终止（延迟终止，完成当前任务后再终止）"""
+        """提前终止：用户主动终止（完成当前任务后再终止）"""
+        # 子线程仍在执行，任务结束信号到达后再统一解锁设置
         self.viewer.show_finish_progress()
+        self._stop_running_task()
 
+    def _stop_running_task(self):
+        """标记用户终止状态并通知模型停止任务"""
         self.is_user_stop = True
         self.model.stop_task()
 
@@ -291,18 +278,6 @@ class WindowPresenter:
         for file_info in results.get_file_infos():
             result = file_info.get_7zip_result()
             self.result_collector.add_result(result)
-
-    @staticmethod
-    def delete_temp_folder_if_exists(results: FileInfoList):
-        """删除可能存在的临时文件夹"""
-        for file_info in results.get_file_infos():
-            extract_path = file_info.extract_path
-            # 临时解压文件夹只会在解压结果目录的同级目录中
-            if extract_path:
-                parent_folder = os.path.dirname(extract_path)
-                temp_folder = function_7zip.get_temp_dirpath(parent_folder)
-                if os.path.exists(temp_folder):
-                    lzytools.file.delete_empty_folder(temp_folder, send_to_trash=False)
 
     def top_window(self, is_enable: bool):
         """设置窗口置顶"""
@@ -327,19 +302,17 @@ class WindowPresenter:
         self.set_app_title_suffix()
 
     def set_app_title_suffix(self):
-        """在程序标题后添加后缀：[测试]/[解压]"""
+        """在程序标题后添加后缀：[T] 测试 / [E] 解压"""
         archive_model = self.page_setting.get_archive_model()
         suffix = ''
         if isinstance(archive_model, ModelArchive.Test):
             suffix = '[T]'
         elif isinstance(archive_model, ModelArchive.Extract):
             suffix = '[E]'
+        self.viewer.setWindowTitle(f'{self.app_title_default} {suffix}')
 
-        new_title = f'{self.app_title_default} {suffix}'
-        self.viewer.setWindowTitle(new_title)
-
-    def _get_window_setting(self):
-        """提取window相关设置"""
+    def _restore_window_setting(self):
+        """根据设置恢复窗口置顶和尺寸状态"""
         is_top_window = self.page_setting.model.get_top_window_is_enable()
         self.top_window(is_top_window)
 
@@ -352,7 +325,7 @@ class WindowPresenter:
 
     def open_password_manager(self):
         """打开密码管理器"""
-        self.viewer.open_page_password_manager()
+        self.viewer.open_page('password_manager')
         self.page_password_manager.update_count()
         self.page_password_manager.hidden_preview()
 
@@ -365,18 +338,3 @@ class WindowPresenter:
     def _page_changed(self):
         """切换页面后的操作"""
         self.page_home.hide_float_button()
-
-    def _bind_model_signal(self):
-        """绑定模型信号，链接到其他组件"""
-        self.model.SignalCurrentFile.connect(self.page_home.set_current_file)
-        self.model.SignalTaskCount.connect(self.page_home.set_task_count)
-        self.model.SignalTaskCount.connect(self.viewer.set_progress_count)
-        self.model.SignalTaskIndex.connect(self.page_home.set_task_index)
-        self.model.SignalTaskIndex.connect(self.viewer.set_progress_index)
-        self.model.SignalCurrentPw.connect(self.page_home.set_current_password)
-        self.model.SignalPwCount.connect(self.page_home.set_password_count)
-        self.model.SignalPwIndex.connect(self.page_home.set_password_index)
-        self.model.SignalResult.connect(self.page_history.collection_history)
-        # self.model.SignalStart.connect(None)
-        self.model.SignalFinish.connect(self.finished)
-        self.model.StepInfo.connect(self.page_home.set_current_file_step_tip)
