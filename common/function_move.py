@@ -1,5 +1,6 @@
 import os
 import shutil
+from typing import List, Optional
 
 import lzytools
 import lzytools_archive
@@ -7,119 +8,155 @@ import lzytools_archive
 from common import function_file
 
 
-def move_to_smart(dirpath: str, target_dirpath: str, dirname_=None):
-    """移动内部文件至指定文件夹（智能模式）
+def move_to_smart(
+        dirpath: str,
+        target_dirpath: str,
+        dirname_: Optional[str] = None
+) -> str:
+    """移动内部文件至指定文件夹（智能模式）。
+
     :param dirpath: 需要检查的文件夹
     :param target_dirpath: 移动至目标文件夹
-    :param dirname_: 指定的文件夹名称，特殊情况使用"""
+    :param dirname_: 指定的文件夹名称，特殊情况使用
+    :return: 移动后的路径
+    """
     # 找出最深一级的存在多文件的文件夹/或文件
     deepest_file = lzytools.file.get_first_multi_file_dirpath(dirpath)
 
-    # 如果找到的文件夹是其自身，则需要新建一个文件夹，移动到该文件夹下
-    # （传入的dirpath路径为临时文件夹的路径，如果为其自身会导致该临时文件夹作为解压文件夹的外部文件夹）
-    if deepest_file == dirpath:
-        # 先新建指定文件名的文件夹，将内部文件移动至该文件夹下，然后在移动到外部
-        # 2026.09.16修复：解压文件夹内一级目录中同时存在多个文件，并且存在与压缩文件同名的文件夹，则移动到临时文件夹时会报错
-        if os.path.exists(dirpath) and len(os.listdir(dirpath)) >= 2 and dirname_.lower() in os.listdir(dirpath):
-            dirname_ = lzytools.file.create_nodup_filename_standard_digital_suffix(dirname_, dirpath)
+    if os.path.normpath(deepest_file) == os.path.normpath(dirpath):
+        # 最深一级就是顶层目录本身：先在临时文件夹内新建一层，再整体移出，
+        # 否则临时文件夹会成为解压文件夹的外部目录
+        if not dirname_:
+            raise ValueError('智能模式需要指定文件夹名称')
+
+        dirname_ = _get_available_dirname(dirpath, dirname_)
         move_dirpath = os.path.normpath(os.path.join(dirpath, dirname_))
         _move_inside_file_to_folder(deepest_file, move_dirpath)
-        new_file_dict = function_file.move_file_to_folder(move_dirpath, target_dirpath)
+        moved_files = function_file.move_file_to_folder(move_dirpath, target_dirpath)
     else:
-        # 移动找到的文件
-        new_file_dict = function_file.move_file_to_folder(deepest_file, target_dirpath)
+        # 直接移动找到的文件/文件夹
+        moved_files = function_file.move_file_to_folder(deepest_file, target_dirpath)
 
-    move_path: str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
-    return move_path
-
-
-def move_to_no_deal(dirpath: str, target_dirpath):
-    """移动内部文件至指定文件夹（不做处理的）
-    :param dirpath: 需要检查的文件夹
-    :param target_dirpath: 移动至目标文件夹"""
-    # 逻辑类似于智能模式，但是不需要搜索最深的文件，直接移动即可
-    # 遍历一级目录内的文件
-    files = [os.path.normpath(os.path.join(dirpath, i)) for i in os.listdir(dirpath)]
-
-    # 移动
-    new_file_dict = function_file.move_file_to_folder(files, target_dirpath)
-
-    move_path: str = list(new_file_dict.values())[0]  # 仅处理一个文件，value即为最终的路径
-    return move_path
+    # 本次只移动一个路径，取第一个结果即可
+    return list(moved_files.values())[0]
 
 
-def move_to_same_dirname(dirpath: str, target_dirpath, dirname_=None):
-    """移动内部文件至指定文件夹的同名目录中
+def move_to_no_deal(dirpath: str, target_dirpath: str) -> str:
+    """移动内部文件至指定文件夹（不做处理）。
+
     :param dirpath: 需要检查的文件夹
     :param target_dirpath: 移动至目标文件夹
-    :param dirname_: 指定的文件夹名称"""
+    :return: 移动后的路径
+    """
+    # 逻辑类似智能模式，但不搜索最深的文件，直接移动一级目录内的子项
+    files = _get_child_paths(dirpath)
+    moved_files = function_file.move_file_to_folder(files, target_dirpath)
 
-    if not dirname_:  # 不指定文件夹名称时，读取文件夹的名称
-        ft_ = os.path.basename(dirpath)
-        dirname_ = lzytools_archive.get_filetitle(ft_)
-    else:
-        dirname_ = dirname_[:]  # 复制，防止修改源对象
+    # 调用方只需要一个结果，取第一个移动后的路径
+    return list(moved_files.values())[0]
 
-    # 检查文件夹名是否重复
-    is_dup = lzytools.file.is_dup_filename(dirname_, target_dirpath)
-    if is_dup:
-        dirname_ = lzytools.file.create_nodup_filename_standard_digital_suffix(dirname_, target_dirpath)
 
-    # 组合文件夹，并新建
+def move_to_same_dirname(
+        dirpath: str,
+        target_dirpath: str,
+        dirname_: Optional[str] = None
+) -> str:
+    """移动内部文件至指定文件夹的同名目录中。
+
+    :param dirpath: 需要检查的文件夹
+    :param target_dirpath: 移动至目标文件夹
+    :param dirname_: 指定的文件夹名称
+    :return: 移动后的路径
+    """
+    if not dirname_:
+        # 未指定名称时，取原文件夹的名称（剔除压缩文件后缀）
+        dirname_ = lzytools_archive.get_filetitle(os.path.basename(dirpath))
+
+    # 检查目标目录中是否存在同名文件夹
+    if lzytools.file.is_dup_filename(dirname_, target_dirpath):
+        dirname_ = lzytools.file.create_nodup_filename_standard_digital_suffix(
+            filetitle=dirname_,
+            check_dirpath=target_dirpath
+        )
+
     dirpath_ = os.path.normpath(os.path.join(target_dirpath, dirname_))
     os.mkdir(dirpath_)
 
-    # 如果原目录下仅有一个文件夹且文件名与目标文件夹同名，则移动该子文件夹下的文件
+    # 原目录下只有一个同名子文件夹时，移动该子文件夹的内容，避免多套一层目录
     inside = os.listdir(dirpath)
     if len(inside) == 1 and inside[0] == dirname_:
         child_filepath = os.path.normpath(os.path.join(dirpath, inside[0]))
-        move_path = _move_inside_file_to_folder(child_filepath, dirpath_)
-    else:
-        move_path = _move_inside_file_to_folder(dirpath, dirpath_)
+        return _move_inside_file_to_folder(child_filepath, dirpath_)
 
-    return move_path
+    return _move_inside_file_to_folder(dirpath, dirpath_)
 
 
-def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str):
-    """移动一个文件夹内部的文件到另一个文件夹"""
+def _move_inside_file_to_folder(origin_dirpath: str, target_dirpath: str) -> str:
+    """移动一个文件夹内部的文件到另一个文件夹。
+
+    :param origin_dirpath: 原文件夹路径
+    :param target_dirpath: 目标文件夹路径
+    :return: 目标文件夹路径
+    """
     if os.path.normpath(origin_dirpath) == os.path.normpath(target_dirpath):
         return target_dirpath
     if not os.path.exists(origin_dirpath):
-        raise Exception(origin_dirpath, '目录不存在')
+        raise FileNotFoundError(f'目录不存在: {origin_dirpath}')
     if not os.path.exists(target_dirpath):
         os.mkdir(target_dirpath)
 
-    # 提取原目录文件
-    filenames = os.listdir(origin_dirpath)
-    files = [os.path.normpath(os.path.join(origin_dirpath, i)) for i in filenames]
-
-    # 移动
+    files = _get_child_paths(origin_dirpath)
     try:
-        for file in files:
-            shutil.move(file, target_dirpath)
+        _move_files(files, target_dirpath)
     except FileNotFoundError:
-        # 2025.09.28 修复两端文件名存在空格时的bug
-        # bug原因：os.mkdir()创建的文件夹名由于Windows的文件名修剪机制，不会包含两端空格
-        # 2026.01.13 修复文件名右端存在.的bug
-        # bug原因：os.mkdir()创建的文件夹名由于Windows的文件名修剪机制，不会包含右端的.
+        # Windows 会修剪 os.mkdir() 创建的文件夹名两端的空格和右端的点，
+        # 导致 shutil.move() 按原名找不到目标目录
+        # 2025.09.28 修复两端空格；2026.01.13 修复右端的点
+        actual_target = _find_trimmed_target(target_dirpath)
+        _move_files(files, actual_target)
 
-        # 检查目标文件夹两端是否存在空格以及右端是否存在点，并剔除后检查文件夹是否存在并且是否为空
-        filename_strip = os.path.basename(target_dirpath).strip().rstrip('.').strip()
-        filename_rstrip = os.path.basename(target_dirpath).rstrip().rstrip('.').rstrip()
-        filename_lstrip = os.path.basename(target_dirpath).lstrip().rstrip('.')
-        parent_dirpath = os.path.dirname(target_dirpath)
-        target_dirpath_strip = os.path.normpath(os.path.join(parent_dirpath, filename_strip))
-        target_dirpath_rstrip = os.path.normpath(os.path.join(parent_dirpath, filename_rstrip))
-        target_dirpath_lstrip = os.path.normpath(os.path.join(parent_dirpath, filename_lstrip))
-        if os.path.exists(target_dirpath_strip) and not os.listdir(target_dirpath_strip):
-            for file in files:
-                shutil.move(file, target_dirpath_strip)
-        elif os.path.exists(target_dirpath_rstrip) and not os.listdir(target_dirpath_rstrip):
-            for file in files:
-                shutil.move(file, target_dirpath_rstrip)
-        elif os.path.exists(target_dirpath_lstrip) and not os.listdir(target_dirpath_lstrip):
-            for file in files:
-                shutil.move(file, target_dirpath_lstrip)
-        else:
-            raise Exception('未知错误')
     return target_dirpath
+
+
+def _get_child_paths(dirpath: str) -> List[str]:
+    """返回文件夹内一级子项的完整路径。"""
+    filenames = os.listdir(dirpath)
+    return [os.path.normpath(os.path.join(dirpath, filename)) for filename in filenames]
+
+
+def _move_files(files: List[str], target_dirpath: str) -> None:
+    """将文件/文件夹逐个移动到目标文件夹。"""
+    for file in files:
+        shutil.move(file, target_dirpath)
+
+
+def _find_trimmed_target(target_dirpath: str) -> str:
+    """返回 Windows 修剪文件夹名后实际存在的空目标文件夹。"""
+    dirname_ = os.path.basename(target_dirpath)
+    parent_dirpath = os.path.dirname(target_dirpath)
+
+    # 依次尝试：两端空格、右端空格/点、左端空格
+    trimmed_names = [
+        dirname_.strip().rstrip('.').strip(),
+        dirname_.rstrip().rstrip('.').rstrip(),
+        dirname_.lstrip().rstrip('.')
+    ]
+    for name in trimmed_names:
+        candidate = os.path.normpath(os.path.join(parent_dirpath, name))
+        if os.path.isdir(candidate) and not os.listdir(candidate):
+            return candidate
+
+    raise FileNotFoundError(f'未找到可用的目标文件夹: {target_dirpath}')
+
+
+def _get_available_dirname(dirpath: str, dirname: str) -> str:
+    """返回文件夹内可用的新建文件夹名称。"""
+    # 2026.09.16 修复：一级目录中同时存在多个文件，且存在与压缩文件同名的文件夹时，
+    # 新建文件夹会与已有文件夹冲突，需先生成不重名的名称
+    filenames = os.listdir(dirpath)
+    if len(filenames) >= 2 and dirname.lower() in filenames:
+        return lzytools.file.create_nodup_filename_standard_digital_suffix(
+            filetitle=dirname,
+            check_dirpath=dirpath
+        )
+    return dirname

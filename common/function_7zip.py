@@ -1,208 +1,315 @@
 import os
 import re
 import subprocess
-from typing import Union
 
 from common import function_queue, function_setting
-from common.class_7zip import Result7zip, TYPES_RESULT_7ZIP
+from common.class_7zip import Result7zip
 from common.function_extract import TEMP_EXTRACT_FOLDER
 
 FAKE_PASSWORD = 'FAKEPASSWORD'
-# _7ZIP_PATH = r'./7-Zip/7z.exe'
-_process_running: subprocess.Popen = None  # 正在运行的线程，用于中断
-_CMD_PW_TEXT_FILE = 'cmd_pw.txt'  # 临时使用的密码文件（专用于处理带特殊字符（例如"、^）的密码，双引号不能作为参数传入进程，但可以通过读取文件传入）
+_CMD_PW_TEXT_FILE = 'cmd_pw.txt'
+_process_running = None
+
+_SPECIAL_PASSWORD_CHARS = ['*', ':', '<', '>', '?', '\\', '/', '|', '&', ';', '(', ')', '^', '%']
 
 
-# def update_7zip_path():
-#     """更新7zip路径"""
-#     global _7ZIP_PATH
-#     setting_path = function_setting.get_7zip_path()
-#     if setting_path:
-#         _7ZIP_PATH = function_setting.get_7zip_path()
-
-def get_7zip_path() -> str:
+def get_7zip_path():
     """获取7zip路径"""
     path_setting = function_setting.get_7zip_path()
     if path_setting:
-        _7zip_path = function_setting.get_7zip_path()
-    else:
-        _7zip_path = r'./7-Zip/7z.exe'
-
-    return _7zip_path
+        return path_setting
+    return r'./7-Zip/7z.exe'
 
 
 def get_running_process():
-    """获取正在运行的调用线程"""
+    """获取正在运行的7zip进程，已结束则返回None"""
     print('当前运行线程', _process_running)
-    if _process_running and _process_running.poll() is None:
+    if _process_running is not None and _process_running.poll() is None:
         return _process_running
-    else:
-        return None
+    return None
 
 
-def is_need_local_pw_file(password: str):
-    """判断密码是否需要使用临时密码文件"""
-    # 如果存在特殊字符，则需要使用临时密码文件
-    is_special_char = has_special_chars_translate(password)
-    if is_special_char:
-        return True
-    # 如果字段内存在空格，则需要使用临时密码文件
-    if ' ' in password:
-        return True
-
+def has_special_chars(text):
+    """判断文本中是否包含需要特殊处理的字符"""
+    for char in text:
+        if char in _SPECIAL_PASSWORD_CHARS:
+            return True
     return False
 
 
-def has_special_chars_translate(text: str):
-    """文本中是否存在特殊字符"""
-    # 定义特殊字符集合
-    special_chars = {'*', ':', '<', '>', '?', '\\', '/', '|', '&', ';', '(', ')', '^', '%'}
-    # 创建翻译表：保留特殊字符，删除所有其他字符（None 表示删除）
-    translator = str.maketrans('', '', ''.join(set(text) - special_chars))
-    # 移除非特殊字符后，若剩余字符串非空 → 存在特殊字符
-    return len(text.translate(translator)) > 0
+def has_special_chars_translate(text):
+    """兼容旧调用：判断文本中是否包含需要特殊处理的字符"""
+    return has_special_chars(text)
 
 
-def create_cmd_pw_file(password: str):
-    """创建一个临时的密码文件，用于处理带特殊字符的密码"""
-    with open(_CMD_PW_TEXT_FILE, 'w', encoding='utf-8') as f:
-        f.write(password)
-    f.close()
+def is_need_local_pw_file(password):
+    """判断密码是否需要通过临时文件传给7zip"""
+    if has_special_chars(password):
+        return True
+    if ' ' in password:
+        return True
+    return False
+
+
+def create_cmd_pw_file(password):
+    """创建临时密码文件，用于处理带特殊字符或空格的密码"""
+    with open(_CMD_PW_TEXT_FILE, 'w', encoding='utf-8') as file:
+        file.write(password)
 
 
 def delete_cmd_pw_file():
-    """删除临时密码文件"""
+    """删除临时密码文件。
+
+    当前版本保留空实现，以兼容既有调用并避免并发任务互相删除密码文件。
+    """
     return
-    if os.path.exists(_CMD_PW_TEXT_FILE):
-        os.remove(_CMD_PW_TEXT_FILE)
 
 
-def _process_7zip_with_run(_7zip_command: Union[str, list]):
-    """使用run调用7zip执行传入语句（直接返回结果，不需要实时读取管道信息）
-    :param _7zip_command: 7zip命令行"""
-    # 清理一次命令行
-    if isinstance(_7zip_command, list):
-        _7zip_command = [i for i in _7zip_command if i.strip()]
+def _quote_path(path):
+    """为路径添加引号"""
+    return '"' + path + '"'
 
-    print(f'调用7zip（run）：{_7zip_command}')
-    process = subprocess.run(_7zip_command,
+
+def _clean_command(command):
+    """清理命令列表中的空参数"""
+    cleaned_command = []
+    for part in command:
+        if part and part.strip():
+            cleaned_command.append(part)
+    return cleaned_command
+
+
+def _join_command(command):
+    """将命令列表组合为shell可执行的字符串"""
+    cleaned_command = _clean_command(command)
+    return ' '.join(cleaned_command)
+
+
+def _get_password_part(password):
+    """获取命令行中的密码参数"""
+    if is_need_local_pw_file(password):
+        create_cmd_pw_file(password)
+        return '-y<' + _CMD_PW_TEXT_FILE
+    return '-p' + password
+
+
+def _get_inside_path_part(inside_path):
+    """获取命令行中指定内部文件的参数"""
+    if inside_path:
+        return _quote_path(inside_path)
+    return ''
+
+
+def _build_check_command(mode, _7zip_path, file, password, inside_path):
+    """构造l或t命令"""
+    command = [
+        _quote_path(_7zip_path),
+        mode,
+        _quote_path(file),
+        _get_password_part(password),
+        _get_inside_path_part(inside_path)
+    ]
+    return _join_command(command)
+
+
+def _build_extract_command(_7zip_path, file, password, cover_model, output_folder, filter_rule):
+    """构造x命令"""
+    command = [
+        _quote_path(_7zip_path),
+        'x',
+        _quote_path(file),
+        '-bsp1',
+        '-bse1',
+        '-bso1',
+        cover_model,
+        _get_password_part(password),
+        _quote_path('-o' + output_folder)
+    ]
+
+    if filter_rule:
+        for rule in filter_rule:
+            command.append(rule)
+
+    return _join_command(command)
+
+
+def _process_7zip_with_run(command):
+    """使用run调用7zip，直接返回结果"""
+    if isinstance(command, list):
+        command = _join_command(command)
+
+    print('调用7zip（run）：' + command)
+    process = subprocess.run(command,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              creationflags=subprocess.CREATE_NO_WINDOW,
                              text=True,
                              shell=True)
-    delete_cmd_pw_file()  # 删除临时密码文件
+    delete_cmd_pw_file()
     print('返回码', process.returncode)
     print('错误信息', process.stderr)
     return process
 
 
-def process_7zip_l(_7zip_path: str, file: str, password: str, inside_path: str = ''):
-    """测试指定文件的密码
-    :param _7zip_path: 7zip路径
-    :param file: 需要测试的文件路径
-    :param password: 需要测试的密码
-    :param inside_path: 单独测试的内部文件路径
-    :return: 7zip结果类"""
-    # 编写列表命令行
-    if is_need_local_pw_file(password):  # 对带特殊字符的密码进行特殊处理
-        create_cmd_pw_file(password)  # 创建临时密码文件
-        part_password = f'-y<{_CMD_PW_TEXT_FILE}'
-    else:
-        part_password = f'-p{password}'
-    if inside_path:
-        part_inside = f'"{inside_path}"'
-    else:
-        part_inside = ''
-    command = [f'"{_7zip_path}"',
-               'l',
-               f'"{file}"',
-               part_password,
-               part_inside]
-    command = [i for i in command if i and i.strip()]  # 清理一次列表命令行
-    # 将列表命令行组合为字符串（shell=True）
-    command = ' '.join(command)
-    # 调用
+def _get_error_type_from_text(output):
+    """根据7zip输出文本识别错误类型"""
+    if 'Wrong password' in output:
+        return Result7zip.WrongPassword()
+    if 'Missing volume' in output:
+        return Result7zip.MissingVolume()
+    if 'Cannot open the file as' in output:
+        return Result7zip.WrongFiletype()
+    return None
+
+
+def _get_result_by_return_code(return_code):
+    """根据返回码获取固定类型的结果，无法判断时返回None"""
+    if return_code == 1:
+        return Result7zip.Warning()
+    if return_code == 7:
+        return Result7zip.ErrorCommand()
+    if return_code == 8:
+        return Result7zip.NotEnoughMemory()
+    if return_code == 255:
+        return Result7zip.UserStopped()
+    return None
+
+
+def _analyse_process_return(process):
+    """分析run调用7zip的返回结果"""
+    return_code = process.returncode
+    if return_code == 0:
+        return Result7zip.Success()
+
+    if return_code == 2:
+        output = str(process.stderr) + str(process.stdout)
+        error_type = _get_error_type_from_text(output)
+        if error_type is not None:
+            return error_type
+        print('未知错误：' + output)
+        return Result7zip.UnknownError(str(process.stderr))
+
+    result = _get_result_by_return_code(return_code)
+    if result is not None:
+        return result
+    return Result7zip.UnknownError('未知错误')
+
+
+def _run_check_command(mode, _7zip_path, file, password, inside_path):
+    """执行l或t命令并分析结果"""
+    command = _build_check_command(mode, _7zip_path, file, password, inside_path)
     process = _process_7zip_with_run(command)
-    # 处理调用结果
-    _7zip_result = _analyse_process_return(process)
-    # 结果为”成功“时将正确密码写入结果类中
-    if isinstance(_7zip_result, Result7zip.Success):
-        _7zip_result.password = password
+    result = _analyse_process_return(process)
 
-    return _7zip_result
+    if isinstance(result, Result7zip.Success):
+        result.password = password
 
-
-def process_7zip_t(_7zip_path: str, file: str, password: str, inside_path: str = ''):
-    """测试指定文件的密码
-    :param _7zip_path: 7zip路径
-    :param file: 需要测试的文件路径
-    :param password: 需要测试的密码
-    :param inside_path: 如果测试的文件是压缩文件，则可以尝试仅测试压缩文件内部的其中1个文件
-    :return: 7zip结果类"""
-    # 编写列表命令行
-    if is_need_local_pw_file(password):  # 对带特殊字符的密码进行特殊处理
-        create_cmd_pw_file(password)  # 创建临时密码文件
-        part_password = f'-y<{_CMD_PW_TEXT_FILE}'
-    else:
-        part_password = f'-p{password}'
-    if inside_path:
-        part_inside = f'"{inside_path}"'
-    else:
-        part_inside = ''
-    command = [f'"{_7zip_path}"',
-               't',
-               f'"{file}"',
-               part_password,
-               part_inside]
-    command = [i for i in command if i and i.strip()]  # 清理一次列表命令行
-    # 将列表命令行组合为字符串（shell=True）
-    command = ' '.join(command)
-    # 调用
-    process = _process_7zip_with_run(command)
-    # 处理调用结果
-    _7zip_result = _analyse_process_return(process)
-    # 结果为”成功“时将正确密码写入结果类中
-    if isinstance(_7zip_result, Result7zip.Success):
-        _7zip_result.password = password
-
-    return _7zip_result
+    return result
 
 
-def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
-                   filter_rule: list = None):
-    """解压指定文件
-    :param _7zip_path: 7zip路径
-    :param file: 需要解压的文件路径
-    :param password: 解压时使用的密码（附带测试功能）
-    :param cover_model: 重名文件的覆盖模式
-    :param output_folder: 解压输出目录
-    :param filter_rule: 文件过滤器规则
-    :return: 7zip结果类"""
-    # 实例化发送数据的队列
+def process_7zip_l(_7zip_path, file, password, inside_path=''):
+    """使用l命令测试指定文件的密码"""
+    return _run_check_command('l', _7zip_path, file, password, inside_path)
+
+
+def process_7zip_t(_7zip_path, file, password, inside_path=''):
+    """使用t命令测试指定文件的密码"""
+    return _run_check_command('t', _7zip_path, file, password, inside_path)
+
+
+def _get_extract_error_type(output):
+    """分析解压输出中的错误事件。
+
+    返回三个值：错误类型、是否停止读取输出、是否为虚假成功。
+    """
+    if re.search('Wrong password', output):
+        return Result7zip.WrongPassword(), True, False
+    if re.search('Missing volume', output):
+        return Result7zip.MissingVolume(), True, False
+    if re.search('Cannot open the file as', output):
+        return Result7zip.WrongFiletype(), False, False
+    if re.search('No files to process', output):
+        return Result7zip.UnknownError('No files to process'), True, True
+    return None, False, False
+
+
+def _read_process_line(process):
+    """读取7zip输出的一行，遇到编码错误则忽略该行"""
+    try:
+        return process.stdout.readline()
+    except UnicodeDecodeError:
+        return ''
+
+
+def _send_progress(queue_sender, output):
+    """从输出文本中提取进度并发送"""
+    match_progress = re.search(r'(\d{1,3})% *\d*', output)
+    if not match_progress:
+        return
+
+    current_progress = int(match_progress.group(1))
+    if current_progress:
+        queue_sender.send_data(current_progress)
+
+
+def _read_extract_output(process, queue_sender):
+    """实时读取解压输出，提取错误类型和进度"""
+    error_type = None
+    last_output = ''
+    is_fake_success = False
+    is_read_stderr = True
+    is_read_progress = True
+
+    while True:
+        output = _read_process_line(process)
+        last_output = output
+
+        if output.strip():
+            print('7zip实时输出文本：\n' + output.strip())
+
+        if output == '' and process.poll() is not None:
+            break
+
+        if is_read_stderr and output.strip():
+            found_error_type, should_stop, found_fake_success = _get_extract_error_type(output)
+            if found_error_type is not None:
+                error_type = found_error_type
+            if found_fake_success:
+                is_fake_success = True
+            if should_stop:
+                is_read_stderr = False
+                is_read_progress = False
+
+        if is_read_progress and output:
+            _send_progress(queue_sender, output)
+
+    return error_type, is_fake_success, last_output
+
+
+def _get_extract_result(return_code, error_type, output, password, is_fake_success):
+    """根据解压结果生成结果对象"""
+    if return_code == 0:
+        if is_fake_success and error_type is not None:
+            return error_type
+        return Result7zip.Success(password)
+
+    if return_code == 2:
+        if error_type is not None:
+            return error_type
+        return Result7zip.UnknownError(output)
+
+    result = _get_result_by_return_code(return_code)
+    if result is not None:
+        return result
+    return Result7zip.UnknownError('未知错误')
+
+
+def process_7zip_x(_7zip_path, file, password, cover_model, output_folder, filter_rule=None):
+    """解压指定文件，并实时发送解压进度"""
     queue_sender = function_queue.get_sender()
+    command = _build_extract_command(_7zip_path, file, password, cover_model, output_folder, filter_rule)
 
-    # 编写列表命令行
-    # 同时读取stdout和stderr会导致管道堵塞，所以需要将两个输出流重定向至同一个管道中（使用switch：'bso1','bsp1',bse1'）
-    if is_need_local_pw_file(password):  # 对带特殊字符的密码进行特殊处理
-        create_cmd_pw_file(password)  # 创建临时密码文件
-        part_password = f'-y<{_CMD_PW_TEXT_FILE}'
-    else:
-        part_password = f'-p{password}'
-    command = [f'"{_7zip_path}"',
-               'x',
-               f'"{file}"',
-               '-bsp1', '-bse1', '-bso1',
-               cover_model,
-               part_password,
-               f'"-o{output_folder}"']
-    if filter_rule:
-        command = command + filter_rule
-    command = [i for i in command if i and i.strip()]  # 清理一次列表命令行
-    # 将列表命令行组合为字符串（shell=True）
-    command = ' '.join(command)
-    print(f'调用7zip（Popen）：{command}')
-    # 调用
+    print('调用7zip（Popen）：' + command)
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
@@ -210,238 +317,181 @@ def process_7zip_x(_7zip_path: str, file: str, password: str, cover_model: str, 
                                text=True,
                                shell=True)
 
-    # 赋值给全局变量
     global _process_running
     _process_running = process
 
-    # 实时读取输出流，提取信息
-    # （使用Popen调用7zip时，返回码为2时的报错信息为"<_io.TextIOWrapper name=4 encoding='cp936'>"，
-    # 无法根据该报错信息判断错误类型，所以需要在输出流中分析信息进行判断）
-    error_type: TYPES_RESULT_7ZIP = None
-    is_read_stderr = True  # 是否读取stderr流，出现报错事件/读取到进度信息后不再需要读取
-    is_read_progress = True  # 是否读取进度信息，出现报错事件后不再需要读取
-    is_fake_success = True
-    while True:
-        try:
-            output = process.stdout.readline()
-            if output.strip():
-                print(f'7zip实时输出文本：\n{output.strip()}')  # 测试用
-        except UnicodeDecodeError:  # UnicodeDecodeError: 'gbk' codec can't decode byte 0xaa in position 32: illegal multibyte sequence
-            output = ''
-        if output == '' and process.poll() is not None:  # 读取到空文本或返回码时，结束读取操作
-            break
+    error_type, is_fake_success, last_output = _read_extract_output(process, queue_sender)
 
-        # 读取错误事件
-        if is_read_stderr and output.strip():
-            is_wrong_password = re.search('Wrong password', output)
-            is_missing_volume = re.search('Missing volume', output)
-            is_cannot_open_the_file = re.search('Cannot open the file as', output)
-            is_fake_success = re.search('No files to process', output)  # 虚假的处理成功
-            if is_wrong_password:
-                error_type = Result7zip.WrongPassword()
-                is_read_stderr = False
-                is_read_progress = False
-            elif is_missing_volume:
-                error_type = Result7zip.MissingVolume()
-                is_read_stderr = False
-                is_read_progress = False
-            elif is_cannot_open_the_file:
-                # 如果是后缀名错误的问题，7zip会自动尝试以正确的后缀名进行解压，不需要停止读取
-                error_type = Result7zip.WrongFiletype()
-            elif is_fake_success:
-                # 2025.09.28 临时修复bug 少部分的压缩包在解压时文本提示"No files to process"，但是返回吗仍为0
-                error_type = Result7zip.UnknownError('No files to process')
-                is_read_stderr = False
-                is_read_progress = False
-
-        # 读取进度事件
-        if is_read_progress and output:
-            # 单文件进度输出示例：34% - 061-090；多文件进度输出示例：19% 10 - 031-060。适用正则表达式 '(\d{1,3})% *\d* - '
-            # 部分压缩文件的输出示例：80% 13。适用正则表达式 '(\d{1,3})% *\d*'
-            match_progress = re.search(r'(\d{1,3})% *\d*', output)
-            if match_progress:
-                # is_read_stderr = False  # 读取到进度后直接不读取错误信息，可能会由于zip格式压缩包解压空文件但是有解压进度而无法正常读取错误信息
-                current_progress = int(match_progress.group(1))  # 提取进度百分比（不含%）
-                if current_progress:  # 0%进度不发送数据
-                    queue_sender.send_data(current_progress)
-
-    # 结束后读取返回码
-    delete_cmd_pw_file()  # 删除临时密码文件
+    delete_cmd_pw_file()
     print('识别的错误类型', error_type)
     return_code = process.poll()
-    if return_code == 0 and not is_fake_success:
-        return Result7zip.Success(password)
-    elif return_code == 1:
-        return Result7zip.Warning()
-    elif return_code == 2:
-        if not error_type:
-            error_type = Result7zip.UnknownError(output)
-        return error_type
-    elif return_code == 7:
-        return Result7zip.ErrorCommand()
-    elif return_code == 8:
-        return Result7zip.NotEnoughMemory()
-    elif return_code == 255:
-        return Result7zip.UserStopped()
-    else:  # 兜底
-        return Result7zip.UnknownError('未知错误')
+    return _get_extract_result(return_code, error_type, last_output, password, is_fake_success)
 
 
-def get_temp_dirpath(dirpath: str):
+def get_temp_dirpath(dirpath):
     """获取根据传入路径计算的临时文件夹路径"""
     return os.path.normpath(os.path.join(dirpath, TEMP_EXTRACT_FOLDER))
 
 
-def progress_7zip_x_with_temp_folder(_7zip_path: str, file: str, password: str, cover_model: str, output_folder: str,
-                                     filter_rule: list = None):
-    """解压指定文件（解压至临时文件夹中）
-    :param _7zip_path: 7zip路径
-    :param file: 需要解压的文件路径
-    :param password: 解压时使用的密码（附带测试功能）
-    :param cover_model: 重名文件的覆盖模式
-    :param output_folder: 解压输出目录
-    :param filter_rule: 文件过滤器规则
-    :return: 7zip结果类"""
+def progress_7zip_x_with_temp_folder(_7zip_path, file, password, cover_model, output_folder, filter_rule=None):
+    """解压指定文件到临时文件夹，并实时发送解压进度"""
     extract_dirpath_temp = get_temp_dirpath(output_folder)
     return process_7zip_x(_7zip_path, file, password, cover_model, extract_dirpath_temp, filter_rule)
 
 
-def _analyse_process_return(process: subprocess.CompletedProcess):
-    """分析调用7zip的返回结果
-    :param process: subprocess调用结果对象
-    :return: 7zip结果类"""
-    return_code = process.returncode
-    if return_code == 0:
-        return Result7zip.Success()
-    elif return_code == 1:
-        return Result7zip.Warning()
-    elif return_code == 2:
-        output = str(process.stderr) + str(process.stdout)
-        if 'Wrong password' in output:
-            return Result7zip.WrongPassword()
-        elif 'Missing volume' in output:
-            return Result7zip.MissingVolume()
-        elif 'Cannot open the file as' in output:
-            return Result7zip.WrongFiletype()
-        else:
-            print(f'未知错误：{output}')
-            return Result7zip.UnknownError(str(process.stderr))
-    elif return_code == 7:
-        return Result7zip.ErrorCommand()
-    elif return_code == 8:
-        return Result7zip.NotEnoughMemory()
-    elif return_code == 255:
-        return Result7zip.UserStopped()
-    else:
-        return Result7zip.UnknownError('未知错误')
+def _find_first_line_index(lines, prefix):
+    """查找第一行以指定文本开头的行号"""
+    for index, line in enumerate(lines):
+        if line.startswith(prefix):
+            return index
+    return None
 
 
-def _read_process_stdout_get_files(process: subprocess.CompletedProcess):
-    """读取process的stdout管道，提取其中包含的文件列表信息"""
+def _find_last_line_index(lines, prefix):
+    """查找最后一行以指定文本开头的行号"""
+    for index in range(len(lines) - 1, -1, -1):
+        if lines[index].startswith(prefix):
+            return index
+    return None
+
+
+def _read_process_stdout_get_files(process):
+    """从run结果的stdout中提取文件类型和内部文件路径"""
+    files_dict: dict = {'filetype': None, 'paths': None}
     stdout = process.stdout
-    files_dict = {'filetype': None, 'paths': None}
-    if stdout:
-        text_splits = stdout.splitlines()
-    else:
+    if not stdout:
         return files_dict
 
-    # 提取文件类型
-    cut_splits = [i for i in text_splits if i.startswith('Type = ')]
-    if cut_splits:
-        cut_text = [i for i in text_splits if i.startswith('Type = ')][0]
-        filetype = cut_text[len('Type = '):]
-        files_dict['filetype'] = filetype
+    lines = stdout.splitlines()
 
-    # 提取内部文件路径
-    start_index = None
-    end_index = None
-    for index, i in enumerate(text_splits):
-        if i.startswith('   Date'):
-            start_index = index
-        if i.startswith('----------'):
-            end_index = index
-    if start_index or end_index:
-        column_name_index = text_splits[start_index].find('Name')
-        cut_text = text_splits[start_index + 2:end_index]
-        paths = [i[column_name_index:] for i in cut_text if 'D....' not in i]
-        files_dict['paths'] = paths
+    type_index = _find_first_line_index(lines, 'Type = ')
+    if type_index is not None:
+        files_dict['filetype'] = lines[type_index][len('Type = '):]
+
+    start_index = _find_last_line_index(lines, '   Date')
+    end_index = _find_last_line_index(lines, '----------')
+    if start_index is None or end_index is None or end_index <= start_index:
+        return files_dict
+
+    name_index = lines[start_index].find('Name')
+    if name_index < 0:
+        return files_dict
+
+    paths = []
+    for line in lines[start_index + 2:end_index]:
+        if 'D....' not in line:
+            paths.append(line[name_index:])
+    files_dict['paths'] = paths
 
     return files_dict
 
 
-def get_smallest_file_in_archive(archive_path: str):
+def _run_7zip_list(archive_path):
+    """使用l命令获取压缩包列表信息"""
+    command = [get_7zip_path(), 'l', archive_path, '-p' + FAKE_PASSWORD]
+    return subprocess.run(command,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE,
+                          creationflags=subprocess.CREATE_NO_WINDOW,
+                          text=True,
+                          universal_newlines=True)
+
+
+def _find_list_boundaries(lines):
+    """查找压缩包列表信息中表头和表尾的位置"""
+    title_index = None
+    end_index = None
+
+    for index, line in enumerate(lines):
+        if line.startswith('--------'):
+            title_index = index - 1
+            break
+
+    for index in range(len(lines) - 1, -1, -1):
+        if lines[index].startswith('--------'):
+            end_index = index + 1
+            break
+
+    return title_index, end_index
+
+
+def _get_list_columns(line):
+    """根据分隔线计算各列的起止位置"""
+    columns = []
+    start = 0
+
+    for _ in range(4):
+        end = line.find(' -', start)
+        if end < 0:
+            return None
+        columns.append((start, end))
+        start = end + 1
+
+    columns.append((start, start + 200))
+    return columns
+
+
+def _parse_file_lines(lines, columns):
+    """解析压缩包列表中的文件信息"""
+    date_range = columns[0]
+    attr_range = columns[1]
+    size_range = columns[2]
+    compressed_range = columns[3]
+    name_range = columns[4]
+
+    infos = []
+    for line in lines:
+        data = line[date_range[0]:date_range[1]].strip()
+        attr = line[attr_range[0]:attr_range[1]].strip()
+        size_text = line[size_range[0]:size_range[1]].strip()
+        compressed_text = line[compressed_range[0]:compressed_range[1]].strip()
+        name = line[name_range[0]:name_range[1]].strip()
+
+        if not size_text.isdigit() or not compressed_text.isdigit():
+            continue
+
+        info = {
+            'data': data,
+            'attr': attr,
+            'size': int(size_text),
+            'compressed': int(compressed_text),
+            'name': name
+        }
+        infos.append(info)
+
+    return infos
+
+
+def get_smallest_file_in_archive(archive_path):
     """获取压缩文件中最小的文件内部路径"""
     print('提取压缩文件内部文件路径')
-    # 测试一次压缩文件，读取返回信息
-    _7ZIP_PATH = get_7zip_path()
-    command = [_7ZIP_PATH, "l", archive_path, f"-p{FAKE_PASSWORD}"]  # 需要指定密码，否则7zip会卡在输入密码阶段
-    result = subprocess.run(command,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            creationflags=subprocess.CREATE_NO_WINDOW,
-                            text=True,
-                            universal_newlines=True)
+    result = _run_7zip_list(archive_path)
 
-    # 解析返回信息，提取文件结构
-    if "--------" not in result.stdout:
+    if '--------' not in result.stdout:
         return None
-    # 内部文件信息在两行“--------”之间，表头在第一行“--------”的上一行
-    # print(result.stdout)
+
     print(result.stdout)
-    lines = result.stdout.split("\n")
-    # 先找表头索引
-    for index, line in enumerate(lines):
-        if line.startswith("--------"):
-            index_title = index - 1
-            break
-    # 再找表尾索引
-    for index, line in enumerate(lines[::-1]):
-        if line.startswith("--------"):
-            index_end = len(lines) - index
-            break
-    # 测试一次索引号，如果不存在则直接返回空
-    try:
-        index_title
-        index_end
-    except NameError:
+    lines = result.stdout.split('\n')
+    title_index, end_index = _find_list_boundaries(lines)
+    if title_index is None or title_index < 0:
         return None
-    # 提取信息行
-    lines_info = lines[index_title:index_end]
-    # 解析信息行中每列的起始索引和结束索引
-    line_split = lines_info[1]
-    start_data_time = 0
-    end_data_time = line_split.find(' -')
-    start_attr = end_data_time + 1
-    end_attr = line_split.find(' -', start_attr)
-    start_size = end_attr + 1
-    end_size = line_split.find(' -', start_size)
-    start_compressed = end_size + 1
-    end_compressed = line_split.find(' -', start_compressed)
-    start_name = end_compressed + 1
-    end_name = start_name + 200
-    # 转换为dict格式
-    infos: list[dict] = []
-    for line in lines_info:
-        data = line[start_data_time: end_data_time].strip()
-        attr = line[start_attr: end_attr].strip()
-        size = line[start_size: end_size].strip()
-        compressed = line[start_compressed: end_compressed].strip()
-        name = line[start_name: end_name].strip()
-        if size.isdigit() and compressed.isdigit():
-            size = int(size)
-            compressed = int(compressed)
-            line_dict = {"data": data, "attr": attr, "size": size, "compressed": compressed, "name": name}
-            infos.append(line_dict)
+    if end_index is None or end_index <= title_index + 1:
+        return None
 
-    # 根据size排序列表
-    infos_sorted = sorted(infos, key=lambda x: x['size'])
+    lines_info = lines[title_index:end_index]
+    columns = _get_list_columns(lines_info[1])
+    if columns is None:
+        return None
 
-    # 提取最小文件（排除文件夹）
+    infos = _parse_file_lines(lines_info, columns)
+
     smallest_file = ''
-    for info_dict in infos_sorted:
-        if info_dict['attr'] == 'D....':
+    smallest_size = None
+    for info in infos:
+        if info['attr'] == 'D....':
             continue
-        else:
-            smallest_file = info_dict['name']
+        if smallest_size is None or info['size'] < smallest_size:
+            smallest_file = info['name']
+            smallest_size = info['size']
 
     return smallest_file
