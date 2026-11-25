@@ -5,9 +5,10 @@ from typing import Union
 from PySide6.QtWidgets import QApplication
 
 from common import function_password
-from common.function_password import DB_FILEPATH, DBPassword, Password  # 必须添加DBPassword, Password类
+# 显式导入密码本相关的类，读取旧版本的密码本时需要
+from common.function_password import DB_FILEPATH, DBPassword, Password
 
-_ = Password  # 占位，防止未导入Password
+_ = Password  # 占位，避免 Password 被判定为未使用
 
 
 class PasswordModel:
@@ -44,20 +45,33 @@ class PasswordModel:
 
     def update_password(self, password: Union[str, list]):
         """更新密码本"""
-        if password:
-            # 更新前备份一次密码
-            function_password.backup_file(DB_FILEPATH)
-            if isinstance(password, (list, set)):
-                pws = password
-            elif isinstance(password, str):
-                # 考虑两端可能存在空格的密码，添加密码时同时添加原始和去除空格的两种格式
-                pws = [i for i in password.split('\n') if i.strip()]
-                pws_strip = [i.strip() for i in pws if i.strip() not in pws]  # 为了保持密码的顺序，不使用set进行去重
-                pws += pws_strip
-            else:
-                return
-                # 写入密码本
-            self.password_db.add_passwords(pws)
+        if not password:
+            return
+
+        # 更新前备份一次密码
+        function_password.backup_file(DB_FILEPATH)
+
+        if isinstance(password, (list, set)):
+            pws = list(password)
+        elif isinstance(password, str):
+            # 一个密码占一行，空白行不加入密码本
+            pws = []
+            for line in password.split('\n'):
+                if line.strip():
+                    pws.append(line)
+
+            # 同时加入去掉两端空格的版本，保持原有顺序且不重复
+            stripped_pws = []
+            for pw in pws:
+                stripped = pw.strip()
+                if stripped not in pws:
+                    stripped_pws.append(stripped)
+            pws = pws + stripped_pws
+        else:
+            return
+
+        # 写入密码本
+        self.password_db.add_passwords(pws)
 
     def add_use_count_once(self, passwords: Union[str, list]):
         """增加一次密码的使用次数"""
@@ -69,15 +83,20 @@ class PasswordModel:
     def count_password(self) -> str:
         """统计密码本信息"""
         pws = self.password_db.get_passwords()
-        info_1 = '添加方法：一个密码占一行，点击“更新密码本”。\n'
-        info_4 = '直接拖入旧版本的密码本文件，可以读取其中的密码\n'
-        info_2 = f'当前存储的密码数量：{len(pws)}\n'
-        info_pw10 = '\n'.join(pws[:10])
-        info_3 = f'常用密码预览：\n{info_pw10}'
-        info_join = info_1 + info_4 + '\n' + info_2 + '\n' + info_3
-        return info_join
+
+        lines = [
+            '添加方法：一个密码占一行，点击“更新密码本”。',
+            '直接拖入旧版本的密码本文件，可以读取其中的密码',
+            '',
+            f'当前存储的密码数量：{len(pws)}',
+            '',
+        ]
+
+        # 只预览前 10 个密码
+        preview = '\n'.join(pws[:10])
+        lines.append('常用密码预览：\n' + preview)
+        return '\n'.join(lines)
 
     def drop_files(self, files):
         """处理拖入的文件"""
-        passwords_in_files = function_password.read_passwords_from_files(files)
-        return passwords_in_files
+        return function_password.read_passwords_from_files(files)

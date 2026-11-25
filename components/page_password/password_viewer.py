@@ -24,7 +24,6 @@ class PasswordViewer(QWidget):
 
         # 初始化
         self.ui.pushButton_open.setEnabled(False)
-        # self.ui.pushButton_update.setEnabled(False)
         self._bind_signal()
         self._load_icon()
         self.ui.plainTextEdit_password.dropEvent = self.drop_event
@@ -51,26 +50,30 @@ class PasswordViewer(QWidget):
         self.ui.pushButton_clipboard.clicked.connect(self.ReadClipboard.emit)
         self.ui.pushButton_output.clicked.connect(self.OutputPassword.emit)
         self.ui.pushButton_open.clicked.connect(self.OpenPassword.emit)
-        self.ui.pushButton_update.clicked.connect(
-            lambda: self.UpdatePassword.emit(self.ui.plainTextEdit_password.toPlainText()))
-        # self.ui.plainTextEdit_password.textChanged.connect(self._pw_text_changed)
+        self.ui.pushButton_update.clicked.connect(self._on_update_clicked)
         self.ui.toolButton_clear.clicked.connect(self.clear_pw)
+
+    def _on_update_clicked(self):
+        """点击更新按钮时，发出密码框中的文本"""
+        text = self.ui.plainTextEdit_password.toPlainText()
+        self.UpdatePassword.emit(text)
 
     def _load_icon(self):
         """加载图标"""
         self.ui.toolButton_clear.setIcon(lzytools_Qt.convert_base64_image_to_pixmap(ICON_ERASER))
 
     def drop_event(self, event):
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
-
-            # 获取所有拖入文件的路径
-            urls = event.mimeData().urls()
-            file_paths = [url.toLocalFile() for url in urls]
-            self.DropFiles.emit(file_paths)
-
-        else:
+        """拖入文件时，把文件路径通过信号发出"""
+        if not event.mimeData().hasUrls():
             event.ignore()
+            return
+
+        event.acceptProposedAction()
+
+        file_paths = []
+        for url in event.mimeData().urls():
+            file_paths.append(url.toLocalFile())
+        self.DropFiles.emit(file_paths)
 
 
 if __name__ == "__main__":

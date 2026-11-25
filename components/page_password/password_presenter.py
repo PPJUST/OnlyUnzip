@@ -39,6 +39,7 @@ class PasswordPresenter(QObject):
         self.show_pw_count_info()
 
     def show_pw_count_info(self):
+        """把密码本统计信息显示在密码框的提示文本中"""
         self.viewer.show_pw_count_info(self.model.count_password())
 
     def _bind_signal(self):
@@ -51,14 +52,17 @@ class PasswordPresenter(QObject):
         self.viewer.DropFiles.connect(self._drop_files)
 
     def _read_clipboard(self):
+        """把剪贴板内容追加到密码框"""
         self.viewer.append_pw(self.model.read_clipboard())
 
     def _output_password(self):
+        """导出密码本，并允许打开导出文件"""
         self.model.output_password()
         self.viewer.set_open_button_enable(True)
 
     def _drop_files(self, files):
-        pws_drop = self.model.drop_files(files)
-        print('拖入文件中包含的密码', pws_drop)
-        if pws_drop:
-            self.viewer.append_pw('\n'.join(pws_drop))
+        """把拖入文件中包含的密码追加到密码框"""
+        passwords = self.model.drop_files(files)
+        print('拖入文件中包含的密码', passwords)
+        if passwords:
+            self.viewer.append_pw('\n'.join(passwords))
