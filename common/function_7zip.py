@@ -13,6 +13,28 @@ _process_running = None
 _SPECIAL_PASSWORD_CHARS = ['*', ':', '<', '>', '?', '\\', '/', '|', '&', ';', '(', ')', '^', '%']
 
 
+def _decode_7zip_output(data):
+    """将7zip输出的字节数据解码为文本，兼容UTF-8/GBK并容忍无效字节。
+
+    7zip的输出编码不固定，且可能混入无法用系统代码页解码的字节，
+    直接让subprocess按文本模式解码会抛出UnicodeDecodeError。
+    """
+    if data is None:
+        return ''
+    if isinstance(data, str):
+        return data
+    if isinstance(data, (bytes, bytearray)):
+        chunks = bytes(data).splitlines(keepends=True)
+        decoded = []
+        for chunk in chunks:
+            try:
+                decoded.append(chunk.decode('utf-8'))
+            except UnicodeDecodeError:
+                decoded.append(chunk.decode('gbk', errors='replace'))
+        return ''.join(decoded)
+    return str(data)
+
+
 def get_7zip_path():
     """获取7zip路径"""
     path_setting = function_setting.get_7zip_path()
@@ -143,8 +165,9 @@ def _process_7zip_with_run(command):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              creationflags=subprocess.CREATE_NO_WINDOW,
-                             text=True,
                              shell=True)
+    process.stdout = _decode_7zip_output(process.stdout)
+    process.stderr = _decode_7zip_output(process.stderr)
     delete_cmd_pw_file()
     print('返回码', process.returncode)
     print('错误信息', process.stderr)
@@ -234,11 +257,8 @@ def _get_extract_error_type(output):
 
 
 def _read_process_line(process):
-    """读取7zip输出的一行，遇到编码错误则忽略该行"""
-    try:
-        return process.stdout.readline()
-    except UnicodeDecodeError:
-        return ''
+    """读取7zip输出的一行，自动解码并容忍无效字节"""
+    return _decode_7zip_output(process.stdout.readline())
 
 
 def _send_progress(queue_sender, output):
@@ -314,7 +334,6 @@ def process_7zip_x(_7zip_path, file, password, cover_model, output_folder, filte
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
                                creationflags=subprocess.CREATE_NO_WINDOW,
-                               text=True,
                                shell=True)
 
     global _process_running
@@ -389,12 +408,13 @@ def _read_process_stdout_get_files(process):
 def _run_7zip_list(archive_path):
     """使用l命令获取压缩包列表信息"""
     command = [get_7zip_path(), 'l', archive_path, '-p' + FAKE_PASSWORD]
-    return subprocess.run(command,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          creationflags=subprocess.CREATE_NO_WINDOW,
-                          text=True,
-                          universal_newlines=True)
+    process = subprocess.run(command,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             creationflags=subprocess.CREATE_NO_WINDOW)
+    process.stdout = _decode_7zip_output(process.stdout)
+    process.stderr = _decode_7zip_output(process.stderr)
+    return process
 
 
 def _find_list_boundaries(lines):
